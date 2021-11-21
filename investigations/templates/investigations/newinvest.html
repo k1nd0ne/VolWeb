@@ -1,0 +1,111 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<style>
+p, input, .text-white, .form-label  {
+    --tw-bg-opacity: 1;
+    font-family: Anonymous Pro, monospace;
+    --tw-text-opacity: 1;
+    color: rgba(233, 233, 233, var(--tw-text-opacity));
+    -moz-osx-font-smoothing: grayscale;
+    -moz-osx-font-smoothing: auto;
+    font-size: 0.9rem;
+}
+
+.query-input {
+     background-color:#293b58;
+     font-size: 1rem;
+     line-height: 3rem;
+     width: 100%;
+     white-space: nowrap;
+   }
+ .card{
+     border-width: small;
+     background-color:#293b58;
+ }
+
+ .badge {
+     border-width: 1px;
+     --tw-border-opacity: 1;
+     border-color: rgba(149, 149, 149, var(--tw-border-opacity));
+     background-color: rgba(0,0,0,0);
+ }
+ .query-input {
+     font-size: 1rem;
+     color: #ffffff;
+     line-height: 1rem;
+     white-space: nowrap;
+     border-color:#e9e9e9;
+ }
+.text-select{
+     color:#dea71d
+
+}
+
+
+</style>
+<!-- Main Container -->
+<main class="container-fluid col-md-11 ml-sm-auto pt-3 px-4" style="overflow-y:scroll">
+    <div class="row align-items-start mb-5">
+        <div class="col-10">
+            <div class="card">
+                <!-- New investigation form -->
+                <div class="card-body">
+                    <h5 class="card-title" id="invest-title"> <svg class="bi me-2" width="32" height="32"><use xlink:href="#collection"/></svg>New Investigation</h5>
+                    <h6 class="card-subtitle mb-2 text-muted"id="invest-description" >Create an Investigation</h6>
+                    <form id="upload-form" action="">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Title :</label>
+                            {{form.title}}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">OS version :</label>
+                            {{form.os_version}}
+                        </div>
+                        <label class="form-label">Context Description</label>
+                        <div class="mb-3">
+                            {{form.description}}
+                        </div>
+                        <label class="form-label">Forensics Experts :</label>
+                        <div class="mb-3">
+                            {% for u in Users %}
+                            <span class="badge border"><a class="text-muted" id="badge_{{u.first_name}}_{{u.last_name}}" style="text-decoration:none" href="#" onclick="ToggleInvestigator('{{u.first_name}}_{{u.last_name}}');">{{u.first_name}}_{{u.last_name}}</a></span>
+                            {{form.investigators}}
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <p>Select a memory dump to upload.</p>
+                            <input type="file" class="query-input form-control mb-3" id="fileupload" placeholder="Select file">
+                        </div>
+                        <input type="submit" value="Create" id="submit" class="btn btn-prim">     
+                    </form>
+                    <div id="uploaded_files"></div>
+                    <!-- The alert box displaying the error messages if the form is not valid -->
+                    <div id="alert-box" class="not-visible"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+       function ToggleInvestigator(u){
+       var badge = document.getElementById('badge_'+u);
+       var investigators = document.getElementById('id_investigators');
+
+       if(badge.classList.contains("text-muted")){
+       if(investigators.value.includes(u) == false){
+       investigators.value += u + ' ';
+       }
+       badge.classList.remove("text-muted");
+       badge.classList.add("text-select");
+       }
+       else{
+       investigators.value = investigators.value.replace(u,"").replace(' ','');
+       badge.classList.remove("text-select");
+       badge.classList.add("text-muted");
+       }
+       console.log(investigators.value);
+       }
+
+    </script>
+</main>
+{% endblock content %}

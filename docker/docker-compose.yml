@@ -1,0 +1,71 @@
+version: '3'
+
+services:
+  db:
+    container_name: postgresdb
+    image: postgres:latest
+    restart: always
+    env_file:
+      - ./secret/volweb.env
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  web:
+    container_name: django
+    build: 
+      context: ../
+      dockerfile: docker/Dockerfile
+    command: >
+      gunicorn VolWeb.wsgi:application --bind 0.0.0.0:8000 --workers=4 
+    env_file:
+      - secret/volweb.env
+    expose:
+      - 8000
+    depends_on:
+      - db
+    volumes:
+      - cases:/home/app/web/Cases/
+      - staticfiles:/home/app/web/staticfiles
+
+  nginx:
+    container_name: nginx
+    image: nginx:mainline-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./nginx/ssl/:/etc/nginx/certs/
+      - staticfiles:/home/app/web/staticfiles
+      - ./nginx/log/:/var/log/nginx/
+    depends_on:
+      - web
+
+  rabbitmq3:
+    container_name: "rabbitmq3"
+    image: rabbitmq:3.6.6
+    ports:
+      - "5672:5672"
+    environment:
+        - RABBITMQ_DEFAULT_USER=admin
+        - RABBITMQ_DEFAULT_PASS=mypass
+  worker:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    env_file:
+      - secret/volweb.env
+    command: celery -A investigations worker -l info
+    depends_on: 
+      - rabbitmq3
+      - db
+    volumes:
+      - cases:/home/app/web/Cases/
+      - staticfiles:/home/app/web/staticfiles
+volumes:
+  postgres-data:
+  staticfiles:
+  cases:

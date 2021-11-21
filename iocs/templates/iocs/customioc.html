@@ -1,0 +1,129 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<style>
+ main { 
+     color:#ffffff;
+     --tw-bg-opacity: 1;
+     font-family: Anonymous Pro, monospace;
+     --tw-text-opacity: 1;
+     color: rgba(233, 233, 233, var(--tw-text-opacity));
+     -moz-osx-font-smoothing: grayscale;
+     -moz-osx-font-smoothing: auto;
+     font-size: 0.9rem;
+ } 
+   .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+       --tw-bg-opacity: 1;
+       font-family: Anonymous Pro, monospace;
+       --tw-text-opacity: 1;
+       color: rgba(233, 233, 233, var(--tw-text-opacity));
+       -moz-osx-font-smoothing: grayscale;
+       -moz-osx-font-smoothing: auto;
+   }
+   .card{
+       background-color:#293b58;
+   }
+ 
+   .query-input {
+       background-color:#293b58;
+       font-size: 1rem;
+       line-height: 3rem;
+       width: 100%;
+       white-space: nowrap;
+       color:#ffffff;
+   }
+ 
+   .badge {
+       border-width: 1px;
+       --tw-border-opacity: 1;
+       border-color: rgba(149, 149, 149, var(--tw-border-opacity));
+       background-color: rgba(0,0,0,0);
+   }
+ 
+   .text-select{
+       color:#dea71d
+ 
+   }
+
+</style>
+<main class="container-fluid col-md-11 ml-sm-auto pt-3 px-4 text-select">
+  <div class="card border text-select">
+    <div class="card-body">
+      <h5 class="card-title" id="invest-title"> <svg class="bi me-2" width="32" height="32"><use xlink:href="#collection"/></svg>Edit an IOC</h5>
+      <h6 class="card-subtitle mb-2 text-muted"id="invest-description" >Link an IOC to your case(s)</h6>
+      <form id="upload-form" method="POST" action="">
+        {% csrf_token %}
+        <div class="form-group mb-2">
+          <label class="sr-only text-white">IOCs Name :</label>
+          {{form.name}}
+        </div>
+        <div class="form-group mb-2">
+          <label class="sr-only text-white">Value</label>
+          {{form.value}}
+        </div>
+        <div class="form-group mb-2">
+          <label class="sr-only text-white">Select the investigation(s) linked to the IOC :</label>
+          {% for i in investigations %}
+          {% if i.title in form.linkedInvestigation.value %}
+          <span class="badge border"><a class="text-select" id="badge_{{i.title}}_{{i.id}}" style="text-decoration:none" href="#" onclick="ToggleLinkedInvestigation('{{i.title}}_{{i.id}}');">{{i.title}}</a></span>
+          {% else %}
+          <span class="badge border"><a class="text-muted" id="badge_{{i.title}}_{{i.id}}" style="text-decoration:none" href="#" onclick="ToggleLinkedInvestigation('{{i.title}}_{{i.id}}');">{{i.title}}</a></span>
+          {% endif %}
+          {% endfor  %}
+
+          {% if '-1' in form.linkedInvestigationID.value %}
+          <span class="badge border"><a class="text-select" id="badge_All_-1" style="text-decoration:none" href="#" onclick="ToggleLinkedInvestigation('All_-1');">All Investigations</a></span>
+          {% else %}
+          <span class="badge border"><a class="text-muted" id="badge_All_-1" style="text-decoration:none" href="#" onclick="ToggleLinkedInvestigation('All_-1');">All Investigations</a></span>
+          {% endif %}
+          {{form.linkedInvestigation}}
+          {{form.linkedInvestigationID}}
+        </div>
+        <div id="alert-box" class="not-visible"></div>
+        <input class="btn btn-prim " type="submit" value="Save" onclick=CheckNull()>
+      </form>
+    </div>
+  </div>
+</main>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
+  function CheckNull(){
+    var investigators = document.getElementById('id_linkedInvestigation');
+    var investigatorsid = document.getElementById('id_linkedInvestigationID');
+    if(!investigators.value){
+      alertBox = document.getElementById('alert-box');
+      alertBox.innerHTML = "<p class='text-danger'>Please Select at least one linked investigation</p>";
+    }
+  }
+  $(document).ready(function(){
+    var investigators = document.getElementById('id_linkedInvestigation');
+    var investigatorsid = document.getElementById('id_linkedInvestigationID');
+    investigators.value += ' ';
+    investigatorsid.value += ' ';
+  });
+  function ToggleLinkedInvestigation(u){
+    var badge = document.getElementById('badge_'+u);
+    var investigators = document.getElementById('id_linkedInvestigation');
+    var investigatorsid = document.getElementById('id_linkedInvestigationID');
+
+    if(badge.classList.contains("text-muted")){
+      if(investigators.value.includes(u) == false){
+        investigators.value += u.split('_')[0] + ' ';
+        investigatorsid.value += u.split('_')[1] + ' ';
+      }
+      badge.classList.remove("text-muted");
+      badge.classList.add("text-select");
+    }
+    else{
+      investigators.value = investigators.value.replace(u.split('_')[0],"").replace(' ','');
+      investigatorsid.value = investigatorsid.value.replace(u.split('_')[1],"").replace(' ','');
+      badge.classList.remove("text-select");
+      badge.classList.add("text-muted");
+    }
+    console.log(investigators.value);
+    console.log(investigatorsid.value);
+  }
+</script>
+
+
+{% endblock content %}

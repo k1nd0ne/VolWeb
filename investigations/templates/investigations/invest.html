@@ -1,0 +1,286 @@
+{% extends "dashboard/base.html" %}
+
+{% block content%}
+<!-- Custom Card Style -->
+<style type="text/css">
+  .modal-content {
+    background-color: #293b58;
+  }
+  .card{
+    border-width: small;
+    background-color:#293b58;
+    transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
+    padding: 14px 30px 10px 30px;
+  }
+
+  .card:hover{
+    transform: scale(1.01);
+  }
+
+  .text-white {
+    --tw-bg-opacity: 1;
+    font-family: Anonymous Pro, monospace;
+    --tw-text-opacity: 1;
+    color: rgba(233, 233, 233, var(--tw-text-opacity));
+    -moz-osx-font-smoothing: grayscale;
+    -moz-osx-font-smoothing: auto;
+    font-size: 0.9rem;
+  }
+  
+  .query-input {
+    background-color:#293b58;
+    font-size: 1rem;
+    line-height: 3rem;
+    width: 100%;
+    white-space: nowrap;
+  }
+
+   .h3 {
+       color: #eb1f5a;
+       float:right;
+   }
+
+
+   a:hover{
+       color:#ffffff;
+   }
+</style>
+<!-- Main Content -->
+<main class="container-fluid col-md-11 ml-sm-auto pt-3 px-4 text-light" style="overflow-y: scroll;" id="main">
+    <div class="row">
+        <div class="col-10">
+            <h1 class="h3">Investigations</h1>
+            <div class="d-inline">
+                <input class="query-input text-white mb-3" id="myInput" type="text" placeholder="Search..">
+            </div>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
+    <!-- Investigations Cards -->
+    <div id="cards" class="card-deck">
+      {% if investigations %}
+      {% for i in investigations %}
+      <a href="#" data-bs-toggle="modal" data-bs-target="#card_{{i.id}}" id="card_{{i.title}}" style="text-decoration:none">
+        <div class="card mb-3 shadow rounded">
+          <div class="card-body">
+            {% if i.status == "0" %}
+            <p class="card-subtitle" style="float:right; color:#eb1f5a;" id="invest-status_{{i.id}}">Not Analysed.</p>
+            {% endif  %}
+            {% if i.status == "1" %}
+            <div style="float:right; color:#dea71d; margin-left:5px;" class="spinner-grow spinner-grow-sm" role="status"></div><p class="card-subtitle" style=" color:#dea71d; float:right;" id="invest-status_{{i.id}}">Investigation in progress </p>
+            {% endif %}
+
+            {% if i.status == "2" %}
+            <p class="card-subtitle" id="invest-status_{{i.id}}" style="float:right; color:#5ce6ff;">Read to be reviewed</p>
+            {% endif %}
+            <p class="card-subtitle h4 mb-4" id="invest-title">{{ i.title }}</p></strong>
+            <hr>
+            <p class="card-subtitle mb-2" id="invest-description" >Description : {{ i.description }}</p>
+            <span class="badge badge-pill mt-3" style="float:right; background-color:#32d3bc;">{{i.os_version}}</span>
+            <div class="card-footer mt-5">
+              <small>Forensics Expert(s) : {{ i.investigators }}</small>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Modal displayed for each investigations -->
+      <div class="text-white modal fade" id="card_{{i.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog border">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Investigation</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <ul>
+                <li>Title : {{i.title}}</li>
+                <li>OS Version : {{i.os_version}}</li>
+                <li>Forensics Expert(s): {{i.investigators}}</li>
+                <li>File: {{i.name}}</li>
+              </ul>
+              {% if i.status == "0" %}
+              This memory sample is not analysed yet.
+              {% endif %}
+              {% if i.status == "1" %}
+              This sample is being analysed. Please Wait.
+              {% endif %}
+              {% if i.status == "2" %}
+              This sample is ready to be reviewed.
+              {% endif %}
+            </div>
+            <div class="modal-footer">
+              {% if i.status == "0" %}
+              <form action="" method="POST">
+                {% csrf_token %}
+                {{form.action}}
+                {{form.id}}
+                <button class="btn btn-prim" onclick="StartAnalysis('{{i.id}}');" data-bs-dismiss="modal">Start analysis</button>
+              </form>
+              {% endif %}
+              {% if i.status == "1" %}
+              <form action="" method="POST">
+                {% csrf_token %}
+                {{form.action}}
+                {{form.id}}
+                <button type="button" class="btn btn-warn" onclick="CancelAnalysis('{{i.id}}');" data-bs-dismiss="modal">Cancel Analysis</button>
+              </form>
+              {% endif %}
+              {% if i.status == "2" %}
+              <form action="" method="POST">
+                {% csrf_token %}
+                {{form.action}}
+                {{form.id}}
+                <button type="button" class="btn btn-succ" onclick="ReviewCase('{{i.id}}')">Review artifacts</button>
+                <button type="button" class="btn btn-prim" onclick="StartAnalysis('{{i.id}}');" data-bs-dismiss="modal">Restart analysis</button>
+              </form>
+              {% endif %}
+              <button type="button" class="btn btn-dang" onclick="DeleteInvestigation('{{i.id}}')" data-bs-dismiss="modal">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p>Nothing to show. <a href="{%url 'newinvest'%}">Create a new investigation.</a></p>
+      {% endif %}
+    </div>
+  </div>
+    </div>
+</main>
+
+
+<!-- Ajax post requests management (Create/Delete/Restart/Cancel) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
+  /* StartAnalysis script */
+  function StartAnalysis(id){
+    const csrf = document.getElementsByName('csrfmiddlewaretoken');
+    const action = document.getElementById('id_action');
+    action.value = "1";
+    const fd = new FormData();
+    fd.append('csrfmiddlewaretoken', csrf[0].value);
+    fd.append('action', action.value);
+    fd.append('id', id);
+    $.ajax({
+      type:'POST',
+      url: "",
+      enctype: 'multipart/form-data',
+      data: fd,
+      beforeSend: function(){
+
+      },
+      success: function(response){
+        location.reload();
+      },
+      error: function(error){
+
+      },
+      cache: false,
+      contentType : false,
+      processData: false
+    });
+  }
+
+  /* Cancel Analysis script */
+  function CancelAnalysis(id){
+    const csrf = document.getElementsByName('csrfmiddlewaretoken');
+    const action = document.getElementById('id_action');
+    action.value = "2"
+    const fd = new FormData();
+    fd.append('csrfmiddlewaretoken', csrf[0].value);
+    fd.append('action', action.value);
+    fd.append('id', id);
+    $.ajax({
+      type:'POST',
+      url: "",
+      enctype: 'multipart/form-data',
+      data: fd,
+      beforeSend: function(){
+
+      },
+      success: function(response){
+        location.reload();
+      },
+      error: function(error){
+
+      },
+      cache: false,
+      contentType : false,
+      processData: false
+    });
+  }
+
+  /* Review Analysis script */
+  function ReviewCase(id){
+    const csrf = document.getElementsByName('csrfmiddlewaretoken');
+    const action = document.getElementById('id_action');
+    action.value = "3"
+    const fd = new FormData();
+    fd.append('csrfmiddlewaretoken', csrf[0].value);
+    fd.append('action', action.value);
+    fd.append('id', id);
+    $.ajax({
+      type:'POST',
+      url: '',
+      enctype: 'multipart/form-data',
+      data: fd,
+      beforeSend: function(){
+
+      },
+      success: function(response){
+        window.location.href = '/investigations/reviewinvest/';
+      },
+      error: function(error){
+
+      },
+      cache: false,
+      contentType : false,
+      processData: false
+    });
+  }
+
+  /* Delete investigation script */
+  function DeleteInvestigation(id){
+    const csrf = document.getElementsByName('csrfmiddlewaretoken');
+    const action = document.getElementById('id_action');
+    action.value = "0"
+    const fd = new FormData();
+    fd.append('csrfmiddlewaretoken', csrf[0].value);
+    fd.append('action', action.value);
+    fd.append('id', id);
+    $.ajax({
+      type:'POST',
+      url: "",
+      enctype: 'multipart/form-data',
+      data: fd,
+      beforeSend: function(){
+        document.getElementById('card_'+id).classList.add('d-none');
+      },
+      success: function(response){
+        location.reload();
+      },
+      error: function(error){
+
+      },
+      cache: false,
+      contentType : false,
+      processData: false
+    });
+  }
+
+
+  //Search an investigation
+  $(document).ready(function(){
+    $("#myInput").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#cards a").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+{% endblock content %}

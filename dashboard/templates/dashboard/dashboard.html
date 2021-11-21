@@ -1,0 +1,217 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block content%}
+<script src="{% static 'dashboard/anychart-base.min.js'%}"></script>
+<!-- Custom Cards Style -->
+<link rel="stylesheet" href="{% static 'dashboard/anychart-ui.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'dashboard/anychart-font.min.css' %}"/>
+
+<style>
+.card {
+    align-items: center;
+
+}
+  .card-title {
+      font-weight: bold;
+  }
+  .card img {
+      width: 100%;
+      border-top-right-radius: 0;
+      border-bottom-left-radius: calc(0.25rem - 1px);
+  }
+  @media only screen and (max-width: 768px) {
+      a {
+          display: none;
+      }
+      .card-body {
+          padding: 0.5em 1.2em;
+      }
+      .card-body .card-text {
+          margin: 0;
+      }
+      .card img {
+          width: 100%;
+      }
+  }
+  @media only screen and (max-width: 1200px) {
+      .card img {
+          width: 100%;
+      }
+  }
+  .card{
+      background-color:#293b58;
+      padding: 14px 30px 10px 30px;
+  }
+
+  .card-btn{
+       border-color:#5ce6ff;
+       border-width: medium;
+       border;
+       background-color:#1C2A34;
+
+       padding: 14px 30px 20px 30px;
+   }
+
+
+  .card:hover{
+      transform: scale(1.01);
+  }
+  .text-white {
+      --tw-bg-opacity: 1;
+      font-family: Anonymous Pro, monospace;
+      --tw-text-opacity: 1;
+      color: rgba(233, 233, 233, var(--tw-text-opacity));
+      -moz-osx-font-smoothing: grayscale;
+      -moz-osx-font-smoothing: auto;
+      font-size: 0.9rem;
+  }
+
+  ul.no-bullets {
+      list-style-type: none; /* Remove bullets */
+  }
+
+  .h3 {
+      color: #eb1f5a;
+      float:right;
+  }
+  .subtdb{
+      float:right;
+  }
+  th {
+      color: #5ce6ff;
+  }
+  tr {
+      color: #dea71d;
+  }
+  .mid-section{
+      background-color:#293b58;
+  }
+  .mem-color{
+      color: #32d3bc;
+  }
+  .ind-color{
+      color: #eb1f5a;
+  }
+  #chart {
+         height: 20rem;
+  }
+</style>
+<!-- Dashboard Cards  -->
+<main class=" container-fuild col-md-11 ml-sm-auto pt-3 px-4 text-light">
+    <div class="row align-items-start mb-5">
+        <div class="col-md-10">
+            <div class="subtdb">
+                <ul class="no-bullets">
+                    <li><h1 class="h3">Dashboard</h1></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <!-- New invesitgation Card  -->
+            <div class="card shadow card-btn rounded mb-5">
+                <a href="{% url 'newinvest' %}">
+                    <img class="img-fluid" width="100" height="100" src="{% static 'images/Invest-on-dark.png'%}"/>
+                </a>
+            </div>
+
+            <!-- IOCs Creation Card  -->
+            <div class="card shadow card-btn rounded">
+                <a href="{% url 'newioc' %}">
+                    <img class="img-fluid" width="100" height="100" src="{% static 'images/IOC-on-dark.png'%}"/>
+                </a> 
+            </div>
+        </div>
+        <div class="col-3 mid-section rounded">
+            <h4 class="h4 mt-3">Forensic experts</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in Users %}
+                    <tr>
+                        <td>{{u.first_name}}</td>
+                        <td>{{u.last_name}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-6 rigth-section">
+            <div class="row">
+                <div class="col-8 mb-5" id="chart">
+                    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title display-4 text-center mem-color" id="memcount" countTomem="{{investigations}}"></h5>
+                            <h5 class="card-title">Analysis</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title display-4 text-center ind-color" id="indcount" countToind="{{iocs}}"></h5>
+                            <h5 class="card-title">Indicator(s)</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<script>
+if (document.getElementById('memcount')) {
+        const countUp = new CountUp('memcount', document.getElementById("memcount").getAttribute("countTomem"));
+        if (!countUp.error) {
+            countUp.start();
+        } else {
+            console.error(countUp.error);
+        }
+  }
+if (document.getElementById('indcount')) {
+        const countUp = new CountUp('indcount', document.getElementById("indcount").getAttribute("countToind"));
+        if (!countUp.error) {
+            countUp.start();
+        } else {
+            console.error(countUp.error);
+        }
+  }
+
+// create data
+var data = [
+  ["January", 1],
+  ["February", 12],
+  ["March", 18],
+  ["April", 10],
+  ["May", 9]
+];
+    
+// create a chart
+chart = anychart.line();
+chart.title("Activity Timeline");
+chart.background().fill("#293b58");
+// create a line series and set the data
+var series = chart.line(data);
+series.stroke('#32d3bc');
+// set the container id
+chart.container("chart");
+
+// initiate drawing the chart
+chart.draw();
+
+
+
+</script>
+{% endblock content %}

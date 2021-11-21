@@ -1,0 +1,32 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VolWeb · Login</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="{% static 'dashboard/bootstrap.min.css' %}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="{% static 'dashboard/signin.css' %}" rel="stylesheet">
+</head>
+<body class="text-center text-light">
+
+  <main class="form-signin" >
+    <form method="POST">
+      {% csrf_token %}
+      <div class="d-inline">
+        <img src="{% static 'images/Volweb-on-dark.png'%}" class="mb-4">
+      </div>
+      {{ form|crispy }}
+
+      <button class="w-100 btn btn-lg btn-classic" type="submit">Sign in</button>
+    </form>
+  </main>
+
+
+</body>
+</html>

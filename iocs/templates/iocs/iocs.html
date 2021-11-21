@@ -1,0 +1,176 @@
+{% extends "dashboard/base.html" %}
+
+{% block content%}
+
+<style>
+	.border {
+		border-width: 1px;
+
+	}
+	main {
+		--tw-bg-opacity: 1;
+		font-family: Anonymous Pro, monospace;
+		--tw-text-opacity: 1;
+		color: rgba(233, 233, 233, var(--tw-text-opacity));
+		-moz-osx-font-smoothing: grayscale;
+		-moz-osx-font-smoothing: auto;
+        color:#9e9e9e;
+	}
+
+    .modal-content {
+       background-color: #293b58;
+   }
+
+    .table{
+        color:#ffffff;
+        background-color:#293b58;
+    }
+
+      .h3 {
+        color: #eb1f5a;
+        float:right;
+    }
+.query-input {
+     background-color:#293b58;
+     font-size: 1rem;
+     line-height: 3rem;
+     width: 100%;
+     white-space: nowrap;
+   }
+
+</style>
+<div class="spinner-border" role="status" id="loading">
+</div>
+<main class="container-fluid col-md-11 ml-sm-auto pt-3 px-4" style="overflow-y:scroll; display:none;" id="main">
+		
+    <div class="row">
+        <div class="col-10">
+        <h1 class="h3">IOCs</h1>
+        </div>
+	</div>
+	<div class="row">
+        <div class="col-10">
+		<div class="d-inline">
+			<input class=" query-input form-control mb-3" id="myInput" type="text" placeholder="Search..">
+		</div>
+		<hr>
+		<table class="table table-sm table-hover" id="ioc_table">
+			<thead>
+				<tr>
+					<th scope="col">IOCs Name</th>
+					<th scope="col">Value</th>
+					<th scope="col">Linked Cases</th>
+					<th scope="col">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for ioc in iocs %}
+				<tr>
+					<td>{{ioc.name}}</td>
+					<td class="text-danger">{{ioc.value}}</td>
+					<td class="text-primary">{{ioc.linkedInvestigation}}</td>
+					<td><a class="btn-sm btn btn-warn" href="#" role="button" onclick="CustomizeIOC('{{ioc.id}}')">Edit</a> <a class="btn btn-dang btn-sm" href="#" role="button" data-bs-toggle="modal" data-bs-target="#card_{{ioc.id}}" >Delete</a></td>
+
+					<div class="text-dark modal fade" id="card_{{ioc.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog border">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="exampleModalLabel">Delete IOC</h5>
+									<button type="button" class="bg-white btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body text-white">
+									Are you sure you want to delete this ioc ?
+								</div>
+								<div class="modal-footer">
+									<form action="" method="POST">
+										{% csrf_token %}
+										{{form.action}}
+										{{form.id}}
+									</form>
+									<button type="button" class="btn btn-dang" onclick="DeleteIOC('{{ioc.id}}')" data-bs-dismiss="modal">Delete</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+    </div>
+    </div>
+	</main>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+		//Ask for IOC deletion
+		function DeleteIOC(id){
+			const csrf = document.getElementsByName('csrfmiddlewaretoken');
+			const action = document.getElementById('id_action');
+			action.value = "0"
+			const fd = new FormData();
+			fd.append('csrfmiddlewaretoken', csrf[0].value);
+			fd.append('action', action.value);
+			fd.append('id', id);
+			$.ajax({
+				type:'POST',
+				url: "",
+				enctype: 'multipart/form-data',
+				data: fd,
+				beforeSend: function(){
+					document.getElementById('card_'+id).classList.add('d-none');
+				},
+				success: function(response){
+					location.reload();
+				},
+				error: function(error){
+
+				},
+				cache: false,
+				contentType : false,
+				processData: false
+			});
+		}
+
+		//SearchBar javascript search function
+		$(document).ready(function(){
+			$('#main').show();
+			$('#loading').hide();
+			$("#myInput").on("keyup", function() {
+				var value = $(this).val().toLowerCase();
+				$("#ioc_table tr").filter(function() {
+					$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+				});
+			});
+		});
+		//Ask for IOC customisation
+		function CustomizeIOC(id){
+			const csrf = document.getElementsByName('csrfmiddlewaretoken');
+			const action = document.getElementById('id_action');
+			action.value = "2";
+			const fd = new FormData();
+			fd.append('csrfmiddlewaretoken', csrf[0].value);
+			fd.append('action', action.value);
+			fd.append('id', id);
+			$.ajax({
+				type:'POST',
+				url: "",
+				enctype: 'multipart/form-data',
+				data: fd,
+				beforeSend: function(){
+
+				},
+				success: function(response){
+					window.location.href = '/iocs/customioc';
+				},
+				error: function(error){
+					console.log('error');
+				},
+				cache: false,
+				contentType : false,
+				processData: false
+			});
+		}
+	</script>
+
+
+	{% endblock content %}

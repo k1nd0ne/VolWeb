@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="16.0px"
+   height="16.0px"
+   viewBox="0 0 16.0 16.0"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="dessin.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview3375"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:zoom="24.886869"
+     inkscape:cx="0.46209108"
+     inkscape:cy="10.427186"
+     inkscape:window-width="3440"
+     inkscape:window-height="1298"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3381" />
+  </sodipodi:namedview>
+  <defs
+     id="defs3370">
+    <rect
+       x="2360.5698"
+       y="-474.61194"
+       width="412.16299"
+       height="165.48969"
+       id="rect1659" />
+  </defs>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       transform="matrix(0.4525622,0,0,0.4525622,-1065.7543,213.36669)"
+       id="text1657"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:1.25;font-family:monospace;-inkscape-font-specification:monospace;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect1659);fill:#e9e9e9;fill-opacity:1"
+       inkscape:export-filename="/home/k1nd0ne/work/volweb-dev/dashboard/static/images/favico.png"
+       inkscape:export-xdpi="25.217176"
+       inkscape:export-ydpi="25.217176"><tspan
+         x="2360.5703"
+         y="-439.2207"
+         id="tspan3530"><tspan
+           style="fill:#32d3bc"
+           id="tspan3528">V</tspan></tspan></text>
+  </g>
+</svg>
