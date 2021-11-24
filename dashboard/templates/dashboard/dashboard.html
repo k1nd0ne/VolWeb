@@ -123,7 +123,9 @@
                 </a> 
             </div>
         </div>
-        <div class="col-3 mid-section rounded">
+        <div class="col-2">
+        </div>
+        <div class="col-2 mid-section rounded">
             <h4 class="h4 mt-3">Forensic experts</h4>
             <table class="table">
                 <thead>
@@ -142,7 +144,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-6 rigth-section">
+        <div class="col-5 rigth-section">
             <div class="row">
                 <div class="col-8 mb-5" id="chart">
                     
@@ -191,16 +193,11 @@ if (document.getElementById('indcount')) {
 
 // create data
 var data = [
-  ["January", 1],
-  ["February", 12],
-  ["March", 18],
-  ["April", 10],
-  ["May", 9]
 ];
     
 // create a chart
 chart = anychart.line();
-chart.title("Activity Timeline");
+chart.title("Activity Timeline (coming soon)");
 chart.background().fill("#293b58");
 // create a line series and set the data
 var series = chart.line(data);

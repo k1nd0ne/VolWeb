@@ -188,7 +188,7 @@ Process dump
 """
 def dump_memory_pid(case_id,pid):
     case = UploadInvestigation.objects.get(pk=case_id)
-    dump_path = case.file
+    dump_path = "Cases/" + case.name
     data = []
     try:
         output = subprocess.check_output(['vol', '-f', str(dump_path), '-o', 'Cases/Results/', 'windows.pslist', '--pid', pid, '--dump'])

@@ -41,7 +41,7 @@
    }
 
 
-   a:hover{
+   .invests:hover{
        color:#ffffff;
    }
 </style>
@@ -62,26 +62,23 @@
     <div id="cards" class="card-deck">
       {% if investigations %}
       {% for i in investigations %}
-      <a href="#" data-bs-toggle="modal" data-bs-target="#card_{{i.id}}" id="card_{{i.title}}" style="text-decoration:none">
+      <a href="#" class="invests" data-bs-toggle="modal" data-bs-target="#card_{{i.id}}" id="card_{{i.title}}" style="text-decoration:none">
         <div class="card mb-3 shadow rounded">
           <div class="card-body">
+            <p class="card-subtitle h4 mb-2" style="color:#32d3bc;" id="invest-title">{{ i.title }}</p></strong>
+            <p class="card-subtitle mb-2" id="invest-description" >{{ i.description }}</p>
+            <small><u>Forensics Expert(s)</u> : {{ i.investigators }}</small>
+            <hr>
             {% if i.status == "0" %}
-            <p class="card-subtitle" style="float:right; color:#eb1f5a;" id="invest-status_{{i.id}}">Not Analysed.</p>
+            <p class="card-subtitle" style="color:#eb1f5a;" id="invest-status_{{i.id}}">Not Analysed.</p>
             {% endif  %}
             {% if i.status == "1" %}
-            <div style="float:right; color:#dea71d; margin-left:5px;" class="spinner-grow spinner-grow-sm" role="status"></div><p class="card-subtitle" style=" color:#dea71d; float:right;" id="invest-status_{{i.id}}">Investigation in progress </p>
+            <div style="float:left; color:#dea71d; margin-right:5px;" class="spinner-grow spinner-grow-sm" role="status"></div><p class="card-subtitle" style=" color:#dea71d;" id="invest-status_{{i.id}}">Investigation in progress </p>
             {% endif %}
 
             {% if i.status == "2" %}
-            <p class="card-subtitle" id="invest-status_{{i.id}}" style="float:right; color:#5ce6ff;">Read to be reviewed</p>
+            <p class="card-subtitle" id="invest-status_{{i.id}}" style="color:#32d3bc;">Ready to be reviewed</p>
             {% endif %}
-            <p class="card-subtitle h4 mb-4" id="invest-title">{{ i.title }}</p></strong>
-            <hr>
-            <p class="card-subtitle mb-2" id="invest-description" >Description : {{ i.description }}</p>
-            <span class="badge badge-pill mt-3" style="float:right; background-color:#32d3bc;">{{i.os_version}}</span>
-            <div class="card-footer mt-5">
-              <small>Forensics Expert(s) : {{ i.investigators }}</small>
-            </div>
           </div>
         </div>
       </a>

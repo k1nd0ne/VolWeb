@@ -86,14 +86,14 @@ body > * {
 }
 
 .text-link {
-    color:#dea71d;
+    color:#eb1f5a;
 }
 a{
     color:#ffffff;
 }
 
 a:hover{
-    color:#dea71d;
+    color:#eb1f5a;
 }
 
 
@@ -137,6 +137,48 @@ a:hover{
 .btn-succ:hover{
     background-color:#5ce6ff;
     color: #293b58;
+}
+
+
+.btn-prim-d {
+    background-color:#1c2a34;
+    border-color: #32d3bc;
+    color: #32d3bc;
+}
+.btn-prim-d:hover{
+    background-color:#32d3bc;
+    color: #1c2a34;
+}
+
+
+.btn-warn-d {
+    background-color:#1c2a34;
+    border-color: #dea71d;
+    color: #dea71d;
+}
+.btn-warn-d:hover{
+    background-color:#dea71d;
+    color: #1c2a34;
+}
+
+.btn-dang-d {
+    background-color:#1c2a34;
+    border-color: #eb1f5a;
+    color: #eb1f5a;
+}
+.btn-dang-d:hover{
+    background-color:#eb1f5a;
+    color: #1c2a34;
+}
+
+.btn-succ-d {
+    background-color:#1c2a34;
+    border-color: #5ce6ff;
+    color: #5ce6ff;
+}
+.btn-succ-d:hover{
+    background-color:#5ce6ff;
+    color: #1C2A34;
 }
 
 

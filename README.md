@@ -1,15 +1,11 @@
-# Volweb 
 
-Creator : Félix Guyard
+![title.png](:/bbd372f976144d068b64a1ee6dd52f8c)
 
-Twitter : @k1nd0ne
-
-The goal volweb is to improve the effeciency of memory forensics by providing a centralized, visual and enhance memory analysis plateform for incident responder and digital forensics investigators.
-
+Volweb is a digtial  forensic memory analysis plateforme. The goal volweb is to improve the effeciency of memory forensics by providing a centralized, visual and enhance plateform for incident responder and digital forensics investigators.
 Volweb is based on volatility3, and this plateform will evolve with the framework developpement.
 
-**Volweb is still in Alpha version and will evolve quickly.** 
-Communications of updates will be via twitter.
+**Volweb is still in Beta version and will evolve quickly.** 
+Communications of updates will be via twitter and by following the release on github.
 
 ## Features
 The platform is currently supporting the following features : 
@@ -23,6 +19,7 @@ The platform is currently supporting the following features :
 - process env
 - process cmdline
 - process privileges
+- process dump
 - network scan
 - hashdump
 - dlllist
@@ -30,6 +27,7 @@ The platform is currently supporting the following features :
 - Timeline Explorer
 - User Authentication
 - User Management
+- Automatic Report Generation
 
 
 ## Deploy
@@ -84,12 +82,28 @@ find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
 find . -path "*/migrations/*.pyc"  -delete
 ```
 
-## Wiki
+## Important Note
 
-A quick guide is available in the project wiki to configure the Volweb platform.
+To be able to see forensic investigators name, you need to fill the First Name and Last name in the User section in the django administration panel.
 
-# TODO
+![Note.png](:/c2a7216c26c44912a19e22a6cf3319e3)
+
+### Issues
+I you have found an issue, please raise it. 
+I'm doing 1 sprint every month to fix discovered bugs.
+
+### Need to contact me ? 
+Contact me at k1nd0ne@mail.com for any questions regarding this tool.
+
+# Next Release goals 
+- Integrate Volatility results directly inside the database (Currently in JSON).
+- Better file & process dump management (integration with celery)
+- Add missing module for the windows memory analysis.
+- Fix various discovered bugs.
+
+# Global goals
 - Mac OS support
 - Linux support
 - Visual confirmation of what to not look (legit process highlight integration)
 - Import multiple IOC from a CSV
+- Export IOCs to a CSV for qualification and integration to Threat Intelligence Plateforms

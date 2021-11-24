@@ -25,7 +25,12 @@
       color:#eb1f5a;
   }
   .card-font{
+     background-color:#1c2a34;
+  }
+
+  .card-font-2{
       background-color:#293b58;
+
   }
 
   .gen-report{
@@ -42,13 +47,13 @@
 <main class="container-fluid col-md-11 ml-sm-auto pt-3 px-4" style="overflow-y:scroll; display:none;" id="main">
 
 <div class="row">
-    <div class="card-font col-5">
+    <div class="card-font-2 col-5">
           <h3 class="h3"> Case : {{case.title}}</h3>
           <h6>{{case.os_version}}</h6>
           <h6>{{case.investigators}}</h6>
     </div>
-    <div class="card-font col-5">
-          <button onclick="GenerateReport('{{case.title}}','{{case.os_version}}','{{case.description}}','{{case.file}}','HASH');" class="btn gen-report mt-4 btn-warn" type="button">Generate Report <span class='text-muted'>(PDF)</span></button>
+    <div class="card-font-2 col-5">
+          <button onclick="GenerateReport('{{case.title}}','{{case.os_version}}','{{case.description}}','{{case.file}}','HASH');" class="btn gen-report mt-4 btn-warn-d" type="button">Generate Report <span class='text-muted'>(PDF)</span></button>
           
     </div>
 </div>
@@ -58,26 +63,25 @@
         <ul class="list-group card-font list-group-flush">
           <li class="list-group-item card-font">
             <h4 class="h5">Process Artifacts</h4>
-            <button class="mt-3 btn btn-prim" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
               Process Tree <span class='text-muted'>(Raw)</span>
             </button>
-            <button class="btn btn-prim mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcessGraph" aria-expanded="false" aria-controls="collapseProcessGraph">
+            <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcessGraph" aria-expanded="false" aria-controls="collapseProcessGraph">
               Process Tree <span class='text-muted'>(Graph)</span>
             </button>
-            <button class="btn btn-prim mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcessScan" aria-expanded="false" aria-controls="collapseProcessScan">
+            <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcessScan" aria-expanded="false" aria-controls="collapseProcessScan">
               Process Scan <span class='text-muted'>(Raw)</span>
             </button>
-            <button class="btn btn-prim mt-3"type="button" data-bs-toggle="collapse" data-bs-target="#collapseCmdLine" aria-expanded="false" aria-controls="collapsCmdLine">
+            <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCmdLine" aria-expanded="false" aria-controls="collapsCmdLine">
               Process Command Line <span class='text-muted'>(Raw)</span>
             </button>
-            <button class="btn btn-prim mt-3"type="button" data-bs-toggle="collapse" data-bs-target="#collapsePriv" aria-expanded="false" aria-controls="collapsePriv">
+            <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePriv" aria-expanded="false" aria-controls="collapsePriv">
               Process Privileges <span class='text-muted'>(Raw)</span>
             </button>
 
-            <button class="btn btn-prim mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnv" aria-expanded="false" aria-controls="collapseEnv">
+            <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnv" aria-expanded="false" aria-controls="collapseEnv">
               Process Env variables <span class='text-muted'>(Raw)</span>
             </button>
-
 
             <div class="collapse mt-5 text-white card-font" id="collapseProcessGraph">
               <div style="height:80rem;" class="  text-white"id="container">
@@ -251,7 +255,7 @@
           </li>
           <li class="list-group-item card-font">
             <h5 class="h5">Network Artifacts</h5>
-            <button class="btn btn-warn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNetscan" aria-expanded="false" aria-controls="collapseNetscan">
+            <button class="btn btn-warn-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNetscan" aria-expanded="false" aria-controls="collapseNetscan">
               Network Scan <span class="text-muted">(Raw)</span>
             </button>
             <div class="collapse mt-5" id="collapseNetscan">
@@ -287,7 +291,7 @@
           </li>
           <li class="list-group-item card-font">
             <h5 class="h5">Cryptography</h5>
-            <button class="btn btn-succ" type="button" data-bs-toggle="collapse" data-bs-target=#collapseHashDump>
+            <button class="btn btn-succ-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseHashDump>
               HashDump
             </button>
             <div class="collapse mt-5" id="collapseHashDump">
@@ -315,18 +319,18 @@
 
           <li class="list-group-item card-font">
             <h5 class="h5">Malware Analysis (Beta)</h5>
-            <button class="btn btn-dang" type="button" data-bs-toggle="modal" data-bs-target=#downloadDump>
+            <button class="btn btn-dang-d" type="button" data-bs-toggle="modal" data-bs-target=#downloadDump>
               Dump Process
             </button>
 
-            <button class="btn btn-dang" type="button" data-bs-toggle="collapse" data-bs-target=#collapseTimeline>
+            <button class="btn btn-dang-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseTimeline>
               TimeLine Explorer
             </button>
-            <button class="btn btn-dang" type="button" data-bs-toggle="collapse" data-bs-target=#collapseFileScan>
+            <button class="btn btn-dang-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseFileScan>
               FileScan
             </button>
 
-            <button class="btn btn-dang" type="button" data-bs-toggle="collapse" data-bs-target=#collapseIOC>
+            <button class="btn btn-dang-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseIOC>
               IOCs
             </button>
             <div class="collapse mt-5" id="collapseIOC">
@@ -481,7 +485,7 @@
                 <div class="modal-footer">
                   {{form.id}}
                   <input type="hidden" value="{{case.id}}" id="case_id"/>
-                  <button type="submit" class="btn btn-prim" >Download</button>
+                  <button type="submit" class="btn btn-prim-d" >Download</button>
                 </form>
               </div>
             </div>
