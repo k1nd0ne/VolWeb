@@ -86,7 +86,7 @@ find . -path "*/migrations/*.pyc"  -delete
 
 To be able to see forensic investigators name, you need to fill the First Name and Last name in the User section in the django administration panel.
 
-![Note.png](:/c2a7216c26c44912a19e22a6cf3319e3)
+![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/Note.png)
 
 ### Issues
 I you have found an issue, please raise it. 
