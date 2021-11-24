@@ -11,7 +11,7 @@ Volweb is based on volatility3, and this plateform will evolve with the framewor
 **Volweb is still in Beta version and will evolve quickly.** 
 Communications of updates will be via twitter and by following the release on github.
 
-## Features
+## Features ✅
 The platform is currently supporting the following features : 
 
 - Investigation creation and dump upload
@@ -34,7 +34,7 @@ The platform is currently supporting the following features :
 - Automatic Report Generation
 
 
-## Deploy
+## Getting Started 🛠️
 Volweb is fully dockerized and ready to be deployed on a production server. 
 In order to deploy Volweb, you will need to follow these steps : 
 
@@ -73,7 +73,7 @@ docker exec -it $(docker ps -aqf "name=django") python manage.py createsuperuser
 
 The ngnix logs can be found in the **/ngnix/log** folder.
 
-## Reset 
+## Reset
 
 /!\ This procedure will delete all the memory dump and database items and reset the volweb platform /!\
 
@@ -92,7 +92,7 @@ To be able to see forensic investigators name, you need to fill the First Name a
 
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/Note.png)
 
-### Issues
+## Issues ⚠️
 I you have found an issue, please raise it. 
 I'm doing 1 sprint every month to fix discovered bugs.
 
