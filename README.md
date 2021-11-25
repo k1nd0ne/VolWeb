@@ -43,7 +43,7 @@ Clone the repository.
 git clone https://github.com/k1nd0ne/VolWeb
 ```
 
-Then, edit the **docker/volweb.env** file and add the secret informations according to your need to the following fields: 
+Then, edit the **docker/volweb.env** file and add the secret information according to your need to the following fields: 
 
 ```
  POSTGRES_USER=USER_HERE
