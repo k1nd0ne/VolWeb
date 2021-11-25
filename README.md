@@ -41,7 +41,7 @@ In order to deploy Volweb, you will need to follow these steps :
 Clone the repository. 
 
 ```
-git clone $project-link$
+git clone https://github.com/k1nd0ne/VolWeb
 ```
 
 Then, edit the **docker/volweb.env** file and add the secret informations according to your need to the following fields: 
