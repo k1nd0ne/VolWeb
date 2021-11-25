@@ -1,8 +1,8 @@
 
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/title.png)
 
-Volweb is a digtial  forensic memory analysis plateform. The goal of VolWeb is to improve the effeciency of memory forensics by providing a centralized, visual and enhance plateform for incident responder and digital forensics investigators.
-VolWeb is based on volatility3, and this plateform will evolve with the framework developpement.
+Volweb is a digtial  forensic memory analysis platform. The goal of VolWeb is to improve the effeciency of memory forensics by providing a centralized, visual and enhance platform for incident responder and digital forensics investigators.
+VolWeb is based on volatility3, and this platform will evolve with the framework developpement.
 
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/investigation.png)
 
@@ -109,4 +109,4 @@ Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 - Linux support
 - Visual confirmation of what to not look (legit process highlight integration)
 - Import multiple IOC from a CSV
-- Export IOCs to a CSV for qualification and integration to Threat Intelligence Plateforms
+- Export IOCs to a CSV for qualification and integration to Threat Intelligence Platforms
