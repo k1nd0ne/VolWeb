@@ -1,17 +1,16 @@
-
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/title.png)
 
-Volweb is a digtial  forensic memory analysis platform. The goal of VolWeb is to improve the effeciency of memory forensics by providing a centralized, visual and enhance platform for incident responder and digital forensics investigators.
-VolWeb is based on volatility3, and this platform will evolve with the framework developpement.
+Volweb is a digtialforensic memory analysis platform. The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responder and digital forensics investigators.
+VolWeb is based on volatility3, and this platform will evolve with the framework development.
 
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/investigation.png)
 
 
 **Volweb is still in Beta version and will evolve quickly.** 
-Communications of updates will be via twitter and by following the release on github.
+Communications of updates will be released via twitter and by following the releases on github.
 
 ## Features ✅
-The platform is currently supporting the following features : 
+The platform is currently supporting the following features: 
 
 - Investigation creation and dump upload
 - IoC import
@@ -35,7 +34,7 @@ The platform is currently supporting the following features :
 
 ## Getting Started 🛠️
 Volweb is fully dockerized and ready to be deployed on a production server. 
-In order to deploy Volweb, you will need to follow these steps : 
+In order to deploy Volweb, you will need to follow these steps: 
 
 Clone the repository. 
 
@@ -64,7 +63,7 @@ docker-compose build
 docker-compose up -d
 ```
 
-Create a superuser account : 
+Create a superuser account: 
 
 ```
 docker exec -it $(docker ps -aqf "name=django") python manage.py createsuperuser
@@ -87,15 +86,15 @@ find . -path "*/migrations/*.pyc"  -delete
 
 ## Important Note
 
-To be able to see forensic investigators name, you need to fill the First Name and Last name in the User section in the django administration panel.
+To be able to see names of the forensic investigators, you’ll need to fill in the First Name and Last name fields in the User section from the Django administration panel.
 
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/Note.png)
 
 ## Issues ⚠️
-I you have found an issue, please raise it. 
-I'm doing 1 sprint every month to fix discovered bugs.
+If you have found an issue, please raise it. 
+I'll perform 1 sprint every month to fix discovered bugs.
 
-### Need to contact me ? 
+### Need to contact me? 
 Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
 # Next Release goals 
