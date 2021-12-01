@@ -8,7 +8,7 @@ import uuid
 from django.contrib import messages
 from django.http import HttpResponse, Http404, StreamingHttpResponse, FileResponse, JsonResponse
 from iocs.models import NewIOC
-from .tasks import start_memory_analysis
+from .tasks import start_memory_analysis, dump_memory_pid
 from celery.result import AsyncResult
 from .tasks import app, dump_memory_pid
 
@@ -140,9 +140,10 @@ def reviewinvest(request):
         if form.is_valid():
             case_id = form.cleaned_data['id']
             pid = form.cleaned_data['pid']
-            file_path = dump_memory_pid(str(case_id), str(pid))
+            task_res = dump_memory_pid.delay(case_id,str(pid))
+            file_path = task_res.get()
             try:
-                #Checking the extension (need to audit the application to see if LFI is possible)
+                #Checking the extension (need to audit the application to see if R/LFI is possible)
                 ext = os.path.basename(file_path).split('.')[-1].lower()
                 if ext not in ['py', 'db',  'sqlite3']:
                     response = FileResponse(open('Cases/Results/'+file_path, 'rb'))

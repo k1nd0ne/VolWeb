@@ -184,8 +184,9 @@ def collect_image_env(dump_path):
     return {'envars': data[4:]}
 
 """
-Process dump
+Process dump task
 """
+@app.task(name="dump_memory_pid")
 def dump_memory_pid(case_id,pid):
     case = UploadInvestigation.objects.get(pk=case_id)
     dump_path = "Cases/" + case.name
@@ -245,6 +246,7 @@ Main task : Launch each volatility modules and save the result into a json file
 @app.task(name="start_memory_analysis")
 def start_memory_analysis(dump_path,id):
     case = UploadInvestigation.objects.get(pk=id)
+
     #Collect IOCs with the strings utility
     iocs = NewIOC.objects.all()
     terms = ""
