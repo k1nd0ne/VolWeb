@@ -97,7 +97,7 @@
 
                   // set the chart title
                   chart.title("Process_Tree");
-                  chart.background().fill("#1c2a34");
+                  chart.background().fill("#293b58");
                   // set the container id
                   chart.container("container");
                   // initiate drawing the chart
@@ -124,17 +124,23 @@
                     <th scope="col">Handles</th>
                     <th scope="col">SessionId</th>
                     <th scope="col">Wow64</th>
-                    <th scope="col">CreatedTime</th>
+                    <th scope="col">CreateTime</th>
                     <th scope="col">ExitTime</th>
-                    <th scope="col">File output</th>
                   </tr>
                 </thead>
                 <tbody id="processScan">
                   {% for process in psscan %}
                   <tr>
-                    {% for item in process %}
-                    <td>{{item }}</td>
-                    {% endfor %}
+                    <td>{{process.PID}}</td>
+                    <td>{{process.PPID}}</td>
+                    <td>{{process.ImageFileName}}</td>
+                    <td>{{process.Offset}}</td>
+                    <td>{{process.Threads}}</td>
+                    <td>{{process.Handles}}</td>
+                    <td>{{process.SessionId}}</td>
+                    <td>{{process.Wow64}}</td>
+                    <td>{{process.CreateTime}}</td>
+                    <td>{{process.ExitTime}}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -190,9 +196,9 @@
                 <tbody id="cmdline">
                   {% for process in cmdline %}
                   <tr>
-                    {% for item in process %}
-                    <td>{{item }}</td>
-                    {% endfor %}
+                    <td>{{process.PID }}</td>
+                    <td>{{process.Process}}</td>
+                    <td>{{process.Args}}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -212,14 +218,18 @@
                     <th scope="col">Privilege</th>
                     <th scope="col">Attributes</th>
                     <th scope="col">Description</th>
+                    <th scope="col">Value</th>
                   </tr>
                 </thead>
                 <tbody id="processPriv">
                   {% for process in privileges %}
                   <tr>
-                    {% for item in process %}
-                    <td>{{item }}</td>
-                    {% endfor %}
+                    <td>{{process.PID}}</td>
+                    <td>{{process.Process}}</td>
+                    <td>{{process.Privilege}}</td>
+                    <td>{{process.Attributes}}</td>
+                    <td>{{process.Description}}</td>
+                    <td>{{process.Value}}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -234,8 +244,9 @@
               <table id="processEnvTable" class="table card-font processenv">
                 <thead>
                   <tr>
+                    <th scope="col">Block</th>
                     <th scope="col">PID</th>
-                    <th scope="col">Process Block</th>
+                    <th scope="col">Process</th>
                     <th scope="col">Variable</th>
                     <th scope="col">Value</th>
                   </tr>
@@ -243,9 +254,11 @@
                 <tbody id="processEnv">
                   {% for process in envars %}
                   <tr>
-                    {% for item in process %}
-                    <td>{{item }}</td>
-                    {% endfor %}
+                    <td>{{process.Block}}</td>
+                    <td>{{process.PID}}</td>
+                    <td>{{process.Process}}</td>
+                    <td>{{process.Variable}}</td>
+                    <td>{{process.Value}}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -278,9 +291,14 @@
                 <tbody id="network">
                   {% for process in netscan %}
                   <tr>
-                    {% for item in process %}
-                    <td>{{item }}</td>
-                    {% endfor %}
+                    <td>{{process.Offset}}</td>
+                    <td>{{process.Proto}}</td>
+                    <td>{{process.LocalAddr}}</td>
+                    <td>{{process.LocalPort}}</td>
+                    <td>{{process.ForeignAddr}}</td>
+                    <td>{{process.ForeignPort}}</td>
+                    <td>{{process.State}}</td>
+                    <td>{{process.PID}}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -340,16 +358,16 @@
               <table id="IOCTable" class="table card-font ioc">
                 <thead>
                   <tr>
-                    <th scope="col">String found</th>
-                    <th scope="col">Offset</th>
+                    <th scope="col">Physical Address</th>
                     <th scope="col">Linked Process</th>
+                    <th scope="col">Match String</th>
                   </tr>
                 </thead>
                 <tbody id="IOCTab">
                   {% for files in iocmatch %}
                   <tr>
-                    {% for item in files %}
-                    <td><p>{{item}}<p></td>
+                    {% for key,value in files.items %}
+                    <td><p>{{value}}<p></td>
                       {% endfor %}
                     </tr>
                     {% endfor %}
@@ -372,9 +390,10 @@
                   <tbody id="FileScanTab">
                     {% for files in filescan %}
                     <tr>
-                      {% for item in files %}
-                      <td>{{item }}</td>
-                      {% endfor %}
+                    <tr>
+                      <td>{{files.Offset }}</td>
+                      <td>{{files.Name}}</td>
+                      <td>{{files.Size}}</td>
                     </tr>
                     {% endfor %}
                   </tbody>
@@ -388,19 +407,19 @@
                 <table id="TimelineTable" class="table card-font timeline">
                   <thead>
                     <tr>
-                      <th scope="col">Pluging</th>
-                      <th scope="col">Description</th>
+                      <th scope="col">Accessed Date</th>
+                      <th scope="col">Changed Date</th>
                       <th scope="col">Created Date</th>
+                      <th scope="col">Description</th>
                       <th scope="col">Modified Date</th>
-                      <th scope="col">Access Date</th>
-                      <th scope="col">Change Date</th>
+                      <th scope="col">Pluging</th>
                     </tr>
                   </thead>
                   <tbody id="TimelineTab">
                     {% for events in timeline %}
                     <tr>
-                      {% for item in events %}
-                      <td>{{item }}</td>
+                      {% for key,value in events.items %}
+                      <td>{{value}}</td>
                       {% endfor %}
                     </tr>
                     {% endfor %}
@@ -459,7 +478,7 @@
             xAxis.title("Month");
             var yAxis = chart.yAxis();
             yAxis.title("Sales, $");
-            chart.background().fill("#1c2a34");
+            chart.background().fill("#293b58");
             // set the container id
             chart.container("container-timeline");
             // initiate drawing the chart

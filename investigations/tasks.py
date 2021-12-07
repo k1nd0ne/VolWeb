@@ -1,4 +1,4 @@
-from .models import UploadInvestigation
+from .models import *
 from iocs.models import NewIOC
 from .celery import app
 from json import dumps
@@ -16,16 +16,13 @@ Process IOC Extraction
 def collect_user_iocs(dump_path,investigation_ioc_path):
     data = []
     try:
-        output = subprocess.check_output(['vol', '-f' ,dump_path, 'windows.strings' ,'--strings-file', investigation_ioc_path])
+        output = subprocess.check_output(['vol', '-r', 'json', '-f', dump_path, 'windows.strings' ,'--strings-file', investigation_ioc_path])
     except subprocess.CalledProcessError as err:
         print("Error processing memory dump: ", err)
         return {'iocmatch':[['Nothing Found']]}
-    strings_info = output.splitlines()
-    for elem in strings_info[4:]:
-        data.append(list(filter(None,elem.decode("utf-8").split('\t'))))
-    data = data[4:]
-    result = data = [i+j for i, j in zip(data[::2], data[1::2])]
-    return {'iocmatch': result}
+    strings_info = output.decode()
+    data = json.loads(strings_info)
+    return {'iocmatch': data}
 
 """
 HashDump
@@ -48,13 +45,12 @@ FileScan
 def collect_image_files(dump_path):
     data = []
     try:
-        output = subprocess.check_output(['vol', '-f', dump_path, 'windows.filescan'])
+        output = subprocess.check_output(['vol', '-r', 'json', '-f', dump_path, 'windows.filescan'])
     except subprocess.CalledProcessError as err:
         print('Error processing memory dump: ',err)
         return {'filescan':[['Corrupted Dump']]}
-    filescan_info = output.splitlines()
-    for elem in filescan_info[4:]:
-        data.append(list(filter(None,elem.decode("utf-8").split('\t'))))
+    imagef_info = output.decode()
+    data = json.loads(imagef_info)
     return {'filescan':data}
 """
 Pstree
@@ -77,13 +73,12 @@ Netscan
 def collect_image_netscan(dump_path):
     data = []
     try:
-        output = subprocess.check_output(['vol', '-f', dump_path, 'windows.netscan'])
+        output = subprocess.check_output(['vol', '-r', 'json', '-f', dump_path, 'windows.netscan'])
     except subprocess.CalledProcessError as err:
         print("Error processing memory dump: ", err)
         return {'netscan':[['Corrupted Dump']]}
-    netscan_info = output.splitlines()
-    for elem in netscan_info[4:]:
-         data.append(list(filter(None,elem.decode("utf-8").split('\t'))))
+    netscan_info = output.decode()
+    data = json.loads(netscan_info)
     return {'netscan': data}
 
 """
@@ -92,13 +87,12 @@ PsScan
 def collect_image_psscan(dump_path):
     data = []
     try:
-        output = subprocess.check_output(['vol', '-f', dump_path, 'windows.psscan'])
+        output = subprocess.check_output(['vol', '-r', 'json', '-f', dump_path, 'windows.psscan'])
     except subprocess.CalledProcessError as err:
         print("Error processing memory dump: ", err)
         return {'psscan':[['Corrupted Dump']]}
-    psscan_info = output.splitlines()
-    for elem in psscan_info[4:]:
-         data.append(list(filter(None,elem.decode("utf-8").split('\t'))))
+    psscan_info = output.decode()
+    data = json.loads(psscan_info)
     return {'psscan': data}
 
 """
@@ -120,53 +114,48 @@ def build_graph(pstree):
         return {'graph': dumps(data)}
     except:
         return {'graph': dumps(data)}
+
 """
 Process CmdLine
 """
 def collect_image_cmdline(dump_path):
     data = []
     try:
-        output = subprocess.check_output(['vol', '-f', dump_path, 'windows.cmdline'])
+        output = subprocess.check_output(['vol', '-r', 'json', '-f', dump_path, 'windows.cmdline'])
     except subprocess.CalledProcessError as err:
         print("Error processing memory dump: ", err)
         return {'cmdline':[['Corrupted Dump']]}
-    cmdline_info = output.splitlines()
-    for elem in cmdline_info:
-         data.append(list(filter(None,elem.decode("utf-8").split('\t'))))
-    return {'cmdline': data[4:]}
+    cmdline_info = output.decode()
+    data = json.loads(cmdline_info)
+    return {'cmdline': data}
 
 """
 Process Priviledges
 """
-
 def collect_image_privileges(dump_path):
     data = []
     try:
-        output = subprocess.check_output(['vol', '-f', dump_path, 'windows.privileges'])
+        output = subprocess.check_output(['vol', '-r', 'json', '-f', dump_path, 'windows.privileges'])
     except subprocess.CalledProcessError as err:
         print("Error processing memory dump: ", err)
         return {'privileges':[['Corrupted Dump']]}
-    privileges_info = output.splitlines()
-    for elem in privileges_info:
-         data.append(list(filter(None,elem.decode("utf-8").split('\t'))))
-    return {'privileges': data[4:]}
+    privileges_info = output.decode()
+    data = json.loads(privileges_info)
+    return {'privileges': data}
 
 """
 Malfind
 """
-
 def malfind(dump_path):
     data = []
     try:
-        output = subprocess.check_output(['vol', '-f', dump_path, 'windows.malfind'])
+        output = subprocess.check_output(['vol', '-r', 'json', '-f', dump_path, 'windows.malfind'])
     except subprocess.CalledProcessError as err:
         print("Error processing memory dump: ", err)
         return {'malfind':[['Corrupted Dump']]}
-    malware_info = output.splitlines()
-    for elem in malware_info:
-         data.append(list(filter(None,elem.decode("utf-8").split('\t'))))
-    print(data)
-    return {'malfind': data[4:]}
+    malware_info = output.decode()
+    data = json.loads(malware_info)
+    return {'malfind': data}
 
 """
 Env
@@ -174,14 +163,13 @@ Env
 def collect_image_env(dump_path):
     data = []
     try:
-        output = subprocess.check_output(['vol', '-f', dump_path, 'windows.envars'])
+        output = subprocess.check_output(['vol', '-r', 'json', '-f', dump_path, 'windows.envars'])
     except subprocess.CalledProcessError as err:
         print("Error processing memory dump: ", err)
         return {'envars':[['Corrupted Dump']]}
-    envars_info = output.splitlines()
-    for elem in envars_info:
-         data.append(list(filter(None,elem.decode("utf-8").split('\t'))))
-    return {'envars': data[4:]}
+    envars_info = output.decode()
+    data = json.loads(envars_info)
+    return {'envars': data}
 
 """
 Process dump task
@@ -207,13 +195,13 @@ def build_timeline(data):
     nb_event = 1
     actual_date = ""
     try:
-        saved_date = str(data[0][2])
+        saved_date = data[0]["Created Date"]
     except:
         print("Timeline Error")
         return
     for i in data:
         try:
-            actual_date = str(i[2])
+            actual_date = str(i["Created Date"])
             if actual_date != saved_date:
                 timeline.append([saved_date,nb_event])
                 saved_date = actual_date
@@ -231,14 +219,13 @@ Dump Timeline
 def collect_image_timeline(dump_path):
      data = []
      try:
-         output = subprocess.check_output(['vol', '-f', dump_path, 'timeliner.Timeliner'])
+         output = subprocess.check_output(['vol', '-r','json', '-f', dump_path, 'timeliner.Timeliner'])
      except subprocess.CalledProcessError as err:
          print("Error processing memory dump: ", err)
          return {'timeline': ['no data']}
-     timeline_info = output.splitlines()
-     for elem in timeline_info:
-          data.append(list(filter(None,elem.decode("utf-8").split('\t'))))
-     return {'timeline': data[4:]}
+     timeline_info = output.decode()
+     data = json.loads(timeline_info)
+     return {'timeline': data}
 
 """
 Main task : Launch each volatility modules and save the result into a json file
