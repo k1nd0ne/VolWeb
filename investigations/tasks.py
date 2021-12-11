@@ -252,6 +252,7 @@ def start_memory_analysis(dump_path,id):
         iocmatch = collect_user_iocs(dump_path,ioc_result_name)
 
     # Run volatility modules and get the results
+    malwarefind = malfind(dump_path)
     hashdump = collect_image_hash(dump_path)
     filescan = collect_image_files(dump_path)
     timeline = collect_image_timeline(dump_path)
@@ -268,6 +269,7 @@ def start_memory_analysis(dump_path,id):
 
     #Save the result to json
     context = {}
+    context.update(malwarefind)
     context.update(pstree)
     context.update(psscan)
     context.update(netscan)

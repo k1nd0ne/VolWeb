@@ -5,7 +5,7 @@
 <style>
 
   .modal-content {
-      background-color: #293b58;
+    background-color: #293b58;
   }
 
   .table,.btn {
@@ -22,19 +22,35 @@
   }
 
   .h3{
-      color:#eb1f5a;
+    color:#eb1f5a;
   }
-  .card-font{
-     background-color:#1c2a34;
+  .card-font, .accordion-button, .accordion-item {
+    background-color:#1c2a34;
+    color: white;
+  }
+
+  .accordion-button.collapsed::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
   }
 
   .card-font-2{
-      background-color:#293b58;
+    background-color:#293b58;
 
   }
 
   .gen-report{
-      float:right;
+    float:right;
+  }
+  code{
+    display: block;
+    background: none;
+    white-space: pre;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: scroll;
+    max-width: 100%;
+    min-width: 100px;
+    padding: 0;
+    color:white;
   }
 </style>
 
@@ -46,133 +62,361 @@
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/anychart-font.min.css' %}"/>
 <main class="container-fluid col-md-11 ml-sm-auto pt-3 px-4" style="overflow-y:scroll; display:none;" id="main">
 
-<div class="row">
+  <div class="row">
     <div class="card-font-2 col-5">
-          <h3 class="h3"> Case : {{case.title}}</h3>
-          <h6>{{case.os_version}}</h6>
-          <h6>{{case.investigators}}</h6>
+      <h3 class="h3"> Case : {{case.title}}</h3>
+      <h6>{{case.description}}</h6>
+      <h6>{{case.os_version}}</h6>
+      <h6>{{case.investigators}}</h6>
     </div>
     <div class="card-font-2 col-5">
-          <button onclick="GenerateReport('{{case.title}}','{{case.os_version}}','{{case.description}}','{{case.file}}','HASH');" class="btn gen-report mt-4 btn-warn-d" type="button">Generate Report <span class='text-muted'>(PDF)</span></button>
-          
+      <button onclick="GenerateReport('{{case.title}}','{{case.os_version}}','{{case.description}}','{{case.file}}','HASH');" class="btn gen-report mt-4 btn-warn-d" type="button">Generate Report <span class='text-muted'>(PDF)</span></button>
     </div>
-</div>
-<div class="row mt-5">
+  </div>
+
+  <div class="row mt-5">
     <div class="col-10 card-font">
-        <div class="spinner-border text-white" role="status" id="loading"></div>
-        <ul class="list-group card-font list-group-flush">
-          <li class="list-group-item card-font">
-            <h4 class="h5">Process Artifacts</h4>
-            <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-              Process Tree <span class='text-muted'>(Raw)</span>
-            </button>
-            <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcessGraph" aria-expanded="false" aria-controls="collapseProcessGraph">
-              Process Tree <span class='text-muted'>(Graph)</span>
-            </button>
-            <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcessScan" aria-expanded="false" aria-controls="collapseProcessScan">
-              Process Scan <span class='text-muted'>(Raw)</span>
-            </button>
-            <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCmdLine" aria-expanded="false" aria-controls="collapsCmdLine">
-              Process Command Line <span class='text-muted'>(Raw)</span>
-            </button>
-            <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePriv" aria-expanded="false" aria-controls="collapsePriv">
-              Process Privileges <span class='text-muted'>(Raw)</span>
-            </button>
+      <div class="spinner-border text-white" role="status" id="loading"></div>
+      <ul class="list-group card-font list-group-flush">
+        <li class="list-group-item card-font">
+          <h4 class="h5">Process Artifacts</h4>
+          <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            Process Tree <span class='text-muted'>(Raw)</span>
+          </button>
+          <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcessGraph" aria-expanded="false" aria-controls="collapseProcessGraph">
+            Process Tree <span class='text-muted'>(Graph)</span>
+          </button>
+          <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcessScan" aria-expanded="false" aria-controls="collapseProcessScan">
+            Process Scan <span class='text-muted'>(Raw)</span>
+          </button>
+          <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCmdLine" aria-expanded="false" aria-controls="collapsCmdLine">
+            Process Command Line <span class='text-muted'>(Raw)</span>
+          </button>
+          <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePriv" aria-expanded="false" aria-controls="collapsePriv">
+            Process Privileges <span class='text-muted'>(Raw)</span>
+          </button>
 
-            <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnv" aria-expanded="false" aria-controls="collapseEnv">
-              Process Env variables <span class='text-muted'>(Raw)</span>
-            </button>
+          <button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnv" aria-expanded="false" aria-controls="collapseEnv">
+            Process Env variables <span class='text-muted'>(Raw)</span>
+          </button>
 
-            <div class="collapse mt-5 text-white card-font" id="collapseProcessGraph">
-              <div style="height:80rem;" class="  text-white"id="container">
-              </div>
-              <script>
-                anychart.onDocumentReady(function () {
-                  // create data
-                  var data = JSON.parse("{{graph|escapejs}}");
-                  // create a data tree
-                  treeData = anychart.data.tree(data, "as-tree");
-                  // create a chart and set the data
-                  var chart = anychart.sunburst(treeData);
-
-                  // set the chart title
-                  chart.title("Process_Tree");
-                  chart.background().fill("#293b58");
-                  // set the container id
-                  chart.container("container");
-                  // initiate drawing the chart
-                  chart.draw();
-                  chart.tooltip().format("{%name}\n\npid: {%pid}");
-                });
-              </script>
+          <div class="collapse mt-5 text-white card-font" id="collapseProcessGraph">
+            <div style="height:80rem;" class="  text-white"id="container">
             </div>
+            <script>
+              anychart.onDocumentReady(function () {
+                // create data
+                var data = JSON.parse("{{graph|escapejs}}");
+                // create a data tree
+                treeData = anychart.data.tree(data, "as-tree");
+                // create a chart and set the data
+                var chart = anychart.sunburst(treeData);
+
+                // set the chart title
+                chart.title("Process_Tree");
+                chart.background().fill("#293b58");
+                // set the container id
+                chart.container("container");
+                // initiate drawing the chart
+                chart.draw();
+                chart.tooltip().format("{%name}\n\npid: {%pid}");
+              });
+            </script>
+          </div>
 
 
-            <div class="collapse mt-5" id="collapseProcessScan">
-              <h6 class="h6">Process Scan</h6>
-              <div class="d-inline">
-                <input class="form-control mb-3" id="searchProcessScan" type="text" placeholder="Search..">
-              </div>
-              <table id="processScanTable" class="table card-font processcan">
-                <thead>
-                  <tr>
-                    <th scope="col">PID</th>
-                    <th scope="col">PPID</th>
-                    <th scope="col">ImageFileName</th>
-                    <th scope="col">Offset(V)</th>
-                    <th scope="col">Threads</th>
-                    <th scope="col">Handles</th>
-                    <th scope="col">SessionId</th>
-                    <th scope="col">Wow64</th>
-                    <th scope="col">CreateTime</th>
-                    <th scope="col">ExitTime</th>
-                  </tr>
-                </thead>
-                <tbody id="processScan">
-                  {% for process in psscan %}
-                  <tr>
-                    <td>{{process.PID}}</td>
-                    <td>{{process.PPID}}</td>
-                    <td>{{process.ImageFileName}}</td>
-                    <td>{{process.Offset}}</td>
-                    <td>{{process.Threads}}</td>
-                    <td>{{process.Handles}}</td>
-                    <td>{{process.SessionId}}</td>
-                    <td>{{process.Wow64}}</td>
-                    <td>{{process.CreateTime}}</td>
-                    <td>{{process.ExitTime}}</td>
-                  </tr>
+          <div class="collapse mt-5" id="collapseProcessScan">
+            <h6 class="h6">Process Scan</h6>
+            <div class="d-inline">
+              <input class="form-control mb-3" id="searchProcessScan" type="text" placeholder="Search..">
+            </div>
+            <table id="processScanTable" class="table card-font processcan">
+              <thead>
+                <tr>
+                  <th scope="col">PID</th>
+                  <th scope="col">PPID</th>
+                  <th scope="col">ImageFileName</th>
+                  <th scope="col">Offset(V)</th>
+                  <th scope="col">Threads</th>
+                  <th scope="col">Handles</th>
+                  <th scope="col">SessionId</th>
+                  <th scope="col">Wow64</th>
+                  <th scope="col">CreateTime</th>
+                  <th scope="col">ExitTime</th>
+                </tr>
+              </thead>
+              <tbody id="processScan">
+                {% for process in psscan %}
+                <tr>
+                  <td>{{process.PID}}</td>
+                  <td>{{process.PPID}}</td>
+                  <td>{{process.ImageFileName}}</td>
+                  <td>{{process.Offset}}</td>
+                  <td>{{process.Threads}}</td>
+                  <td>{{process.Handles}}</td>
+                  <td>{{process.SessionId}}</td>
+                  <td>{{process.Wow64}}</td>
+                  <td>{{process.CreateTime}}</td>
+                  <td>{{process.ExitTime}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+          </div>
+
+          <div class="text-white collapse mt-5" id="collapseExample">
+            <h6 class="h6">Process Tree</h6>
+            <div class="d-inline">
+              <input class="form-control mb-3" id="searchProcess" type="text" placeholder="Search..">
+            </div>
+            <table id="processTreeTable" class="table card-font processtree">
+              <thead>
+                <tr>
+                  <th scope="col">PID</th>
+                  <th scope="col">PPID</th>
+                  <th scope="col">ImageFileName</th>
+                  <th scope="col">Offset(V)</th>
+                  <th scope="col">Threads</th>
+                  <th scope="col">Handles</th>
+                  <th scope="col">SessionId</th>
+                  <th scope="col">Wow64</th>
+                  <th scope="col">CreatedTime</th>
+                  <th scope="col">ExitTime</th>
+                </tr>
+              </thead>
+              <tbody id="process">
+                {% for process in pstree %}
+                <tr>
+                  {% for item in process %}
+                  <td>{{item }}</td>
                   {% endfor %}
-                </tbody>
-              </table>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
 
+          <div class="text-white collapse mt-5" id="collapseCmdLine">
+            <h6 class="h6">Process Command Line</h6>
+            <div class="d-inline">
+              <input class="form-control mb-3" id="searchCmdLine" type="text" placeholder="Search..">
+            </div>
+            <table id="processCmdTable" class="table card-font processcmdline">
+              <thead>
+                <tr>
+                  <th scope="col">PID</th>
+                  <th scope="col">Process Name</th>
+                  <th scope="col">Command</th>
+                </tr>
+              </thead>
+              <tbody id="cmdline">
+                {% for process in cmdline %}
+                <tr>
+                  <td>{{process.PID }}</td>
+                  <td>{{process.Process}}</td>
+                  <td>{{process.Args}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="collapse mt-5" id="collapsePriv">
+            <h6 class="h6">Process Privileges</h6>
+            <div class="d-inline">
+              <input class="form-control mb-3" id="searchPriv" type="text" placeholder="Search..">
+            </div>
+            <table id="processPrivilegesTable" class="table card-font processpriv">
+              <thead>
+                <tr>
+                  <th scope="col">PID</th>
+                  <th scope="col">Process Value</th>
+                  <th scope="col">Privilege</th>
+                  <th scope="col">Attributes</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Value</th>
+                </tr>
+              </thead>
+              <tbody id="processPriv">
+                {% for process in privileges %}
+                <tr>
+                  <td>{{process.PID}}</td>
+                  <td>{{process.Process}}</td>
+                  <td>{{process.Privilege}}</td>
+                  <td>{{process.Attributes}}</td>
+                  <td>{{process.Description}}</td>
+                  <td>{{process.Value}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="collapse mt-5 text-white" id="collapseEnv">
+            <h6 class="h6">Process Environnement Variables</h6>
+            <div class="d-inline">
+              <input class="form-control mb-3" id="searchEnv" type="text" placeholder="Search..">
+            </div>
+            <table id="processEnvTable" class="table card-font processenv">
+              <thead>
+                <tr>
+                  <th scope="col">Block</th>
+                  <th scope="col">PID</th>
+                  <th scope="col">Process</th>
+                  <th scope="col">Variable</th>
+                  <th scope="col">Value</th>
+                </tr>
+              </thead>
+              <tbody id="processEnv">
+                {% for process in envars %}
+                <tr>
+                  <td>{{process.Block}}</td>
+                  <td>{{process.PID}}</td>
+                  <td>{{process.Process}}</td>
+                  <td>{{process.Variable}}</td>
+                  <td>{{process.Value}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+          </div>
+        </li>
+        <li class="list-group-item card-font">
+          <h5 class="h5">Network Artifacts</h5>
+          <button class="btn btn-warn-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNetscan" aria-expanded="false" aria-controls="collapseNetscan">
+            Network Scan <span class="text-muted">(Raw)</span>
+          </button>
+          <div class="collapse mt-5" id="collapseNetscan">
+            <div class="d-inline">
+              <input class="form-control mb-3" id="searchNetwork" type="text" placeholder="Search..">
+            </div>
+            <table id="processNetworkTable" class="table card-font netscan">
+              <thead>
+                <tr>
+                  <th scope="col">Offset</th>
+                  <th scope="col">Proto</th>
+                  <th scope="col">LocalAddr</th>
+                  <th scope="col">LocalPort</th>
+                  <th scope="col">ForeignAddr</th>
+                  <th scope="col">ForeinPort</th>
+                  <th scope="col">State</th>
+                  <th scope="col">PID</th>
+                </tr>
+              </thead>
+              <tbody id="network">
+                {% for process in netscan %}
+                <tr>
+                  <td>{{process.Offset}}</td>
+                  <td>{{process.Proto}}</td>
+                  <td>{{process.LocalAddr}}</td>
+                  <td>{{process.LocalPort}}</td>
+                  <td>{{process.ForeignAddr}}</td>
+                  <td>{{process.ForeignPort}}</td>
+                  <td>{{process.State}}</td>
+                  <td>{{process.PID}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+
+        </li>
+        <li class="list-group-item card-font">
+          <h5 class="h5">Cryptography</h5>
+          <button class="btn btn-succ-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseHashDump>
+            HashDump
+          </button>
+          <div class="collapse mt-5" id="collapseHashDump">
+            <table id="processHashTable" class="table card-font hashdump">
+              <thead>
+                <tr>
+                  <th scope="col">User</th>
+                  <th scope="col">RID</th>
+                  <th scope="col">lmhash</th>
+                  <th scope="col">nthash</th>
+                </tr>
+              </thead>
+              <tbody id="HashDumpTab">
+                {% for elem in hashdump %}
+                <tr>
+                  {% for item in elem %}
+                  <td>{{item }}</td>
+                  {% endfor %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </li>
+
+        <li class="list-group-item card-font">
+          <h5 class="h5">Malware Analysis (Beta)</h5>
+          <button class="btn btn-dang-d" type="button" data-bs-toggle="modal" data-bs-target=#downloadDump>
+            Dump Process
+          </button>
+
+          <button class="btn btn-dang-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseTimeline>
+            TimeLine Explorer
+          </button>
+          <button class="btn btn-dang-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseFileScan>
+            FileScan
+          </button>
+
+          <button class="btn btn-dang-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseIOC>
+            IOCs
+          </button>
+
+          <button class="btn btn-dang-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseMalfind>
+            Malfind
+          </button>
+
+          <div class="collapse mt-5" id="collapseMalfind">
+            {% for matches in malfind %}
+
+            <div class="accordion accordion-flush" id="accordionFlush{{ forloop.counter }}">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingOne">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne{{ forloop.counter }}" aria-expanded="false" aria-controls="flush-collapseOne">
+                    {{matches.PID}} -> {{matches.Process}}
+                  </button>
+                </h2>
+                <div id="flush-collapseOne{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlush{{ forloop.counter }}">
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col"><code>{{matches.Disasm}}</code></div>
+                      <div class="col text-right"><code>{{matches.Hexdump}}</code></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div class="text-white collapse mt-5" id="collapseExample">
-              <h6 class="h6">Process Tree</h6>
-              <div class="d-inline">
-                <input class="form-control mb-3" id="searchProcess" type="text" placeholder="Search..">
-              </div>
-              <table id="processTreeTable" class="table card-font processtree">
-                <thead>
-                  <tr>
-                    <th scope="col">PID</th>
-                    <th scope="col">PPID</th>
-                    <th scope="col">ImageFileName</th>
-                    <th scope="col">Offset(V)</th>
-                    <th scope="col">Threads</th>
-                    <th scope="col">Handles</th>
-                    <th scope="col">SessionId</th>
-                    <th scope="col">Wow64</th>
-                    <th scope="col">CreatedTime</th>
-                    <th scope="col">ExitTime</th>
-                  </tr>
-                </thead>
-                <tbody id="process">
-                  {% for process in pstree %}
-                  <tr>
-                    {% for item in process %}
-                    <td>{{item }}</td>
+            {% endfor %}
+            <div class="d-inline">
+              <input class="form-control mb-3" id="searchIOC" type="text" placeholder="Search..">
+            </div>
+          </div>
+
+          <div class="collapse mt-5" id="collapseIOC">
+            <div class="d-inline">
+              <input class="form-control mb-3" id="searchIOC" type="text" placeholder="Search..">
+            </div>
+            <table id="IOCTable" class="table card-font ioc">
+              <thead>
+                <tr>
+                  <th scope="col">Physical Address</th>
+                  <th scope="col">Linked Process</th>
+                  <th scope="col">Match String</th>
+                </tr>
+              </thead>
+              <tbody id="IOCTab">
+                {% for files in iocmatch %}
+                <tr>
+                  {% for key,value in files.items %}
+                  <td><p>{{value}}<p></td>
                     {% endfor %}
                   </tr>
                   {% endfor %}
@@ -180,216 +424,21 @@
               </table>
             </div>
 
-            <div class="text-white collapse mt-5" id="collapseCmdLine">
-              <h6 class="h6">Process Command Line</h6>
+            <div class="collapse mt-5" id="collapseFileScan">
               <div class="d-inline">
-                <input class="form-control mb-3" id="searchCmdLine" type="text" placeholder="Search..">
+                <input class="form-control mb-3" id="searchFileScan" type="text" placeholder="Search..">
               </div>
-              <table id="processCmdTable" class="table card-font processcmdline">
-                <thead>
-                  <tr>
-                    <th scope="col">PID</th>
-                    <th scope="col">Process Name</th>
-                    <th scope="col">Command</th>
-                  </tr>
-                </thead>
-                <tbody id="cmdline">
-                  {% for process in cmdline %}
-                  <tr>
-                    <td>{{process.PID }}</td>
-                    <td>{{process.Process}}</td>
-                    <td>{{process.Args}}</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-
-            <div class="collapse mt-5" id="collapsePriv">
-              <h6 class="h6">Process Privileges</h6>
-              <div class="d-inline">
-                <input class="form-control mb-3" id="searchPriv" type="text" placeholder="Search..">
-              </div>
-              <table id="processPrivilegesTable" class="table card-font processpriv">
-                <thead>
-                  <tr>
-                    <th scope="col">PID</th>
-                    <th scope="col">Process Value</th>
-                    <th scope="col">Privilege</th>
-                    <th scope="col">Attributes</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Value</th>
-                  </tr>
-                </thead>
-                <tbody id="processPriv">
-                  {% for process in privileges %}
-                  <tr>
-                    <td>{{process.PID}}</td>
-                    <td>{{process.Process}}</td>
-                    <td>{{process.Privilege}}</td>
-                    <td>{{process.Attributes}}</td>
-                    <td>{{process.Description}}</td>
-                    <td>{{process.Value}}</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-
-            <div class="collapse mt-5 text-white" id="collapseEnv">
-              <h6 class="h6">Process Environnement Variables</h6>
-              <div class="d-inline">
-                <input class="form-control mb-3" id="searchEnv" type="text" placeholder="Search..">
-              </div>
-              <table id="processEnvTable" class="table card-font processenv">
-                <thead>
-                  <tr>
-                    <th scope="col">Block</th>
-                    <th scope="col">PID</th>
-                    <th scope="col">Process</th>
-                    <th scope="col">Variable</th>
-                    <th scope="col">Value</th>
-                  </tr>
-                </thead>
-                <tbody id="processEnv">
-                  {% for process in envars %}
-                  <tr>
-                    <td>{{process.Block}}</td>
-                    <td>{{process.PID}}</td>
-                    <td>{{process.Process}}</td>
-                    <td>{{process.Variable}}</td>
-                    <td>{{process.Value}}</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-
-            </div>
-          </li>
-          <li class="list-group-item card-font">
-            <h5 class="h5">Network Artifacts</h5>
-            <button class="btn btn-warn-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNetscan" aria-expanded="false" aria-controls="collapseNetscan">
-              Network Scan <span class="text-muted">(Raw)</span>
-            </button>
-            <div class="collapse mt-5" id="collapseNetscan">
-              <div class="d-inline">
-                <input class="form-control mb-3" id="searchNetwork" type="text" placeholder="Search..">
-              </div>
-              <table id="processNetworkTable" class="table card-font netscan">
+              <table id="FileScanTable" class="table card-font filescan">
                 <thead>
                   <tr>
                     <th scope="col">Offset</th>
-                    <th scope="col">Proto</th>
-                    <th scope="col">LocalAddr</th>
-                    <th scope="col">LocalPort</th>
-                    <th scope="col">ForeignAddr</th>
-                    <th scope="col">ForeinPort</th>
-                    <th scope="col">State</th>
-                    <th scope="col">PID</th>
+                    <th scope="col">File</th>
+                    <th scope="col">Size</th>
                   </tr>
                 </thead>
-                <tbody id="network">
-                  {% for process in netscan %}
+                <tbody id="FileScanTab">
+                  {% for files in filescan %}
                   <tr>
-                    <td>{{process.Offset}}</td>
-                    <td>{{process.Proto}}</td>
-                    <td>{{process.LocalAddr}}</td>
-                    <td>{{process.LocalPort}}</td>
-                    <td>{{process.ForeignAddr}}</td>
-                    <td>{{process.ForeignPort}}</td>
-                    <td>{{process.State}}</td>
-                    <td>{{process.PID}}</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-
-
-          </li>
-          <li class="list-group-item card-font">
-            <h5 class="h5">Cryptography</h5>
-            <button class="btn btn-succ-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseHashDump>
-              HashDump
-            </button>
-            <div class="collapse mt-5" id="collapseHashDump">
-              <table id="processHashTable" class="table card-font hashdump">
-                <thead>
-                  <tr>
-                    <th scope="col">User</th>
-                    <th scope="col">RID</th>
-                    <th scope="col">lmhash</th>
-                    <th scope="col">nthash</th>
-                  </tr>
-                </thead>
-                <tbody id="HashDumpTab">
-                  {% for elem in hashdump %}
-                  <tr>
-                    {% for item in elem %}
-                    <td>{{item }}</td>
-                    {% endfor %}
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          </li>
-
-          <li class="list-group-item card-font">
-            <h5 class="h5">Malware Analysis (Beta)</h5>
-            <button class="btn btn-dang-d" type="button" data-bs-toggle="modal" data-bs-target=#downloadDump>
-              Dump Process
-            </button>
-
-            <button class="btn btn-dang-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseTimeline>
-              TimeLine Explorer
-            </button>
-            <button class="btn btn-dang-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseFileScan>
-              FileScan
-            </button>
-
-            <button class="btn btn-dang-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseIOC>
-              IOCs
-            </button>
-            <div class="collapse mt-5" id="collapseIOC">
-              <div class="d-inline">
-                <input class="form-control mb-3" id="searchIOC" type="text" placeholder="Search..">
-              </div>
-              <table id="IOCTable" class="table card-font ioc">
-                <thead>
-                  <tr>
-                    <th scope="col">Physical Address</th>
-                    <th scope="col">Linked Process</th>
-                    <th scope="col">Match String</th>
-                  </tr>
-                </thead>
-                <tbody id="IOCTab">
-                  {% for files in iocmatch %}
-                  <tr>
-                    {% for key,value in files.items %}
-                    <td><p>{{value}}<p></td>
-                      {% endfor %}
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-
-              <div class="collapse mt-5" id="collapseFileScan">
-                <div class="d-inline">
-                  <input class="form-control mb-3" id="searchFileScan" type="text" placeholder="Search..">
-                </div>
-                <table id="FileScanTable" class="table card-font filescan">
-                  <thead>
-                    <tr>
-                      <th scope="col">Offset</th>
-                      <th scope="col">File</th>
-                      <th scope="col">Size</th>
-                    </tr>
-                  </thead>
-                  <tbody id="FileScanTab">
-                    {% for files in filescan %}
-                    <tr>
                     <tr>
                       <td>{{files.Offset }}</td>
                       <td>{{files.Name}}</td>
@@ -427,493 +476,500 @@
                 </table>
               </div>
             </li>
-       </div>
+          </div>
+        </div>
+      </main>
+      <!-- Toasts -->
+      {% if messages %}
+      <div aria-live="polite" aria-atomic="true" style="position: relative;">
+        <!-- Position it -->
+        <div style="position: absolute; top: 3rem; right: 0;">
+          <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+              <strong class="mr-auto">VolWeb</strong>
+            </div>
+            <div class="toast-body">
+              {% for message in messages %}
+              {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+              {{message}}
+              {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
       </div>
-    </main>
-        <!-- Toasts -->
-        {% if messages %}
-        <div aria-live="polite" aria-atomic="true" style="position: relative;">
-          <!-- Position it -->
-          <div style="position: absolute; top: 3rem; right: 0;">
-            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-              <div class="toast-header">
-                <strong class="mr-auto">VolWeb</strong>
-              </div>
-              <div class="toast-body">
-                {% for message in messages %}
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                {{message}}
-                {% endif %}
-                {% endfor %}
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endif %}
+      {% endif %}
 
-        <script>
+      <script>
 
-          function displayTimeLine(date){
-            document.getElementById('searchTimeline').value = date.toString();
-            $('#searchTimeline').keyup();
-          }
+        function displayTimeLine(date){
+          document.getElementById('searchTimeline').value = date.toString();
+          $('#searchTimeline').keyup();
+        }
 
-          anychart.onDocumentReady(function () {
-            // create data
-            var data = JSON.parse("{{linechart|escapejs}}");
-            // create a chart
-            var chart = anychart.line();
-            // create a line series and set the data
-            var series = chart.line(data);
-            chart.xScroller(true);
-            // set the chart title
-            chart.title("Timeline Explorer");
-            chart.listen("click", function(x) {
-              index = x.pointIndex;
-              displayTimeLine(data[index][0]);
-            });
-
-            // set the titles of the axes
-            var xAxis = chart.xAxis();
-            xAxis.title("Month");
-            var yAxis = chart.yAxis();
-            yAxis.title("Sales, $");
-            chart.background().fill("#293b58");
-            // set the container id
-            chart.container("container-timeline");
-            // initiate drawing the chart
-            chart.draw();
-
+        anychart.onDocumentReady(function () {
+          // create data
+          var data = JSON.parse("{{linechart|escapejs}}");
+          // create a chart
+          var chart = anychart.line();
+          // create a line series and set the data
+          var series = chart.line(data);
+          chart.xScroller(true);
+          // set the chart title
+          chart.title("Timeline Explorer");
+          chart.listen("click", function(x) {
+            index = x.pointIndex;
+            displayTimeLine(data[index][0]);
           });
-        </script>
 
-        <div class="text-white modal fade" id="downloadDump" tabindex="-1" aria-labelledby="downloadDump" aria-hidden="true">
-          <div class="modal-dialog border">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Dump a process by PID</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <form action="" method="POST">
-                  {% csrf_token %}
-                  <div class="form-group">
-                    {{form.pid}}
-                  </div>
+          // set the titles of the axes
+          var xAxis = chart.xAxis();
+          xAxis.title("Month");
+          var yAxis = chart.yAxis();
+          yAxis.title("Sales, $");
+          chart.background().fill("#293b58");
+          // set the container id
+          chart.container("container-timeline");
+          // initiate drawing the chart
+          chart.draw();
+
+        });
+      </script>
+
+      <div class="text-white modal fade" id="downloadDump" tabindex="-1" aria-labelledby="downloadDump" aria-hidden="true">
+        <div class="modal-dialog border">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Dump a process by PID</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form action="" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                  {{form.pid}}
                 </div>
-                <div class="modal-footer">
-                  {{form.id}}
-                  <input type="hidden" value="{{case.id}}" id="case_id"/>
-                  <button type="submit" class="btn btn-prim-d" >Download</button>
-                </form>
               </div>
+              <div class="modal-footer">
+                {{form.id}}
+                <input type="hidden" value="{{case.id}}" id="case_id"/>
+                <button type="submit" class="btn btn-prim-d" >Download</button>
+              </form>
             </div>
           </div>
         </div>
+      </div>
 
-        <table id="report_table_process_tree" class="hidden" ></table>
-        <table id="report_table_process_scan" class="hidden"></table>
-        <table id="report_table_process_cmdline" class="hidden"></table>
-        <table id="report_table_process_priv" class="hidden"></table>
-        <table id="report_table_process_env" class="hidden"></table>
-        <table id="report_table_process_net" class="hidden"></table>
-        <table id="report_table_timeline" class="hidden"></table>
-        <table id="report_table_hashdump" class="hidden"></table>
-        <table id="report_table_ioc" class="hidden"></table>
+      <table id="report_table_process_tree" class="hidden" ></table>
+      <table id="report_table_process_scan" class="hidden"></table>
+      <table id="report_table_process_cmdline" class="hidden"></table>
+      <table id="report_table_process_priv" class="hidden"></table>
+      <table id="report_table_process_env" class="hidden"></table>
+      <table id="report_table_process_net" class="hidden"></table>
+      <table id="report_table_timeline" class="hidden"></table>
+      <table id="report_table_hashdump" class="hidden"></table>
+      <table id="report_table_ioc" class="hidden"></table>
 
 
-        <script src="{% static 'dashboard/jquery.min.js'%}"></script>
-        <script type="module" src="{% static 'dashboard/jspdf.umd.min.js'%}"></script>
-        <script type="module" src="{% static 'dashboard/jspdf.plugin.autotable.js'%}"></script>
-        <script>
-          function ReportProcessTree() {
-            var TheadProcessTree = $('table.processtree > thead');
-            var TrProcessTree = $('table.processtree > tbody > tr.highlight');
-            $('#report_table_process_tree').append(TheadProcessTree);
-            $('#report_table_process_tree').append(TrProcessTree);
+      <script src="{% static 'dashboard/jquery.min.js'%}"></script>
+      <script type="module" src="{% static 'dashboard/jspdf.umd.min.js'%}"></script>
+      <script type="module" src="{% static 'dashboard/jspdf.plugin.autotable.js'%}"></script>
+      <script>
+        function ReportProcessTree() {
+          var TheadProcessTree = $('table.processtree > thead');
+          var TrProcessTree = $('table.processtree > tbody > tr.highlight');
+          $('#report_table_process_tree').append(TheadProcessTree);
+          $('#report_table_process_tree').append(TrProcessTree);
+        }
+
+        function ReportProcessScan(){
+          var TheadProcessScan = $('table.processcan > tbody > tr.highlight');
+          var TrProcessScan = $('table.processcan > thead');
+          $('#report_table_process_scan').append(TheadProcessScan);
+          $('#report_table_process_scan').append(TrProcessScan);
+        }
+
+        function ReportProcessCmdLine(){
+          var TheadProcessCmdline = $('table.processcmdline > tbody > tr.highlight');
+          var TrProcessCmdline = $('table.processcmdline > thead');
+          $('#report_table_process_cmdline').append(TheadProcessCmdline);
+          $('#report_table_process_cmdline').append(TrProcessCmdline);
+        }
+
+        function ReportProcessPriv(){
+          var TheadProcessPriv = $('table.processpriv > tbody > tr.highlight');
+          var TrProcessPriv = $('table.processpriv > thead');
+          $('#report_table_process_priv').append(TheadProcessPriv);
+          $('#report_table_process_priv').append(TrProcessPriv);
+        }
+
+        function ReportProcessEnv(){
+          var TheadProcessEnv = $('table.processenv > tbody > tr.highlight');
+          var TrProcessEnv = $('table.processenv > thead');
+          $('#report_table_process_env').append(TheadProcessEnv);
+          $('#report_table_process_env').append(TrProcessEnv);
+        }
+
+        function ReportNetscan(){
+          var TheadNetscan = $('table.netscan > tbody > tr.highlight');
+          var TrNetscan = $('table.netscan > thead');
+          $('#report_table_process_net').append(TheadNetscan);
+          $('#report_table_process_net').append(TrNetscan);
+        }
+
+        function ReportTimeline(){
+          var TheadTimeline = $('table.timeline > tbody > tr.highlight');
+          var TrTimeline = $('table.timeline > thead');
+          $('#report_table_timeline').append(TheadTimeline);
+          $('#report_table_timeline').append(TrTimeline);
+        }
+
+        function ReportHashdump(){
+          var TheadHashDump = $('table.hashdump > tbody > tr.highlight');
+          var TrTimeHashDump = $('table.hashdump > thead');
+          $('#report_table_hashdump').append(TheadHashDump);
+          $('#report_table_hashdump').append(TrTimeHashDump);
+        }
+
+        function ReportIOC(){
+          var TheadIOC = $('table.ioc > tbody > tr.highlight');
+          var TrIOC = $('table.ioc > thead');
+          $('#report_table_ioc').append(TheadIOC);
+          $('#report_table_ioc').append(TrIOC);
+        }
+        //TODO : Implement the others (tbody classes already set)
+
+
+        function GenerateReport(case_name,os,description,filename,hash){
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+          doc.setFont("helvetica");
+          doc.setFontSize(18);
+          doc.text("Memory Investigation Report", 10, 10);
+          doc.setFontSize(10);
+          doc.text("Case Name : " + case_name, 10, 20);
+          doc.text("OS : " + os, 10, 25);
+          doc.text("Description : " + description, 10, 30);
+          doc.text("This investigation report is putting together all the tagged element that are proving the compromission of the asset", 10, 50);
+          doc.setFontSize(15);
+          doc.text("Process Scan Artifacts :",10,60)
+          doc.setFontSize(10);
+          ReportProcessScan();
+          doc.setLineWidth(0.2);
+          doc.line(10, 45, 200, 45);
+
+          doc.autoTable({
+            tableWidth: 'wrap',
+            rowPageBreak: 'auto',
+            styles: { cellPadding: 0.5, fontSize: 8 },
+            margin: { top: 65 },
+            html: '#report_table_process_scan',
+          });
+
+          doc.setFontSize(15);
+          doc.text("Process Tree Artifacts :",10,doc.autoTable.previous.finalY + 10);
+          doc.setFontSize(10);
+          ReportProcessTree();
+          doc.setLineWidth(0.2);
+          doc.line(10, 45, 200, 45);
+          doc.autoTable({
+            tableWidth: 'wrap',
+            rowPageBreak: 'auto',
+            styles: { cellPadding: 0.5, fontSize: 8 },
+            startY: doc.autoTable.previous.finalY + 15,
+            html: '#report_table_process_tree',
+          });
+
+
+          doc.setFontSize(15);
+          doc.text("Process Command Line Artifacts :",10,doc.autoTable.previous.finalY + 10);
+          doc.setFontSize(10);
+          ReportProcessCmdLine();
+          doc.setLineWidth(0.2);
+          doc.line(10, 45, 200, 45);
+          doc.autoTable({
+            rowPageBreak: 'auto',
+            styles: { cellPadding: 0.5, fontSize: 8},
+            startY: doc.autoTable.previous.finalY + 15,
+            html: '#report_table_process_cmdline',
+          });
+
+          doc.setFontSize(15);
+          doc.text("Process Privileges Artifacts :",10,doc.autoTable.previous.finalY + 10);
+          doc.setFontSize(10);
+          ReportProcessPriv();
+          doc.setLineWidth(0.2);
+          doc.line(10, 45, 200, 45);
+          doc.autoTable({
+            rowPageBreak: 'auto',
+            styles: { cellPadding: 0.5, fontSize: 8},
+            startY: doc.autoTable.previous.finalY + 15,
+            html: '#report_table_process_priv',
+          });
+
+          doc.setFontSize(15);
+          doc.text("Process Environnement variables Artifacts :",10,doc.autoTable.previous.finalY + 10);
+          doc.setFontSize(10);
+          ReportProcessEnv();
+          doc.setLineWidth(0.2);
+          doc.line(10, 45, 200, 45);
+          doc.autoTable({
+            rowPageBreak: 'auto',
+            styles: { cellPadding: 0.5, fontSize: 8},
+            startY: doc.autoTable.previous.finalY + 15,
+            html: '#report_table_process_env',
+          });
+
+          doc.setFontSize(15);
+          doc.text("Network Artifacts :",10,doc.autoTable.previous.finalY + 10);
+          doc.setFontSize(10);
+          ReportNetscan();
+          doc.setLineWidth(0.2);
+          doc.line(10, 45, 200, 45);
+          doc.autoTable({
+            rowPageBreak: 'auto',
+            styles: { cellPadding: 0.5, fontSize: 8},
+            startY: doc.autoTable.previous.finalY + 15,
+            html: '#report_table_process_net',
+          });
+
+          doc.setFontSize(15);
+          doc.text("Cryptography Artifacts :",10,doc.autoTable.previous.finalY + 10);
+          doc.setFontSize(10);
+          ReportHashdump();
+          doc.setLineWidth(0.2);
+          doc.line(10, 45, 200, 45);
+          doc.autoTable({
+            rowPageBreak: 'auto',
+            styles: { cellPadding: 0.5, fontSize: 8},
+            startY: doc.autoTable.previous.finalY + 15,
+            html: '#report_table_hashdump',
+          });
+
+          doc.setFontSize(15);
+          doc.text("Other Artifacts :",10,doc.autoTable.previous.finalY + 10);
+          doc.setFontSize(10);
+          ReportTimeline();
+          doc.setLineWidth(0.2);
+          doc.line(10, 45, 200, 45);
+          doc.autoTable({
+            rowPageBreak: 'auto',
+            styles: { cellPadding: 0.5, fontSize: 8},
+            startY: doc.autoTable.previous.finalY + 15,
+            html: '#report_table_timeline',
+          });
+
+          doc.setFontSize(15);
+          doc.text("IOCs:",10,doc.autoTable.previous.finalY + 10);
+          doc.setFontSize(10);
+          ReportIOC();
+          doc.setLineWidth(0.2);
+          doc.line(10, 45, 200, 45);
+          doc.autoTable({
+            rowPageBreak: 'auto',
+            styles: { cellPadding: 0.5, fontSize: 8},
+            startY: doc.autoTable.previous.finalY + 15,
+            html: '#report_table_ioc',
+          });
+
+          doc.save("report.pdf");
+        }
+
+        $('#processTreeTable').on('click', 'tbody tr', function(event) {
+          var table = $(this);
+
+          if (table.hasClass("highlight")){
+            table.removeClass("highlight");
           }
-
-          function ReportProcessScan(){
-            var TheadProcessScan = $('table.processcan > tbody > tr.highlight');
-            var TrProcessScan = $('table.processcan > thead');
-            $('#report_table_process_scan').append(TheadProcessScan);
-            $('#report_table_process_scan').append(TrProcessScan);
+          else{
+            table.addClass("highlight");
           }
+        });
 
-          function ReportProcessCmdLine(){
-            var TheadProcessCmdline = $('table.processcmdline > tbody > tr.highlight');
-            var TrProcessCmdline = $('table.processcmdline > thead');
-            $('#report_table_process_cmdline').append(TheadProcessCmdline);
-            $('#report_table_process_cmdline').append(TrProcessCmdline);
+        $('#processScanTable').on('click', 'tbody tr', function(event) {
+          var table = $(this);
+          if (table.hasClass("highlight")){
+            table.removeClass("highlight");
           }
-
-          function ReportProcessPriv(){
-            var TheadProcessPriv = $('table.processpriv > tbody > tr.highlight');
-            var TrProcessPriv = $('table.processpriv > thead');
-            $('#report_table_process_priv').append(TheadProcessPriv);
-            $('#report_table_process_priv').append(TrProcessPriv);
+          else{
+            table.addClass("highlight");
           }
+        });
 
-          function ReportProcessEnv(){
-            var TheadProcessEnv = $('table.processenv > tbody > tr.highlight');
-            var TrProcessEnv = $('table.processenv > thead');
-            $('#report_table_process_env').append(TheadProcessEnv);
-            $('#report_table_process_env').append(TrProcessEnv);
+        $('#processEnvTable').on('click', 'tbody tr', function(event) {
+          var table = $(this);
+          if (table.hasClass("highlight")){
+            table.removeClass("highlight");
           }
-
-          function ReportNetscan(){
-            var TheadNetscan = $('table.netscan > tbody > tr.highlight');
-            var TrNetscan = $('table.netscan > thead');
-            $('#report_table_process_net').append(TheadNetscan);
-            $('#report_table_process_net').append(TrNetscan);
+          else{
+            table.addClass("highlight");
           }
+        });
 
-          function ReportTimeline(){
-            var TheadTimeline = $('table.timeline > tbody > tr.highlight');
-            var TrTimeline = $('table.timeline > thead');
-            $('#report_table_timeline').append(TheadTimeline);
-            $('#report_table_timeline').append(TrTimeline);
+        $('#processCmdTable').on('click', 'tbody tr', function(event) {
+          var table = $(this);
+          if (table.hasClass("highlight")){
+            table.removeClass("highlight");
           }
-
-          function ReportHashdump(){
-            var TheadHashDump = $('table.hashdump > tbody > tr.highlight');
-            var TrTimeHashDump = $('table.hashdump > thead');
-            $('#report_table_hashdump').append(TheadHashDump);
-            $('#report_table_hashdump').append(TrTimeHashDump);
+          else{
+            table.addClass("highlight");
           }
+        });
 
-          function ReportIOC(){
-            var TheadIOC = $('table.ioc > tbody > tr.highlight');
-            var TrIOC = $('table.ioc > thead');
-            $('#report_table_ioc').append(TheadIOC);
-            $('#report_table_ioc').append(TrIOC);
+        $('#processPrivilegesTable').on('click', 'tbody tr', function(event) {
+          var table = $(this);
+          if (table.hasClass("highlight")){
+            table.removeClass("highlight");
           }
-          //TODO : Implement the others (tbody classes already set)
-
-
-          function GenerateReport(case_name,os,description,filename,hash){
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFont("helvetica");
-            doc.setFontSize(18);
-            doc.text("Memory Investigation Report", 10, 10);
-            doc.setFontSize(10);
-            doc.text("Case Name : " + case_name, 10, 20);
-            doc.text("OS : " + os, 10, 25);
-            doc.text("Description : " + description, 10, 30);
-            doc.text("This investigation report is putting together all the tagged element that are proving the compromission of the asset", 10, 50);
-            doc.setFontSize(15);
-            doc.text("Process Scan Artifacts :",10,60)
-            doc.setFontSize(10);
-            ReportProcessScan();
-            doc.setLineWidth(0.2);
-            doc.line(10, 45, 200, 45);
-
-            doc.autoTable({
-              tableWidth: 'wrap',
-              rowPageBreak: 'auto',
-              styles: { cellPadding: 0.5, fontSize: 8 },
-              margin: { top: 65 },
-              html: '#report_table_process_scan',
-            });
-
-            doc.setFontSize(15);
-            doc.text("Process Tree Artifacts :",10,doc.autoTable.previous.finalY + 10);
-            doc.setFontSize(10);
-            ReportProcessTree();
-            doc.setLineWidth(0.2);
-            doc.line(10, 45, 200, 45);
-            doc.autoTable({
-              tableWidth: 'wrap',
-              rowPageBreak: 'auto',
-              styles: { cellPadding: 0.5, fontSize: 8 },
-              startY: doc.autoTable.previous.finalY + 15,
-              html: '#report_table_process_tree',
-            });
-
-
-            doc.setFontSize(15);
-            doc.text("Process Command Line Artifacts :",10,doc.autoTable.previous.finalY + 10);
-            doc.setFontSize(10);
-            ReportProcessCmdLine();
-            doc.setLineWidth(0.2);
-            doc.line(10, 45, 200, 45);
-            doc.autoTable({
-              rowPageBreak: 'auto',
-              styles: { cellPadding: 0.5, fontSize: 8},
-              startY: doc.autoTable.previous.finalY + 15,
-              html: '#report_table_process_cmdline',
-            });
-
-            doc.setFontSize(15);
-            doc.text("Process Privileges Artifacts :",10,doc.autoTable.previous.finalY + 10);
-            doc.setFontSize(10);
-            ReportProcessPriv();
-            doc.setLineWidth(0.2);
-            doc.line(10, 45, 200, 45);
-            doc.autoTable({
-              rowPageBreak: 'auto',
-              styles: { cellPadding: 0.5, fontSize: 8},
-              startY: doc.autoTable.previous.finalY + 15,
-              html: '#report_table_process_priv',
-            });
-
-            doc.setFontSize(15);
-            doc.text("Process Environnement variables Artifacts :",10,doc.autoTable.previous.finalY + 10);
-            doc.setFontSize(10);
-            ReportProcessEnv();
-            doc.setLineWidth(0.2);
-            doc.line(10, 45, 200, 45);
-            doc.autoTable({
-              rowPageBreak: 'auto',
-              styles: { cellPadding: 0.5, fontSize: 8},
-              startY: doc.autoTable.previous.finalY + 15,
-              html: '#report_table_process_env',
-            });
-
-            doc.setFontSize(15);
-            doc.text("Network Artifacts :",10,doc.autoTable.previous.finalY + 10);
-            doc.setFontSize(10);
-            ReportNetscan();
-            doc.setLineWidth(0.2);
-            doc.line(10, 45, 200, 45);
-            doc.autoTable({
-              rowPageBreak: 'auto',
-              styles: { cellPadding: 0.5, fontSize: 8},
-              startY: doc.autoTable.previous.finalY + 15,
-              html: '#report_table_process_net',
-            });
-
-            doc.setFontSize(15);
-            doc.text("Cryptography Artifacts :",10,doc.autoTable.previous.finalY + 10);
-            doc.setFontSize(10);
-            ReportHashdump();
-            doc.setLineWidth(0.2);
-            doc.line(10, 45, 200, 45);
-            doc.autoTable({
-              rowPageBreak: 'auto',
-              styles: { cellPadding: 0.5, fontSize: 8},
-              startY: doc.autoTable.previous.finalY + 15,
-              html: '#report_table_hashdump',
-            });
-
-            doc.setFontSize(15);
-            doc.text("Other Artifacts :",10,doc.autoTable.previous.finalY + 10);
-            doc.setFontSize(10);
-            ReportTimeline();
-            doc.setLineWidth(0.2);
-            doc.line(10, 45, 200, 45);
-            doc.autoTable({
-              rowPageBreak: 'auto',
-              styles: { cellPadding: 0.5, fontSize: 8},
-              startY: doc.autoTable.previous.finalY + 15,
-              html: '#report_table_timeline',
-            });
-
-            doc.setFontSize(15);
-            doc.text("IOCs:",10,doc.autoTable.previous.finalY + 10);
-            doc.setFontSize(10);
-            ReportIOC();
-            doc.setLineWidth(0.2);
-            doc.line(10, 45, 200, 45);
-            doc.autoTable({
-              rowPageBreak: 'auto',
-              styles: { cellPadding: 0.5, fontSize: 8},
-              startY: doc.autoTable.previous.finalY + 15,
-              html: '#report_table_ioc',
-            });
-
-            doc.save("report.pdf");
+          else{
+            table.addClass("highlight");
           }
-
-          $('#processTreeTable').on('click', 'tbody tr', function(event) {
-            var table = $(this);
-
-            if (table.hasClass("highlight")){
-              table.removeClass("highlight");
-            }
-            else{
-              table.addClass("highlight");
-            }
-          });
-
-          $('#processScanTable').on('click', 'tbody tr', function(event) {
-            var table = $(this);
-            if (table.hasClass("highlight")){
-              table.removeClass("highlight");
-            }
-            else{
-              table.addClass("highlight");
-            }
-          });
-
-          $('#processEnvTable').on('click', 'tbody tr', function(event) {
-            var table = $(this);
-            if (table.hasClass("highlight")){
-              table.removeClass("highlight");
-            }
-            else{
-              table.addClass("highlight");
-            }
-          });
-
-          $('#processCmdTable').on('click', 'tbody tr', function(event) {
-            var table = $(this);
-            if (table.hasClass("highlight")){
-              table.removeClass("highlight");
-            }
-            else{
-              table.addClass("highlight");
-            }
-          });
-
-          $('#processPrivilegesTable').on('click', 'tbody tr', function(event) {
-            var table = $(this);
-            if (table.hasClass("highlight")){
-              table.removeClass("highlight");
-            }
-            else{
-              table.addClass("highlight");
-            }
-          });
+        });
 
 
-          $('#processNetworkTable').on('click', 'tbody tr', function(event) {
-            var table = $(this);
-            if (table.hasClass("highlight")){
-              table.removeClass("highlight");
-            }
-            else{
-              table.addClass("highlight");
-            }
-          });
+        $('#processNetworkTable').on('click', 'tbody tr', function(event) {
+          var table = $(this);
+          if (table.hasClass("highlight")){
+            table.removeClass("highlight");
+          }
+          else{
+            table.addClass("highlight");
+          }
+        });
 
 
-          $('#TimelineTable').on('click', 'tbody tr', function(event) {
-            var table = $(this);
-            if (table.hasClass("highlight")){
-              table.removeClass("highlight");
-            }
-            else{
-              table.addClass("highlight");
-            }
-          });
+        $('#TimelineTable').on('click', 'tbody tr', function(event) {
+          var table = $(this);
+          if (table.hasClass("highlight")){
+            table.removeClass("highlight");
+          }
+          else{
+            table.addClass("highlight");
+          }
+        });
 
 
-          $('#FileScanTable').on('click', 'tbody tr', function(event) {
-            var table = $(this);
-            if (table.hasClass("highlight")){
-              table.removeClass("highlight");
-            }
-            else{
-              table.addClass("highlight");
-            }
-          });
+        $('#FileScanTable').on('click', 'tbody tr', function(event) {
+          var table = $(this);
+          if (table.hasClass("highlight")){
+            table.removeClass("highlight");
+          }
+          else{
+            table.addClass("highlight");
+          }
+        });
 
-          $('#IOCTable').on('click', 'tbody tr', function(event) {
-            var table = $(this);
-            if (table.hasClass("highlight")){
-              table.removeClass("highlight");
-            }
-            else{
-              table.addClass("highlight");
-            }
-          });
+        $('#IOCTable').on('click', 'tbody tr', function(event) {
+          var table = $(this);
+          if (table.hasClass("highlight")){
+            table.removeClass("highlight");
+          }
+          else{
+            table.addClass("highlight");
+          }
+        });
 
-          $('#processHashTable').on('click', 'tbody tr', function(event) {
-            var table = $(this);
-            if (table.hasClass("highlight")){
-              table.removeClass("highlight");
-            }
-            else{
-              table.addClass("highlight");
-            }
-          });
+        $('#processHashTable').on('click', 'tbody tr', function(event) {
+          var table = $(this);
+          if (table.hasClass("highlight")){
+            table.removeClass("highlight");
+          }
+          else{
+            table.addClass("highlight");
+          }
+        });
 
 
 
-          //Binding Case Id for ProcessDump
-          $(document).ready(function(){
-            $('#main').show();
-            $('#loading').hide();
-            const case_id = document.getElementById('case_id');
-            var id = document.getElementById('id_id');
-            id.value = case_id.value;
-          });
+        //Binding Case Id for ProcessDump
+        $(document).ready(function(){
+          $('#main').show();
+          $('#loading').hide();
+          const case_id = document.getElementById('case_id');
+          var id = document.getElementById('id_id');
+          id.value = case_id.value;
+        });
 
-          //Process Scan Search function
+        //Process Scan Search function
           $(document).ready(function(){
             $("#searchProcess").on("keyup", function() {
               var value = $(this).val().toLowerCase();
               $("#process tr").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});});});
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});
+              });
 
-                //TimeLine SearchBar
-                $(document).ready(function(){
-                  $("#searchTimeline").on("keyup", function() {
+              //TimeLine SearchBar
+              $("#searchTimeline").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#TimelineTab tr").filter(function() {
+                  $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});
+                });
+
+                //CmdLine SearchBar
+
+                $("#searchCmdLine").on("keyup", function() {
+                  var value = $(this).val().toLowerCase();
+                  $("#cmdline tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});
+                  });
+
+                  //Network SearchBar
+
+                  $("#searchNetwork").on("keyup", function() {
                     var value = $(this).val().toLowerCase();
-                    $("#TimelineTab tr").filter(function() {
-                      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});});});
+                    $("#network tr").filter(function() {
+                      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});
+                    });
 
-                      //CmdLine SearchBar
-                      $(document).ready(function(){
-                        $("#searchCmdLine").on("keyup", function() {
+
+                    //ProcessScan SearchBar
+
+                    $("#searchProcessScan").on("keyup", function() {
+                      var value = $(this).val().toLowerCase();
+                      $("#processScan tr").filter(function() {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});
+                      });
+
+
+
+                      //Process Privileges SearchBar
+
+                      $("#searchPriv").on("keyup", function() {
+                        var value = $(this).val().toLowerCase();
+                        $("#processPriv tr").filter(function() {
+                          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});
+                        });
+
+
+                        //Process Env SearchBar
+
+                        $("#searchEnv").on("keyup", function() {
                           var value = $(this).val().toLowerCase();
-                          $("#cmdline tr").filter(function() {
-                            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});});});
+                          $("#processEnv tr").filter(function() {
+                            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});
+                          });
 
 
-                            //Network SearchBar
+                          //FileScan SearchBar
+
+                          $("#searchFileScan").on("keyup", function() {
+                            var value = $(this).val().toLowerCase();
+                            $("#FileScanTab tr").filter(function() {
+                              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});
+                            });
+
+
+                            //IOC SearchBar
+
+                            $("#searchIOC").on("keyup", function() {
+                              var value = $(this).val().toLowerCase();
+                              $("#IOCTab tr").filter(function() {
+                                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});
+                              });
+                            });
+
                             $(document).ready(function(){
-                              $("#searchNetwork").on("keyup", function() {
-                                var value = $(this).val().toLowerCase();
-                                $("#network tr").filter(function() {
-                                  $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});});});
-
-                                  //ProcessScan SearchBar
-                                  $(document).ready(function(){
-                                    $("#searchProcessScan").on("keyup", function() {
-                                      var value = $(this).val().toLowerCase();
-                                      $("#processScan tr").filter(function() {
-                                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});});});
-
-
-                                        //Process Privileges SearchBar
-                                        $(document).ready(function(){
-                                          $("#searchPriv").on("keyup", function() {
-                                            var value = $(this).val().toLowerCase();
-                                            $("#processPriv tr").filter(function() {
-                                              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});
-                                            });
-                                          });
-
-                                          //Process Env SearchBar
-                                          $(document).ready(function(){
-                                            $("#searchEnv").on("keyup", function() {
-                                              var value = $(this).val().toLowerCase();
-                                              $("#processEnv tr").filter(function() {
-                                                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});});});
-
-                                                //FileScan SearchBar
-                                                $(document).ready(function(){
-                                                  $("#searchFileScan").on("keyup", function() {
-                                                    var value = $(this).val().toLowerCase();
-                                                    $("#FileScanTab tr").filter(function() {
-                                                      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});
-                                                    });
-                                                  });
-
-                                                  //IOC SearchBar
-                                                  $(document).ready(function(){
-                                                    $("#searchIOC").on("keyup", function() {
-                                                      var value = $(this).val().toLowerCase();
-                                                      $("#IOCTab tr").filter(function() {
-                                                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)});
-                                                      });
-                                                    });
-
-                                                    $(document).ready(function(){
-                                                      $('.toast').toast('show');
-                                                    });
-                                                  </script>
-                                                  {% endblock content %}
+                              $('.toast').toast('show');
+                            });
+                        </script>
+                        {% endblock content %}

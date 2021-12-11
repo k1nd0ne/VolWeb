@@ -46,7 +46,7 @@ services:
 
   rabbitmq3:
     container_name: "rabbitmq3"
-    image: rabbitmq:3.6.6
+    image: rabbitmq:latest
     ports:
       - "5672:5672"
     environment:
