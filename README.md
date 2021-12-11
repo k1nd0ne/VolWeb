@@ -1,20 +1,20 @@
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/title.png)
 
-Volweb is a digtial forensic memory analysis platform. The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responder and digital forensics investigators.
+Volweb is a digtial forensic memory analysis platform. The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responders and digital forensics investigators.
 VolWeb is based on volatility3, and this platform will evolve with the framework development.
 
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/investigation.png)
 
 
 **Volweb is still in Beta version and will evolve quickly.** 
-Communications of updates will be released via twitter and by following the releases on github.
+The updates communications will be on twitter or by following the github.
 
 ## Features ✅
 The platform is currently supporting the following features: 
 
 - Investigation creation and dump upload
 - IoC import
-- IoC extraction with linked process
+- IoC extraction with linked processes
 - process tree
 - process scan
 - process dump
@@ -33,8 +33,8 @@ The platform is currently supporting the following features:
 
 
 ## Getting Started 🛠️
-Volweb is fully dockerized and ready to be deployed on a production server. 
-In order to deploy Volweb, you will need to follow these steps: 
+Volweb is fully dockerized and can be deployed in a production environement. 
+In order to deploy Volweb, you should follow these steps: 
 
 Clone the repository. 
 
@@ -50,7 +50,7 @@ Then, edit the **docker/volweb.env** file and add the secret information accordi
  DJANGO_SECRET=SECRET_KEY_HERE
 ```
 
-Next, add your ssl certificate into the **nginx/ssl** folder (generated via certbot for example).
+Next, add your ssl certificate into the **nginx/ssl** folder (generated via certbot or openssl for example).
 
 ```
 cp fullchain.pem privkey.pem ./volweb-cert/docker/nginx/ssl
@@ -76,32 +76,33 @@ The ngnix logs can be found in the **/ngnix/log** folder.
 /!\ This procedure will delete all the memory dump and database items and reset the volweb platform /!\
 
 ```
+cd VolWeb/docker
 docker-compose down --rmi all --volumes
 ```
 
 ```
+cd VolWeb
 find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
 find . -path "*/migrations/*.pyc"  -delete
 ```
 
 ## Important Note
 
-To be able to see names of the forensic investigators, you’ll need to fill in the First Name and Last name fields in the User section from the Django administration panel.
+To be able to see the forensic investigator's name when creating a new analysis, you’ll need to fill in the "First Name" and "Last Name "fields in the User section of the Django administration panel -> https://[IP]/admin.
 
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/Note.png)
 
 ## Issues ⚠️
 If you have found an issue, please raise it. 
-I'll perform 1 sprint every month to fix discovered bugs.
+I am performing 1 sprint every month to fix discovered bugs.
 
 ### Need to contact me? 
 Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
 # Next Release goals 
-- Integrate Volatility results directly inside the database (Currently in JSON).
-- Better file & process dump management (integration with celery)
-- Add missing module for the windows memory analysis.
-- Fix various discovered bugs.
+- Add missing modules to the windows memory analysis.
+- Code optimisation
+- Docker optimisation
 
 # Global goals
 - Mac OS support
