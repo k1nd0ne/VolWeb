@@ -27,6 +27,7 @@ The platform is currently supporting the following features:
 - dlllist
 - filescan
 - Timeline Explorer
+- malfind
 - User Authentication
 - User Management
 - Automatic Report Generation
@@ -100,11 +101,13 @@ I am performing 1 sprint every month to fix discovered bugs.
 Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
 # Next Release goals 
-- Add missing modules to the windows memory analysis.
-- Code optimisation
-- Docker optimisation
+- Admin account creation at first launch
+- Celery Task timeout in case of corrupted memory dump
 
 # Global goals
+- Code optimisation
+- Docker optimisation
+- Add missing modules to the windows memory analysis.
 - Mac OS support
 - Linux support
 - Visual confirmation of what to not look (legit process highlight integration)
