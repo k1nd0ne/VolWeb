@@ -72,6 +72,10 @@ By default the admin account created will have the following credentials :
 admin:password
 ```
 
+Navigate to https://[VOLWEB HOSTED IP]/admin and create an analyst account in the "User" section.
+Don't forget to had the first name and the last name of the analyst.
+Change the admin password.
+Disconnect from the admin panel and navigate to https://[VOLWEB HOSTED IP]/
 
 ## Reset
 
@@ -91,7 +95,7 @@ find . -path "*/migrations/*.pyc"  -delete
 ## Important Note
 
 The admin account cannot create analysis. Only use this account for analyst account creation and don't forget to change the password.
-Create the analysts accounts via the Django administration panel -> https://[IP]/admin.
+Create the analysts accounts via the Django administration panel -> https://[VOLWEB HOSTED IP]/admin.
 
 Don't forget to add the first and the last name of the analyst to be able to select him when creating an investigation.
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/Note.png)
