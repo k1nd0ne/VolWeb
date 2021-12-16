@@ -53,15 +53,16 @@ Then, edit the **docker/volweb.env** file and add the secret information accordi
  DJANGO_SECRET=SECRET_KEY_HERE
 ```
 
-Next, add your ssl certificate into the **nginx/ssl** folder (generated via certbot or openssl for example).
-
+Next, add your ssl certificate into the **nginx/ssl** folder (generated via certbot or openssl for example) :
 ```
-cp fullchain.pem privkey.pem ./volweb-cert/docker/nginx/ssl
+openssl genrsa > ./VolWeb/docker/nginx/ssl/privkey.pem
+openssl req -new -x509 -key ./VolWeb/docker/nginx/ssl/privkey.pem > ./VolWeb/docker/nginx/ssl/fullchain.pem
 ```
 
 Build the docker and run it.
 
 ```
+cd ./VolWeb/docker
 docker-compose build
 docker-compose up -d
 ```
@@ -80,12 +81,12 @@ admin:password
 ⚠️ This procedure will delete all the memory dumps, IOCs and database items and will reset the VolWeb platform ⚠️
 
 ```
-cd VolWeb/docker
+cd ./VolWeb/docker
 docker-compose down --rmi all --volumes
 ```
 
 ```
-cd VolWeb
+cd ./VolWeb/
 find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
 find . -path "*/migrations/*.pyc"  -delete
 ```
