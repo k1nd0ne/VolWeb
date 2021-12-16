@@ -103,13 +103,14 @@ Don't forget to add the first and the last name of the analyst to be able to sel
 ## Issues ⚠️
 If you have found an issue, please raise it.
 I am performing 1 sprint every month to fix discovered bugs.
+I am also performing whitebox pentest to improve the SecOps dimension.
 
 ### Need to contact me?
 Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
 # Next Release goals
 - Celery Task timeout in case of corrupted memory dump
-- Bug Fix
+- Vulnerability Fix : ⚠️ Authenticated RCE found where an authenticated user could manipulate the IOC creation field to inject code.
 
 # Global goals
 - Code optimisation
