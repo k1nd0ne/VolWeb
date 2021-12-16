@@ -58,9 +58,10 @@ Next, add your ssl certificate into the **nginx/ssl** folder (generated via cert
 openssl genrsa > ./VolWeb/docker/nginx/ssl/privkey.pem
 openssl req -new -x509 -key ./VolWeb/docker/nginx/ssl/privkey.pem > ./VolWeb/docker/nginx/ssl/fullchain.pem
 ```
+**Don't forget to fill the different fields in the openssl certificate configuration. 
+Make sure that the privkey and fullchain files respectively have the same name as the example above.**
 
-Build the docker and run it.
-
+Finally, build the docker and run it.
 ```
 cd ./VolWeb/docker
 docker-compose build
