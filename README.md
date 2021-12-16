@@ -1,4 +1,6 @@
-![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/title.png)
+<p align="center">
+  <img src="https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/title.png" alt="VolWeb Title"/>
+</p>
 
 Volweb is a digtial forensic memory analysis platform. The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responders and digital forensics investigators.
 VolWeb is based on volatility3, and this platform will evolve with the framework development.
@@ -6,8 +8,8 @@ VolWeb is based on volatility3, and this platform will evolve with the framework
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/investigation.png)
 
 
-**Volweb is still in Beta version and will evolve quickly.**
-The updates communications will be on twitter or by following the github.
+**Volweb is still in development and will evolve quickly.**
+Update communications will be via twitter or by following this repo.
 
 ## Features ✅
 The platform is currently supporting the following features:
@@ -34,7 +36,7 @@ The platform is currently supporting the following features:
 
 
 ## Getting Started 🛠️
-Volweb is fully dockerized and can be deployed in a production environement.
+Volweb is fully dockerized and can be deployed in a production environment.
 In order to deploy Volweb, you should follow these steps:
 
 Clone the repository.
@@ -91,9 +93,9 @@ find . -path "*/migrations/*.pyc"  -delete
 ## Important Note
 
 The admin account cannot create analysis. Only use this account for analyst account creation and don't forget to change the password.
+Create the analysts accounts via the Django administration panel -> https://[IP]/admin.
 
-To be able to see the forensic analyst's name when creating a new analysis, you’ll need to fill in the "First Name" and "Last Name "fields in the User section of the Django administration panel -> https://[IP]/admin.
-
+Don't forget to add the first and the last name of the analyst to be able to select him when creating an investigation.
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/Note.png)
 
 ## Issues ⚠️
@@ -104,8 +106,8 @@ I am performing 1 sprint every month to fix discovered bugs.
 Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
 # Next Release goals
-- Admin account creation at first launch
 - Celery Task timeout in case of corrupted memory dump
+- Bug Fix
 
 # Global goals
 - Code optimisation
