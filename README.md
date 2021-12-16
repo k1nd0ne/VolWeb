@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/title.png" alt="VolWeb Title"/>
+  <img src="https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/title2.png" alt="VolWeb Title"/>
 </p>
 
 Volweb is a digtial forensic memory analysis platform. The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responders and digital forensics investigators.
