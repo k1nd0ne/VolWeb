@@ -10,4 +10,4 @@ from django.core import serializers
 def dashboard(request):
     User = get_user_model()
     activity = serializers.serialize("json", Activity.objects.all(), fields = ("date", "count"))
-    return render(request,'dashboard/dashboard.html',{'Activity': activity, 'Users':User.objects.all(),'investigations':UploadInvestigation.objects.all().count(), 'iocs':NewIOC.objects.all().count()})
+    return render(request,'dashboard/dashboard.html',{'Activity': activity, 'Users':User.objects.filter(is_superuser = False),'investigations':UploadInvestigation.objects.all().count(), 'iocs':NewIOC.objects.all().count()})

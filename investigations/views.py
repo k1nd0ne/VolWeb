@@ -139,7 +139,7 @@ def newinvest(request):
                     return res
     form = UploadFileForm()
     User = get_user_model()
-    return render(request, 'investigations/newinvest.html', {'form': form, 'Users':User.objects.all()})
+    return render(request, 'investigations/newinvest.html', {'form': form, 'Users':User.objects.filter(is_superuser = False)})
 
 
 #The reviewinvest view : Handle the dump memory request and pass the memory analysis results to the context
