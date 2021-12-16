@@ -53,6 +53,7 @@
             <div class="d-inline">
                 <input class="query-input text-white mb-3" id="myInput" type="text" placeholder="Search..">
             </div>
+            <p><a href="{%url 'newinvest'%}">Create a new investigation.</a></p>
             <hr>
         </div>
     </div>
@@ -140,8 +141,6 @@
         </div>
       </div>
       {% endfor %}
-      {% else %}
-      <p>Nothing to show. <a href="{%url 'newinvest'%}">Create a new investigation.</a></p>
       {% endif %}
     </div>
   </div>

@@ -15,3 +15,6 @@ class UploadInvestigation(models.Model):
     def __str__(self):
         return str(self.pk)
 
+class Activity(models.Model):
+    date = models.DateField(primary_key=True)
+    count = models.IntegerField()

@@ -1,16 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .forms import UploadFileForm, ManageInvestigation, DumpMemory
-from .models import UploadInvestigation
+from .forms import *
+from .models import *
 from django.contrib.auth import get_user_model
-import threading, json, os
-import uuid
 from django.contrib import messages
 from django.http import HttpResponse, Http404, StreamingHttpResponse, FileResponse, JsonResponse
 from iocs.models import NewIOC
 from .tasks import start_memory_analysis, dump_memory_pid
 from celery.result import AsyncResult
 from .tasks import app, dump_memory_pid
+import json, os, uuid, datetime
 
 
 #Global context variable used by the volatility_script.py to store results and give it back to the investigation review view.
@@ -103,6 +102,10 @@ def newinvest(request):
                 FileFolder.save()
                 if int(end):
                     res = JsonResponse({'data':'Uploaded Successfully','existingPath': fileName})
+                    activity = Activity()
+                    activity.date = datetime.datetime.now().date()
+                    activity.count += 1
+                    activity.save()
                 else:
                     res = JsonResponse({'existingPath': fileName})
                 return res
@@ -117,6 +120,14 @@ def newinvest(request):
                                 model_id.eof = int(end)
                                 model_id.save()
                                 res = JsonResponse({'data':'Uploaded Successfully','existingPath':model_id.existingPath})
+                                try:
+                                    activity = Activity.objects.get(date=datetime.datetime.now().date())
+                                    activity.count = activity.count + 1
+                                except Activity.DoesNotExist:
+                                    activity = Activity()
+                                    activity.date = datetime.datetime.now().date()
+                                    activity.count = 1
+                                activity.save()
                             else:
                                 res = JsonResponse({'existingPath':model_id.existingPath})
                                 return res

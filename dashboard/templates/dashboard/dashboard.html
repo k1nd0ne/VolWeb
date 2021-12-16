@@ -93,7 +93,7 @@
       color: #eb1f5a;
   }
   #chart {
-         height: 20rem;
+         height: 22rem;
   }
 </style>
 <!-- Dashboard Cards  -->
@@ -120,12 +120,13 @@
             <div class="card shadow card-btn rounded">
                 <a href="{% url 'newioc' %}">
                     <img class="img-fluid" width="100" height="100" src="{% static 'images/IOC-on-dark.png'%}"/>
-                </a> 
+                </a>
             </div>
         </div>
         <div class="col-2">
         </div>
         <div class="col-2 mid-section rounded">
+
             <h4 class="h4 mt-3">Forensic experts</h4>
             <table class="table">
                 <thead>
@@ -147,7 +148,7 @@
         <div class="col-5 rigth-section">
             <div class="row">
                 <div class="col-8 mb-5" id="chart">
-                    
+
                 </div>
             </div>
             <div class="row">
@@ -192,15 +193,19 @@ if (document.getElementById('indcount')) {
   }
 
 // create data
-var data = [
-];
-    
+var data = [];
+var data_raw = JSON.parse("{{Activity|escapejs}}");
+for (var i in data_raw){
+  data.push([data_raw[i]["pk"],data_raw[i]["fields"]["count"]]);
+}
 // create a chart
-chart = anychart.line();
-chart.title("Activity Timeline (coming soon)");
+chart = anychart.column();
+chart.title("Analysis Activities");
 chart.background().fill("#293b58");
+chart.xAxis().title("Date");
+chart.yAxis().title("Analysis");
 // create a line series and set the data
-var series = chart.line(data);
+var series = chart.column(data);
 series.stroke('#32d3bc');
 // set the container id
 chart.container("chart");
