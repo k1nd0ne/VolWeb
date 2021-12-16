@@ -39,13 +39,9 @@ The platform is currently supporting the following features:
 Volweb is fully dockerized and can be deployed in a production environment.
 In order to deploy Volweb, you should follow these steps:
 
-Clone the repository.
+Download the latest release -> https://github.com/k1nd0ne/VolWeb/releases
 
-```
-git clone https://github.com/k1nd0ne/VolWeb
-```
-
-Then, edit the **docker/volweb.env** file and add the secret information according to your need to the following fields:
+Then, navigate to the VolWeb directory and edit the **./docker/volweb.env** file and add the secret information to the following fields:
 
 ```
  POSTGRES_USER=USER_HERE
