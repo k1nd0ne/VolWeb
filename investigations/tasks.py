@@ -2,11 +2,7 @@ from .models import *
 from iocs.models import NewIOC
 from .celery import app
 from json import dumps
-import subprocess
-import time
-import json
-import re
-import os
+import subprocess, time, json, re, os
 
 
 
@@ -238,13 +234,18 @@ def start_memory_analysis(dump_path,id):
     iocs = NewIOC.objects.all()
     terms = ""
     ioc_result_name = "Cases/IOCs/iocs_invest_" + str(id)
-    os.system("echo '' > "+ioc_result_name)
+    strings_output_file = "Cases/IOCs/output_"+ str(id)
+    with open(ioc_result_name, 'w') as fout:
+        fout.write('')
+
     for ioc in iocs:
         if (str(id) in ioc.linkedInvestigationID) or ('-1' in ioc.linkedInvestigationID):
             terms = terms + ioc.value + "|"
     if terms != "":
-        command = "strings -t d " + dump_path + ' | grep -E "' + terms[:len(terms)-1] + '" > ' + ioc_result_name
-        os.system(command)
+        with open(strings_output_file, 'w') as fout:
+            fout.write(subprocess.check_output(['strings', '-t', 'd', dump_path]).decode())
+        with open(ioc_result_name, 'w') as fout:
+            fout.write(subprocess.check_output(['grep', '-E', terms[:len(terms)-1] ,  strings_output_file]).decode())
     f_len = os.path.getsize(ioc_result_name)
     if f_len <= 1:
         iocmatch = {'iocmatch':[['No IOCs']]}
