@@ -246,6 +246,19 @@
       processData: false
     });
   }
+
+// Refresh or reload page.
+function refresh() {
+    $.ajax({
+        url: "{% url 'investigations' %}",
+        success: function(data) {
+          var parser = new DOMParser();
+          var wrapper = parser.parseFromString(data, "text/html");
+          cards = wrapper.getElementById('cards');
+          $('#cards').html(cards);
+      }
+    });
+}
   //Search an investigation
   $(document).ready(function(){
     $("#myInput").on("keyup", function() {
@@ -254,6 +267,7 @@
         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
       });
     });
+    window.setInterval('refresh()', 30000); 	// Call a function every 10000 milliseconds (OR 10 seconds).
   });
 </script>
 {% endblock content %}
