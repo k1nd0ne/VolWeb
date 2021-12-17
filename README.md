@@ -2,13 +2,14 @@
   <img src="https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/title2.png" alt="VolWeb Title"/>
 </p>
 
-Volweb is a digtial forensic memory analysis platform. The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responders and digital forensics investigators.
+Volweb is a digital forensic memory analysis platform.  
+The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responders and digital forensics investigators.  
 VolWeb is based on volatility3, and this platform will evolve with the framework development.
 
 ![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/investigation.png)
 
 
-**Volweb is still in development and will evolve quickly.**
+**Volweb is still in development and will evolve quickly.**  
 Update communications will be via twitter or by following this repo.
 
 ## Features ✅
@@ -39,7 +40,7 @@ The platform is currently supporting the following features:
 Volweb is fully dockerized and can be deployed in a production environment.
 In order to deploy Volweb, you should follow these steps:
 
-Download the latest release -> https://github.com/k1nd0ne/VolWeb/releases
+Download the latest release: https://github.com/k1nd0ne/VolWeb/releases
 
 Then, navigate to the VolWeb directory and edit the **./docker/volweb.env** file and add the secret information to the following fields:
 
@@ -49,15 +50,15 @@ Then, navigate to the VolWeb directory and edit the **./docker/volweb.env** file
  DJANGO_SECRET=SECRET_KEY_HERE
 ```
 
-Next, add your ssl certificate into the **nginx/ssl** folder (generated via certbot or openssl for example) :
+Next, add your ssl certificate into the **nginx/ssl** folder (generated via certbot or openssl for example):
 ```
 openssl genrsa > ./VolWeb/docker/nginx/ssl/privkey.pem
 openssl req -new -x509 -key ./VolWeb/docker/nginx/ssl/privkey.pem > ./VolWeb/docker/nginx/ssl/fullchain.pem
 ```
-**Don't forget to fill the different fields in the openssl certificate configuration. 
+**Don't forget to fill the different fields in the openssl certificate configuration.
 Make sure that the privkey and fullchain files respectively have the same name as the example above.**
 
-Finally, build the docker and run it.
+Finally, build the images and run the containers.
 ```
 cd ./VolWeb/docker
 docker-compose build
@@ -66,15 +67,15 @@ docker-compose up -d
 
 The ngnix logs can be found in the **/ngnix/log** folder.
 
-By default the admin account created will have the following credentials :
+By default the admin account created will have the following credentials:
 
 ```
 admin:password
 ```
 
 Navigate to https://[VOLWEB HOSTED IP]/admin and create an analyst account in the "User" section.
-Don't forget to had the first name and the last name of the analyst.
-Change the admin password.
+Don't forget to had the first name and the last name of the analyst.  
+Change the admin password.  
 Disconnect from the admin panel and navigate to https://[VOLWEB HOSTED IP]/
 
 ## Reset
@@ -102,7 +103,7 @@ Don't forget to add the first and the last name of the analyst to be able to sel
 
 ## Issues ⚠️
 If you have found an issue, please raise it.
-I am performing 1 sprint every month to fix discovered bugs.
+I am performing one sprint every month to fix discovered bugs.
 I am also performing whitebox pentests to improve the SecOps dimension.
 
 ### Need to contact me?
