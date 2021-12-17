@@ -98,9 +98,6 @@ find . -path "*/migrations/*.pyc"  -delete
 The admin account cannot create analysis. Only use this account for analyst account creation and don't forget to change the password.
 Create the analysts accounts via the Django administration panel -> https://[VOLWEB HOSTED IP]/admin.
 
-Don't forget to add the first and the last name of the analyst to be able to select him when creating an investigation.
-![alt text](https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/Note.png)
-
 ## Issues ⚠️
 If you have found an issue, please raise it.
 I am performing one sprint every month to fix discovered bugs.
