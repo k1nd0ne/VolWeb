@@ -4,17 +4,12 @@ from .forms import *
 from .models import *
 from django.contrib.auth import get_user_model
 from django.contrib import messages
-from django.http import HttpResponse, Http404, StreamingHttpResponse, FileResponse, JsonResponse
+from django.http import StreamingHttpResponse, FileResponse, JsonResponse
 from iocs.models import NewIOC
 from .tasks import start_memory_analysis, dump_memory_pid
 from celery.result import AsyncResult
 from .tasks import app, dump_memory_pid
 import json, os, uuid, datetime
-
-
-#Global context variable used by the volatility_script.py to store results and give it back to the investigation review view.
-context = {}
-
 
 #Investigation view : Manage the created investigations actions (Launch/Delete/Cancel)
 @login_required
@@ -30,7 +25,6 @@ def investigations(request):
                 if action == "1":
                     case.status = "1"
                     result = start_memory_analysis.delay('Cases/'+str(case.name),case.id)
-                    print(type(result))
                     case.taskid = result
                     case.save()
                 #Remove the memory dump
@@ -48,13 +42,6 @@ def investigations(request):
                     task_id = case.taskid
                     app.control.terminate(task_id)
                     case.save()
-                #Review the investigation (Load the json result file into the context for the 'reviewinvest' view)
-                elif action == "3":
-                    global context
-                    with open('Cases/Results/'+str(case.id)+'.json') as f:
-                        context = json.load(f)
-                    context['case'] = case
-                return JsonResponse({'message': 'true'})
             else:
                 return JsonResponse({'message': 'false'})
     else:
@@ -141,12 +128,20 @@ def newinvest(request):
     User = get_user_model()
     return render(request, 'investigations/newinvest.html', {'form': form, 'Users':User.objects.filter(is_superuser = False)})
 
-
-#The reviewinvest view : Handle the dump memory request and pass the memory analysis results to the context
+#The reviewinvest view : Handle the review/dump memory request and pass the memory analysis results to the context
 @login_required
 def reviewinvest(request):
-    global context
     if request.method == 'POST':
+        form = ManageInvestigation(request.POST)
+        if form.is_valid():
+            id = form.cleaned_data['id']
+            case = UploadInvestigation.objects.get(pk=id)
+            with open('Cases/Results/'+str(case.id)+'.json') as f:
+                context = json.load(f)
+            context['case'] = case
+            form = DumpMemory()
+            context.update({'form': form})
+            return render(request, 'investigations/reviewinvest.html',context)
         form = DumpMemory(request.POST)
         if form.is_valid():
             case_id = form.cleaned_data['id']
@@ -167,6 +162,6 @@ def reviewinvest(request):
                 messages.add_message(request,messages.ERROR,'Failed to fetch the requested process')
         else:
             messages.add_message(request,messages.ERROR,'The PID is not correct')
-    form = DumpMemory()
+
     context.update({'form': form})
     return render(request, 'investigations/reviewinvest.html',context)

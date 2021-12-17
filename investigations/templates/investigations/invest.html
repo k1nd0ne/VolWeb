@@ -1,5 +1,5 @@
 {% extends "dashboard/base.html" %}
-
+{% load static %}
 {% block content%}
 <!-- Custom Card Style -->
 <style type="text/css">
@@ -26,7 +26,7 @@
     -moz-osx-font-smoothing: auto;
     font-size: 0.9rem;
   }
-  
+
   .query-input {
     background-color:#293b58;
     font-size: 1rem;
@@ -123,15 +123,15 @@
                 {% csrf_token %}
                 {{form.action}}
                 {{form.id}}
-                <button type="button" class="btn btn-warn" onclick="CancelAnalysis('{{i.id}}');" data-bs-dismiss="modal">Cancel Analysis</button>
+                <button type="button" class="btn btn-warn" onclick="CancelAnalysis('{{i.id}}');" data-bs-dismiss="modal">Cancel analysis</button>
               </form>
               {% endif %}
               {% if i.status == "2" %}
-              <form action="" method="POST">
+              <form id="reviewform" action="{% url 'reviewinvest' %}" method="POST">
                 {% csrf_token %}
                 {{form.action}}
                 {{form.id}}
-                <button type="button" class="btn btn-succ" onclick="ReviewCase('{{i.id}}')">Review artifacts</button>
+                <input class="btn btn-succ" type="submit" onclick="ReviewCase('{{i.id}}')" value="Review results">
                 <button type="button" class="btn btn-prim" onclick="StartAnalysis('{{i.id}}');" data-bs-dismiss="modal">Restart analysis</button>
               </form>
               {% endif %}
@@ -149,7 +149,7 @@
 
 
 <!-- Ajax post requests management (Create/Delete/Restart/Cancel) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="{% static 'dashboard/jquery-3.6.0.min.js' %}"></script>
 <script>
 
   /* StartAnalysis script */
@@ -214,31 +214,10 @@
   function ReviewCase(id){
     const csrf = document.getElementsByName('csrfmiddlewaretoken');
     const action = document.getElementById('id_action');
-    action.value = "3"
-    const fd = new FormData();
-    fd.append('csrfmiddlewaretoken', csrf[0].value);
-    fd.append('action', action.value);
-    fd.append('id', id);
-    $.ajax({
-      type:'POST',
-      url: '',
-      enctype: 'multipart/form-data',
-      data: fd,
-      beforeSend: function(){
-
-      },
-      success: function(response){
-        window.location.href = '/investigations/reviewinvest/';
-      },
-      error: function(error){
-
-      },
-      cache: false,
-      contentType : false,
-      processData: false
-    });
+    const case_id = document.getElementById('id_id');
+    action.value = "3";
+    case_id.value = id;
   }
-
   /* Delete investigation script */
   function DeleteInvestigation(id){
     const csrf = document.getElementsByName('csrfmiddlewaretoken');
@@ -267,8 +246,6 @@
       processData: false
     });
   }
-
-
   //Search an investigation
   $(document).ready(function(){
     $("#myInput").on("keyup", function() {
