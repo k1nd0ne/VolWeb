@@ -42,7 +42,7 @@
 <div class="spinner-border" role="status" id="loading">
 </div>
 <main class="container-fluid col-md-11 ml-sm-auto pt-3 px-4" style="overflow-y:scroll; display:none;" id="main">
-		
+
     <div class="row">
         <div class="col-10">
         <h1 class="h3">IOCs</h1>
@@ -53,6 +53,7 @@
 		<div class="d-inline">
 			<input class=" query-input form-control mb-3" id="myInput" type="text" placeholder="Search..">
 		</div>
+		<p><a href="{%url 'newioc'%}">Create a new IOC.</a></p>
 		<hr>
 		<table class="table table-sm table-hover" id="ioc_table">
 			<thead>
