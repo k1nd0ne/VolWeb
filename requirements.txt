@@ -10,3 +10,4 @@ yara-python
 pycrypto
 pefile
 capstone
+redis

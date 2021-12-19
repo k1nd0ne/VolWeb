@@ -44,23 +44,19 @@ services:
     depends_on:
       - web
 
-  rabbitmq3:
-    container_name: "rabbitmq3"
-    image: rabbitmq:latest
+  redis:
+    image: redis:alpine
     ports:
-      - "5672:5672"
-    environment:
-        - RABBITMQ_DEFAULT_USER=admin
-        - RABBITMQ_DEFAULT_PASS=mypass
+      - '6379:6379'
   worker:
     build:
       context: ../
       dockerfile: docker/Dockerfile
     env_file:
       - secret/volweb.env
-    command: celery -A investigations worker -l info
+    command: celery -A investigations worker -l INFO
     depends_on: 
-      - rabbitmq3
+      - redis
       - db
     volumes:
       - cases:/home/app/web/Cases/
