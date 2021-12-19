@@ -77,7 +77,7 @@ Navigate to https://[VOLWEB HOSTED IP]/admin and create an analyst account in th
 Change the admin password.  
 Disconnect from the admin panel and navigate to https://[VOLWEB HOSTED IP]/ to login with the analyst account.
 
-## Reset
+## Reset 🔄
 
 ⚠️ This procedure will delete all the uploaded memory dumps & database items ⚠️
 
@@ -92,7 +92,7 @@ find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
 find . -path "*/migrations/*.pyc"  -delete
 ```
 
-## Important Note
+## Important Note 📄
 
 The admin account cannot create analysis. Only use this account for analyst account creation and don't forget to change the password.
 Create the analysts accounts via the Django administration panel -> https://[VOLWEB HOSTED IP]/admin.
@@ -102,13 +102,18 @@ If you have found an issue, please raise it.
 I am performing one sprint every month to fix discovered bugs.
 I am also performing whitebox pentests to improve the SecOps dimension.
 
-### Need to contact me?
+### Contact 📬
 Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
-# Next Release goals
+# Wiki 📚
+The full documentation will be available in the Wiki section. 
+Build in progress.
+
+# Next Release goals 📋
+- Messaging system (django messages -> frontend display)
 - Celery Task timeout in case of corrupted memory dump
 
-# Global goals
+# Global goals 📋
 - Code optimisation
 - Docker optimisation
 - Add missing modules to the windows memory analysis.
