@@ -73,14 +73,13 @@ By default the admin account created will have the following credentials:
 admin:password
 ```
 
-Navigate to https://[VOLWEB HOSTED IP]/admin and create an analyst account in the "User" section.
-Don't forget to had the first name and the last name of the analyst.  
+Navigate to https://[VOLWEB HOSTED IP]/admin and create an analyst account in the "User" section. 
 Change the admin password.  
-Disconnect from the admin panel and navigate to https://[VOLWEB HOSTED IP]/
+Disconnect from the admin panel and navigate to https://[VOLWEB HOSTED IP]/ to login with the analyst account.
 
 ## Reset
 
-⚠️ This procedure will delete all the memory dumps, IOCs and database items and will reset the VolWeb platform ⚠️
+⚠️ This procedure will delete all the uploaded memory dumps & database items ⚠️
 
 ```
 cd ./VolWeb/docker
