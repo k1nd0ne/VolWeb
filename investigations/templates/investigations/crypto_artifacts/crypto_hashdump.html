@@ -1,0 +1,24 @@
+<button class="btn btn-succ-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseHashDump>
+  HashDump
+</button>
+<div class="collapse mt-5" id="collapseHashDump">
+  <table id="processHashTable" class="table card-font hashdump">
+    <thead>
+      <tr>
+        <th scope="col">User</th>
+        <th scope="col">RID</th>
+        <th scope="col">lmhash</th>
+        <th scope="col">nthash</th>
+      </tr>
+    </thead>
+    <tbody id="HashDumpTab">
+      {% for elem in hashdump %}
+      <tr>
+        {% for item in elem %}
+        <td>{{item }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

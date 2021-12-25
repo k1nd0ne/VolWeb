@@ -1,0 +1,27 @@
+<!-- Investigation malware_analysis_dump_process -->
+<button class="btn btn-dang-d" type="button" data-bs-toggle="modal" data-bs-target=#downloadDump>
+  Dump Process
+</button>
+<div class="text-white modal fade" id="downloadDump" tabindex="-1" aria-labelledby="downloadDump" aria-hidden="true">
+  <div class="modal-dialog border">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Dump a process by PID</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="" method="POST">
+        <div class="modal-body">
+          {% csrf_token %}
+          <div class="form-group">
+            {{form.pid}}
+          </div>
+        </div>
+        <div class="modal-footer">
+          {{form.id}}
+          <input type="hidden" value="{{case.id}}" id="case_id"/>
+          <button type="submit" class="btn btn-prim-d" >Download</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,44 @@
+<!-- Investigation process_scan artifacts -->
+<button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcessScan" aria-expanded="false" aria-controls="collapseProcessScan">
+  Process Scan <span class='text-muted'>(Raw)</span>
+</button>
+
+<div class="collapse mt-5" id="collapseProcessScan">
+  <h6 class="h6">Process Scan</h6>
+  <div class="d-inline">
+    <input class="form-control mb-3" id="searchProcessScan" type="text" placeholder="Search..">
+  </div>
+  <table id="processScanTable" class="table card-font processcan">
+    <thead>
+      <tr>
+        <th scope="col">PID</th>
+        <th scope="col">PPID</th>
+        <th scope="col">ImageFileName</th>
+        <th scope="col">Offset(V)</th>
+        <th scope="col">Threads</th>
+        <th scope="col">Handles</th>
+        <th scope="col">SessionId</th>
+        <th scope="col">Wow64</th>
+        <th scope="col">CreateTime</th>
+        <th scope="col">ExitTime</th>
+      </tr>
+    </thead>
+    <tbody id="processScan">
+      {% for process in psscan %}
+      <tr>
+        <td>{{process.PID}}</td>
+        <td>{{process.PPID}}</td>
+        <td>{{process.ImageFileName}}</td>
+        <td>{{process.Offset}}</td>
+        <td>{{process.Threads}}</td>
+        <td>{{process.Handles}}</td>
+        <td>{{process.SessionId}}</td>
+        <td>{{process.Wow64}}</td>
+        <td>{{process.CreateTime}}</td>
+        <td>{{process.ExitTime}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>

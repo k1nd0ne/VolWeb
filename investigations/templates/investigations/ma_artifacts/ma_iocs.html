@@ -1,0 +1,27 @@
+<!-- Investigation malware_analysis_iocs-->
+<button class="btn btn-dang-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseIOC>
+  IOCs
+</button>
+<div class="collapse mt-5" id="collapseIOC">
+  <div class="d-inline">
+    <input class="form-control mb-3" id="searchIOC" type="text" placeholder="Search..">
+  </div>
+  <table id="IOCTable" class="table card-font ioc">
+    <thead>
+      <tr>
+        <th scope="col">Physical Address</th>
+        <th scope="col">Linked Process</th>
+        <th scope="col">Match String</th>
+      </tr>
+    </thead>
+    <tbody id="IOCTab">
+      {% for files in iocmatch %}
+      <tr>
+        {% for key,value in files.items %}
+        <td><p>{{value}}<p></td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>

@@ -1,0 +1,36 @@
+<!-- Investigation process_tree artifacts -->
+<button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+  Process Tree <span class='text-muted'>(Raw)</span>
+</button>
+
+<div class="text-white collapse mt-5" id="collapseExample">
+  <h6 class="h6">Process Tree</h6>
+  <div class="d-inline">
+    <input class="form-control mb-3" id="searchProcess" type="text" placeholder="Search..">
+  </div>
+  <table id="processTreeTable" class="table card-font processtree">
+    <thead>
+      <tr>
+        <th scope="col">PID</th>
+        <th scope="col">PPID</th>
+        <th scope="col">ImageFileName</th>
+        <th scope="col">Offset(V)</th>
+        <th scope="col">Threads</th>
+        <th scope="col">Handles</th>
+        <th scope="col">SessionId</th>
+        <th scope="col">Wow64</th>
+        <th scope="col">CreatedTime</th>
+        <th scope="col">ExitTime</th>
+      </tr>
+    </thead>
+    <tbody id="process">
+      {% for process in pstree %}
+      <tr>
+        {% for item in process %}
+        <td>{{item }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

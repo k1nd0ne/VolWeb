@@ -1,0 +1,34 @@
+<!-- Investigation process_privileges artifacts -->
+<button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePriv" aria-expanded="false" aria-controls="collapsePriv">
+  Process Privileges <span class='text-muted'>(Raw)</span>
+</button>
+<div class="collapse mt-5" id="collapsePriv">
+  <h6 class="h6">Process Privileges</h6>
+  <div class="d-inline">
+    <input class="form-control mb-3" id="searchPriv" type="text" placeholder="Search..">
+  </div>
+  <table id="processPrivilegesTable" class="table card-font processpriv">
+    <thead>
+      <tr>
+        <th scope="col">PID</th>
+        <th scope="col">Process Value</th>
+        <th scope="col">Privilege</th>
+        <th scope="col">Attributes</th>
+        <th scope="col">Description</th>
+        <th scope="col">Value</th>
+      </tr>
+    </thead>
+    <tbody id="processPriv">
+      {% for process in privileges %}
+      <tr>
+        <td>{{process.PID}}</td>
+        <td>{{process.Process}}</td>
+        <td>{{process.Privilege}}</td>
+        <td>{{process.Attributes}}</td>
+        <td>{{process.Description}}</td>
+        <td>{{process.Value}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

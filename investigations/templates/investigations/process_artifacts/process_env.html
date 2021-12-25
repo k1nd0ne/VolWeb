@@ -1,0 +1,34 @@
+<!-- Investigation process_env artifacts -->
+<button class="btn btn-prim-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnv" aria-expanded="false" aria-controls="collapseEnv">
+  Process Env variables <span class='text-muted'>(Raw)</span>
+</button>
+
+<div class="collapse mt-5 text-white" id="collapseEnv">
+  <h6 class="h6">Process Environnement Variables</h6>
+  <div class="d-inline">
+    <input class="form-control mb-3" id="searchEnv" type="text" placeholder="Search..">
+  </div>
+  <table id="processEnvTable" class="table card-font processenv">
+    <thead>
+      <tr>
+        <th scope="col">Block</th>
+        <th scope="col">PID</th>
+        <th scope="col">Process</th>
+        <th scope="col">Variable</th>
+        <th scope="col">Value</th>
+      </tr>
+    </thead>
+    <tbody id="processEnv">
+      {% for process in envars %}
+      <tr>
+        <td>{{process.Block}}</td>
+        <td>{{process.PID}}</td>
+        <td>{{process.Process}}</td>
+        <td>{{process.Variable}}</td>
+        <td>{{process.Value}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
