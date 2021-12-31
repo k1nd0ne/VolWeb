@@ -10,6 +10,16 @@ p, input, .text-white, .form-label  {
     -moz-osx-font-smoothing: auto;
     font-size: 0.9rem;
 }
+.main {
+    color:#ffffff;
+    --tw-bg-opacity: 1;
+    font-family: Anonymous Pro, monospace;
+    --tw-text-opacity: 1;
+    color: rgba(233, 233, 233, var(--tw-text-opacity));
+    -moz-osx-font-smoothing: grayscale;
+    -moz-osx-font-smoothing: auto;
+    font-size: 0.9rem;
+}
 
 .query-input {
      background-color:#293b58;
@@ -37,16 +47,15 @@ p, input, .text-white, .form-label  {
      border-color:#e9e9e9;
  }
 .text-select{
-     color:#dea71d
+     color:#eb1f5a;
 
 }
 
-
 </style>
 <!-- Main Container -->
-<main class="container-fluid col-md-11 ml-sm-auto pt-3 px-4" style="overflow-y:scroll">
+<div class="container-fluid main" style="overflow-y:scroll">
     <div class="row align-items-start mb-5">
-        <div class="col-10">
+        <div class="col-12">
             <div class="card">
                 <!-- New investigation form -->
                 <div class="card-body">
@@ -107,5 +116,5 @@ p, input, .text-white, .form-label  {
        }
 
     </script>
-</main>
+</div>
 {% endblock content %}

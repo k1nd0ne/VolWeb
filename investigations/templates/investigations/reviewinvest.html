@@ -3,6 +3,16 @@
 {% block content%}
 
 <style>
+  .main {
+      color:#ffffff;
+      --tw-bg-opacity: 1;
+      font-family: Anonymous Pro, monospace;
+      --tw-text-opacity: 1;
+      color: rgba(233, 233, 233, var(--tw-text-opacity));
+      -moz-osx-font-smoothing: grayscale;
+      -moz-osx-font-smoothing: auto;
+      font-size: 0.9rem;
+  }
 
   .modal-content {
     background-color: #293b58;
@@ -57,14 +67,14 @@
 <script src="{% static 'dashboard/anychart-ui.min.js' %}"></script>
 <link rel="stylesheet" href="{% static 'dashboard/anychart-ui.min.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/anychart-font.min.css' %}"/>
-<main class="container-fluid col-md-11 ml-sm-auto pt-3 px-4" style="overflow-y:scroll;" id="main">
+<div class="container-fluid main" style="overflow-y:scroll;" id="main">
 
   <!-- Investigation Banner -->
 
   {% include "investigations/invest_banner.html" %}
 
-  <div class="row mt-5">
-    <div class="col-10 card-font">
+  <div class="row mt-3">
+    <div class="col-12 card-font">
       <div class="spinner-border text-white" role="status" id="loading"></div>
       <ul class="list-group card-font list-group-flush">
 
@@ -110,18 +120,16 @@
           {% include "investigations/ma_artifacts/ma_filescan.html" %}
           {% include "investigations/ma_artifacts/ma_dumpprocess.html" %}
         </li>
+
       </div>
     </div>
 
-    <!-- Cryptography Artifacts -->
     <li class="list-group-item card-font">
       <h5 class="h5">Reporting (Beta)</h5>
       <button onclick="GenerateReport('{{case.title}}','{{case.os_version}}','{{case.description}}','{{case.file}}');" class="btn btn-warn-d" type="button">Generate Report <span class='text-muted'>(PDF)</span></button>
     </li>
 
-
-
-  </main>
+  </div>
   <!-- Toasts -->
   {% if messages %}
   <div aria-live="polite" aria-atomic="true" style="position: relative;">
@@ -155,7 +163,7 @@
   <table id="report_table_hashdump" class="hidden"></table>
   <table id="report_table_ioc" class="hidden"></table>
 
-  <script src="{% static 'dashboard/jquery.min.js'%}"></script>
+  <script src="{% static 'dashboard/jquery-3.6.0.min.js'%}"></script>
   <script type="module" src="{% static 'dashboard/jspdf.umd.min.js'%}"></script>
   <script type="module" src="{% static 'dashboard/jspdf.plugin.autotable.js'%}"></script>
   <script>

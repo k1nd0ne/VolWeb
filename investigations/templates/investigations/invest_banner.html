@@ -1,13 +1,20 @@
 <!-- Investigation Information Banner -->
 <div class="row">
-  <div class="card-font col-10">
+  <div class="card-font col-12">
     <li class="list-group-item card-font">
-      <h3 class="h3"> Case : {{case.title}}</h3>
-      <h6 class="ml-3">Description : <span class="text-muted">{{case.description}}</span></h6>
-      <h6 class="ml-3">Operating System : <span class="text-muted">{{case.os_version}}</span></h6>
-      <h6 class="ml-3">Analyst(s) : <span class="text-muted">{{case.investigators}}</span></h6>
-    </li>
+      <h3 class="h3">{{case.title}}</h3>
 
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+
+        <li class="breadcrumb-item">Operating System : <span class="text-link">{{case.os_version}}</span></li>
+        <li class="breadcrumb-item" aria-current="page">Analyst(s) : <span class="text-link">{{case.investigators}}</span></li>
+        <li class="breadcrumb-item" aria-current="page">Description : <span class="text-link">{{case.description}}</span></li>
+        <li class="breadcrumb-item" aria-current="page">Filename : <span class="text-link">{{case.name}}</span></li>
+      </ol>
+    </nav>
+    </li>
   </div>
 
 </div>

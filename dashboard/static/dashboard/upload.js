@@ -13,7 +13,7 @@ class FileUpload {
                             <p class="filename"></p>
                             <small class="textbox"></small>
                             <div class="progress" style="margin-top: 5px;">
-                                <div class="progress-bar bg-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
                                 </div>
                             </div>
                         </div>`
@@ -152,7 +152,7 @@ class FileUpload {
                     existingPath = res.existingPath
                     self.upload_file(nextChunk, existingPath);
                 } else {
-                    alertBox.innerHTML = "<p class='text-success'>Upload Completed check the Investigation Menu.</p>";
+                    alertBox.innerHTML = "<p class='text-white'>Upload Completed check the <a href=\"../\">Analysis</a></p>";
                 }
             }
         });
@@ -167,4 +167,3 @@ class FileUpload {
         uploader.upload();
     });
 })(jQuery);
-

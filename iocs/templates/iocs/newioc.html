@@ -1,16 +1,16 @@
 {% extends "dashboard/base.html" %}
 {% block content %}
 <style>
-main {
-    color:#ffffff;
-    --tw-bg-opacity: 1;
-    font-family: Anonymous Pro, monospace;
-    --tw-text-opacity: 1;
-    color: rgba(233, 233, 233, var(--tw-text-opacity));
-    -moz-osx-font-smoothing: grayscale;
-    -moz-osx-font-smoothing: auto;
-    font-size: 0.9rem;
-}
+  .main {
+      color:#ffffff;
+      --tw-bg-opacity: 1;
+      font-family: Anonymous Pro, monospace;
+      --tw-text-opacity: 1;
+      color: rgba(233, 233, 233, var(--tw-text-opacity));
+      -moz-osx-font-smoothing: grayscale;
+      -moz-osx-font-smoothing: auto;
+      font-size: 0.9rem;
+  }
   .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
       --tw-bg-opacity: 1;
       font-family: Anonymous Pro, monospace;
@@ -40,15 +40,16 @@ main {
   }
 
   .text-select{
-      color:#dea71d
+       color:#eb1f5a;
+
   }
 </style>
 
-<main class="container-fluid col-md-10 ml-sm-auto pt-3 px-4 text-light">
+<div class="container-fluid main text-light">
     <div class="card border text-light">
         <div class="card-body">
-            <h5 class="card-title" id="invest-title"> <svg class="bi me-2" width="32" height="32"><use xlink:href="#collection"/></svg>Create an IOC</h5>
-            <h6 class="card-subtitle mb-2 text-muted"id="invest-description" >Link an IOC to your case(s)</h6>
+            <h5 class="card-title" id="invest-title"> <svg class="bi me-2 text-light" width="32" height="32"><use xlink:href="#collection"/></svg>Create an IOC</h5>
+            <h6 class="card-subtitle mb-2 text-muted"id="invest-description" >Link an IOC to your analysis</h6>
             <form id="upload-form" method="POST" action="">
                 {% csrf_token %}
                 <div class="form-group mb-2">
@@ -73,7 +74,7 @@ main {
             </form>
         </div>
     </div>
-</main>
+</div>
 <script>
 
     function CheckNull(){

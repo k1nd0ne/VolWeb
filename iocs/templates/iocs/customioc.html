@@ -1,7 +1,7 @@
 {% extends "dashboard/base.html" %}
 {% block content %}
 <style>
- main { 
+ .main {
      color:#ffffff;
      --tw-bg-opacity: 1;
      font-family: Anonymous Pro, monospace;
@@ -10,7 +10,7 @@
      -moz-osx-font-smoothing: grayscale;
      -moz-osx-font-smoothing: auto;
      font-size: 0.9rem;
- } 
+ }
    .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
        --tw-bg-opacity: 1;
        font-family: Anonymous Pro, monospace;
@@ -22,7 +22,7 @@
    .card{
        background-color:#293b58;
    }
- 
+
    .query-input {
        background-color:#293b58;
        font-size: 1rem;
@@ -31,21 +31,21 @@
        white-space: nowrap;
        color:#ffffff;
    }
- 
+
    .badge {
        border-width: 1px;
        --tw-border-opacity: 1;
        border-color: rgba(149, 149, 149, var(--tw-border-opacity));
        background-color: rgba(0,0,0,0);
    }
- 
+
    .text-select{
        color:#dea71d
- 
+
    }
 
 </style>
-<main class="container-fluid col-md-11 ml-sm-auto pt-3 px-4 text-select">
+<div class="container-fluid main">
   <div class="card border text-select">
     <div class="card-body">
       <h5 class="card-title" id="invest-title"> <svg class="bi me-2" width="32" height="32"><use xlink:href="#collection"/></svg>Edit an IOC</h5>
@@ -83,7 +83,7 @@
       </form>
     </div>
   </div>
-</main>
+</div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
 

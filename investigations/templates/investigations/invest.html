@@ -3,6 +3,16 @@
 {% block content%}
 <!-- Custom Card Style -->
 <style type="text/css">
+  .main {
+    color:#ffffff;
+    --tw-bg-opacity: 1;
+    font-family: Anonymous Pro, monospace;
+    --tw-text-opacity: 1;
+    color: rgba(233, 233, 233, var(--tw-text-opacity));
+    -moz-osx-font-smoothing: grayscale;
+    -moz-osx-font-smoothing: auto;
+    font-size: 0.9rem;
+  }
   .modal-content {
     background-color: #293b58;
   }
@@ -26,126 +36,124 @@
     -moz-osx-font-smoothing: auto;
     font-size: 0.9rem;
   }
-
   .query-input {
     background-color:#293b58;
     font-size: 1rem;
     line-height: 3rem;
     width: 100%;
     white-space: nowrap;
+    color:#ffffff;
   }
 
-   .h3 {
-       color: #eb1f5a;
-       float:right;
-   }
+  .h3 {
+    color: #eb1f5a;
+    float:right;
+  }
 
-
-   .invests:hover{
-       color:#ffffff;
-   }
+  .invests:hover{
+    color:#ffffff;
+  }
 </style>
-<!-- Main Content -->
-<main class="container-fluid col-md-11 ml-sm-auto pt-3 px-4 text-light" style="overflow-y: scroll;" id="main">
-    <div class="row">
-        <div class="col-10">
-            <h1 class="h3">Investigations</h1>
-            <div class="d-inline">
-                <input class="query-input text-white mb-3" id="myInput" type="text" placeholder="Search..">
-            </div>
-            <p><a href="{%url 'newinvest'%}">Create a new investigation.</a></p>
-            <hr>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-10">
-    <!-- Investigations Cards -->
-    <div id="cards" class="card-deck">
-      {% if investigations %}
-      {% for i in investigations %}
-      <a href="#" class="invests" data-bs-toggle="modal" data-bs-target="#card_{{i.id}}" id="card_{{i.title}}" style="text-decoration:none">
-        <div class="card mb-3 shadow rounded">
-          <div class="card-body">
-            <p class="card-subtitle h4 mb-2" style="color:#32d3bc;" id="invest-title">{{ i.title }}</p></strong>
-            <p class="card-subtitle mb-2" id="invest-description" >{{ i.description }}</p>
-            <small><u>Forensics Expert(s)</u> : {{ i.investigators }}</small>
-            <hr>
-            {% if i.status == "0" %}
-            <p class="card-subtitle" style="color:#eb1f5a;" id="invest-status_{{i.id}}">Not Analysed.</p>
-            {% endif  %}
-            {% if i.status == "1" %}
-            <div style="float:left; color:#dea71d; margin-right:5px;" class="spinner-grow spinner-grow-sm" role="status"></div><p class="card-subtitle" style=" color:#dea71d;" id="invest-status_{{i.id}}">Investigation in progress </p>
-            {% endif %}
-
-            {% if i.status == "2" %}
-            <p class="card-subtitle" id="invest-status_{{i.id}}" style="color:#32d3bc;">Ready to be reviewed</p>
-            {% endif %}
-          </div>
-        </div>
-      </a>
-
-      <!-- Modal displayed for each investigations -->
-      <div class="text-white modal fade" id="card_{{i.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog border">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Investigation</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <ul>
-                <li>Title : {{i.title}}</li>
-                <li>OS Version : {{i.os_version}}</li>
-                <li>Forensics Expert(s): {{i.investigators}}</li>
-                <li>File: {{i.name}}</li>
-              </ul>
-              {% if i.status == "0" %}
-              This memory sample is not analysed yet.
-              {% endif %}
-              {% if i.status == "1" %}
-              This sample is being analysed. Please Wait.
-              {% endif %}
-              {% if i.status == "2" %}
-              This sample is ready to be reviewed.
-              {% endif %}
-            </div>
-            <div class="modal-footer">
-              {% if i.status == "0" %}
-              <form action="" method="POST">
-                {% csrf_token %}
-                {{form.action}}
-                {{form.id}}
-                <button class="btn btn-prim" onclick="StartAnalysis('{{i.id}}');" data-bs-dismiss="modal">Start analysis</button>
-              </form>
-              {% endif %}
-              {% if i.status == "1" %}
-              <form action="" method="POST">
-                {% csrf_token %}
-                {{form.action}}
-                {{form.id}}
-                <button type="button" class="btn btn-warn" onclick="CancelAnalysis('{{i.id}}');" data-bs-dismiss="modal">Cancel analysis</button>
-              </form>
-              {% endif %}
-              {% if i.status == "2" %}
-              <form id="reviewform" action="{% url 'reviewinvest' %}" method="POST">
-                {% csrf_token %}
-                {{form.action}}
-                {{form.id}}
-                <input class="btn btn-succ" type="submit" onclick="ReviewCase('{{i.id}}')" value="Review results">
-                <button type="button" class="btn btn-prim" onclick="StartAnalysis('{{i.id}}');" data-bs-dismiss="modal">Restart analysis</button>
-              </form>
-              {% endif %}
-              <button type="button" class="btn btn-dang" onclick="DeleteInvestigation('{{i.id}}')" data-bs-dismiss="modal">Delete</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-      {% endif %}
+<div class="container-fluid main" style="overflow-y:scroll">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="h3">Investigations</h1>
+      <div class="d-inline">
+				<input class="query-input form-control mb-3" id="myInput" type="text" placeholder="Search..">
+			</div>
+      <p><a href="{%url 'newinvest'%}">Create a new investigation.</a></p>
+      <hr>
     </div>
   </div>
+  <div class="row">
+    <div class="col-12">
+      <!-- Investigations Cards -->
+      <div id="cards" class="card-deck">
+        {% if investigations %}
+        {% for i in investigations %}
+        <a href="#" class="invests" data-bs-toggle="modal" data-bs-target="#card_{{i.id}}" id="card_{{i.title}}" style="text-decoration:none">
+          <div class="card mb-3 shadow rounded">
+            <div class="card-body">
+              <p class="card-subtitle h4 mb-2" style="color:#32d3bc;" id="invest-title">{{ i.title }}</p>
+              <p class="card-subtitle mb-2" id="invest-description" >{{ i.description }}</p>
+              <small><u>Forensics Expert(s)</u> : {{ i.investigators }}</small>
+              <hr>
+              {% if i.status == "0" %}
+              <p class="card-subtitle" style="color:#eb1f5a;" id="invest-status_{{i.id}}">Not Analysed.</p>
+              {% endif  %}
+              {% if i.status == "1" %}
+              <div style="float:left; color:#dea71d; margin-right:5px;" class="spinner-grow spinner-grow-sm" role="status"></div><p class="card-subtitle" style=" color:#dea71d;" id="invest-status_{{i.id}}">Investigation in progress </p>
+              {% endif %}
+
+              {% if i.status == "2" %}
+              <p class="card-subtitle" id="invest-status_{{i.id}}" style="color:#32d3bc;">Ready to be reviewed</p>
+              {% endif %}
+            </div>
+          </div>
+        </a>
+
+        <!-- Modal displayed for each investigations -->
+        <div class="text-white modal fade" id="card_{{i.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog border">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Investigation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <ul>
+                  <li>Title : {{i.title}}</li>
+                  <li>OS Version : {{i.os_version}}</li>
+                  <li>Forensics Expert(s): {{i.investigators}}</li>
+                  <li>File: {{i.name}}</li>
+                </ul>
+                {% if i.status == "0" %}
+                This memory sample is not analysed yet.
+                {% endif %}
+                {% if i.status == "1" %}
+                This sample is being analysed. Please Wait.
+                {% endif %}
+                {% if i.status == "2" %}
+                This sample is ready to be reviewed.
+                {% endif %}
+              </div>
+              <div class="modal-footer">
+                {% if i.status == "0" %}
+                <form action="" method="POST">
+                  {% csrf_token %}
+                  {{form.action}}
+                  {{form.id}}
+                  <button class="btn btn-prim" onclick="StartAnalysis('{{i.id}}');" data-bs-dismiss="modal">Start analysis</button>
+                </form>
+                {% endif %}
+                {% if i.status == "1" %}
+                <form action="" method="POST">
+                  {% csrf_token %}
+                  {{form.action}}
+                  {{form.id}}
+                  <button type="button" class="btn btn-warn" onclick="CancelAnalysis('{{i.id}}');" data-bs-dismiss="modal">Cancel analysis</button>
+                </form>
+                {% endif %}
+                {% if i.status == "2" %}
+                <form id="reviewform" action="{% url 'reviewinvest' %}" method="POST">
+                  {% csrf_token %}
+                  {{form.action}}
+                  {{form.id}}
+                  <input class="btn btn-succ" type="submit" onclick="ReviewCase('{{i.id}}')" value="Review results">
+                  <button type="button" class="btn btn-prim" onclick="StartAnalysis('{{i.id}}');" data-bs-dismiss="modal">Restart analysis</button>
+                </form>
+                {% endif %}
+                <button type="button" class="btn btn-dang" onclick="DeleteInvestigation('{{i.id}}')" data-bs-dismiss="modal">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+      </div>
     </div>
-</main>
+  </div>
+</div>
 
 
 <!-- Ajax post requests management (Create/Delete/Restart/Cancel) -->
@@ -247,18 +255,18 @@
     });
   }
 
-// Refresh or reload page.
-function refresh() {
+  // Refresh or reload page.
+  function refresh() {
     $.ajax({
-        url: "{% url 'investigations' %}",
-        success: function(data) {
-          var parser = new DOMParser();
-          var wrapper = parser.parseFromString(data, "text/html");
-          cards = wrapper.getElementById('cards');
-          $('#cards').html(cards);
+      url: "{% url 'investigations' %}",
+      success: function(data) {
+        var parser = new DOMParser();
+        var wrapper = parser.parseFromString(data, "text/html");
+        cards = wrapper.getElementById('cards');
+        $('#cards').html(cards);
       }
     });
-}
+  }
   //Search an investigation
   $(document).ready(function(){
     $("#myInput").on("keyup", function() {

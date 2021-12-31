@@ -16,6 +16,7 @@
     -moz-user-select: none;
     user-select: none;
   }
+
   @media (min-width: 768px) {
     .bd-placeholder-img-lg {
       font-size: 3.5rem;
@@ -41,7 +42,7 @@
   }
 
   </style>
-<script src="{% static 'dashboard/countup.min.js'%}"></script>
+  <script src="{% static 'dashboard/countup.min.js'%}"></script>
   <!-- Custom styles for the dashboard -->
   <link href="{% static 'dashboard/sidebars.css' %}" rel="stylesheet">
 </head>
@@ -104,64 +105,79 @@
     <symbol id="tools" viewBox="0 0 16 16">
       <path d="M1 0L0 1l2.2 3.081a1 1 0 0 0 .815.419h.07a1 1 0 0 1 .708.293l2.675 2.675-2.617 2.654A3.003 3.003 0 0 0 0 13a3 3 0 1 0 5.878-.851l2.654-2.617.968.968-.305.914a1 1 0 0 0 .242 1.023l3.356 3.356a1 1 0 0 0 1.414 0l1.586-1.586a1 1 0 0 0 0-1.414l-3.356-3.356a1 1 0 0 0-1.023-.242L10.5 9.5l-.96-.96 2.68-2.643A3.005 3.005 0 0 0 16 3c0-.269-.035-.53-.102-.777l-2.14 2.141L12 4l-.364-1.757L13.777.102a3 3 0 0 0-3.675 3.68L7.462 6.46 4.793 3.793a1 1 0 0 1-.293-.707v-.071a1 1 0 0 0-.419-.814L1 0zm9.646 10.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708zM3 11l.471.242.529.026.287.445.445.287.026.529L5 13l-.242.471-.026.529-.445.287-.287.445-.529.026L3 15l-.471-.242L2 14.732l-.287-.445L1.268 14l-.026-.529L1 13l.242-.471.026-.529.445-.287.287-.445.529-.026L3 11z"/>
     </symbol>
+
     <symbol id="chevron-right" viewBox="0 0 16 16">
-      <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+      <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8zm-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5z"/>
     </symbol>
-    <symbol id="geo-fill" viewBox="0 0 16 16">
-      <path fill-rule="evenodd" d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999zm2.493 8.574a.5.5 0 0 1-.411.575c-.712.118-1.28.295-1.655.493a1.319 1.319 0 0 0-.37.265.301.301 0 0 0-.057.09V14l.002.008a.147.147 0 0 0 .016.033.617.617 0 0 0 .145.15c.165.13.435.27.813.395.751.25 1.82.414 3.024.414s2.273-.163 3.024-.414c.378-.126.648-.265.813-.395a.619.619 0 0 0 .146-.15.148.148 0 0 0 .015-.033L12 14v-.004a.301.301 0 0 0-.057-.09 1.318 1.318 0 0 0-.37-.264c-.376-.198-.943-.375-1.655-.493a.5.5 0 1 1 .164-.986c.77.127 1.452.328 1.957.594C12.5 13 13 13.4 13 14c0 .426-.26.752-.544.977-.29.228-.68.413-1.116.558-.878.293-2.059.465-3.34.465-1.281 0-2.462-.172-3.34-.465-.436-.145-.826-.33-1.116-.558C3.26 14.752 3 14.426 3 14c0-.599.5-1 .961-1.243.505-.266 1.187-.467 1.957-.594a.5.5 0 0 1 .575.411z"/>
-    </symbol>
-  </svg>
-  <!-- Left Side bar -->
-  <div class="d-flex flex-column p-3 text-white sidebar" style="width: 250px;height:auto;">
-    <center><img width='50%' src="{% static 'images/Volweb-on-light.png'%}"/></center>
-    <hr>
-    <ul class="nav nav-pills flex-column mb-auto">
+    <symbol id="new" viewBox="0 0 16 16">
+      <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>    </symbol>
+    </svg>
+    <main class="container-fuild text-light">
+      <div class="d-flex flex-column flex-shrink-0 p-3 text-white sidebar" style="width: 230px;">
+        <center><img width='50%' src="{% static 'images/Volweb-on-light.png'%}"/></center>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+          <li class="nav-item">
+            <a href="{% url 'dashboard' %}" class="nav-link bg-transparent px-2 capitalize
+            {% if request.get_full_path == "/"%}
+            text-link"
+            {% endif %}">
+            <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+            Dashboard
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{% url 'investigations' %}" class="nav-link bg-transparent px-2 capitalize
+          {% if request.get_full_path == "/investigations/"%}
+          text-link"
+          {% endif %}">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#collection"/></svg>
+          Investigations
+        </a>
+      </li>
       <li class="nav-item">
-        <a href="{% url 'dashboard' %}" class="nav-link bg-transparent px-2 capitalize
-        {% if request.get_full_path == "/"%}
-         text-link"
+        <a href="{% url 'iocs' %}" class="nav-link bg-transparent px-2 capitalize
+        {% if request.get_full_path == "/iocs/"%}
+        text-link"
         {% endif %}">
-        <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
-        Dashboard
+        <svg class="bi me-2" width="16" height="16"><use xlink:href="#grid"/></svg>
+        IOCs
       </a>
     </li>
-    <li>
-      <a href="{% url 'investigations' %}" class="nav-link bg-transparent px-2 capitalize
-      {% if request.get_full_path == "/investigations/"%}
-      text-link"
-      {% endif %}">
-      <svg class="bi me-2" width="16" height="16"><use xlink:href="#collection"/></svg>
-      Investigations
-    </a>
-  </li>
-  <li>
-    <a href="{% url 'iocs' %}" class="nav-link bg-transparent px-2 capitalize
-    {% if request.get_full_path == "/iocs/"%}
-    text-link"
-    {% endif %}">
-    <svg class="bi me-2" width="16" height="16"><use xlink:href="#grid"/></svg>
-    IOCs
-  </a>
-</li>
-</ul>
-<hr/>
-{% if user.is_authenticated %}
-<div class="dropdown">
-  <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-    <img src="{% static 'images/login.png'%}" alt="User" width="32" height="32" class="rounded-circle me-2">
-    <strong>{{ user.username }}</strong>
-  </a>
-  <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-    <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
+    <hr>
+    <li class="nav-item">
+      <a  data-bs-toggle="collapse" href="#collapseAction" class="nav-link bg-transparent px-2 capitalize">
+        <svg class="bi me-2" width="16" height="16"><use xlink:href="#new"/></svg>
+        New...
+      </a>
+      <div class="collapse" id="collapseAction">
+        <ul>
+          <a href="{% url 'newinvest' %}" class="nav-link bg-transparent capitalize"><svg class="bi me-2" width="16" height="16"><use xlink:href="#chevron-right"/></svg>Analysis</a></li>
+          <a href="{% url 'newioc' %}" class="nav-link bg-transparent capitalize"><svg class="bi me-2" width="16" height="16"><use xlink:href="#chevron-right"/></svg>Indicator</a></li>
+        </ul>
+      </div>
+    </li>
   </ul>
+  <hr>
+  <div class="dropdown">
+    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+      <img src="{% static 'images/login.png'%}" alt="User" width="32" height="32" class="rounded-circle me-2">
+      <strong>{{ user.username }}</strong>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+      <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
+    </ul>
+  </div>
 </div>
-</div>
-{% endif %}
-
 {% block content %}
-<!-- Each Page content goes here -->
+
 {% endblock %}
-<!-- JS inclusion -->
+
+</main>
+
+
 <script src="{% static 'dashboard/bootstrap.bundle.min.js'%}"></script>
 <script src="{% static 'dashboard/jquery-3.6.0.min.js' %}"></script>
 <script src="{% static 'dashboard/upload.js' %}"></script>
