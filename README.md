@@ -67,15 +67,17 @@ docker-compose up -d
 
 The ngnix logs can be found in the **/ngnix/log** folder.
 
-By default the admin account created will have the following credentials:
+By default the admin and user accounts created will have the following credentials:
 
 ```
 admin:password
+user:password
 ```
+You can create more analyst accounts via the Django administration panel -> https://[VOLWEB HOSTED IP]/admin.
 
-Navigate to https://[VOLWEB HOSTED IP]/admin and create an analyst account in the "User" section. 
-Change the admin password.  
-Disconnect from the admin panel and navigate to https://[VOLWEB HOSTED IP]/ to login with the analyst account.
+## Important Note 📄
+
+The admin account cannot create analysis. Only use this account for analyst account creation and don't forget to change the passwords.
 
 ## Reset 🔄
 
@@ -92,10 +94,7 @@ find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
 find . -path "*/migrations/*.pyc"  -delete
 ```
 
-## Important Note 📄
 
-The admin account cannot create analysis. Only use this account for analyst account creation and don't forget to change the password.
-Create the analysts accounts via the Django administration panel -> https://[VOLWEB HOSTED IP]/admin.
 
 ## Issues ⚠️
 If you have found an issue, please raise it.
@@ -114,11 +113,10 @@ Build in progress.
 - Celery Task timeout in case of corrupted memory dump
 
 # Global goals 📋
-- Code optimisation
-- Docker optimisation
 - Add missing modules to the windows memory analysis.
 - Mac OS support
 - Linux support
 - Visual confirmation of what to not look (legit process highlight integration)
+- Recode MalConfScan for volatility3
 - Import multiple IOC from a CSV
 - Export IOCs to a CSV for qualification and integration to Threat Intelligence Platforms
