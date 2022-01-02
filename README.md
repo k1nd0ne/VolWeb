@@ -104,8 +104,7 @@ I am also performing whitebox pentests to improve the SecOps dimension.
 Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
 # Wiki 📚
-The full documentation will be available in the Wiki section. 
-Build in progress.
+The full documentation can be found here : https://k1nd0ne.github.io
 
 # Next Release goals 📋
 - Messaging system (django messages -> frontend display)
