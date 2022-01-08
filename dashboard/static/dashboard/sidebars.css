@@ -83,14 +83,18 @@ main {
 .lh-tight { line-height: 1.25; }
 
 
-.text-link {
+.nav-link {
+  color:#ffffff;
+}
+
+.text-link{
     color:#eb1f5a;
 }
 a{
     color:#ffffff;
 }
 
-a:hover{
+a:hover, .nav-link:hover{
     color:#eb1f5a;
 }
 
@@ -179,7 +183,37 @@ a:hover{
     color: #1C2A34;
 }
 
+.bd-placeholder-img {
+  font-size: 1.125rem;
+  text-anchor: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
 
+@media (min-width: 768px) {
+  .bd-placeholder-img-lg {
+    font-size: 3.5rem;
+  }
+}
+.text-white, .text-danger, .text-warning, .text-primary {
+  --tw-bg-opacity: 1;
+  font-family: Anonymous Pro, monospace;
+  --tw-text-opacity: 1;
+  color: rgba(233, 233, 233, var(--tw-text-opacity));
+  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: auto;
+  font-size: 0.9rem;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+  --tw-bg-opacity: 1;
+  font-family: Anonymous Pro, monospace;
+  --tw-text-opacity: 1;
+  color: rgba(233, 233, 233, var(--tw-text-opacity));
+  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: auto;
+}
 
 
 .fw-semibold { font-weight: 600; }

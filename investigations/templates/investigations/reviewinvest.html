@@ -64,14 +64,11 @@
 </style>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js" type="text/javascript"></script>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-core.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-exports.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-graph.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-sunburst.min.js"></script>
-<!-- <script src="{% static 'dashboard/anychart-base.min.js'%}"></script> -->
-<!-- <script src="{% static 'dashboard/anychart-sunburst.min.js' %}"></script> -->
-<!-- <script src="{% static 'dashboard/anychart-exports.min.js' %}"></script> -->
-<!-- <script src="{% static 'dashboard/anychart-ui.min.js' %}"></script> -->
-<link rel="stylesheet" href="{% static 'dashboard/anychart-ui.min.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'dashboard/anychart-font.min.css' %}"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/css/anychart-ui.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/fonts/css/anychart-font.min.css"/>
 <div class="container-fluid main" style="overflow-y:scroll;" id="main">
 
   <!-- Investigation Banner -->
@@ -171,9 +168,11 @@
 
 
   <table hidden id="report_table_ioc"></table>
-
-  <script src="{% static 'dashboard/jquery-3.6.0.min.js'%}"></script>
-  <script type="module" src="{% static 'dashboard/jspdf.umd.min.js'%}"></script>
+  <script
+			  src="https://code.jquery.com/jquery-3.6.0.min.js"
+			  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+			  crossorigin="anonymous"></script>
+  <script type="module" src="https://unpkg.com/jspdf@2.0.0/dist/jspdf.umd.min.js"></script>
   <script type="module" src="{% static 'dashboard/jspdf.plugin.autotable.js'%}"></script>
   <script src="{% static 'dashboard/report.js'%}"></script>
   <script>
