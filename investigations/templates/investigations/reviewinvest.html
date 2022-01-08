@@ -62,10 +62,14 @@
     color:white;
   }
 </style>
-<script src="{% static 'dashboard/anychart-base.min.js'%}"></script>
-<script src="{% static 'dashboard/anychart-sunburst.min.js' %}"></script>
-<script src="{% static 'dashboard/anychart-exports.min.js' %}"></script>
-<script src="{% static 'dashboard/anychart-ui.min.js' %}"></script>
+<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js" type="text/javascript"></script>
+<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-core.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-graph.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-sunburst.min.js"></script>
+<!-- <script src="{% static 'dashboard/anychart-base.min.js'%}"></script> -->
+<!-- <script src="{% static 'dashboard/anychart-sunburst.min.js' %}"></script> -->
+<!-- <script src="{% static 'dashboard/anychart-exports.min.js' %}"></script> -->
+<!-- <script src="{% static 'dashboard/anychart-ui.min.js' %}"></script> -->
 <link rel="stylesheet" href="{% static 'dashboard/anychart-ui.min.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/anychart-font.min.css' %}"/>
 <div class="container-fluid main" style="overflow-y:scroll;" id="main">
@@ -102,6 +106,7 @@
         <li class="list-group-item card-font">
           <h5 class="h5">Network Artifacts</h5>
           {% include "investigations/network_artifacts/network_scan.html" %}
+          {% include "investigations/network_artifacts/network_graph.html" %}
         </li>
 
 

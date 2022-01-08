@@ -78,6 +78,53 @@ def collect_image_netscan(dump_path):
     return {'netscan': data}
 
 """
+Network Graph
+"""
+def generate_network_graph(data):
+    graph_data = {'nodes':[], 'edges':[]}
+    for entrie in data:
+        node_data_1 = {'id':entrie['LocalAddr'], 'Involved_PIDs': [entrie['PID']], 'Local_Ports':[entrie['LocalPort']]}
+        node_data_2 = {'id':entrie['ForeignAddr'], 'Involved_PIDs': [entrie['PID']], 'Local_Ports':[entrie['ForeignPort']]}
+        edge_data = {'from': entrie['LocalAddr'], 'to': entrie['ForeignAddr']}
+
+
+        if not graph_data['nodes']:
+            graph_data['nodes'].append(node_data_1)
+
+
+        is_present = False
+
+        for item in graph_data['nodes']:
+            if node_data_1['id'] == item['id']:
+                is_present = True
+                break
+        if not is_present:
+            graph_data['nodes'].append(node_data_1)
+        else:
+            if entrie['PID'] not in item['Involved_PIDs']:
+                item['Involved_PIDs'].append(entrie['PID'])
+            if entrie['LocalPort'] not in item['Local_Ports']:
+                item['Local_Ports'].append(entrie['LocalPort'])
+
+        is_present = False
+        for item in graph_data['nodes']:
+            if node_data_2['id'] == item['id']:
+                is_present = True
+                break
+        if not is_present:
+            graph_data['nodes'].append(node_data_2)
+        else:
+            if entrie['PID'] not in item['Involved_PIDs']:
+                item['Involved_PIDs'].append(entrie['PID'])
+            if entrie['ForeignPort'] not in item['Local_Ports']:
+                item['Local_Ports'].append(entrie['ForeignPort'])
+
+        if edge_data not in graph_data['edges']:
+            graph_data['edges'].append(edge_data)
+
+    return {'network_graph' : json.dumps(graph_data)}
+
+"""
 PsScan
 """
 def collect_image_psscan(dump_path):
@@ -261,6 +308,7 @@ def start_memory_analysis(dump_path,id):
     pstree = collect_image_pstree(dump_path)
     graph = build_graph(pstree['pstree'])
     netscan = collect_image_netscan(dump_path)
+    netgraph = generate_network_graph(netscan['netscan'])
     psscan = collect_image_psscan(dump_path)
     cmdline = collect_image_cmdline(dump_path)
     privileges = collect_image_privileges(dump_path)
@@ -274,6 +322,7 @@ def start_memory_analysis(dump_path,id):
     context.update(pstree)
     context.update(psscan)
     context.update(netscan)
+    context.update(netgraph)
     context.update(graph)
     context.update(cmdline)
     context.update(privileges)
