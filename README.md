@@ -14,25 +14,24 @@ Update communications will be via twitter or by following this repo.
 ## Features ✅
 The platform is currently supporting the following features:
 
-- Investigation creation and dump upload
-- IoC import
-- IoC extraction with linked processes
-- process tree
-- process scan
-- process dump
-- process env
-- process cmdline
-- process privileges
-- process dump
-- network scan
-- hashdump
-- dlllist
-- filescan
-- Timeline Explorer
-- malfind
-- User Authentication
-- User Management
-- Automatic Report Generation
+| Features      | Windows          | Linux   |    MacOs  	|
+| ------------- |:-------------:| :---------:|:----------------:|
+|  String IoC extraction | 	✅	| ❌   	 | ❌ |
+| Process Tree | 	✅		|   ❌  	 |	 ❌ 	|
+| Process Graph  | ✅	| ❌  |	❌	| 
+| Process Scan | ✅	| ❌ |❌	|
+| Process Dump  | ✅	|❌ |	❌|
+| Process Env |✅ |❌ | ❌|
+| Process Cmdline | ✅| ❌|❌ |
+| Process Privileges |✅ | ❌| ❌|
+| Network Scan |✅ |❌ |❌ |
+| Network Graph |✅ |❌ |❌ |
+| Hash Dumping |✅ |❌ |❌ |
+| Dll List |✅ | ❌|❌ |
+| File scan |✅ | ❌|❌ |
+| Timeline Explorer |✅ |❌ |❌ |
+| Malware finder |✅ | ❌| ❌|
+| Automatic Report Generation |✅ | ❌|❌|
 
 
 ## Getting Started 🛠️
