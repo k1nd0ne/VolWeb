@@ -25,8 +25,11 @@ The platform is currently supporting the following features:
 | Process Cmdline | ✅| ❌|❌ |
 | Process Privileges |✅ | ❌| ❌|
 | Network Scan |✅ |❌ |❌ |
+| Network Stat |✅ |❌ |❌ |
 | Network Graph |✅ |❌ |❌ |
-| Hash Dumping |✅ |❌ |❌ |
+| Hash Dump |✅ |❌ |❌ |
+| Lsa/Cache Dump |✅ |❌ |❌ |
+| Skeleton key check |✅ |❌ |❌ |
 | Dll List |✅ | ❌|❌ |
 | File scan |✅ | ❌|❌ |
 | Timeline Explorer |✅ |❌ |❌ |
@@ -106,14 +109,13 @@ Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 The full documentation can be found here : https://k1nd0ne.github.io
 
 # Next Release goals 📋
-- Messaging system (django messages -> frontend display)
 - Celery Task timeout in case of corrupted memory dump
+- Visual confirmation of what to not look (legit process highlight integration)
+- Recode MalConfScan for volatility3
 
 # Global goals 📋
 - Add missing modules to the windows memory analysis.
 - Mac OS support
 - Linux support
-- Visual confirmation of what to not look (legit process highlight integration)
-- Recode MalConfScan for volatility3
 - Import multiple IOC from a CSV
 - Export IOCs to a CSV for qualification and integration to Threat Intelligence Platforms
