@@ -1,13 +1,13 @@
-<!-- Investigation network_scan artifacts -->
+<!-- Investigation network_stat artifacts -->
 
-<button class="btn btn-warn-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNetscan" aria-expanded="false" aria-controls="collapseNetscan">
-  Network Scan
+<button class="btn btn-warn-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNetstat" aria-expanded="false" aria-controls="collapseNetstat">
+  Network Stat
 </button>
-<div class="collapse mt-5" id="collapseNetscan">
+<div class="collapse mt-5" id="collapseNetstat">
   <div class="d-inline">
-    <input class="form-control mb-3" id="searchNetwork" type="text" placeholder="Search..">
+    <input class="form-control mb-3" id="searchNetworkStat" type="text" placeholder="Search..">
   </div>
-  <table id="processNetworkTable" class="table card-font netscan">
+  <table id="processNetworkStatTable" class="table card-font netstat">
     <thead>
       <tr>
         <th scope="col">Created</th>
@@ -22,8 +22,8 @@
         <th scope="col">PID</th>
       </tr>
     </thead>
-    <tbody id="network">
-      {% for process in netscan %}
+    <tbody id="netstat">
+      {% for process in netstat %}
       <tr>
         <td>{{process.Created}}</td>
         <td>{{process.Offset}}</td>

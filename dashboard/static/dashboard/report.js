@@ -44,6 +44,15 @@
       $('#report_table_process_net').append(TrNetscan);
     }
 
+    function ReportNetstat(){
+      document.getElementById('searchNetworkStat').value = "";
+      $('#searchNetwork').keyup();
+      var TheadNetstat = $('table.netstat > tbody > tr.highlight').clone();
+      var TrNetstat = $('table.netstat > thead').clone();
+      $('#report_table_process_netstat').append(TheadNetstat);
+      $('#report_table_process_netstat').append(TrNetstat);
+    }
+
     function ReportTimeline(){
       document.getElementById('searchTimeline').value = "";
       $('#searchTimeline').keyup();
@@ -58,6 +67,21 @@
       var TrTimeHashDump = $('table.hashdump > thead').clone();
       $('#report_table_hashdump').append(TheadHashDump);
       $('#report_table_hashdump').append(TrTimeHashDump);
+    }
+
+    function ReportSkeleton(){
+      var TheadSkeleton = $('table.skeleton > tbody > tr.highlight').clone();
+      var TrTimeSkeleton = $('table.skeleton > thead').clone();
+      $('#report_table_skeleton').append(TheadSkeleton);
+      $('#report_table_skeleton').append(TrTimeSkeleton);
+    }
+
+
+    function ReportLsadump(){
+      var TheadLsaDump = $('table.lsadump > tbody > tr.highlight').clone();
+      var TrTimeLsaDump = $('table.lsadump > thead').clone();
+      $('#report_table_lsadump').append(TheadLsaDump);
+      $('#report_table_lsadump').append(TrTimeLsaDump);
     }
 
     function ReportIOC(){
@@ -86,6 +110,14 @@
       $('#report_table_processtree').append(TheadProcess);
       $('#report_table_processtree').append(TrFileProcess);
     }
+
+    function ReportCachedump(){
+      var TheadCacheDump = $('table.cachedump > tbody > tr.highlight').clone();
+      var TrTimeCacheDump = $('table.cachedump > thead').clone();
+      $('#report_table_cachedump').append(TheadCacheDump);
+      $('#report_table_cachedump').append(TrTimeCacheDump);
+    }
+
 
 
     function GenerateReport(case_name,os,description,filename){
@@ -168,7 +200,7 @@
       });
 
       doc.setFontSize(15);
-      doc.text("Network Artifacts :",10,doc.autoTable.previous.finalY + 10);
+      doc.text("Network Artifacts : netscan",10,doc.autoTable.previous.finalY + 10);
       doc.setFontSize(10);
       ReportNetscan();
       doc.setLineWidth(0.2);
@@ -181,7 +213,20 @@
       });
 
       doc.setFontSize(15);
-      doc.text("Cryptography Artifacts :",10,doc.autoTable.previous.finalY + 10);
+      doc.text("Network artifacts : netstat",10,doc.autoTable.previous.finalY + 10);
+      doc.setFontSize(10);
+      ReportNetstat();
+      doc.setLineWidth(0.2);
+      doc.line(10, 45, 200, 45);
+      doc.autoTable({
+        rowPageBreak: 'auto',
+        styles: { cellPadding: 0.5, fontSize: 8},
+        startY: doc.autoTable.previous.finalY + 15,
+        html: '#report_table_netstat',
+      });
+
+      doc.setFontSize(15);
+      doc.text("Cryptography Artifacts : Hashdump",10,doc.autoTable.previous.finalY + 10);
       doc.setFontSize(10);
       ReportHashdump();
       doc.setLineWidth(0.2);
@@ -194,17 +239,44 @@
       });
 
       doc.setFontSize(15);
-      doc.text("Other Artifacts :",10,doc.autoTable.previous.finalY + 10);
+      doc.text("Cryptography Artifacts : Cachedump",10,doc.autoTable.previous.finalY + 10);
       doc.setFontSize(10);
-      ReportTimeline();
+      ReportCachedump();
       doc.setLineWidth(0.2);
       doc.line(10, 45, 200, 45);
       doc.autoTable({
         rowPageBreak: 'auto',
         styles: { cellPadding: 0.5, fontSize: 8},
         startY: doc.autoTable.previous.finalY + 15,
-        html: '#report_table_timeline',
+        html: '#report_table_cachedump',
       });
+
+      doc.setFontSize(15);
+      doc.text("Cryptography Artifacts : Lsadump",10,doc.autoTable.previous.finalY + 10);
+      doc.setFontSize(10);
+      ReportLsadump();
+      doc.setLineWidth(0.2);
+      doc.line(10, 45, 200, 45);
+      doc.autoTable({
+        rowPageBreak: 'auto',
+        styles: { cellPadding: 0.5, fontSize: 8},
+        startY: doc.autoTable.previous.finalY + 15,
+        html: '#report_table_lsadump',
+      });
+
+      doc.setFontSize(15);
+      doc.text("Malware Artifacts : Skeleton Key",10,doc.autoTable.previous.finalY + 10);
+      doc.setFontSize(10);
+      ReportLsadump();
+      doc.setLineWidth(0.2);
+      doc.line(10, 45, 200, 45);
+      doc.autoTable({
+        rowPageBreak: 'auto',
+        styles: { cellPadding: 0.5, fontSize: 8},
+        startY: doc.autoTable.previous.finalY + 15,
+        html: '#report_table_skeleton',
+      });
+
 
       doc.setFontSize(15);
       doc.text("IOCs:",10,doc.autoTable.previous.finalY + 10);
@@ -232,7 +304,18 @@
         html: '#report_table_filescan',
       });
 
-
+      doc.setFontSize(15);
+      doc.text("Other Artifacts :",10,doc.autoTable.previous.finalY + 10);
+      doc.setFontSize(10);
+      ReportTimeline();
+      doc.setLineWidth(0.2);
+      doc.line(10, 45, 200, 45);
+      doc.autoTable({
+        rowPageBreak: 'auto',
+        styles: { cellPadding: 0.5, fontSize: 8},
+        startY: doc.autoTable.previous.finalY + 15,
+        html: '#report_table_timeline',
+      });
 
       doc.save("report.pdf");
     }

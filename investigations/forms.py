@@ -1,6 +1,6 @@
 from django import forms
-from .models import UploadInvestigation
-from django.forms import ModelForm, CheckboxSelectMultiple, TextInput, Textarea, MultipleChoiceField, FileField
+from .models import UploadInvestigation, ProcessDump, FileDump
+from django.forms import ModelForm, TextInput, Textarea, FileField, Select
 
 class UploadFileForm(forms.ModelForm):
     class Meta:
@@ -9,7 +9,7 @@ class UploadFileForm(forms.ModelForm):
         widgets = {
                 'title': TextInput(attrs={'class':'rounded query-input',}),
                 'description': Textarea(attrs={'class':'rounded query-input','placeholder': 'Example : Client, machine usage,...'}),
-                'os_version': TextInput(attrs={'class':'text-white rounded query-input','placeholder':'Example : Windows Server 2008 R2'}),
+                'os_version': Select(attrs={'value':'Windows','class': 'form-select query-input form-select-sm'}),
                 'investigators': TextInput(attrs={'class':'d-none'}),
                 'status': TextInput(attrs={'class':'d-none'}),
         }
@@ -20,8 +20,29 @@ class ManageInvestigation(forms.Form):
      action = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
         'class': 'd-none',}))
 
-class DumpMemory(forms.Form):
+class DumpMemory(forms.ModelForm):
+    class Meta:
+        model = ProcessDump
+        fields = ('pid','case_id',)
+        widgets = {
+                'pid': TextInput(attrs={'class': 'form-control rounded query-input','placeholder': 'PID'}),
+                'case_id': TextInput(attrs={'class': 'd-none'}),
+        }
+
+
+class DumpFile(forms.ModelForm):
+    class Meta:
+        model = FileDump
+        fields = ('offset','case_id',)
+        widgets = {
+                'offset': TextInput(attrs={'class': 'form-control rounded query-input','placeholder': 'File Offset (decimal)'}),
+                'case_id': TextInput(attrs={'class': 'd-none'}),
+        }
+
+class DownloadDump(forms.Form):
      id = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
-         'class': 'd-none','id':'id_id','value':'n/a'}))
-     pid = forms.IntegerField(widget=forms.TextInput(attrs={
-        'class': 'form-control','placeholder': 'PID'}))
+        'class': 'd-none','value':'n/a'}))
+
+class DownloadFile(forms.Form):
+     id = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
+        'class': 'd-none','value':'n/a'}))

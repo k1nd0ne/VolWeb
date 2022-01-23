@@ -1,0 +1,24 @@
+<button class="btn btn-succ-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseCacheDump>
+  CacheDump
+</button>
+<div class="collapse mt-5" id="collapseCacheDump">
+  <table id="processCacheTable" class="table card-font cachedump">
+    <thead>
+      <tr>
+        <th scope="col">Username</th>
+        <th scope="col">Domain</th>
+        <th scope="col">Domain name</th>
+        <th scope="col">Hash</th>
+      </tr>
+    </thead>
+    <tbody id="CacheDumpTab">
+      {% for elem in cachedump %}
+      <tr>
+        {% for item in elem %}
+        <td>{{item }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

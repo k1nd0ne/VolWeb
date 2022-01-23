@@ -15,15 +15,16 @@
       chart.background().fill("#293b58");
       chart.nodes().labels().enabled(true);
 
-      chart.nodes().labels().format("{%id}");
+      chart.nodes().labels().format("{%id} ({%Owner(s)})");
       chart.nodes().labels().fontSize(12);
+      chart.nodes().labels().fontColor("#ffffff");
       chart.nodes().labels().fontWeight(600);
       // set the chart title
       chart.title("Network Communications");
       // configure tooltips of nodes
       chart.nodes().tooltip().useHtml(true);
       chart.nodes().tooltip().format(
-      "<span style='font-weight:bold'>Involved PIDs : {%Involved_PIDs}</span><br><span style='font-weight:bold'>Local Ports: {%Local_Ports}</span>"
+      "<span style='font-weight:bold'>Involved PIDs : {%Involved_PIDs}</span><br><spanstyle='font-weight:bold'>Owner : {%Owner(s)}</span><br><span style='font-weight:bold'>Local Ports: {%Local_Ports}</span>"
       );
       // set the container id
       chart.container("net_graph");

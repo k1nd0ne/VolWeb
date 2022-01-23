@@ -1,0 +1,24 @@
+<button class="btn btn-succ-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseLsaDump>
+  lsaDump
+</button>
+<div class="collapse mt-5" id="collapseLsaDump">
+  <table id="processLsaTable" class="table card-font lsadump">
+    <thead>
+      <tr>
+        <th scope="col">Key</th>
+        <th scope="col">Secret</th>
+        <th scope="col">Hex</th>
+
+      </tr>
+    </thead>
+    <tbody id="LsaDumpTab">
+      {% for elem in lsadump %}
+      <tr>
+        {% for item in elem %}
+        <td>{{item }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

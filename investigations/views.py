@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.core.serializers import serialize
 from django.contrib.auth.decorators import login_required
 from .forms import *
 from .models import *
@@ -6,10 +7,11 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.http import StreamingHttpResponse, FileResponse, JsonResponse
 from iocs.models import NewIOC
-from .tasks import start_memory_analysis, dump_memory_pid
+from .tasks import start_memory_analysis, dump_memory_pid, app, dump_memory_file
 from celery.result import AsyncResult
-from .tasks import app, dump_memory_pid
 import json, os, uuid, datetime
+from os.path import exists
+
 
 #Investigation view : Manage the created investigations actions (Launch/Delete/Cancel)
 @login_required
@@ -43,7 +45,7 @@ def investigations(request):
                     app.control.terminate(task_id)
                     case.save()
             else:
-                return JsonResponse({'message': 'false'})
+                return JsonResponse({'message': 'An error occured'})
     else:
         #Display all the investigations and the action form
         form = ManageInvestigation()
@@ -128,7 +130,7 @@ def newinvest(request):
     User = get_user_model()
     return render(request, 'investigations/newinvest.html', {'form': form, 'Users':User.objects.filter(is_superuser = False)})
 
-#The reviewinvest view : Handle the review/dump memory request and pass the memory analysis results to the context
+#The reviewinvest view : Pass the memory analysis results to the context
 @login_required
 def reviewinvest(request):
     if request.method == 'POST':
@@ -139,15 +141,77 @@ def reviewinvest(request):
             with open('Cases/Results/'+str(case.id)+'.json') as f:
                 context = json.load(f)
             context['case'] = case
-            form = DumpMemory()
-            context.update({'form': form})
+            dump_process_form = DumpMemory()
+            download_dump_form = DownloadDump()
+            dump_file_form = DumpFile()
+            download_file_form = DownloadFile()
+            context.update({'dl_dump_form': download_dump_form, 'dump_file_form': dump_file_form, 'download_file_form': download_file_form, 'form': dump_process_form, 'dumps':ProcessDump.objects.filter(case_id = id), 'files':FileDump.objects.filter(case_id = id)})
             return render(request, 'investigations/reviewinvest.html',context)
+        else:
+            form = ManageInvestigation()
+            return render(request,'investigations/invest.html',{'investigations': UploadInvestigation.objects.all(), 'form': form})
+
+
+#The dump_process view : Handle the dump memory requests
+@login_required
+def dump_process(request):
+    if request.method == 'POST':
         form = DumpMemory(request.POST)
         if form.is_valid():
-            case_id = form.cleaned_data['id']
+            case_id = form.cleaned_data['case_id']
             pid = form.cleaned_data['pid']
-            task_res = dump_memory_pid.delay(case_id,str(pid))
+            if len(ProcessDump.objects.filter(pid = pid, case_id = case_id)) > 0:
+                return JsonResponse({'message': "exist"})
+            task_res = dump_memory_pid.delay(str(case_id),str(pid))
             file_path = task_res.get()
+            if file_path != "ERROR":
+                #create ProcessDump model :
+                Dump = form.save()
+                Dump.filename = file_path
+                Dump.save()
+                dumps = serialize("json",ProcessDump.objects.filter(process_dump_id = Dump.process_dump_id), fields=('pid','filename'))
+                return JsonResponse({'message': "success",'dumps': dumps })
+            else:
+                return JsonResponse({'message': "failed"})
+        else:
+            return JsonResponse({'message': "error"})
+
+
+#The dump_process view : Handle the dump memory requests
+@login_required
+def dump_file(request):
+    if request.method == 'POST':
+        print(request.POST)
+        form = DumpFile(request.POST)
+        if form.is_valid():
+            case_id = form.cleaned_data['case_id']
+            offset = form.cleaned_data['offset']
+            if len(FileDump.objects.filter(offset = offset, case_id = case_id)) > 0:
+                return JsonResponse({'message': "exist"})
+            task_res = dump_memory_file.delay(str(case_id),offset)
+            file_path = task_res.get()
+            if file_path != "ERROR":
+                #create ProcessDump model :
+                Dump = form.save()
+                Dump.filename = file_path
+                Dump.save()
+                files = serialize("json",FileDump.objects.filter(file_dump_id = Dump.file_dump_id), fields=('offset','filename'))
+                return JsonResponse({'message': "success",'files': files })
+            else:
+                return JsonResponse({'message': "failed"})
+        else:
+            print("FORM NO VALID")
+            return JsonResponse({'message': "error"})
+
+#The download_dump view : Handle the dump download requests
+@login_required
+def download_dump(request):
+    if request.method == 'POST':
+        form = DownloadDump(request.POST)
+        if form.is_valid():
+            dump_id = form.cleaned_data['id']
+            Dump = ProcessDump.objects.get(process_dump_id = dump_id)
+            file_path = Dump.filename
             try:
                 #Checking the extension (need to audit the application to see if R/LFI is possible)
                 ext = os.path.basename(file_path).split('.')[-1].lower()
@@ -160,8 +224,31 @@ def reviewinvest(request):
                     messages.add_message(request,messages.ERROR,'You can not download such file.')
             except:
                 messages.add_message(request,messages.ERROR,'Failed to fetch the requested process')
-        else:
-            messages.add_message(request,messages.ERROR,'The PID is not correct')
 
-    context.update({'form': form})
-    return render(request, 'investigations/reviewinvest.html',context)
+        else:
+            return JsonResponse({'message': "error"})
+
+#The download_file view : Handle the file download requests
+@login_required
+def download_file(request):
+    if request.method == 'POST':
+        form = DownloadDump(request.POST)
+        if form.is_valid():
+            file_id = form.cleaned_data['id']
+            Dump = FileDump.objects.get(file_dump_id = file_id)
+            file_path = Dump.filename
+            try:
+                #Checking the extension (need to audit the application to see if R/LFI is possible)
+                ext = os.path.basename(file_path).split('.')[-1].lower()
+                if ext not in ['py', 'db',  'sqlite3']:
+                    response = FileResponse(open('Cases/Results/'+file_path, 'rb'))
+                    response['content_type'] = "application/octet-stream"
+                    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+                    return response
+                else:
+                    messages.add_message(request,messages.ERROR,'You can not download such file.')
+            except:
+                messages.add_message(request,messages.ERROR,'Failed to fetch the requested file')
+
+        else:
+            return JsonResponse({'message': "error"})

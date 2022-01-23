@@ -103,6 +103,7 @@
         <li class="list-group-item card-font">
           <h5 class="h5">Network Artifacts</h5>
           {% include "investigations/network_artifacts/network_scan.html" %}
+          {% include "investigations/network_artifacts/network_stat.html" %}
           {% include "investigations/network_artifacts/network_graph.html" %}
         </li>
 
@@ -111,51 +112,46 @@
         <li class="list-group-item card-font">
           <h5 class="h5">Cryptography</h5>
           {% include "investigations/crypto_artifacts/crypto_hashdump.html" %}
+          {% include "investigations/crypto_artifacts/crypto_lsadump.html" %}
+          {% include "investigations/crypto_artifacts/crypto_cachedump.html" %}
         </li>
 
         <!-- Malware Analysis -->
 
         <li class="list-group-item card-font">
-          <h5 class="h5">Malware Analysis (Beta)</h5>
+          <h5 class="h5">Malware Analysis</h5>
           {% include "investigations/ma_artifacts/ma_timeline.html" %}
+          {% include "investigations/ma_artifacts/ma_skeleton.html" %}
           {% include "investigations/ma_artifacts/ma_iocs.html" %}
           {% include "investigations/ma_artifacts/ma_malfind.html" %}
           {% include "investigations/ma_artifacts/ma_filescan.html" %}
           {% include "investigations/ma_artifacts/ma_dumpprocess.html" %}
+          {% include "investigations/ma_artifacts/ma_dumpfile.html" %}
         </li>
 
-      </div>
-    </div>
 
-    <li class="list-group-item card-font">
-      <h5 class="h5">Reporting (Beta)</h5>
-      <button onclick="GenerateReport('{{case.title}}','{{case.os_version}}','{{case.description}}','{{case.name}}');" class="btn btn-warn-d" type="button">Generate Report <span class='text-muted'>(PDF)</span></button>
-    </li>
+        <li class="list-group-item card-font">
+          <h5 class="h5">Reporting (Beta)</h5>
+          <button onclick="GenerateReport('{{case.title}}','{{case.os_version}}','{{case.description}}','{{case.name}}');" class="btn btn-warn-d" type="button">Generate Report <span class='text-muted'>(PDF)</span></button>
+        </li>
 
-  </div>
-  <!-- Toasts -->
-  {% if messages %}
-  <div aria-live="polite" aria-atomic="true" style="position: relative;">
-    <!-- Position it -->
-    <div style="position: absolute; top: 3rem; right: 0;">
-      <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-          <strong class="mr-auto">VolWeb</strong>
-        </div>
-        <div class="toast-body">
-          {% for message in messages %}
-          {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-          {{message}}
-          {% endif %}
-          {% endfor %}
-        </div>
-      </div>
+        <li class="list-group-item card-font">
+          <h5 class="h5">Process Dumps</h5>
+          {% include "investigations/process_dumps.html"%}
+        </li>
+
+
+        <li class="list-group-item card-font">
+          <h5 class="h5">File Dumps</h5>
+          {% include "investigations/file_dumps.html"%}
+        </li>
+      </ul>
     </div>
   </div>
-  {% endif %}
+</div>
 
 
-
+  {% include "investigations/toasts.html" %}
   <table hidden id="report_table_process_scan"></table>
   <table hidden id="report_table_process_cmdline"></table>
   <table hidden id="report_table_process_priv"></table>
@@ -165,9 +161,13 @@
   <table hidden id="report_table_hashdump"></table>
   <table hidden id="report_table_filescan"></table>
   <table hidden id="report_table_processtree"></table>
-
-
+  <table hidden id="report_table_cachedump"></table>
+  <table hidden id="report_table_lsadump"></table>
+  <table hidden id="report_table_process_netstat"></table>
   <table hidden id="report_table_ioc"></table>
+  <table hidden id="report_table_skeleton"></table>
+
+
   <script
 			  src="https://code.jquery.com/jquery-3.6.0.min.js"
 			  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
@@ -176,6 +176,21 @@
   <script type="module" src="{% static 'dashboard/jspdf.plugin.autotable.js'%}"></script>
   <script src="{% static 'dashboard/report.js'%}"></script>
   <script>
+
+
+    $('#processCacheTable').on('click', 'tbody tr', function(event) {
+      var table = $(this);
+
+      if (table.hasClass("highlight")){
+        table.removeClass("highlight");
+      }
+      else{
+        table.addClass("highlight");
+      }
+    });
+
+
+
     $('#processTreeTable').on('click', 'tbody tr', function(event) {
       var table = $(this);
 
@@ -279,23 +294,62 @@
         table.addClass("highlight");
       }
     });
-    //Binding Case Id for ProcessDump
-    $(document).ready(function(){
-      $('#main').show();
-      $('#loading').hide();
-      const case_id = document.getElementById('case_id');
-      var id = document.getElementById('id_id');
-      id.value = case_id.value;
+
+
+    $('#processCacheTable').on('click', 'tbody tr', function(event) {
+      var table = $(this);
+      if (table.hasClass("highlight")){
+        table.removeClass("highlight");
+      }
+      else{
+        table.addClass("highlight");
+      }
     });
+
+    $('#processLsaTable').on('click', 'tbody tr', function(event) {
+      var table = $(this);
+      if (table.hasClass("highlight")){
+        table.removeClass("highlight");
+      }
+      else{
+        table.addClass("highlight");
+      }
+    });
+
+    $('#processNetworkStatTable').on('click', 'tbody tr', function(event) {
+      var table = $(this);
+      if (table.hasClass("highlight")){
+        table.removeClass("highlight");
+      }
+      else{
+        table.addClass("highlight");
+      }
+    });
+
+
 
     //Process Scan Search function
     $(document).ready(function(){
+
+      $('#main').show();
+      $('#loading').hide();
+
       $("#searchProcess").on("keyup", function() {
         var value = $(this).val().toLowerCase();
         $("#process tr").filter(function() {
           $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
         });
       });
+
+      //NetStat Search funtion
+      $("#searchNetworkStat").on("keyup", function() {
+          var value = $(this).val().toLowerCase();
+          $("#network tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+        });
+
+      //Malfind Search function
 
       $("#searchMalfind").on("keyup", function() {
         var value = $(this).val().toLowerCase();
@@ -383,7 +437,7 @@
     });
 
     $(document).ready(function(){
-      $('.toast').toast('show');
+      $('.toast-other').toast('show');
     });
   </script>
   {% endblock content %}

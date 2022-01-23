@@ -72,7 +72,12 @@
         {% if investigations %}
         {% for i in investigations %}
         <a href="#" class="invests" data-bs-toggle="modal" data-bs-target="#card_{{i.id}}" id="card_{{i.title}}" style="text-decoration:none">
-          <div class="card mb-3 shadow rounded">
+          <div class="card mb-3 flex-row justify-content-center align-items-center shadow rounded">
+            <div class="card-header border-0 ">
+              <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-windows" viewBox="0 0 16 16">
+                <path d="M6.555 1.375 0 2.237v5.45h6.555V1.375zM0 13.795l6.555.933V8.313H0v5.482zm7.278-5.4.026 6.378L16 16V8.395H7.278zM16 0 7.33 1.244v6.414H16V0z"/>
+              </svg>
+            </div>
             <div class="card-body">
               <p class="card-subtitle h4 mb-2" style="color:#32d3bc;" id="invest-title">{{ i.title }}</p>
               <p class="card-subtitle mb-2" id="invest-description" >{{ i.description }}</p>
@@ -161,6 +166,8 @@
       src="https://code.jquery.com/jquery-3.6.0.min.js"
       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
       crossorigin="anonymous"></script>
+
+
 <script>
 
   /* StartAnalysis script */

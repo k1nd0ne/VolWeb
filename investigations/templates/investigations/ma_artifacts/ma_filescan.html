@@ -6,20 +6,19 @@
   <div class="d-inline">
     <input class="form-control mb-3" id="searchFileScan" type="text" placeholder="Search..">
   </div>
-  <table id="FileScanTable" class="table card-font filescan">
+  <table style="table-layout:fixed;" id="FileScanTable" class="table card-font table-condensed filescan">
     <thead>
       <tr>
         <th scope="col">Offset</th>
-        <th scope="col">File</th>
+        <th scope="col" width ='75%'>File</th>
         <th scope="col">Size</th>
       </tr>
     </thead>
     <tbody id="FileScanTab">
       {% for files in filescan %}
-      <tr>
         <tr>
           <td>{{files.Offset }}</td>
-          <td>{{files.Name}}</td>
+          <td style="word-wrap:break-word;">{{files.Name}}</td>
           <td>{{files.Size}}</td>
         </tr>
         {% endfor %}
