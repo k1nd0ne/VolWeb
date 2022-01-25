@@ -43,12 +43,12 @@ In order to deploy Volweb, you should follow these steps:
 
 Download the latest release: https://github.com/k1nd0ne/VolWeb/releases
 
-Then, navigate to the VolWeb directory and edit the **./docker/volweb.env** file and add the secret information to the following fields:
+Then, navigate to the VolWeb directory and edit the **./docker/secret/volweb.env** file and add the secret information to the following fields:
 
 ```
- POSTGRES_USER=USER_HERE
- POSTGRES_PASSWORD=PASSWORD_HERE
- DJANGO_SECRET=SECRET_KEY_HERE
+POSTGRES_USER=USER_HERE
+POSTGRES_PASSWORD=PASSWORD_HERE
+DJANGO_SECRET=SECRET_KEY_HERE
 ```
 
 Next, add your ssl certificate into the **nginx/ssl** folder (generated via certbot or openssl for example):
