@@ -65,6 +65,7 @@ class FileUpload {
                     return;
 
         }
+        alertBox.innerHTML = "";
         this.create_progress_bar();
         this.file = this.input.files[0];
         this.upload_file(0, null);
