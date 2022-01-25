@@ -1,10 +1,4 @@
 
-dashboard/migrations/
-
 docker/nginx/log/
-
 *.pem
 
-investigations/migrations/
-
-iocs/migrations/

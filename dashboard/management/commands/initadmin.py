@@ -45,7 +45,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         Account = get_user_model()
         if Account.objects.count() == 0:
-            createSuperUser("admin", "password", email = "", firstName = "NAME", lastName = "SURNAME")
-            createSimpleUser("user", "password", email = "", firstName = "NAME", lastName = "SURNAME")
+            try:
+                createSuperUser("admin", "password", email = "", firstName = "NAME", lastName = "SURNAME")
+                createSimpleUser("user", "password", email = "", firstName = "NAME", lastName = "SURNAME")
+            except:
+                print("Could not create the admin and user accounts")
         else:
             print('User&Admin accounts can only be initialized if no Accounts exist')
