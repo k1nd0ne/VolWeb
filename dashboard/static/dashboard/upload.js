@@ -153,7 +153,7 @@ class FileUpload {
                     existingPath = res.existingPath
                     self.upload_file(nextChunk, existingPath);
                 } else {
-                    alertBox.innerHTML = "<p class='text-white'>Upload Completed check the <a href=\"../\">Analysis</a></p>";
+                    alertBox.innerHTML = "<p class='text-white'>Upload completed you can start the Analysis from <a href=\"../\">here</a></p>";
                 }
             }
         });
