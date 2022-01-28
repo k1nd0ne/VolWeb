@@ -2,8 +2,8 @@ from celery import Celery
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'VolWeb.settings')
 app = Celery('investigations',
-             broker='redis://redis:6379/0',
-             backend='redis://redis:6379/0',
+             broker='amqp://admin:mypass@rabbitmq3:5672//',
+             backend='rpc://',
              include=['investigations.tasks'])
 
 # Optional configuration, see the application user guide.

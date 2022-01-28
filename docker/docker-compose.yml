@@ -14,11 +14,11 @@ services:
 
   web:
     container_name: django
-    build: 
+    build:
       context: ../
       dockerfile: docker/Dockerfile
     command: >
-      gunicorn VolWeb.wsgi:application --bind 0.0.0.0:8000 --workers=4 
+      gunicorn VolWeb.wsgi:application --bind 0.0.0.0:8000 --workers=4
     env_file:
       - secret/volweb.env
     expose:
@@ -44,10 +44,14 @@ services:
     depends_on:
       - web
 
-  redis:
-    image: redis:6.2.6-alpine
+  rabbitmq3:
+    container_name: "rabbitmq3"
+    image: rabbitmq:3.9.13
     ports:
-      - '6379:6379'
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
   worker:
     build:
       context: ../
@@ -55,8 +59,8 @@ services:
     env_file:
       - secret/volweb.env
     command: celery -A investigations worker -l INFO
-    depends_on: 
-      - redis
+    depends_on:
+      - rabbitmq3
       - db
     volumes:
       - cases:/home/app/web/Cases/
