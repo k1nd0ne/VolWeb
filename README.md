@@ -89,14 +89,6 @@ cd ./VolWeb/docker
 docker-compose down --rmi all --volumes
 ```
 
-```
-cd ./VolWeb/
-find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
-find . -path "*/migrations/*.pyc"  -delete
-```
-
-
-
 ## Issues ⚠️
 If you have found an issue, please raise it.
 I am performing one sprint every month to fix discovered bugs.
