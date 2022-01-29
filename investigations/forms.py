@@ -15,9 +15,7 @@ class UploadFileForm(forms.ModelForm):
         }
 
 class ManageInvestigation(forms.Form):
-     id = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
-        'class': 'd-none',}))
-     action = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
+     sa_case_id = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
         'class': 'd-none',}))
 
 class DumpMemory(forms.ModelForm):

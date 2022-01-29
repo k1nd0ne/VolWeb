@@ -16,39 +16,7 @@ from os.path import exists
 #Investigation view : Manage the created investigations actions (Launch/Delete/Cancel)
 @login_required
 def investigations(request):
-    if request.method == 'POST':
-        form = ManageInvestigation(request.POST)
-        if request.is_ajax():
-            if form.is_valid():
-                action = form.cleaned_data['action']
-                id = form.cleaned_data['id']
-                case = UploadInvestigation.objects.get(pk=id)
-                #Launch the volatility_script
-                if action == "1":
-                    case.status = "1"
-                    result = start_memory_analysis.delay('Cases/'+str(case.name),case.id)
-                    case.taskid = result
-                    case.save()
-                #Remove the memory dump
-                elif action == "0":
-                    iocs = NewIOC.objects.all()
-                    for ioc in iocs:
-                        if str(case.id) in ioc.linkedInvestigationID:
-                            ioc.delete()
-                    os.system('rm Cases/Results/'+str(case.id)+'.json')
-                    os.system('rm Cases/' + str(case.name))
-                    case.delete()
-                #Cancel the memory analysis
-                elif action == "2":
-                    case.status = "0"
-                    task_id = case.taskid
-                    app.control.terminate(task_id)
-                    case.save()
-            else:
-                return JsonResponse({'message': 'An error occured'})
-    else:
-        #Display all the investigations and the action form
-        form = ManageInvestigation()
+    form = ManageInvestigation()
     return render(request,'investigations/invest.html',{'investigations': UploadInvestigation.objects.all(), 'form': form})
 
 
@@ -130,13 +98,68 @@ def newinvest(request):
     User = get_user_model()
     return render(request, 'investigations/newinvest.html', {'form': form, 'Users':User.objects.filter(is_superuser = False)})
 
-#The reviewinvest view : Pass the memory analysis results to the context
+
+#The start_analysis view : start an analysis
 @login_required
-def reviewinvest(request):
+def start_analysis(request):
     if request.method == 'POST':
         form = ManageInvestigation(request.POST)
         if form.is_valid():
-            id = form.cleaned_data['id']
+            id = form.cleaned_data['sa_case_id']
+            case = UploadInvestigation.objects.get(pk=id)
+            case.status = "1"
+            result = start_memory_analysis.delay('Cases/'+str(case.name),case.id)
+            case.taskid = result
+            case.save()
+            return JsonResponse({'message': "success"})
+        else:
+            return JsonResponse({'message': "error"})
+
+
+#The remove_analysis view : remove an analysis
+@login_required
+def remove_analysis(request):
+    if request.method == 'POST':
+        form = ManageInvestigation(request.POST)
+        if form.is_valid():
+            id = form.cleaned_data['sa_case_id']
+            case = UploadInvestigation.objects.get(pk=id)
+            iocs = NewIOC.objects.all()
+            for ioc in iocs:
+                if str(case.id) in ioc.linkedInvestigationID:
+                    ioc.delete()
+            os.system('rm Cases/Results/'+str(case.id)+'.json')
+            os.system('rm Cases/' + str(case.name))
+            case.delete()
+            return JsonResponse({'message': "success"})
+        else:
+            return JsonResponse({'message': "error"})
+
+#The cancel_analysis view : cancel an analysis
+@login_required
+def cancel_analysis(request):
+    if request.method == 'POST':
+        form = ManageInvestigation(request.POST)
+        if form.is_valid():
+            id = form.cleaned_data['sa_case_id']
+            case = UploadInvestigation.objects.get(pk=id)
+            case.status = "0"
+            task_id = case.taskid
+            app.control.terminate(task_id)
+            case.save()
+            return JsonResponse({'message': "success"})
+        else:
+            return JsonResponse({'message': "error"})
+
+
+#The reviewinvest view : Pass the memory analysis results to the context
+@login_required
+def reviewinvest(request):
+    if request.method == 'GET':
+        print(request.GET)
+        form = ManageInvestigation(request.GET)
+        if form.is_valid():
+            id = form.cleaned_data['sa_case_id']
             case = UploadInvestigation.objects.get(pk=id)
             with open('Cases/Results/'+str(case.id)+'.json') as f:
                 context = json.load(f)

@@ -124,42 +124,35 @@
               </div>
               <div class="modal-footer">
                 {% if i.status == "0" %}
-                <form action="" method="POST">
-                  {% csrf_token %}
-                  {{form.action}}
-                  {{form.id}}
                   <button class="btn btn-prim" onclick="StartAnalysis('{{i.id}}');" data-bs-dismiss="modal">Start analysis</button>
-                </form>
                 {% endif %}
                 {% if i.status == "1" %}
-                <form action="" method="POST">
-                  {% csrf_token %}
-                  {{form.action}}
-                  {{form.id}}
                   <button type="button" class="btn btn-warn" onclick="CancelAnalysis('{{i.id}}');" data-bs-dismiss="modal">Cancel analysis</button>
-                </form>
                 {% endif %}
                 {% if i.status == "2" %}
-                <form id="reviewform" action="{% url 'reviewinvest' %}" method="POST">
-                  {% csrf_token %}
-                  {{form.action}}
-                  {{form.id}}
-                  <input class="btn btn-succ" type="submit" onclick="ReviewCase('{{i.id}}')" value="Review results">
-                  <button type="button" class="btn btn-prim" onclick="StartAnalysis('{{i.id}}');" data-bs-dismiss="modal">Restart analysis</button>
+                <form id="reviewform" action="{% url 'reviewinvest' %}" method="GET">
+                  <input type="hidden" name="sa_case_id" value="{{i.id}}">
+                  <input class="btn btn-succ" type="submit" value="Review results">
                 </form>
+                  <button type="button" class="btn btn-prim" onclick="StartAnalysis('{{i.id}}');" data-bs-dismiss="modal">Restart analysis</button>
                 {% endif %}
-                <button type="button" class="btn btn-dang" onclick="DeleteInvestigation('{{i.id}}')" data-bs-dismiss="modal">Delete</button>
+                <button type="button" class="btn btn-dang" onclick="DeleteAnalysis('{{i.id}}')" data-bs-dismiss="modal">Delete</button>
               </div>
             </div>
           </div>
         </div>
         {% endfor %}
+        <form action="{% url 'start_analysis' %}" method="POST">
+          {% csrf_token %}
+          {{form.sa_case_id}}
+        </form>
         {% endif %}
       </div>
     </div>
+
   </div>
 </div>
-
+{% include "investigations/toasts.html" %}
 
 <!-- Ajax post requests management (Create/Delete/Restart/Cancel) -->
 <script
@@ -169,29 +162,34 @@
 
 
 <script>
-
-  /* StartAnalysis script */
-  function StartAnalysis(id){
-    const csrf = document.getElementsByName('csrfmiddlewaretoken');
-    const action = document.getElementById('id_action');
-    action.value = "1";
+  function StartAnalysis(case_id){
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const fd = new FormData();
-    fd.append('csrfmiddlewaretoken', csrf[0].value);
-    fd.append('action', action.value);
-    fd.append('id', id);
+    fd.append('csrfmiddlewaretoken', csrftoken);
+    fd.append('sa_case_id', case_id);
     $.ajax({
       type:'POST',
-      url: "",
+      url: "{% url 'start_analysis' %}",
       enctype: 'multipart/form-data',
       data: fd,
       beforeSend: function(){
-
+        //Toggle the message that we did take the request into a count
       },
       success: function(response){
-        location.reload();
+        if (response['message'] == "success") {
+          $('#proc-success-message').html("Starting analysis...");
+          $('.toast-proc-success').toast('show');
+          refresh();
+        }
+        if (response['message'] == "error")
+        {
+          $('#proc-error-message').html("Invalid request");
+          $('.toast-proc-error').toast('show');
+        }
       },
       error: function(error){
-
+        $('#proc-error-message').html("Something went wrong (500) ");
+        $('.toast-proc-error').toast('show');
       },
       cache: false,
       contentType : false,
@@ -199,28 +197,35 @@
     });
   }
 
-  /* Cancel Analysis script */
-  function CancelAnalysis(id){
-    const csrf = document.getElementsByName('csrfmiddlewaretoken');
-    const action = document.getElementById('id_action');
-    action.value = "2"
+  /* Delete investigation script */
+  function CancelAnalysis(case_id){
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const fd = new FormData();
-    fd.append('csrfmiddlewaretoken', csrf[0].value);
-    fd.append('action', action.value);
-    fd.append('id', id);
+    fd.append('csrfmiddlewaretoken', csrftoken);
+    fd.append('sa_case_id', case_id);
     $.ajax({
       type:'POST',
-      url: "",
+      url: "{% url 'cancel_analysis' %}",
       enctype: 'multipart/form-data',
       data: fd,
       beforeSend: function(){
-
+        //Toggle the message that we did take the request into a count
       },
       success: function(response){
-        location.reload();
+        if (response['message'] == "success") {
+          $('#proc-success-message').html("Analysis canceled.");
+          $('.toast-proc-success').toast('show');
+          refresh();
+        }
+        if (response['message'] == "error")
+        {
+          $('#proc-error-message').html("Invalid request");
+          $('.toast-proc-error').toast('show');
+        }
       },
       error: function(error){
-
+        $('#proc-error-message').html("Something went wrong (500) ");
+        $('.toast-proc-error').toast('show');
       },
       cache: false,
       contentType : false,
@@ -237,27 +242,34 @@
     case_id.value = id;
   }
   /* Delete investigation script */
-  function DeleteInvestigation(id){
-    const csrf = document.getElementsByName('csrfmiddlewaretoken');
-    const action = document.getElementById('id_action');
-    action.value = "0"
+  function DeleteAnalysis(case_id){
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const fd = new FormData();
-    fd.append('csrfmiddlewaretoken', csrf[0].value);
-    fd.append('action', action.value);
-    fd.append('id', id);
+    fd.append('csrfmiddlewaretoken', csrftoken);
+    fd.append('sa_case_id', case_id);
     $.ajax({
       type:'POST',
-      url: "",
+      url: "{% url 'remove_analysis' %}",
       enctype: 'multipart/form-data',
       data: fd,
       beforeSend: function(){
-        document.getElementById('card_'+id).classList.add('d-none');
+        //Toggle the message that we did take the request into a count
       },
       success: function(response){
-        location.reload();
+        if (response['message'] == "success") {
+          $('#proc-success-message').html("Analysis removed.");
+          $('.toast-proc-success').toast('show');
+          refresh();
+        }
+        if (response['message'] == "error")
+        {
+          $('#proc-error-message').html("Invalid request");
+          $('.toast-proc-error').toast('show');
+        }
       },
       error: function(error){
-
+        $('#proc-error-message').html("Something went wrong (500) ");
+        $('.toast-proc-error').toast('show');
       },
       cache: false,
       contentType : false,

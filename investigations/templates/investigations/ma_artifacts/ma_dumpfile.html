@@ -43,7 +43,7 @@ function DemandFileDump(case_id){
   fd.append('offset', offset.value);
   $.ajax({
     type:'POST',
-    url: "../dump_file/",
+    url: "{% url 'dump_file' %}",
     enctype: 'multipart/form-data',
     data: fd,
     beforeSend: function(){

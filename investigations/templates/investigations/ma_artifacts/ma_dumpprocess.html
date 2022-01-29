@@ -43,7 +43,7 @@ function DemandDump(case_id){
   fd.append('pid', pid.value);
   $.ajax({
     type:'POST',
-    url: "../dump_process/",
+    url: "{% url 'dump_process' %}",
     enctype: 'multipart/form-data',
     data: fd,
     beforeSend: function(){
