@@ -105,6 +105,7 @@ The full documentation can be found here : https://k1nd0ne.github.io
 - Celery Task timeout in case of corrupted memory dump
 - Visual confirmation of what to not look (legit process highlight integration)
 - Recode MalConfScan for volatility3
+- RipRaw integration for linux analysis. 
 
 # Global goals 📋
 - Add missing modules to the windows memory analysis.
