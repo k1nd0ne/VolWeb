@@ -156,7 +156,6 @@ def cancel_analysis(request):
 @login_required
 def reviewinvest(request):
     if request.method == 'GET':
-        print(request.GET)
         form = ManageInvestigation(request.GET)
         if form.is_valid():
             id = form.cleaned_data['sa_case_id']
@@ -204,7 +203,6 @@ def dump_process(request):
 @login_required
 def dump_file(request):
     if request.method == 'POST':
-        print(request.POST)
         form = DumpFile(request.POST)
         if form.is_valid():
             case_id = form.cleaned_data['case_id']
@@ -223,7 +221,6 @@ def dump_file(request):
             else:
                 return JsonResponse({'message': "failed"})
         else:
-            print("FORM NO VALID")
             return JsonResponse({'message': "error"})
 
 #The download_dump view : Handle the dump download requests

@@ -26,7 +26,6 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
+    'cookiebanner',
 ]
 
 MIDDLEWARE = [
@@ -134,3 +134,27 @@ LOGIN_URL = 'login'
 
 MEDIA_URL = '/Cases/'
 
+
+from django.utils.translation import ugettext_lazy as _
+
+COOKIEBANNER = {
+    "title": _("Cookie settings"),
+    "header_text": _("This platform is using cookies to work."),
+    "groups": [
+        {
+            "id": "essential",
+            "name": _("Essential"),
+            "description": _("Essential cookies allow this page to work."),
+            "cookies": [
+                {
+                    "pattern": "csrftoken",
+                    "description": _("This cookie prevents Cross-Site-Request-Forgery attacks."),
+                },
+                {
+                    "pattern": "sessionid",
+                    "description": _("This cookie is necessary to allow logging in, for example."),
+                },
+            ],
+        },
+    ],
+}

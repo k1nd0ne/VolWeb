@@ -14,9 +14,9 @@
     <tbody id="LsaDumpTab">
       {% for elem in lsadump %}
       <tr>
-        {% for item in elem %}
-        <td>{{item }}</td>
-        {% endfor %}
+        <td>{{elem.Key}}</td>
+        <td>{{elem.Secret}}</td>
+        <td>{{elem.Hex}}</td>
       </tr>
       {% endfor %}
     </tbody>

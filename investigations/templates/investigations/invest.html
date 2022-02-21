@@ -142,7 +142,7 @@
           </div>
         </div>
         {% endfor %}
-        <form action="{% url 'start_analysis' %}" method="POST">
+        <form method="POST">
           {% csrf_token %}
           {{form.sa_case_id}}
         </form>

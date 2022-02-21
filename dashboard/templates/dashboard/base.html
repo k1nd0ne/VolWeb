@@ -1,4 +1,5 @@
 {% load static %}
+{% load cookiebanner %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -12,6 +13,8 @@
   <!-- Custom styles for the dashboard -->
   <link href="{% static 'dashboard/sidebars.css' %}" rel="stylesheet">
 </head>
+{% cookiebanner_modal 'cookiebanner' %}
+
 <body>
   <!-- SVG Icons -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -80,6 +83,7 @@
       <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>    </symbol>
     </svg>
     <main class="container-fuild text-light">
+
       <div class="d-flex flex-column flex-shrink-0 p-3 text-white sidebar" style="width: 230px;">
         <center><img width='50%' src="{% static 'images/Volweb-on-light.png'%}"/></center>
         <hr>
@@ -139,7 +143,11 @@
 </div>
 {% block content %}
 
+
 {% endblock %}
+
+
+
 
 </main>
 
@@ -149,7 +157,6 @@
 			  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
 			  crossorigin="anonymous"></script>
 <script src="{% static 'dashboard/upload.js' %}"></script>
-
 
 
 </body>

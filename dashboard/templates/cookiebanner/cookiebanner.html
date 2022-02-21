@@ -1,0 +1,57 @@
+{% load i18n %}
+
+<!-- Cookie Banner -->
+<div id="cb-cookie-banner" class="d-none alert alert-dark text-center mb-0" role="alert">
+This platform uses cookies to assure you the best experience.
+<a href="https://www.cookiesandyou.com/" target="blank">Learn more</a>
+<input type="submit" name="enable_all" class="cookiebannerSubmit btn"
+       value="{% trans 'Got It' %}">
+</div>
+<!-- End of Cookie Banner -->
+
+<script>
+  const cookiegroups = JSON.parse("{{ cookiegroups_json|escapejs }}");
+
+  document.addEventListener("DOMContentLoaded", function () {
+    let keyValue = document.cookie.match('(^|;) ?cookiebanner=([^;]*)(;|$)');
+    let cookiebannerCookie = keyValue ? decodeURIComponent(keyValue[2]) : null;
+    if (cookiebannerCookie) return;
+
+    document.getElementById("cb-cookie-banner").classList.remove('d-none');
+
+
+    document.querySelectorAll("input.cookiebannerSubmit").forEach((inp) => {
+      inp.addEventListener("click", () => {
+        let enable_cookies;
+        if (inp.name === 'enable_all') {
+          enable_cookies = cookiegroups.map((x) => x.id);
+          }
+        //No need to implement that now but could be usefull in the future.
+        //  else {
+        //   let checked_cookiegroups = Array.from(document.querySelector("#cookiebannerForm"))
+        //     .filter((x) => x.checked).map((x) => x.name);
+        //   enable_cookies = cookiegroups
+        //     .filter((x) => {
+        //       return checked_cookiegroups.includes(x.id) ? x : !x.optional;
+        //     })
+        //     .map((x) => x.id);
+        // }
+        const max_age = (365 * 24 * 60 * 60);
+        const secure = window.location.hostname === 'localhost' ? "" : "secure";
+        document.cookie = `cookiebanner=${encodeURIComponent(enable_cookies)}; path=/; max-age=${max_age}; ${secure}`;
+        location.reload();
+      })
+    })
+  });
+</script>
+
+<style>
+
+  .cookiebannerSubmit.btn {
+    background-color:#293b58;
+    border-color: #32d3bc;
+    color: #32d3bc;
+  }
+   #cb-cookie-banner { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 999; border-radius: 0; }
+
+</style>
