@@ -1,9 +1,9 @@
 <!-- Investigation malware_analysis_dump_process -->
-<button class="btn btn-dang-d" type="button" data-bs-toggle="modal" data-bs-target=#downloadFile>
+<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="modal" data-bs-target=#downloadFile>
   Dump File
 </button>
-<div class="text-white modal fade" id="downloadFile" tabindex="-1" aria-labelledby="downloadFile" aria-hidden="true">
-  <div class="modal-dialog border">
+<div class="modal fade" id="downloadFile" tabindex="-1" aria-labelledby="downloadFile" aria-hidden="true">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Dump a file</h5>
@@ -19,7 +19,7 @@
           <div id="alert-box-1" class="not-visible"></div>
         </div>
         <div class="modal-footer">
-          <input class="btn btn-succ" type="submit" onclick="DemandFileDump('{{case.id}}')" value="Dump">
+          <input class="btn btn-dark border border-dark" type="submit" onclick="DemandFileDump('{{case.id}}')" value="Dump">
         </div>
       </form>
     </div>
@@ -61,7 +61,7 @@ function DemandFileDump(case_id){
           $("#file_table tbody").append("<tr>\
             <td>"+item['fields']['filename'] + "</td>\
             <td class='text-danger'>"+item['fields']['offset'] + "</td>\
-            <td><button type='button' class='btn btn-prim' onclick=\"DownloadFile('" + item['pk'] + "')\">Download</button></td>\
+            <td><button type='button' class='btn border border-dark btn-dark' onclick=\"DownloadFile('" + item['pk'] + "','"+item['fields']['filename'] + "')\">Download</button></td>\
         </tr>");
         });
       }
@@ -83,7 +83,8 @@ function DemandFileDump(case_id){
 
     },
     error: function(error){
-      console.log("ERROR : " + error)
+      $('#proc-error-message').html("Could not dump the file requested.");
+      $('.toast-proc-error').toast('show');
     },
     cache: false,
     contentType : false,

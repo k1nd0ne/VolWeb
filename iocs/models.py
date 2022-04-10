@@ -1,10 +1,11 @@
 from django.db import models
+from investigations.models import UploadInvestigation
 
-class NewIOC(models.Model):
+class IOC(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
-    value = models.CharField(max_length=100)
-    linkedInvestigation = models.CharField(max_length=100)
-    linkedInvestigationID = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    context = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
+    linkedInvestigation = models.ForeignKey(UploadInvestigation, on_delete=models.CASCADE)
     def __str__(self):
         return str(self.pk)

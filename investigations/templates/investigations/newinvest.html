@@ -1,120 +1,80 @@
 {% extends "dashboard/base.html" %}
-{% block content %}
-<style>
-p, input, .text-white, .form-label  {
-    --tw-bg-opacity: 1;
-    font-family: Anonymous Pro, monospace;
-    --tw-text-opacity: 1;
-    color: rgba(233, 233, 233, var(--tw-text-opacity));
-    -moz-osx-font-smoothing: grayscale;
-    -moz-osx-font-smoothing: auto;
-    font-size: 0.9rem;
-}
-.main {
-    color:#ffffff;
-    --tw-bg-opacity: 1;
-    font-family: Anonymous Pro, monospace;
-    --tw-text-opacity: 1;
-    color: rgba(233, 233, 233, var(--tw-text-opacity));
-    -moz-osx-font-smoothing: grayscale;
-    -moz-osx-font-smoothing: auto;
-    font-size: 0.9rem;
-}
-
-.query-input {
-     background-color:#293b58;
-     font-size: 1rem;
-     line-height: 3rem;
-     width: 100%;
-     white-space: nowrap;
-   }
- .card{
-     border-width: small;
-     background-color:#293b58;
- }
-
- .badge {
-     border-width: 1px;
-     --tw-border-opacity: 1;
-     border-color: rgba(149, 149, 149, var(--tw-border-opacity));
-     background-color: rgba(0,0,0,0);
- }
- .query-input {
-     font-size: 1rem;
-     color: #ffffff;
-     line-height: 1rem;
-     white-space: nowrap;
-     border-color:#e9e9e9;
- }
-.text-select{
-     color:#eb1f5a;
-
-}
-
-</style>
-<!-- Main Container -->
-<div class="container-fluid main" style="overflow-y:scroll">
-    <div class="row align-items-start mb-5">
-        <div class="col-12">
-            <div class="card">
-                <!-- New investigation form -->
-                <div class="card-body">
-                    <h5 class="card-title" id="invest-title"> <svg class="bi me-2" width="32" height="32"><use xlink:href="#collection"/></svg>New Investigation</h5>
-                    <h6 class="card-subtitle mb-2 text-muted"id="invest-description" >Create an Investigation</h6>
-                    <form id="upload-form" action="">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label">Title :</label>
-                            {{form.title}}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">OS version :</label>
-                            {{form.os_version}}
-                        </div>
-                        <label class="form-label">Context Description</label>
-                        <div class="mb-3">
-                            {{form.description}}
-                        </div>
-                        <label class="form-label">Forensics Experts :</label>
-                        <div class="mb-3">
-                            {% for u in Users %}
-                            <span class="badge border"><a class="text-muted" id="badge_{{u.username}}" style="text-decoration:none" href="#" onclick="ToggleInvestigator('{{u.username}}');">{{u.username}}</a></span>
-                            {{form.investigators}}
-                            {% endfor %}
-                        </div>
-                        <div class="form-group">
-                            <p>Select a memory dump to upload.</p>
-                            <input type="file" class="query-input form-control mb-3" id="fileupload" placeholder="Select file">
-                        </div>
-                        <input type="submit" value="Create" id="submit" class="btn btn-prim">
-                    </form>
-                    <div id="uploaded_files"></div>
-                    <!-- The alert box displaying the error messages if the form is not valid -->
-                    <div id="alert-box" class="not-visible"></div>
-                </div>
+{% load static %}
+{% block content%}
+<div class="container-fluid"><a class="btn btn-link link-primary mb-3" role="button" target="_parent" href="{% url 'investigations' %}"><i class="fas fa-arrow-left"></i>&nbsp;Back</a>
+  <div class="d-sm-flex justify-content-between align-items-center mb-4">
+    <h3 class="text-dark mb-0">New investigation</h3>
+  </div>
+  <form id="upload-form" action="">
+    {% csrf_token %}
+    <div class="card bg-light border border-dark border-sm shadow mb-3">
+      <div class="card-header py-3">
+        <p class="text-dark m-0 fw-bold">Fill in the required fields *</p>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-8 col-lg-8">
+            <div class="mb-3"><label class="form-label"><strong>HostName *</strong></label>
+              {{form.title}}
             </div>
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4">
+
+            <div class="mb-3"><label class="form-label" for="service_price"><strong>OS *</strong><br></label>
+              {{form.os_version}}
+            </div>
+          </div>
         </div>
+        <div class="mb-3"><label class="form-label" for="client_description"><strong>Description *</strong><br></label>
+          {{form.description}}
+          <div class="mb-3"><label class="form-label" for="service_client_payment_validated"><strong>Forensics Analyst&nbsp; *</strong></label>
+            <div class="form-group mb-3">
+              {% for u in Users %}
+              <a onclick="ToggleInvestigator('{{u.username}}');" href="#">
+                <span id="badge_{{u.username}}" class="badge text-muted" style="margin-right: 10px;color: rgb(0,0,0);border: 1px solid rgb(0,0,0) ;">{{u.username}}</span>
+              </a>
+            </div>
+            {% endfor %}
+            {{form.investigators}}
+          </div>
+          <div class="row mb-2">
+            <div class="col">
+              <div class="mb-3"><label class="form-label" for="service_client_end_date"><strong>Memory Dump *</strong><br></label>
+                <input class="form-control" id="fileupload" type="file"></div>
+              </div>
+            </div><button class="btn btn-primary" id="submit">Create</button>
+          </div>
+        </div>
+        <div class="text-end mb-3"></div>
+      </form>
     </div>
+    <div id="uploaded_files"></div>
+    <!-- The alert box displaying the error messages if the form is not valid -->
+    <div id="alert-box" class="text-dark not-visible"></div>
     <script>
-       function ToggleInvestigator(u){
-       var badge = document.getElementById('badge_'+u);
-       var investigators = document.getElementById('id_investigators');
+      function ToggleInvestigator(u){
+        var badge = document.getElementById('badge_'+u);
+        var investigators = document.getElementById('id_investigators');
 
-       if(badge.classList.contains("text-muted")){
-       if(investigators.value.includes(u) == false){
-       investigators.value += u + ' ';
-       }
-       badge.classList.remove("text-muted");
-       badge.classList.add("text-select");
-       }
-       else{
-       investigators.value = investigators.value.replace(u,"").replace(' ','');
-       badge.classList.remove("text-select");
-       badge.classList.add("text-muted");
-       }
-       console.log(investigators.value);
-       }
-
+        if(badge.classList.contains("text-muted")){
+          if(investigators.value.includes(u) == false){
+            investigators.value += u + ' ';
+          }
+          badge.classList.remove("text-muted");
+          badge.classList.add("text-dark");
+        }
+        else{
+          investigators.value = investigators.value.replace(u,"").replace(' ','');
+          badge.classList.remove("text-dark");
+          badge.classList.add("text-muted");
+        }
+        theme();
+      }
+      $(document).ready(function(){
+        $('.spinner-main').hide();
+        $('.container').show();
+        $('.container-fluid').show();
+      });
     </script>
-</div>
-{% endblock content %}
+    <script src="{% static 'js/upload.js' %}"></script>
+    {% endblock content %}

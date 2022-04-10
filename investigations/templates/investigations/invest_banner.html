@@ -1,20 +1,17 @@
 <!-- Investigation Information Banner -->
-<div class="row">
+<div class="row mt-3">
   <div class="card-font col-12">
-    <li class="list-group-item card-font">
-      <h3 class="h3">{{case.title}}</h3>
-
-
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-
-        <li class="breadcrumb-item">Operating System : <span class="text-link">{{case.os_version}}</span></li>
-        <li class="breadcrumb-item" aria-current="page">Analyst(s) : <span class="text-link">{{case.investigators}}</span></li>
-        <li class="breadcrumb-item" aria-current="page">Description : <span class="text-link">{{case.description}}</span></li>
-        <li class="breadcrumb-item" aria-current="page">Filename : <span class="text-link">{{case.name}}</span></li>
-      </ol>
-    </nav>
+    <li class="list-group-item card-font bg-light">
+      <h3 class="h3 text-dark">{{case.title}}</h3>
+      <ul>
+        <li class="text-dark">Operating System : <span class="text-dark">{{case.os_version}}</span></li>
+        <li class="text-dark">Analyst(s) : <span class="text-dark">{{case.investigators}}</span></li>
+        <li class="text-dark">Description : <span class="text-dark">{{case.description}}</span></li>
+        <li class="text-dark">Filename : <span class="text-dark">{{case.name}}</span></li>
+        <li class="text-dark">md5 : <span class="text-dark">{{hash.md5}}</span></li>
+        <li class="text-dark">sha1 : <span class="text-dark">{{hash.sha1}}</span></li>
+        <li class="text-dark">sha256 : <span class="text-dark">{{hash.sha256}}</span></li>
+      </ul>
     </li>
   </div>
-
 </div>

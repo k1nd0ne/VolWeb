@@ -1,4 +1,6 @@
-<table class="table table-sm" id="file_table">
+<div class=table-responsive>
+
+<table class="table table-light table-sm" id="file_table">
   <thead>
     <tr>
       <th scope="col">FileName</th>
@@ -12,13 +14,13 @@
       <td class="w-50">{{file.filename}}</td>
       <td class="w-25 text-danger">{{file.offset}}</td>
       <td class="w-25">
-        <button type="button" class="btn btn-prim" onclick="DownloadFile('{{file.file_dump_id}}')">Download</button>
+        <button type="button" class="btn btn-dark border border-dark" onclick="DownloadFile('{{file.file_dump_id}}','{{file.filename}}')">Download</button>
       </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-
+</div>
 <form id="form1" action="{% url 'download_file' %}" method="POST">
   {% csrf_token %}
   {{download_file_form.id}}
@@ -26,7 +28,7 @@
 
 
 <script>
-  function DownloadFile(dump_id){
+  function DownloadFile(dump_id,filename){
       const csrf = document.getElementsByName('csrfmiddlewaretoken');
       const id = document.getElementById('id_id');
       id.value = dump_id;
@@ -35,7 +37,7 @@
       fd.append('id', dump_id);
       $.ajax({
         type:'POST',
-        url: "../download_file/",
+        url: "{% url 'download_file' %}",
         enctype: 'multipart/form-data',
         data: fd,
         beforeSend: function(){
@@ -48,12 +50,12 @@
                     //Check the Browser type and download the File.
                     var isIE = false || !!document.documentMode;
                     if (isIE) {
-                        window.navigator.msSaveBlob(blob, "filedump.dmp");
+                        window.navigator.msSaveBlob(blob, filename);
                     } else {
                         var url = window.URL || window.webkitURL;
                         link = url.createObjectURL(blob);
                         var a = $("<a />");
-                        a.attr("download", "filedump.dmp");
+                        a.attr("download", filename);
                         a.attr("href", link);
                         $("body").append(a);
                         a[0].click();

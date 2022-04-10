@@ -1,130 +1,152 @@
 {% extends "dashboard/base.html" %}
 {% load static %}
 {% block content%}
-<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js"></script>
-<!-- Custom Cards Style -->
-<link rel="stylesheet" type="text/css" href="{% static 'dashboard/dashboard.css' %}"/>
-<!-- Dashboard Cards  -->
-<div class="container-fluid">
-
-  <div class="row">
-    <div class="col-12">
-      <div class="subtdb">
-        <ul class="no-bullets">
-          <li><h1 class="h3">Dashboard</h1></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="row mb-3">
-    <div class="col-6">
-      <div class="card">
-          <div id="chart"></div>
-      </div>
-    </div>
-    <div class="col-6 rounded">
-      <div class="card">
-        <h4 class="h5">People</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Username</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for u in Users %}
-                <tr>
-                    <td>{{u.username}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        </div>
-    </div>
-    </div>
-
-    <div class="row">
-    <div class="col-3">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title display-4 text-center mem-color" id="memcount" countTomem="{{investigations}}"></h4>
-                <h5 class="card-title">Analysis</h5>
+  <div class="container-fluid" style="margin-top: 50px;">
+        <div class="row">
+            <div class="col-md-8">
+              <div id="chart" style="height:30rem;"></div>
+            </div>
+            <div class="col-md-4">
+                <div class="table-responsive">
+                    <table class="table table-light">
+                        <thead>
+                            <tr>
+                                <th>Forensics Analysts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {% for u in Users %}
+                          <tr>
+                              <td>{{u.username}}</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-3">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title display-4 text-center ind-color" id="indcount" countToind="{{iocs}}"></h4>
-                <h5 class="card-title">Indicator(s)</h5>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-3">
+                <div class="card bg-light border border-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-dark">Analysis</h4>
+                        <h6 class="fs-1 text-primary card-subtitle mb-2" id="memcount" countTomem="{{investigations}}"></h6><a class="card-link text-dark" href="{% url 'investigations' %}">View&gt;</a><a class=" text-dark card-link" href="{% url 'newinvest' %}">Create&gt;</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="card bg-light border border-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-dark">IOCs</h4>
+                        <h6 class="fs-1 text-danger card-subtitle mb-2" id="indcount" countToind="{{iocs}}"></h6><a class="text-dark card-link" href="{% url 'iocs' %}">View&gt;</a><a class="text-dark card-link" href="{% url 'newioc' %}">Create&gt;</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    </div>
-</div>
+    <script src="{% static 'js/countup.min.js'%}"></script>
+    <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js"></script>
+    <script>
+    let lightSwitch = document.getElementById("lightSwitch");
+    // create data
+    var data = [];
+    var data_raw = JSON.parse("{{Activity|escapejs}}");
+    for (var i in data_raw){
+      data.push([data_raw[i]["pk"],data_raw[i]["fields"]["count"]]);
+    }
 
-<script>
-if (document.getElementById('memcount')) {
-        const countUp = new CountUp('memcount', document.getElementById("memcount").getAttribute("countTomem"));
-        if (!countUp.error) {
-            countUp.start();
-        } else {
-            console.error(countUp.error);
-        }
-  }
-if (document.getElementById('indcount')) {
-        const countUp = new CountUp('indcount', document.getElementById("indcount").getAttribute("countToind"));
-        if (!countUp.error) {
-            countUp.start();
-        } else {
-            console.error(countUp.error);
-        }
-  }
-
-// create data
-var data = [];
-var data_raw = JSON.parse("{{Activity|escapejs}}");
-for (var i in data_raw){
-  data.push([data_raw[i]["pk"],data_raw[i]["fields"]["count"]]);
-}
-// create a chart
-chart = anychart.line();
-
-// adjust chart settings
- var title = chart.title();
- // enable title
- title.enabled(true);
- // set title text
- title.useHtml(true);
-title.text(
-  "<a style=\"color:#FFFFFF; \">Analysis Activities</a>"
-);
-chart.background().fill("#293b58");
-var title_x = chart.xAxis().title();
-title_x.enabled(true);
-title_x.useHtml(true);
-title_x.text(
-  "<a style=\"color:#FFFFFF; \">Date</a>"
-);
-
-var title_y = chart.yAxis().title();
-title_y.enabled(true);
-title_y.useHtml(true);
-title_y.text(
-  "<a style=\"color:#FFFFFF; \">Analysis</a>"
-);
+    // create a chart
+    chart = anychart.line();
+    // adjust chart settings
+     var title = chart.title();
+     // enable title
+     title.enabled(true);
+     // set title text
+     title.useHtml(true);
+    var title_x = chart.xAxis().title();
+    title_x.enabled(true);
+    title_x.useHtml(true);
 
 
-// create a line series and set the data
-var series = chart.spline(data);
-series.stroke('3 #32d3bc 0.8');
-// set the container id
-chart.container("chart");
+    var title_y = chart.yAxis().title();
+    title_y.enabled(true);
+    title_y.useHtml(true);
 
-// initiate drawing the chart
-chart.draw();
+
+    if (lightSwitch.checked) {
+      title.text(
+        "<a style=\"color:white; \">Analysis Activities</a>"
+      );
+      title_x.text(
+        "<a style=\"color:white; \">Date</a>"
+      );
+      title_y.text(
+        "<a style=\"color:white; \">Analysis</a>"
+      );
+      chart.background().fill("#212529");
+    }
+
+    else{
+      title.text(
+        "<a style=\"color:black; \">Analysis Activities</a>"
+      );
+      title_x.text(
+        "<a style=\"color:black; \">Date</a>"
+      );
+      title_y.text(
+        "<a style=\"color:black; \">Analysis</a>"
+      );
+      chart.background().fill("#f8f9fa");
+    }
 
 
 
-</script>
+
+    // create a line series and set the data
+    var series = chart.spline(data);
+    series.stroke('3 #32d3bc 0.8');
+    // set the container id
+    chart.container("chart");
+    function change_graph(){
+      if (lightSwitch.checked) {
+        title.text(
+          "<a style=\"color:white; \">Analysis Activities</a>"
+        );
+        title_x.text(
+          "<a style=\"color:white; \">Date</a>"
+        );
+        title_y.text(
+          "<a style=\"color:white; \">Analysis</a>"
+        );
+        chart.background().fill("#212529");
+      }
+
+      else{
+        title.text(
+          "<a style=\"color:black; \">Analysis Activities</a>"
+        );
+        title_x.text(
+          "<a style=\"color:black; \">Date</a>"
+        );
+        title_y.text(
+          "<a style=\"color:black; \">Analysis</a>"
+        );
+        chart.background().fill("#f8f9fa");
+      }
+    }
+
+    // initiate drawing the chart
+    chart.draw();
+      $(document).ready(function(){
+        change_graph();
+        lightSwitch.addEventListener("change", change_graph);
+        $('.container').show();
+        $('.container-fluid').show();
+        $('.spinner-main').hide();
+
+      });
+    </script>
 {% endblock content %}

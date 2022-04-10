@@ -1,167 +1,186 @@
 {% extends "dashboard/base.html" %}
 {% load static %}
 {% block content%}
-<!-- Custom Card Style -->
-<style type="text/css">
-  .main {
-    color:#ffffff;
-    --tw-bg-opacity: 1;
-    font-family: Anonymous Pro, monospace;
-    --tw-text-opacity: 1;
-    color: rgba(233, 233, 233, var(--tw-text-opacity));
-    -moz-osx-font-smoothing: grayscale;
-    -moz-osx-font-smoothing: auto;
-    font-size: 0.9rem;
-  }
-  .modal-content {
-    background-color: #293b58;
-  }
-  .card{
-    border-width: small;
-    background-color:#293b58;
-    transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
-    padding: 14px 30px 10px 30px;
-  }
-
-  .card:hover{
-    transform: scale(1.01);
-  }
-
-  .text-white {
-    --tw-bg-opacity: 1;
-    font-family: Anonymous Pro, monospace;
-    --tw-text-opacity: 1;
-    color: rgba(233, 233, 233, var(--tw-text-opacity));
-    -moz-osx-font-smoothing: grayscale;
-    -moz-osx-font-smoothing: auto;
-    font-size: 0.9rem;
-  }
-  .query-input {
-    background-color:#293b58;
-    font-size: 1rem;
-    line-height: 3rem;
-    width: 100%;
-    white-space: nowrap;
-    color:#ffffff;
-  }
-
-  .h3 {
-    color: #eb1f5a;
-    float:right;
-  }
-
-  .invests:hover{
-    color:#ffffff;
-  }
-</style>
-<div class="container-fluid main" style="overflow-y:scroll">
+<div class="container-fluid " style="margin-top: 50px;">
   <div class="row">
-    <div class="col-12">
-      <h1 class="h3">Investigations</h1>
-      <div class="d-inline">
-				<input class="query-input form-control mb-3" id="myInput" type="text" placeholder="Search..">
-			</div>
-      <p><a href="{%url 'newinvest'%}">Create a new investigation.</a></p>
-      <hr>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-12">
-      <!-- Investigations Cards -->
-      <div id="cards" class="card-deck">
+    <div class="col-md-4" style="border-right-width: 3px;border-right-style: solid;overflow-y: scroll;overflow-x: hidden;min-height: 82vh;max-height: 82vh;">
+      <input type="search" id="myInput" style="width: 100%;" placeholder="Search"><a class="link-dark" href="{% url 'newinvest'%}">
+        <div class="card d-flex flex-row justify-content-center align-items-center bg-light border border-dark" style="border-width: 3px;margin-top: 5px;">
+          <i class="icon ion-ios-plus-empty d-xxl-flex text-dark" style="font-size: 50px;margin-left: 10px;"></i>
+        </div>
+      </a>
+      <div id="cards">
         {% if investigations %}
+        <script>
+          window.setInterval('refresh_status()', 60000);
+        </script>
         {% for i in investigations %}
-        <a href="#" class="invests" data-bs-toggle="modal" data-bs-target="#card_{{i.id}}" id="card_{{i.title}}" style="text-decoration:none">
-          <div class="card mb-3 flex-row justify-content-center align-items-center shadow rounded">
-            <div class="card-header border-0 ">
-              <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-windows" viewBox="0 0 16 16">
-                <path d="M6.555 1.375 0 2.237v5.45h6.555V1.375zM0 13.795l6.555.933V8.313H0v5.482zm7.278-5.4.026 6.378L16 16V8.395H7.278zM16 0 7.33 1.244v6.414H16V0z"/>
-              </svg>
-            </div>
+        <a class="link-dark" href=# onclick="DisplayInvestigation('{{i.id}}')">
+          <div id="{{i.id}}" class="card d-flex flex-row justify-content-center align-items-center invest-card bg-light border border-dark border-sm" style="margin-top: 5px;"><i class="fab fa-windows text-info d-xxl-flex" style="font-size: 50px;margin-left: 10px;"></i>
             <div class="card-body">
-              <p class="card-subtitle h4 mb-2" style="color:#32d3bc;" id="invest-title">{{ i.title }}</p>
-              <p class="card-subtitle mb-2" id="invest-description" >{{ i.description }}</p>
-              <small><u>Forensics Expert(s)</u> : {{ i.investigators }}</small>
-              <hr>
-              {% if i.status == "0" %}
-              <p class="card-subtitle" style="color:#eb1f5a;" id="invest-status_{{i.id}}">Not Analysed.</p>
-              {% endif  %}
-              {% if i.status == "1" %}
-              <div style="float:left; color:#dea71d; margin-right:5px;" class="spinner-grow spinner-grow-sm" role="status"></div><p class="card-subtitle" style=" color:#dea71d;" id="invest-status_{{i.id}}">Investigation in progress </p>
-              {% endif %}
-
-              {% if i.status == "2" %}
-              <p class="card-subtitle" id="invest-status_{{i.id}}" style="color:#32d3bc;">Ready to be reviewed</p>
-              {% endif %}
+              <h4 class="card-title text-dark">{{i.title}}</h4>
+              <small class="text-muted card-subtitle mb-2">{{i.name}}</small>
+              <div id="pb_{{i.id}}" class="progress">
+                {% if i.status == '4' %}
+                <div class="progress-bar bg-warning" aria-valuenow="100" aria-valuemin="0" style="width: 100%" aria-valuemax="100">Partial results</div>
+                {% elif i.status == '2' %}
+                <div class="progress-bar bg-success" aria-valuenow="100" aria-valuemin="0" style="width: 100%" aria-valuemax="100">Ready</div>
+                {% elif i.status == '1' %}
+                <div class="progress-bar progress-bar-striped progress-bar-animated" aria-valuenow="100" style="background-color:#212529; width: 100%" aria-valuemin="0" aria-valuemax="100">In progress : {{i.percentage}}%</div>
+                {% else %}
+                <div class="progress-bar progress-bar-striped" aria-valuenow="100" style="background-color:#212529; width: 100%" aria-valuemin="0" aria-valuemax="100">Not analyzed</div>
+                {% endif %}
+              </div>
             </div>
           </div>
         </a>
-
-        <!-- Modal displayed for each investigations -->
-        <div class="text-white modal fade" id="card_{{i.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog border">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Investigation</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <ul>
-                  <li>Title : {{i.title}}</li>
-                  <li>OS Version : {{i.os_version}}</li>
-                  <li>Forensics Expert(s): {{i.investigators}}</li>
-                  <li>File: {{i.name}}</li>
-                </ul>
-                {% if i.status == "0" %}
-                This memory sample is not analysed yet.
-                {% endif %}
-                {% if i.status == "1" %}
-                This sample is being analysed. Please Wait.
-                {% endif %}
-                {% if i.status == "2" %}
-                This sample is ready to be reviewed.
-                {% endif %}
-              </div>
-              <div class="modal-footer">
-                {% if i.status == "0" %}
-                  <button class="btn btn-prim" onclick="StartAnalysis('{{i.id}}');" data-bs-dismiss="modal">Start analysis</button>
-                {% endif %}
-                {% if i.status == "1" %}
-                  <button type="button" class="btn btn-warn" onclick="CancelAnalysis('{{i.id}}');" data-bs-dismiss="modal">Cancel analysis</button>
-                {% endif %}
-                {% if i.status == "2" %}
-                <form id="reviewform" action="{% url 'reviewinvest' %}" method="GET">
-                  <input type="hidden" name="sa_case_id" value="{{i.id}}">
-                  <input class="btn btn-succ" type="submit" value="Review results">
-                </form>
-                  <button type="button" class="btn btn-prim" onclick="StartAnalysis('{{i.id}}');" data-bs-dismiss="modal">Restart analysis</button>
-                {% endif %}
-                <button type="button" class="btn btn-dang" onclick="DeleteAnalysis('{{i.id}}')" data-bs-dismiss="modal">Delete</button>
-              </div>
-            </div>
-          </div>
-        </div>
         {% endfor %}
-        <form method="POST">
-          {% csrf_token %}
-          {{form.sa_case_id}}
-        </form>
         {% endif %}
       </div>
-    </div>
 
+    </div>
+    <div id="actions" class="col-md-8" style="height: 80vh;">
+      <span class="spinner-invest spinner-border spinner-border-sm spinner" role="status"></span>
+      {% if investigations %}
+      <div class="card bg-light border-sm border-dark" style="height: 65vh;">
+        <div class="card-header">
+          <h5 class="mb-0">Details</h5>
+        </div>
+        <div class="invest-details card-body"><span id="title" class="d-lg-flex justify-content-lg-start"></span>
+          <span id="name" class="d-lg-flex justify-content-lg-start"></span><span class="d-lg-flex justify-content-lg-start"></span>
+          <span id="description" class="d-lg-flex justify-content-lg-start"></span>
+          <div class="table-responsive d-lg-flex">
+            <table class="table table-light table-hover table-sm">
+              <thead>
+                <tr>
+                  <th>Forensics Analysts :&nbsp;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td id="investigators"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+            <table class="table table-light table-hover table-sm">
+              <thead>
+                <tr>
+                  <th>Linked String based IOC</th>
+                  <th>Context</th>
+                </tr>
+              </thead>
+              <tbody id="ioc-table">
+
+              </tbody>
+            </table>
+        </div>
+      </div>
+      <div class="card bg-light border-sm border-dark">
+        <div class="card-header">
+          <h5 class="mb-0">Actions</h5>
+        </div>
+        <div class="invest-details invest-actions card-body">
+          <form style="all: unset;" id="reviewform" action="{% url 'reviewinvest' %}" method="GET">
+            <input type="hidden" name="sa_case_id" value="{{i.id}}">
+            <input class="btn btn-dark btn-sm" type="submit" style="margin-right: 10px;" value="Review results">
+          </form>
+
+        </div>
+
+      </div>
+      {% endif %}
+    </div>
   </div>
-</div>
+<form method="POST">
+  {% csrf_token %}
+  {{form.sa_case_id}}
+</form>
 {% include "investigations/toasts.html" %}
 
-<!-- Ajax post requests management (Create/Delete/Restart/Cancel) -->
-<script
-      src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-      crossorigin="anonymous"></script>
-
-
 <script>
+
+  function DisplayInvestigation(case_id){
+    $('.invest-card').removeClass("invest-selected");
+    $(document.getElementById(case_id)).addClass("invest-selected");
+    $('.spinner-invest').show();
+    $('#actions').show();
+    $('.invest-details').hide();
+    $.get("{% url 'get_invest' %}", {sa_case_id:case_id}, // url
+      function (response, textStatus, jqXHR) {  // success callback
+          if(textStatus == "success"){
+            if (response['message'] == "success") {
+              var title = response['result'][0].fields.title;
+              var description =
+              $('#investigators').html(response['result'][0].fields.investigators);
+              $('#title').html("Hostname : " + response['result'][0].fields.title);
+              $('#name').html("Filename : " + response['result'][0].fields.name);
+              $('#description').html("Description : " + response['result'][0].fields.description);
+
+              if (response['result'][0].fields.status == "0") {
+                $('.invest-actions').html("\
+                <button class='btn border-sm border-light btn-dark btn-sm' type='button' style='margin-right: 10px;' onclick=StartAnalysis('" + case_id + "');>Start Analysis</button>\
+                <button class='btn border-sm border-light btn-danger btn-sm' type='button' style='margin-right: 10px;'' onclick=DeleteAnalysis('" + case_id + "');>Delete Analysis</button>\
+                ");
+              }
+              if (response['result'][0].fields.status == "1") {
+                $('.invest-actions').html("\
+                <button class='btn border-sm border-dark btn-light btn-sm' type='button' style='margin-right: 10px;' onclick=CancelAnalysis('" + case_id + "');>Cancel Analysis</button>\
+                ");
+              }
+              if (response['result'][0].fields.status == "2") {
+                $('.invest-actions').html("\
+                <form style='all: unset;' id='reviewform' action=\"{% url 'reviewinvest' %}\" method='GET'>\
+                  <input type='hidden' name='sa_case_id' value='" + case_id + "'>\
+                  <input class='btn border-sm border-light  btn-dark btn-sm' type='submit' style='margin-right: 10px;' value='Review results'>\
+                </form>\
+                <button class='btn border-sm border-light btn-dark btn-sm' type='button' style='margin-right: 10px;' onclick=StartAnalysis('" + case_id + "');>Restart Analysis</button>\
+                <button class='btn btn-danger btn-sm' type='button' style='margin-right: 10px;'' onclick=DeleteAnalysis('" + case_id + "');>Delete Analysis</button>\
+                ");
+              }
+              if (response['result'][0].fields.status == "4") {
+                $('.invest-actions').html("\
+                <form style='all: unset;' id='reviewform' action=\"{% url 'reviewinvest' %}\" method='GET'>\
+                  <input type='hidden' name='sa_case_id' value='" + case_id + "'>\
+                  <input class='btn border-sm border-light btn-dark btn-sm' type='submit' style='margin-right: 10px;' value='Review results'>\
+                </form>\
+                <button class='btn border-sm border-light btn-dark btn-sm' type='button' style='margin-right: 10px;' onclick=StartAnalysis('" + case_id + "');>Restart Analysis</button>\
+                <button class='btn btn-danger btn-sm' type='button' style='margin-right: 10px;'' onclick=DeleteAnalysis('" + case_id + "');>Delete Analysis</button>\
+                <p class='text-warning'>Some volatility modules could not run on this dump. This might indicate that a part of the memory dump is corrupted or not readable by volatility.<p>\
+                ");
+              }
+              if(response['iocs']['message']){
+                $('#ioc-table').html("\
+                <tr>\
+                  <td>N/A</td>\
+                </tr>\
+                "
+                )
+              }
+              else {
+                table_entry = "";
+                response['iocs'].forEach(function(item){
+                  table_entry += "\
+                  <tr>\
+                    <td>"+ item.fields.value +"</td>\
+                    <td>"+ item.fields.context +"</td>\
+                  </tr>\
+                  "
+                });
+                $('#ioc-table').html(table_entry)
+              }
+            }
+            if (response['message'] == "error")
+            {
+              $('#proc-error-message').html("Something went wrong getting the linked iocs.");
+              $('.toast-proc-error').toast('show');
+            }
+            $('.invest-details').show();
+            $('.spinner-invest').hide();
+          }
+    });
+  }
+
   function StartAnalysis(case_id){
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const fd = new FormData();
@@ -173,19 +192,20 @@
       enctype: 'multipart/form-data',
       data: fd,
       beforeSend: function(){
-        //Toggle the message that we did take the request into a count
+
       },
       success: function(response){
         if (response['message'] == "success") {
-          $('#proc-success-message').html("Starting analysis...");
-          $('.toast-proc-success').toast('show');
-          refresh();
+          $('#proc-message').html("Analysis started.");
+          $('.toast-proc').toast('show');
+          refresh_status()
         }
         if (response['message'] == "error")
         {
           $('#proc-error-message').html("Invalid request");
           $('.toast-proc-error').toast('show');
         }
+
       },
       error: function(error){
         $('#proc-error-message').html("Something went wrong (500) ");
@@ -215,7 +235,7 @@
         if (response['message'] == "success") {
           $('#proc-success-message').html("Analysis canceled.");
           $('.toast-proc-success').toast('show');
-          refresh();
+          refresh_status()
         }
         if (response['message'] == "error")
         {
@@ -257,6 +277,7 @@
       },
       success: function(response){
         if (response['message'] == "success") {
+          $('#actions').hide();
           $('#proc-success-message').html("Analysis removed.");
           $('.toast-proc-success').toast('show');
           refresh();
@@ -276,28 +297,73 @@
       processData: false
     });
   }
-
   // Refresh or reload page.
   function refresh() {
     $.ajax({
       url: "{% url 'investigations' %}",
       success: function(data) {
+        $('.modal').modal('hide');
         var parser = new DOMParser();
         var wrapper = parser.parseFromString(data, "text/html");
         cards = wrapper.getElementById('cards');
         $('#cards').html(cards);
+        theme();
       }
+    });
+  }
+
+  // Refresh status.
+  function refresh_status() {
+    $.get("{% url 'get_status' %}",  // url
+    function (data, textStatus, jqXHR) {  // success callback
+      result =  $.parseJSON(data['response']);
+      $.each(result, function( index ){
+        pb = "pb_" + result[index].pk;
+        status = result[index].fields.status;
+        percentage = result[index].fields.percentage;
+        cid = document.getElementById(result[index].pk);
+        if ($(cid).hasClass('invest-selected')){
+            DisplayInvestigation(result[index].pk);
+        }
+        if(status == "2"){
+          $(document.getElementById(pb)).html("\
+          <div class='progress-bar bg-success' aria-valuenow='100' aria-valuemin='0' style='width: 100%' aria-valuemax='100'>Ready</div>\
+          ");
+        }
+        if(status == "1"){
+          $(document.getElementById(pb)).html("\
+          <div class='progress-bar progress-bar-striped progress-bar-animated bg-dark' aria-valuenow='100' style='width: 100%' aria-valuemin='0' aria-valuemax='100'>In progress : " + percentage + "%</div>\
+          ");
+        }
+        if(status == "0"){
+          $(document.getElementById(pb)).html("\
+          <div class='progress-bar progress-bar-striped  bg-dark' aria-valuenow='100' style='width: 100%' aria-valuemin='0' aria-valuemax='100'>Not analyzed</div>");
+        }
+
+        if(status == "4"){
+          $(document.getElementById(pb)).html("\
+          <div class='progress-bar bg-warning' aria-valuenow='100' aria-valuemin='0' style='width: 100%' aria-valuemax='100'>Partial results</div>\
+          ");
+        }
+        theme();
+
+      });
     });
   }
   //Search an investigation
   $(document).ready(function(){
+    $('.spinner-main').hide();
+    $('.spinner-invest').hide();
+    $('.invest-details').hide();
+    $('#actions').hide();
+    $('.container').show();
+    $('.container-fluid').show();
     $("#myInput").on("keyup", function() {
       var value = $(this).val().toLowerCase();
       $("#cards a").filter(function() {
         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
       });
     });
-    window.setInterval('refresh()', 30000); 	// Call a function every 10000 milliseconds (OR 10 seconds).
   });
 </script>
 {% endblock content %}

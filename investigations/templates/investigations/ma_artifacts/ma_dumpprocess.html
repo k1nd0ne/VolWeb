@@ -1,12 +1,12 @@
 <!-- Investigation malware_analysis_dump_process -->
-<button class="btn btn-dang-d" type="button" data-bs-toggle="modal" data-bs-target=#downloadDump>
+<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="modal" data-bs-target=#downloadDump>
   Dump Process
 </button>
-<div class="text-white modal fade" id="downloadDump" tabindex="-1" aria-labelledby="downloadDump" aria-hidden="true">
-  <div class="modal-dialog border">
+<div class="modal fade" id="downloadDump" tabindex="-1" aria-labelledby="downloadDump" aria-hidden="true">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Dump a process by PID</h5>
+        <h5 class="modal-title">Dump a process by PID</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form action="" method="POST">
@@ -19,7 +19,7 @@
           <div id="alert-box" class="not-visible"></div>
         </div>
         <div class="modal-footer">
-          <input class="btn btn-succ" type="submit" onclick="DemandDump('{{case.id}}')" value="Dump">
+          <input class="btn btn-dark" type="submit" onclick="DemandDump('{{case.id}}')" value="Dump">
         </div>
       </form>
     </div>
@@ -50,19 +50,16 @@ function DemandDump(case_id){
       $('#downloadDump').modal('hide')
       $('#proc-message').html("Your dump request was taken into account");
       $('.toast-proc').toast('show');
-      //Toggle the message that we did take the request into a count.
-
     },
     success: function(response){
       if (response['message'] == "success") {
         $('#proc-success-message').html("Your process was successfully dumped");
         $('.toast-proc-success').toast('show');
         JSON.parse(response['dumps']).forEach(function insert(item){
-          console.log(item);
           $("#dump_table tbody").append("<tr>\
             <td>"+item['fields']['filename'] + "</td>\
             <td class='text-danger'>"+item['fields']['pid'] + "</td>\
-            <td><button type='button' class='btn btn-prim' onclick=\"DownloadDump('" + item['pk'] + "')\">Download</button></td>\
+            <td><button type='button' class='btn btn-dark' onclick=\"DownloadDump('" + item['pk'] + "','"+item['fields']['filename'] + "')\">Download</button></td>\
         </tr>");
         });
       }
@@ -84,6 +81,8 @@ function DemandDump(case_id){
 
     },
     error: function(error){
+      $('#proc-failed-message').html("An error occured : " + error);
+      $('.toast-proc-failed').toast('show');
       console.log("ERROR : " + error)
     },
     cache: false,

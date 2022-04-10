@@ -1,5 +1,5 @@
 <!-- Investigation malware_analysis_timeline -->
-<button class="btn btn-dang-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseTimeline>
+<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target=#collapseTimeline>
   TimeLine Explorer
 </button>
 
@@ -8,7 +8,7 @@
   <div class="d-inline">
     <input class="form-control mb-3" id="searchTimeline" type="text" placeholder="Search..">
   </div>
-  <table id="TimelineTable" class="table card-font timeline">
+  <table id="TimelineTable" class="table table-light table-hover card-font timeline">
     <thead>
       <tr>
         <th scope="col">Accessed Date</th>
@@ -37,8 +37,8 @@
     document.getElementById('searchTimeline').value = date.toString();
     $('#searchTimeline').keyup();
   }
-
-  anychart.onDocumentReady(function () {
+    try {
+    let lightSwitch = document.getElementById("lightSwitch");
     // create data
     var data = JSON.parse("{{linechart|escapejs}}");
     // create a chart
@@ -55,14 +55,39 @@
 
     // set the titles of the axes
     var xAxis = chart.xAxis();
-    xAxis.title("Month");
+    xAxis.title("Time");
     var yAxis = chart.yAxis();
-    yAxis.title("Sales, $");
-    chart.background().fill("#293b58");
+    yAxis.title("Events");
+
+    if (lightSwitch.checked) {
+      chart.background().fill("#212529");
+    }
+
+    else{
+      chart.background().fill("#f8f9fa");
+    }
     // set the container id
     chart.container("container-timeline");
     // initiate drawing the chart
     chart.draw();
+    }
+    catch(error){
+      console.log("Could not load timeline chart.");
+    }
 
-  });
+    function change_graph(){
+      if (lightSwitch.checked) {
+        chart.background().fill("#212529");
+      }
+
+      else{
+        chart.background().fill("#f8f9fa");
+      }
+    }
+
+    $(document).ready(function(){
+      change_graph();
+      lightSwitch.addEventListener("change", change_graph);
+    });
+
 </script>

@@ -1,28 +1,43 @@
+from .tasks import start_memory_analysis, dump_memory_pid, app, dump_memory_file
+from django.http import StreamingHttpResponse, FileResponse, JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect
 from django.core.serializers import serialize
-from django.contrib.auth.decorators import login_required
-from .forms import *
-from .models import *
-from django.contrib.auth import get_user_model
-from django.contrib import messages
-from django.http import StreamingHttpResponse, FileResponse, JsonResponse
-from iocs.models import NewIOC
-from .tasks import start_memory_analysis, dump_memory_pid, app, dump_memory_file
 from celery.result import AsyncResult
+from django.contrib import messages
 import json, os, uuid, datetime
+from iocs.models import IOC
 from os.path import exists
+from .models import *
+from .forms import *
+import subprocess
 
-
-#Investigation view : Manage the created investigations actions (Launch/Delete/Cancel)
 @login_required
 def investigations(request):
+    """Investigation dashboard
+
+    Arguments:
+    request : http request object
+
+    Comment:
+    First entry point to visualise all of the investigations
+    """
     form = ManageInvestigation()
     return render(request,'investigations/invest.html',{'investigations': UploadInvestigation.objects.all(), 'form': form})
 
-
-#Create a new investigation based on the ModelForm (see models.py/forms.py)
 @login_required
 def newinvest(request):
+    """Create a new investigation
+
+            Arguments:
+            request : http request object
+
+            Comment:
+            Handle the file upload chunck by chunck.
+            Create the investigation if the upload is successfull.
+            """
     if request.method == 'POST':
         form = UploadFileForm(request.POST)
         if form.is_valid():
@@ -52,6 +67,7 @@ def newinvest(request):
                 FileFolder.investigators = investigators
                 FileFolder.description = description
                 FileFolder.status = "0"
+                FileFolder.percentage = "0"
                 FileFolder.existingPath = fileName
                 FileFolder.eof = end
                 FileFolder.name = fileName
@@ -59,9 +75,13 @@ def newinvest(request):
                 FileFolder.save()
                 if int(end):
                     res = JsonResponse({'data':'Uploaded Successfully','existingPath': fileName})
-                    activity = Activity()
-                    activity.date = datetime.datetime.now().date()
-                    activity.count += 1
+                    try:
+                        activity = Activity.objects.get(date=datetime.datetime.now().date())
+                        activity.count = activity.count + 1
+                    except Activity.DoesNotExist:
+                        activity = Activity()
+                        activity.date = datetime.datetime.now().date()
+                        activity.count = 1
                     activity.save()
                 else:
                     res = JsonResponse({'existingPath': fileName})
@@ -99,15 +119,66 @@ def newinvest(request):
     return render(request, 'investigations/newinvest.html', {'form': form, 'Users':User.objects.filter(is_superuser = False)})
 
 
-#The start_analysis view : start an analysis
+@login_required
+def get_invest(request):
+    """Get the investigation details
+
+        Arguments:
+        request : http request object
+
+        Comment:
+        When a user click on an investigation card, this function load the details about it.
+        """
+    if request.method == 'GET':
+        form = ManageInvestigation(request.GET)
+        if form.is_valid():
+            id = form.cleaned_data['sa_case_id']
+            try:
+                u = UploadInvestigation.objects.get(pk=id)
+                response = serialize('python', [u], ensure_ascii=False, fields=('title','name', 'investigators', 'description', 'status', 'percentage'))
+            except ObjectDoesNotExist:
+                response = {'message':'N/A'}
+            try:
+                i = IOC.objects.filter(linkedInvestigation=id)
+                iocs = serialize('python', list(i), ensure_ascii=False, fields=('value','context'))
+            except ObjectDoesNotExist:
+                iocs = {'message':'N/A'}
+            return JsonResponse({'message': "success", 'result':response,'iocs':iocs})
+        else:
+            return JsonResponse({'message': "error"})
+
+
+@login_required
+def get_status(request):
+    """Update analysis status
+
+        Arguments:
+        request : http request object
+
+        Comment:
+        When an analysis is in progress, the percentage and status are updated in the progress bar.
+        """
+    if request.method == 'GET':
+        invest = serialize("json", UploadInvestigation.objects.all(), fields=('status','percentage'))
+        return JsonResponse({'message': "success","response":invest})
+
 @login_required
 def start_analysis(request):
+    """Start the analysis
+
+        Arguments:
+        request : http request object
+
+        Comment:
+        The user clicked on the "Start analysis" button.
+        """
     if request.method == 'POST':
         form = ManageInvestigation(request.POST)
         if form.is_valid():
             id = form.cleaned_data['sa_case_id']
             case = UploadInvestigation.objects.get(pk=id)
             case.status = "1"
+            case.percentage = "0"
             result = start_memory_analysis.delay('Cases/'+str(case.name),case.id)
             case.taskid = result
             case.save()
@@ -115,29 +186,47 @@ def start_analysis(request):
         else:
             return JsonResponse({'message': "error"})
 
-
-#The remove_analysis view : remove an analysis
 @login_required
 def remove_analysis(request):
+    """Remove the analysis
+
+        Arguments:
+        request : http request object
+
+        Comment:
+        The user clicked on the "remove analysis" button.
+        """
     if request.method == 'POST':
         form = ManageInvestigation(request.POST)
         if form.is_valid():
             id = form.cleaned_data['sa_case_id']
             case = UploadInvestigation.objects.get(pk=id)
-            iocs = NewIOC.objects.all()
-            for ioc in iocs:
-                if str(case.id) in ioc.linkedInvestigationID:
-                    ioc.delete()
-            os.system('rm Cases/Results/'+str(case.id)+'.json')
-            os.system('rm Cases/' + str(case.name))
+            case_json = 'Cases/Results/'+str(case.id)+'.json'
+            case_memdump = 'Cases/' + str(case.name)
+            try:
+                subprocess.check_output(['rm', case_json])
+            except:
+                pass
+            try:
+                subprocess.check_output(['rm', case_memdump])
+            except:
+                pass
             case.delete()
             return JsonResponse({'message': "success"})
         else:
             return JsonResponse({'message': "error"})
 
-#The cancel_analysis view : cancel an analysis
 @login_required
 def cancel_analysis(request):
+    """Cancel the analysis
+
+        Arguments:
+        request : http request object
+
+        Comment:
+        When analysis is in progress the user clicked on the "Cancel" button.
+        The celery task is canceled.
+        """
     if request.method == 'POST':
         form = ManageInvestigation(request.POST)
         if form.is_valid():
@@ -151,10 +240,17 @@ def cancel_analysis(request):
         else:
             return JsonResponse({'message': "error"})
 
-
-#The reviewinvest view : Pass the memory analysis results to the context
 @login_required
 def reviewinvest(request):
+    """Review an analysis
+
+        Arguments:
+        request : http request object
+
+        Comment:
+        The user requested to review an investigation.
+        Get the id of the wanted investigation and send the right context.
+        """
     if request.method == 'GET':
         form = ManageInvestigation(request.GET)
         if form.is_valid():
@@ -167,16 +263,25 @@ def reviewinvest(request):
             download_dump_form = DownloadDump()
             dump_file_form = DumpFile()
             download_file_form = DownloadFile()
-            context.update({'dl_dump_form': download_dump_form, 'dump_file_form': dump_file_form, 'download_file_form': download_file_form, 'form': dump_process_form, 'dumps':ProcessDump.objects.filter(case_id = id), 'files':FileDump.objects.filter(case_id = id)})
+            download_hive_form = DownloadHive()
+            context.update({'dl_hive_form':download_hive_form,'dl_dump_form': download_dump_form, 'dump_file_form': dump_file_form, 'download_file_form': download_file_form, 'form': dump_process_form, 'dumps':ProcessDump.objects.filter(case_id = id), 'files':FileDump.objects.filter(case_id = id)})
             return render(request, 'investigations/reviewinvest.html',context)
         else:
             form = ManageInvestigation()
             return render(request,'investigations/invest.html',{'investigations': UploadInvestigation.objects.all(), 'form': form})
 
-
-#The dump_process view : Handle the dump memory requests
 @login_required
 def dump_process(request):
+    """Dump a process
+
+        Arguments:
+        request : http request object
+
+        Comment:
+        Get the process PID passed by the user.
+        Dump the process via volatility delegated to celery.
+        Send the proper response (failed, success, error).
+        """
     if request.method == 'POST':
         form = DumpMemory(request.POST)
         if form.is_valid():
@@ -199,9 +304,18 @@ def dump_process(request):
             return JsonResponse({'message': "error"})
 
 
-#The dump_process view : Handle the dump memory requests
 @login_required
 def dump_file(request):
+    """Dump a file
+
+        Arguments:
+        request : http request object
+
+        Comment:
+        Get the file offset passed by the user.
+        Dump the file via volatility delegated to celery.
+        Send the proper response (failed, success, error).
+        """
     if request.method == 'POST':
         form = DumpFile(request.POST)
         if form.is_valid():
@@ -223,22 +337,29 @@ def dump_file(request):
         else:
             return JsonResponse({'message': "error"})
 
-#The download_dump view : Handle the dump download requests
 @login_required
-def download_dump(request):
+def download_hive(request):
+    """Download a dumped hive
+
+        Arguments:
+        request : http request object
+
+        Comment:
+        The user requested to download a dumped hive.
+        Get the hive and return it.
+        """
     if request.method == 'POST':
-        form = DownloadDump(request.POST)
+        form = DownloadHive(request.POST)
         if form.is_valid():
-            dump_id = form.cleaned_data['id']
-            Dump = ProcessDump.objects.get(process_dump_id = dump_id)
-            file_path = Dump.filename
+            file_path = form.cleaned_data['filename']
             try:
-                #Checking the extension (need to audit the application to see if R/LFI is possible)
+                #Checking the extension (need to audit the application to see if R/LFI  or data exfiltration is possible )
                 ext = os.path.basename(file_path).split('.')[-1].lower()
-                if ext not in ['py', 'db',  'sqlite3']:
+                if ext in ['hive']:
                     response = FileResponse(open('Cases/Results/'+file_path, 'rb'))
                     response['content_type'] = "application/octet-stream"
                     response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+                    response['filename'] = file_path
                     return response
                 else:
                     messages.add_message(request,messages.ERROR,'You can not download such file.')
@@ -248,20 +369,64 @@ def download_dump(request):
         else:
             return JsonResponse({'message': "error"})
 
-#The download_file view : Handle the file download requests
+@login_required
+def download_dump(request):
+    """Download a dumped process
+
+        Arguments:
+        request : http request object
+
+        Comment:
+        The user requested to download a successfull dumped process.
+        Get the file and return it.
+        """
+    if request.method == 'POST':
+        form = DownloadDump(request.POST)
+        if form.is_valid():
+            dump_id = form.cleaned_data['id']
+            Dump = ProcessDump.objects.get(process_dump_id = dump_id)
+            file_path = Dump.filename
+            case_path = 'Cases/Results/process_dump_'+str(Dump.case_id)
+            try:
+                #Checking the extension (need to audit the application to see if R/LFI  or data exfiltration is possible )
+                ext = os.path.basename(file_path).split('.')[-1].lower()
+                if ext not in ['py', 'db',  'sqlite3']:
+                    response = FileResponse(open(case_path+'/'+file_path, 'rb'))
+                    response['content_type'] = "application/octet-stream"
+                    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+                    response['filename'] = file_path
+                    return response
+                else:
+                    messages.add_message(request,messages.ERROR,'You can not download such file.')
+            except:
+                messages.add_message(request,messages.ERROR,'Failed to fetch the requested process')
+
+        else:
+            return JsonResponse({'message': "error"})
+
 @login_required
 def download_file(request):
+    """Download a dumped file
+
+        Arguments:
+        request : http request object
+
+        Comment:
+        The user requested to download a successfull dumped file.
+        Get the file and return it.
+        """
     if request.method == 'POST':
         form = DownloadDump(request.POST)
         if form.is_valid():
             file_id = form.cleaned_data['id']
             Dump = FileDump.objects.get(file_dump_id = file_id)
             file_path = Dump.filename
+            case_path = 'Cases/Results/file_dump_'+str(Dump.case_id)
             try:
                 #Checking the extension (need to audit the application to see if R/LFI is possible)
                 ext = os.path.basename(file_path).split('.')[-1].lower()
                 if ext not in ['py', 'db',  'sqlite3']:
-                    response = FileResponse(open('Cases/Results/'+file_path, 'rb'))
+                    response = FileResponse(open(case_path+"/"+file_path, 'rb'))
                     response['content_type'] = "application/octet-stream"
                     response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
                     return response

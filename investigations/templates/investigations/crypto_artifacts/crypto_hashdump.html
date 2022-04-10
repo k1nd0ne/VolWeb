@@ -1,8 +1,8 @@
-<button class="btn btn-succ-d" type="button" data-bs-toggle="collapse" data-bs-target=#collapseHashDump>
+<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target=#collapseHashDump>
   HashDump
 </button>
 <div class="collapse mt-5" id="collapseHashDump">
-  <table id="processHashTable" class="table card-font hashdump">
+  <table id="processHashTable" class="table table-light table-hover card-font hashdump">
     <thead>
       <tr>
         <th scope="col">User</th>
@@ -14,9 +14,10 @@
     <tbody id="HashDumpTab">
       {% for elem in hashdump %}
       <tr>
-        {% for item in elem %}
-        <td>{{item }}</td>
-        {% endfor %}
+        <td>{{elem.User}}</td>
+        <td>{{elem.rid}}</td>
+        <td>{{elem.lmhash}}</td>
+        <td>{{elem.nthash}}</td>
       </tr>
       {% endfor %}
     </tbody>

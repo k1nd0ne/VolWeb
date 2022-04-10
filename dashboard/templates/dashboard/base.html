@@ -1,163 +1,232 @@
 {% load static %}
 {% load cookiebanner %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Volweb</title>
-  <link rel="icon" type="image/x-icon" href="{% static 'images/favico.svg'%}">
-  <!-- Bootstrap core CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-  <script src="{% static 'dashboard/countup.min.js'%}"></script>
-  <!-- Custom styles for the dashboard -->
-  <link href="{% static 'dashboard/sidebars.css' %}" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>VolWeb</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favico.svg'%}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    			  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+    			  crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static '/css/Login-Form-Clean.css' %}">
+    <link rel="stylesheet" href="{% static '/css/styles.css' %}">
 </head>
 {% cookiebanner_modal 'cookiebanner' %}
-
-<body>
-  <!-- SVG Icons -->
-  <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-    <symbol id="bootstrap" viewBox="0 0 118 94">
-      <title>Bootstrap</title>
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z"></path>
-    </symbol>
-
-    <symbol id="home" viewBox="0 0 16 16">
-      <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
-    </symbol>
-
-    <symbol id="invest" viewBox="0 0 16 16">
-      <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2l-2.218-.887zm3.564 1.426L5.596 5 8 5.961 14.154 3.5l-2.404-.961zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923l6.5 2.6zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464L7.443.184z"/>
-    </symbol>
-
-    <symbol id="speedometer2" viewBox="0 0 16 16">
-      <path d="M8 4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-1 0V4.5A.5.5 0 0 1 8 4zM3.732 5.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707zM2 10a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 10zm9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5zm.754-4.246a.389.389 0 0 0-.527-.02L7.547 9.31a.91.91 0 1 0 1.302 1.258l3.434-4.297a.389.389 0 0 0-.029-.518z"/>
-      <path fill-rule="evenodd" d="M0 10a8 8 0 1 1 15.547 2.661c-.442 1.253-1.845 1.602-2.932 1.25C11.309 13.488 9.475 13 8 13c-1.474 0-3.31.488-4.615.911-1.087.352-2.49.003-2.932-1.25A7.988 7.988 0 0 1 0 10zm8-7a7 7 0 0 0-6.603 9.329c.203.575.923.876 1.68.63C4.397 12.533 6.358 12 8 12s3.604.532 4.923.96c.757.245 1.477-.056 1.68-.631A7 7 0 0 0 8 3z"/>
-    </symbol>
-    <symbol id="table" viewBox="0 0 16 16">
-      <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm15 2h-4v3h4V4zm0 4h-4v3h4V8zm0 4h-4v3h3a1 1 0 0 0 1-1v-2zm-5 3v-3H6v3h4zm-5 0v-3H1v2a1 1 0 0 0 1 1h3zm-4-4h4V8H1v3zm0-4h4V4H1v3zm5-3v3h4V4H6zm4 4H6v3h4V8z"/>
-    </symbol>
-    <symbol id="people-circle" viewBox="0 0 16 16">
-      <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-      <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-    </symbol>
-    <symbol id="grid" viewBox="0 0 16 16">
-      <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
-    </symbol>
-    <symbol id="collection" viewBox="0 0 16 16">
-      <path d="M2.5 3.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm2-2a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zm1.5.5A.5.5 0 0 1 1 13V6a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-13z"/>
-    </symbol>
-    <symbol id="calendar3" viewBox="0 0 16 16">
-      <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>
-      <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-    </symbol>
-    <symbol id="chat-quote-fill" viewBox="0 0 16 16">
-      <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM7.194 6.766a1.688 1.688 0 0 0-.227-.272 1.467 1.467 0 0 0-.469-.324l-.008-.004A1.785 1.785 0 0 0 5.734 6C4.776 6 4 6.746 4 7.667c0 .92.776 1.666 1.734 1.666.343 0 .662-.095.931-.26-.137.389-.39.804-.81 1.22a.405.405 0 0 0 .011.59c.173.16.447.155.614-.01 1.334-1.329 1.37-2.758.941-3.706a2.461 2.461 0 0 0-.227-.4zM11 9.073c-.136.389-.39.804-.81 1.22a.405.405 0 0 0 .012.59c.172.16.446.155.613-.01 1.334-1.329 1.37-2.758.942-3.706a2.466 2.466 0 0 0-.228-.4 1.686 1.686 0 0 0-.227-.273 1.466 1.466 0 0 0-.469-.324l-.008-.004A1.785 1.785 0 0 0 10.07 6c-.957 0-1.734.746-1.734 1.667 0 .92.777 1.666 1.734 1.666.343 0 .662-.095.931-.26z"/>
-    </symbol>
-    <symbol id="cpu-fill" viewBox="0 0 16 16">
-      <path d="M6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
-      <path d="M5.5.5a.5.5 0 0 0-1 0V2A2.5 2.5 0 0 0 2 4.5H.5a.5.5 0 0 0 0 1H2v1H.5a.5.5 0 0 0 0 1H2v1H.5a.5.5 0 0 0 0 1H2v1H.5a.5.5 0 0 0 0 1H2A2.5 2.5 0 0 0 4.5 14v1.5a.5.5 0 0 0 1 0V14h1v1.5a.5.5 0 0 0 1 0V14h1v1.5a.5.5 0 0 0 1 0V14h1v1.5a.5.5 0 0 0 1 0V14a2.5 2.5 0 0 0 2.5-2.5h1.5a.5.5 0 0 0 0-1H14v-1h1.5a.5.5 0 0 0 0-1H14v-1h1.5a.5.5 0 0 0 0-1H14v-1h1.5a.5.5 0 0 0 0-1H14A2.5 2.5 0 0 0 11.5 2V.5a.5.5 0 0 0-1 0V2h-1V.5a.5.5 0 0 0-1 0V2h-1V.5a.5.5 0 0 0-1 0V2h-1V.5zm1 4.5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3A1.5 1.5 0 0 1 6.5 5z"/>
-    </symbol>
-    <symbol id="gear-fill" viewBox="0 0 16 16">
-      <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
-    </symbol>
-    <symbol id="speedometer" viewBox="0 0 16 16">
-      <path d="M8 2a.5.5 0 0 1 .5.5V4a.5.5 0 0 1-1 0V2.5A.5.5 0 0 1 8 2zM3.732 3.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707zM2 8a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 8zm9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5zm.754-4.246a.389.389 0 0 0-.527-.02L7.547 7.31A.91.91 0 1 0 8.85 8.569l3.434-4.297a.389.389 0 0 0-.029-.518z"/>
-      <path fill-rule="evenodd" d="M6.664 15.889A8 8 0 1 1 9.336.11a8 8 0 0 1-2.672 15.78zm-4.665-4.283A11.945 11.945 0 0 1 8 10c2.186 0 4.236.585 6.001 1.606a7 7 0 1 0-12.002 0z"/>
-    </symbol>
-    <symbol id="toggles2" viewBox="0 0 16 16">
-      <path d="M9.465 10H12a2 2 0 1 1 0 4H9.465c.34-.588.535-1.271.535-2 0-.729-.195-1.412-.535-2z"/>
-      <path d="M6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm.535-10a3.975 3.975 0 0 1-.409-1H4a1 1 0 0 1 0-2h2.126c.091-.355.23-.69.41-1H4a2 2 0 1 0 0 4h2.535z"/>
-      <path d="M14 4a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/>
-    </symbol>
-    <symbol id="tools" viewBox="0 0 16 16">
-      <path d="M1 0L0 1l2.2 3.081a1 1 0 0 0 .815.419h.07a1 1 0 0 1 .708.293l2.675 2.675-2.617 2.654A3.003 3.003 0 0 0 0 13a3 3 0 1 0 5.878-.851l2.654-2.617.968.968-.305.914a1 1 0 0 0 .242 1.023l3.356 3.356a1 1 0 0 0 1.414 0l1.586-1.586a1 1 0 0 0 0-1.414l-3.356-3.356a1 1 0 0 0-1.023-.242L10.5 9.5l-.96-.96 2.68-2.643A3.005 3.005 0 0 0 16 3c0-.269-.035-.53-.102-.777l-2.14 2.141L12 4l-.364-1.757L13.777.102a3 3 0 0 0-3.675 3.68L7.462 6.46 4.793 3.793a1 1 0 0 1-.293-.707v-.071a1 1 0 0 0-.419-.814L1 0zm9.646 10.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708zM3 11l.471.242.529.026.287.445.445.287.026.529L5 13l-.242.471-.026.529-.445.287-.287.445-.529.026L3 15l-.471-.242L2 14.732l-.287-.445L1.268 14l-.026-.529L1 13l.242-.471.026-.529.445-.287.287-.445.529-.026L3 11z"/>
-    </symbol>
-
-    <symbol id="chevron-right" viewBox="0 0 16 16">
-      <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8zm-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5z"/>
-    </symbol>
-    <symbol id="new" viewBox="0 0 16 16">
-      <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
-      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>    </symbol>
-    </svg>
-    <main class="container-fuild text-light">
-
-      <div class="d-flex flex-column flex-shrink-0 p-3 text-white sidebar" style="width: 230px;">
-        <center><img width='50%' src="{% static 'images/Volweb-on-light.png'%}"/></center>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto">
-          <li class="nav-item">
-            <a href="{% url 'dashboard' %}" class="nav-link bg-transparent px-2 capitalize
-            {% if request.get_full_path == "/"%}
-            text-link"
-            {% endif %}">
-            <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
-            Dashboard
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="{% url 'investigations' %}" class="nav-link bg-transparent px-2 capitalize
-          {% if request.get_full_path == "/investigations/"%}
-          text-link"
-          {% endif %}">
-          <svg class="bi me-2" width="16" height="16"><use xlink:href="#collection"/></svg>
-          Investigations
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{% url 'iocs' %}" class="nav-link bg-transparent px-2 capitalize
-        {% if request.get_full_path == "/iocs/"%}
-        text-link"
-        {% endif %}">
-        <svg class="bi me-2" width="16" height="16"><use xlink:href="#grid"/></svg>
-        IOCs
-      </a>
-    </li>
-    <hr>
-    <li class="nav-item">
-      <a  data-bs-toggle="collapse" href="#collapseAction" class="nav-link bg-transparent px-2 capitalize">
-        <svg class="bi me-2" width="16" height="16"><use xlink:href="#new"/></svg>
-        New...
-      </a>
-      <div class="collapse" id="collapseAction">
-        <ul>
-          <a href="{% url 'newinvest' %}" class="nav-link bg-transparent capitalize"><svg class="bi me-2" width="16" height="16"><use xlink:href="#chevron-right"/></svg>Analysis</a></li>
-          <a href="{% url 'newioc' %}" class="nav-link bg-transparent capitalize"><svg class="bi me-2" width="16" height="16"><use xlink:href="#chevron-right"/></svg>Indicator</a></li>
-        </ul>
-      </div>
-    </li>
-  </ul>
-  <hr>
-  <div class="dropdown">
-    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-      <img src="{% static 'images/login.png'%}" alt="User" width="32" height="32" class="rounded-circle me-2">
-      <strong>{{ user.username }}</strong>
-    </a>
-    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-      <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
-    </ul>
-  </div>
 </div>
-{% block content %}
+<span class="spinner-main spinner-border spinner-border-sm spinner" role="status"></span>
+<body style="background: rgb(255,255,255);">
+    <nav class="text-dark navbar navbar-light navbar-expand-md shadow-sm">
+        <div class="container-fluid"><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><a href="{% url 'investigations' %}"><img src="{% static '/img/volweblogo2.png' %}" width="70"></a>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link text-dark
+                      {% if request.get_full_path == '/'%}
+                      active
+                      {% endif %}
+                      "
+                      href="{% url 'dashboard' %}">Dashboard</a></li>
+
+                    <li class="nav-item"><a class="nav-link text-dark
+                      {% if request.get_full_path == '/investigations/'%}
+                      active
+                      {% endif %}
+                      "
+                    href="{% url 'investigations' %}">Analysis</a></li>
+
+                    <li class="nav-item"><a class="nav-link text-dark
+                      {% if request.get_full_path == '/iocs/'%}
+                      active
+                      {% endif %}
+                      " href="{% url 'iocs' %}">IOCs</a></li>
+                    <li class="nav-item d-none"><a class="nav-link text-muted" href="#">Symbols</a></li>
+                </ul>
+            </div>
+
+            <div class="dropdown">
+              <a aria-expanded="false" data-bs-toggle="dropdown" href="#" style="color: rgb(0,0,0);margin-right: 20px;" class="text-dark">User&nbsp;
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+              </svg>
+              </a>
+                <div class="dropdown-menu"><a class="dropdown-item" href="{% url 'logout' %}" style="width: 2;">Log out</a></div>
+            </div>
+            <div class="form-check form-switch ms-auto me-3">
+              <label class="form-check-label ms-3" for="lightSwitch">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="25"
+                  height="25"
+                  fill="currentColor"
+                  class="bi bi-brightness-high"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"
+                  />
+                </svg>
+              </label>
+              <input class="form-check-input" type="checkbox" id="lightSwitch" />
+            </div>
+        </div>
+    </nav>
+
+    <script>
+    /**
+     *  Light Switch @version v0.1.3
+     */
+
+    function theme() {
+      let lightSwitch = document.getElementById("lightSwitch");
+      if (!lightSwitch) {
+        return;
+      }
+
+      /**
+       * @function darkmode
+       * @summary: changes the theme to 'dark mode' and save settings to local stroage.
+       * Basically, replaces/toggles every CSS class that has '-light' class with '-dark'
+       */
+      function darkMode() {
+        document.body.classList.add("bg-dark");
+
+        document.querySelectorAll(".bg-light").forEach((element) => {
+          element.className = element.className.replace(/-light/g, "-dark");
+        });
+
+        document.querySelectorAll(".border-dark").forEach((element) => {
+          element.className = element.className.replace(/border-dark/g, "border-light");
+        });
+
+        document.querySelectorAll(".table").forEach((element) => {
+          element.className = element.className.replace(/table-light/g, "table-dark");
+        });
+
+        if (document.body.classList.contains("text-dark")) {
+          document.body.classList.replace("text-dark", "text-light");
+        } else {
+          document.body.classList.add("text-light");
+        }
+
+        document.querySelectorAll(".text-dark").forEach((element) => {
+          element.className = element.className.replace(/-dark/g, "-light");
+        });
+
+        document.querySelectorAll(".table-light").forEach((element) => {
+          element.className = element.className.replace(/-dark/g, "-light");
+        });
+
+        // set light switch input to true
+        if (! lightSwitch.checked) {
+          lightSwitch.checked = true;
+        }
+        localStorage.setItem("lightSwitch", "dark");
+      }
+
+      /**
+       * @function lightmode
+       * @summary: changes the theme to 'light mode' and save settings to local stroage.
+       */
+      function lightMode() {
+        document.querySelectorAll(".bg-dark").forEach((element) => {
+          element.className = element.className.replace(/-dark/g, "-light");
+        });
+
+        document.body.classList.add("bg-light");
+
+        document.querySelectorAll(".border-light").forEach((element) => {
+          element.className = element.className.replace(/border-light/g, "border-dark");
+        });
 
 
-{% endblock %}
+        if (document.body.classList.contains("text-light")) {
+          document.body.classList.replace("text-light", "text-dark");
+        } else {
+          document.body.classList.add("text-dark");
+        }
+
+        document.querySelectorAll(".text-light").forEach((element) => {
+          element.className = element.className.replace(/-light/g, "-dark");
+        });
+
+        document.querySelectorAll(".table-dark").forEach((element) => {
+          element.className = element.className.replace(/table-dark/g, "table-light");
+        });
+
+        if (lightSwitch.checked) {
+          lightSwitch.checked = false;
+        }
+        localStorage.setItem("lightSwitch", "light");
+      }
+
+      /**
+       * @function onToggleMode
+       * @summary: the event handler attached to the switch. calling @darkMode or @lightMode depending on the checked state.
+       */
+      function onToggleMode() {
+        if (lightSwitch.checked) {
+          darkMode();
+        } else {
+          lightMode();
+        }
+      }
+
+      /**
+       * @function getSystemDefaultTheme
+       * @summary: get system default theme by media query
+       */
+      function getSystemDefaultTheme() {
+        const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+        if (darkThemeMq.matches) {
+          return "dark";
+        }
+        return "light";
+      }
+
+      function setup() {
+        var settings = localStorage.getItem("lightSwitch");
+        if (settings == null) {
+          settings = getSystemDefaultTheme();
+        }
+
+        if (settings == "dark") {
+          lightSwitch.checked = true;
+        }
+
+        lightSwitch.addEventListener("change", onToggleMode);
+        onToggleMode();
+      }
+        setup();
+    }
+
+    $(document).ready(function(){
+        theme();
+    });
+
+</script>
+
+    {% block content %}
 
 
+    {% endblock %}
 
 
-</main>
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"
-			  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-			  crossorigin="anonymous"></script>
-<script src="{% static 'dashboard/upload.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static '/js/bs-init.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
 
 </body>
+
 </html>

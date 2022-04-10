@@ -1,0 +1,105 @@
+.login-clean {
+  padding: 80px 0;
+}
+
+.login-clean form {
+  max-width: 320px;
+  width: 90%;
+  margin: 0 auto;
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 4px;
+  color: #505e6c;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+.login-clean .illustration {
+  text-align: center;
+  padding: 0 0 20px;
+  font-size: 100px;
+  color: rgb(244,71,107);
+}
+
+.login-clean form .form-control {
+  background: #f7f9fc;
+  border: none;
+  border-bottom: 1px solid #dfe7f1;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+  color: inherit;
+  text-indent: 8px;
+  height: 42px;
+}
+
+.login-clean form .btn-primary {
+  background: #000000;
+  border: none;
+  border-radius: 4px;
+  padding: 11px;
+  box-shadow: none;
+  margin-top: 26px;
+  text-shadow: none;
+  outline: none !important;
+}
+
+.login-clean form .btn-primary:hover, .login-clean form .btn-primary:active {
+  background: #ffffff;
+  color: #000000;
+}
+
+.login-clean form .btn-primary:active {
+  transform: translateY(1px);
+}
+
+.login-clean form .forgot {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  color: #6f7a85;
+  opacity: 0.9;
+  text-decoration: none;
+}
+
+.login-clean form .forgot:hover, .login-clean form .forgot:active {
+  opacity: 1;
+  text-decoration: none;
+}
+
+body {
+  height: 100%;
+  padding: 0;
+  background-image: url("../img/Volweb.svg.2022_03_02_20_47_51.0%20copy.svg");
+  background-color: #ffffffdd;
+  background-size: cover;
+  background-repeat: repeat;
+}
+
+.badge:hover {
+  /*color: white;*/
+  /*border-color: black;*/
+}
+
+#toast-1 {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+#toast-2 {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.btn-black, .btn-black:active {
+  background-color: #232323 !important;
+  border-color: #232323 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.link-deco-none {
+  text-decoration: none;
+  color: black;
+}

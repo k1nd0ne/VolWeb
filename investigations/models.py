@@ -14,6 +14,7 @@ class UploadInvestigation(models.Model):
     investigators = models.CharField(max_length=255)
     description = models.TextField(max_length=255)
     status = models.CharField(max_length=20)
+    percentage = models.CharField(max_length=10)
     taskid = models.CharField(max_length=255)
     existingPath = models.CharField(unique=True, max_length=255)
     name = models.CharField(max_length=255)

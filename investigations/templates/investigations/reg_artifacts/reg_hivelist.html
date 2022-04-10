@@ -1,0 +1,81 @@
+<!-- Investigation registry_hivelist artifacts -->
+<button onclick="triggerContextMenu()" class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHiveList" aria-expanded="false" aria-controls="collapsCmdLine">
+  HiveList
+</button>
+<div class="text-white collapse mt-5" id="collapseHiveList">
+  <table id="hivelistTable" class="table table-light table-hover card-font hivelist">
+    <thead>
+      <tr>
+        <th scope="col">FileFullPath</th>
+        <th scope="col">Offset</th>
+        <th scope="col">File Output</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody id="hivelist">
+      {% for entry in hivelist %}
+      <tr>
+        <td>{{entry.FileFullPath}}</td>
+        <td>{{entry.Offset}}</td>
+        <td>{{entry.File_output}}</td>
+        {% if entry.File_output == "Disabled" %}
+        <td>Download Unavailable</td>
+        {% else %}
+        <td>
+          <button type="button" class="btn btn-dark border border-white" onclick="DownloadHive('{{entry.File_output}}')">Download</button>
+        </td>
+        {% endif %}
+
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<form id="form1" action="{% url 'download_hive' %}" method="POST">
+  {% csrf_token %}
+  {{dl_hive_form.filename}}
+</form>
+
+<script>
+  function DownloadHive(filename){
+      const csrf = document.getElementsByName('csrfmiddlewaretoken');
+      const fd = new FormData();
+      fd.append('csrfmiddlewaretoken', csrf[0].value);
+      fd.append('filename', filename);
+      $.ajax({
+        type:'POST',
+        url: "{% url 'download_hive' %}",
+        enctype: 'multipart/form-data',
+        data: fd,
+        beforeSend: function(){
+          $('#proc-message').html("Requesting download...");
+          $('.toast-proc').toast('show');
+        },
+        success: function(data){
+          //Convert the Byte Data to BLOB object.
+                    var blob = new Blob([data], { type: "application/octetstream" });
+                    //Check the Browser type and download the File.
+                    var isIE = false || !!document.documentMode;
+                    if (isIE) {
+                        window.navigator.msSaveBlob(blob, filename);
+                    } else {
+                        var url = window.URL || window.webkitURL;
+                        link = url.createObjectURL(blob);
+                        var a = $("<a />");
+                        a.attr("download", filename);
+                        a.attr("href", link);
+                        $("body").append(a);
+                        a[0].click();
+                        $("body").remove(a);
+                    }
+        },
+        error: function(error){
+          $('#proc-error-message').html("Download failed ! :(");
+          $('.toast-proc-error').toast('show');
+        },
+        cache: false,
+        contentType : false,
+        processData: false
+      });
+  }
+</script>

@@ -1,0 +1,251 @@
+#ipi-table > thead > tr, #ipi-table > thead > tr > td {
+  font-size: .9em;
+  font-weight: 400;
+  background: #51596a;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+#ipi-table > tbody > tr > td {
+  max-height: 200px;
+  vertical-align: middle!important;
+}
+
+.checkboxHover:hover {
+  cursor: pointer;
+}
+
+.navbarHover:hover {
+  background-color: #001634;
+  transition-duration: .4s;
+}
+
+.navbarHover {
+  transition-duration: .4s;
+}
+
+.navbarIconHover {
+  transition-duration: .3s !important;
+}
+
+.navbarIconHover:hover {
+  color: white !important;
+  transition-duration: .3s !important;
+}
+
+.btnNoBorders, .btnNoBorders:focus, .btnNoBorders:active {
+  outline: none;
+  -moz-outline-style: none;
+}
+
+.trashBtn {
+  position: absolute;
+  top: 2%;
+  right: 2%;
+}
+
+.image-upload > input {
+  display: none;
+}
+
+.image-upload:hover {
+  color: #747474;
+}
+
+.image-upload {
+  color: #9b9b9b;
+  padding: 10px 30px;
+}
+
+.ripples {
+  overflow: hidden;
+  position: relative;
+}
+
+.waves {
+  position: absolute;
+  display: block;
+  border-radius: 100%;
+  background-color: rgba(255, 255, 255, 0.3);
+  -webkit-transform: scale(0);
+  -moz-transform: scale(0);
+  -o-transform: scale(0);
+  transform: scale(0);
+}
+
+.ripple {
+  -webkit-animation: ripple 0.65s linear;
+  -moz-animation: ripple 0.65s linear;
+  -ms-animation: ripple 0.65s linear;
+  -o-animation: ripple 0.65s linear;
+  animation: ripple 0.65s linear;
+}
+
+@keyframes ripple {
+  100% {
+    opacity: 0;
+    transform: scale(2.5);
+  }
+}
+
+.btnMaterial {
+  overflow: hidden !important;
+  cursor: pointer !important;
+  position: relative !important;
+  z-index: 10 !important;
+  display: inline-block !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  vertical-align: middle !important;
+  border: none !important;
+  padding: 0 16px !important;
+  white-space: nowrap !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  text-decoration: none !important;
+  text-align: center !important;
+  font-weight: 400 !important;
+  font-size: 14px !important;
+  color: #212121v !important;
+  background-image: none !important;
+  background-color: transparent !important;
+  -webkit-border-radius: 2px !important;
+  -moz-border-radius: 2px !important;
+  border-radius: 2px !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+  -webkit-transition: all 0.2s ease !important;
+  -moz-transition: all 0.2s ease !important;
+  -o-transition: all 0.2s ease !important;
+  transition: all 0.2s ease !important;
+  -ms-touch-action: manipulation !important;
+  touch-action: manipulation !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+}
+
+.btn-accent {
+  color: #ffffff;
+  background-color: #EC407A;
+}
+
+.btn-accent:hover, .btn-accent:focus, .btn-accent.focus, .btn-accent:active, .btn-accent.active {
+  color: #ffffff;
+  background-color: #E91E63;
+}
+
+.btn-raised {
+  -webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 2px 5px rgba(0, 0, 0, 0.26);
+  -moz-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 2px 5px rgba(0, 0, 0, 0.26);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 2px 5px rgba(0, 0, 0, 0.26);
+}
+
+.btn-flat {
+  font-weight: 400;
+  color: #212121;
+  background-color: transparent;
+}
+
+.btn-flat .waves {
+  background-color: rgba(33, 33, 33, 0.1);
+}
+
+.btn-flat:hover, .btn-flat:focus, .btn-flat.focus, .btn-flat:active, .btn-flat.active {
+  color: #212121;
+}
+
+.btn-flat.primary {
+  color: #3F51B5;
+}
+
+.btn-flat.primary .waves {
+  background-color: rgba(63, 81, 181, 0.3);
+}
+
+.btn-flat.accent {
+  color: #EC407A;
+}
+
+.btn-flat.accent .waves {
+  background-color: rgba(255, 64, 129, 0.3);
+}
+
+.btn-flat.success {
+  color: #009688;
+}
+
+.btn-flat.success .waves {
+  background-color: rgba(0, 150, 136, 0.3);
+}
+
+.btn-action {
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+  line-height: 55px;
+  padding: 0;
+  border-radius: 20px;
+}
+
+.btn-action-lg {
+  min-width: 56px;
+  width: 56px;
+  height: 56px;
+  line-height: 84px;
+  padding: 0;
+  border-radius: 28px;
+}
+
+.btn-action-lg .material-icons {
+  font-size: 36px;
+}
+
+.btn-action .waves, .btn-action-lg .waves {
+  display: none;
+}
+
+.card {
+  font-weight: 400;
+  border: 0;
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.card {
+  position: relative;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  background-color: #fff;
+  background-clip: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0.25rem;
+}
+
+.card-body {
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  min-height: 1px;
+  padding: 1.25rem;
+}
+
+button, button:focus, button:active {
+  outline: none !important;
+  -moz-outline-style: none !important;
+  box-shadow: none !important;
+}
+
+input, input:focus, input:active {
+  outline: none !important;
+  -moz-outline-style: none !important;
+  box-shadow: none !important;
+}
+

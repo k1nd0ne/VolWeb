@@ -7,9 +7,9 @@ class UploadFileForm(forms.ModelForm):
         model = UploadInvestigation
         fields = ('name', 'title', 'description', 'status','os_version','investigators')
         widgets = {
-                'title': TextInput(attrs={'class':'rounded query-input',}),
-                'description': Textarea(attrs={'class':'rounded query-input','placeholder': 'Example : Client, machine usage,...'}),
-                'os_version': Select(attrs={'value':'Windows','class': 'form-select query-input form-select-sm'}),
+                'title': TextInput(attrs={'class':'form-control','type':'text', 'placeholder':'Hostname', 'required':''}),
+                'description': Textarea(attrs={"class":"form-control", "rows":"4", "required":"", 'placeholder': 'Example : Client, machine usage,...'}),
+                'os_version': Select(attrs={'value':'Windows','class': 'form-select'}),
                 'investigators': TextInput(attrs={'class':'d-none'}),
                 'status': TextInput(attrs={'class':'d-none'}),
         }
@@ -38,9 +38,14 @@ class DumpFile(forms.ModelForm):
         }
 
 class DownloadDump(forms.Form):
-     id = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
+     id = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
         'class': 'd-none','value':'n/a'}))
 
 class DownloadFile(forms.Form):
-     id = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
+     id = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
+        'class': 'd-none','value':'n/a'}))
+
+
+class DownloadHive(forms.Form):
+     filename = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
         'class': 'd-none','value':'n/a'}))

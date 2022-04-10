@@ -1,36 +1,67 @@
 <!-- Investigation network_scan artifacts -->
-<button class="btn btn-warn-d" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNetGraph" aria-expanded="false" aria-controls="collapseNetscan">
+<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNetGraph" aria-expanded="false" aria-controls="collapseNetscan">
   Network Graph
 </button>
 <div class="collapse mt-5" id="collapseNetGraph">
   <div id="net_graph" style="height:50rem;"></div>
+  <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-ui.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/css/anychart-ui.min.css?hcode=a0c21fc77e1449cc86299c5faa067dc4"/>
+  <link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/fonts/css/anychart-font.min.css"/>
   <script>
-    anychart.onDocumentReady(function () {
       // create data
-      var data = JSON.parse("{{network_graph|escapejs}}");
-      console.log(data);
-      // create a data tree
-      // create a chart and set the data
-      var chart = anychart.graph(data);
-      chart.background().fill("#293b58");
-      chart.nodes().labels().enabled(true);
+      let lightSwitch = document.getElementById("lightSwitch");
+      try{
+        var data = JSON.parse("{{network_graph|escapejs}}");
+        // create a data tree
+        // create a chart and set the data
+        var netchart = anychart.graph(data);
+        netchart.nodes().labels().enabled(true);
+        netchart.nodes().labels().format("{%id} ({%Owner(s)})");
+        netchart.nodes().labels().fontSize(12);
+        netchart.nodes().labels().fontWeight(600);
+        // set the chart title
+        netchart.title("Network Communications");
+        // configure tooltips of nodes
+        netchart.nodes().tooltip().useHtml(true);
+        netchart.nodes().tooltip().format(
+        "<span style='font-weight:bold'>Involved PIDs : {%Involved_PIDs}</span><br><spanstyle='font-weight:bold'>Owner : {%Owner(s)}</span><br><span style='font-weight:bold'>Local Ports: {%Local_Ports}</span>"
+        );
+        // set the container id
+        netchart.container("net_graph");
+        netchart.interactivity().scrollOnMouseWheel(false);
+        netchart.interactivity().zoomOnMouseWheel(false);
+        // add a zoom control panel
+        var zoomController = anychart.ui.zoom();
+        zoomController.target(netchart);
+        zoomController.render();
+        if (lightSwitch.checked) {
+          netchart.background().fill("#212529");
+          netchart.nodes().labels().fontColor("#f8f9fa");
+        }
+        else{
+          netchart.background().fill("#f8f9fa");
+          netchart.nodes().labels().fontColor("#212529");
+        }
+        // initiate drawing the chart
+        netchart.draw();
+      }
+      catch(error){
+        console.log("Could not load network graph");
+      }
+      function change_netgraph(){
+        if (lightSwitch.checked) {
+          netchart.background().fill("#212529");
+          netchart.nodes().labels().fontColor("#f8f9fa");
+        }
 
-      chart.nodes().labels().format("{%id} ({%Owner(s)})");
-      chart.nodes().labels().fontSize(12);
-      chart.nodes().labels().fontColor("#ffffff");
-      chart.nodes().labels().fontWeight(600);
-      // set the chart title
-      chart.title("Network Communications");
-      // configure tooltips of nodes
-      chart.nodes().tooltip().useHtml(true);
-      chart.nodes().tooltip().format(
-      "<span style='font-weight:bold'>Involved PIDs : {%Involved_PIDs}</span><br><spanstyle='font-weight:bold'>Owner : {%Owner(s)}</span><br><span style='font-weight:bold'>Local Ports: {%Local_Ports}</span>"
-      );
-      // set the container id
-      chart.container("net_graph");
-
-      // initiate drawing the chart
-      chart.draw();
-    });
+        else{
+          netchart.background().fill("#f8f9fa");
+          netchart.nodes().labels().fontColor("#212529");
+        }
+      }
+      $(document).ready(function(){
+        change_netgraph();
+        lightSwitch.addEventListener("change", change_netgraph);
+      });
   </script>
 </div>
