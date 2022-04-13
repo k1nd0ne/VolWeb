@@ -13,7 +13,7 @@
       <td class="w-50">{{dump.filename}}</td>
       <td class="w-25 text-danger">{{dump.pid}}</td>
       <td class="w-25">
-        <button type="button" class="btn btn-dark" onclick="DownloadDump('{{dump.process_dump_id}}','{{dump.filename}}')">Download</button>
+        <button type="button" class="btn btn-dark border border-dark" onclick="DownloadDump('{{dump.process_dump_id}}','{{dump.filename}}')">Download</button>
       </td>
     </tr>
     {% endfor %}

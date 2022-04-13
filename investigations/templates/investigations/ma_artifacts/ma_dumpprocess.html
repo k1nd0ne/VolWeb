@@ -59,7 +59,7 @@ function DemandDump(case_id){
           $("#dump_table tbody").append("<tr>\
             <td>"+item['fields']['filename'] + "</td>\
             <td class='text-danger'>"+item['fields']['pid'] + "</td>\
-            <td><button type='button' class='btn btn-dark' onclick=\"DownloadDump('" + item['pk'] + "','"+item['fields']['filename'] + "')\">Download</button></td>\
+            <td><button type='button' class='btn btn-dark border boder-dark' onclick=\"DownloadDump('" + item['pk'] + "','"+item['fields']['filename'] + "')\">Download</button></td>\
         </tr>");
         });
       }

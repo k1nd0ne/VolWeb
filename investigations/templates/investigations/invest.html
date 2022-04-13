@@ -332,12 +332,12 @@
         }
         if(status == "1"){
           $(document.getElementById(pb)).html("\
-          <div class='progress-bar progress-bar-striped progress-bar-animated bg-dark' aria-valuenow='100' style='width: 100%' aria-valuemin='0' aria-valuemax='100'>In progress : " + percentage + "%</div>\
+          <div class='progress-bar progress-bar-striped progress-bar-animated' aria-valuenow='100' style='width: 100%; background-color:#212529;' aria-valuemin='0' aria-valuemax='100'>In progress : " + percentage + "%</div>\
           ");
         }
         if(status == "0"){
           $(document.getElementById(pb)).html("\
-          <div class='progress-bar progress-bar-striped  bg-dark' aria-valuenow='100' style='width: 100%' aria-valuemin='0' aria-valuemax='100'>Not analyzed</div>");
+          <div class='progress-bar progress-bar-striped' aria-valuenow='100' style='width: 100%; background-color:#212529;' aria-valuemin='0' aria-valuemax='100'>Not analyzed</div>");
         }
 
         if(status == "4"){
