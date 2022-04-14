@@ -21,7 +21,7 @@ class UploadInvestigation(models.Model):
     eof = models.BooleanField()
     uid = models.CharField(max_length=255)
     def __str__(self):
-        return str(self.pk)
+        return str(self.title)
 
 class Activity(models.Model):
     date = models.DateField(primary_key=True)

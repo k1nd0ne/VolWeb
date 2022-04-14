@@ -23,15 +23,9 @@
                     </div>
                     <div class="mb-3"><label class="form-label" for="client_description"><strong>Value *</strong><br></label>{{form.value}}</div>
                         <div class="form-group mb-3">
-                          <div class="mb-3"><label class="form-label" for="service_price"><strong>Linked analysis *</strong><br></label><select class="form-select">
-                                  <optgroup label="Choose an analysis">
-                                    {% for i in investigations %}
-                                      <option id="{{i.id}}" value="{{i.id}}" onclick="select({{i.id}})" >{{i.title}} ({{i.os_version}})</option>
-                                    {% endfor %}
-                                  </optgroup>
-                              </select>
+                          <div class="mb-3"><label class="form-label" for="service_price"><strong>Linked analysis *</strong><br></label>
+                            {{form.linkedInvestigation}}
                           </div>
-                          {{form.linkedInvestigation}}
                           {{form.ioc_id}}
                     </div><button class="btn btn-primary" id="submit">Save</button>
                 </div>
@@ -41,11 +35,7 @@
     </div>
 
     <script>
-    function select(id){
-      document.getElementById("id_linkedInvestigation").value = id;
-    }
     $(document).ready(function(){
-      select($('#id_linkedInvestigation').val())
       $('#id_ioc_id').val('{{ioc_id}}');
       $('.container').show();
       $('.container-fluid').show();

@@ -23,16 +23,17 @@
                     </div>
                     <div class="mb-3"><label class="form-label" for="client_description"><strong>Value *</strong><br></label>{{form.value}}</div>
                         <div class="form-group mb-3">
-                          <div class="mb-3"><label class="form-label" for="service_price"><strong>Linked analysis *</strong><br></label><select class="form-select">
+                          <div class="mb-3"><label class="form-label" for="service_price"><strong>Linked analysis *</strong><br></label>
+                            <!-- <select class="form-select">
                                   <optgroup label="Choose an analysis">
                                       <option>Select an investigation</option>
                                     {% for i in investigations %}
-                                      <option id="select_{{i.id}}" value="{{i.id}}" onclick="select({{i.id}})" >{{i.title}} ({{i.os_version}})</option>
+                                      <option id="select_{{i.id}}" value="{{i.id}}">{{i.title}} ({{i.os_version}})</option>
                                     {% endfor %}
                                   </optgroup>
-                              </select>
+                              </select> -->
+                              {{form.linkedInvestigation}}
                           </div>
-                          {{form.linkedInvestigation}}
                     </div><button class="btn btn-primary" id="submit">Create</button>
                 </div>
             </div>
@@ -41,22 +42,12 @@
     </div>
 
     <script>
-    function select(id){
-      document.getElementById("id_linkedInvestigation").value = id;
-    }
+
     $(document).ready(function(){
       $('.container').show();
       $('.container-fluid').show();
       $('.spinner-main').hide();
     });
-
-
-
-
-
-
-
-
 
     </script>
 {% endblock content %}
