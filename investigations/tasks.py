@@ -45,6 +45,7 @@ def memory_image_hash(dump_path):
 """Process dump task"""
 @app.task(name="dump_memory_pid")
 def dump_memory_pid(case_id,pid):
+    
     case = UploadInvestigation.objects.get(pk=case_id)
     dump_path = "Cases/" + case.name
     output_path = 'Cases/Results/process_dump_'+case_id

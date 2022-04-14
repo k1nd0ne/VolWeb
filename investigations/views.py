@@ -284,12 +284,13 @@ def dump_process(request):
         """
     if request.method == 'POST':
         form = DumpMemory(request.POST)
+        print(request.POST)
         if form.is_valid():
             case_id = form.cleaned_data['case_id']
             pid = form.cleaned_data['pid']
             if len(ProcessDump.objects.filter(pid = pid, case_id = case_id)) > 0:
                 return JsonResponse({'message': "exist"})
-            task_res = dump_memory_pid.delay(str(case_id),str(pid))
+            task_res = dump_memory_pid.delay(str(case_id.id),str(pid))
             file_path = task_res.get()
             if file_path != "ERROR":
                 #create ProcessDump model :
@@ -323,7 +324,7 @@ def dump_file(request):
             offset = form.cleaned_data['offset']
             if len(FileDump.objects.filter(offset = offset, case_id = case_id)) > 0:
                 return JsonResponse({'message': "exist"})
-            task_res = dump_memory_file.delay(str(case_id),offset)
+            task_res = dump_memory_file.delay(str(case_id.id),offset)
             file_path = task_res.get()
             if file_path != "ERROR":
                 #create ProcessDump model :

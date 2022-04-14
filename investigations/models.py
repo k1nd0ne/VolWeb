@@ -31,7 +31,7 @@ class Activity(models.Model):
 class ProcessDump(models.Model):
     process_dump_id = models.AutoField(primary_key=True)
     case_id = models.ForeignKey(
-        'UploadInvestigation',
+        UploadInvestigation,
         on_delete=models.CASCADE,
     )
     pid = models.IntegerField()
@@ -40,7 +40,7 @@ class ProcessDump(models.Model):
 class FileDump(models.Model):
     file_dump_id = models.AutoField(primary_key=True)
     case_id = models.ForeignKey(
-        'UploadInvestigation',
+        UploadInvestigation,
         on_delete=models.CASCADE,
     )
     offset = models.IntegerField()
