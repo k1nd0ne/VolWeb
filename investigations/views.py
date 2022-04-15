@@ -387,7 +387,7 @@ def download_dump(request):
             dump_id = form.cleaned_data['id']
             Dump = ProcessDump.objects.get(process_dump_id = dump_id)
             file_path = Dump.filename
-            case_path = 'Cases/Results/process_dump_'+str(Dump.case_id)
+            case_path = 'Cases/Results/process_dump_'+str(Dump.case_id.id)
             try:
                 #Checking the extension (need to audit the application to see if R/LFI  or data exfiltration is possible )
                 ext = os.path.basename(file_path).split('.')[-1].lower()
@@ -422,7 +422,7 @@ def download_file(request):
             file_id = form.cleaned_data['id']
             Dump = FileDump.objects.get(file_dump_id = file_id)
             file_path = Dump.filename
-            case_path = 'Cases/Results/file_dump_'+str(Dump.case_id)
+            case_path = 'Cases/Results/file_dump_'+str(Dump.case_id.id)
             try:
                 #Checking the extension (need to audit the application to see if R/LFI is possible)
                 ext = os.path.basename(file_path).split('.')[-1].lower()
