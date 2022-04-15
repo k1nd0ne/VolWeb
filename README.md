@@ -7,7 +7,7 @@ The goal of VolWeb is to improve the efficiency of memory forensics by providing
 VolWeb is based on volatility3, and this platform will evolve with the framework development.
 This project is under active development, and this readme may or may not reflect the most up-to-date documentation. 
 
-Demo : https://k1nd0ne.github.io/demo.html
+Blog : https://www.forensicxlab.com/VolWeb.html
 
 **Volweb is still in development and will evolve quickly.**  
 Update communications will be via twitter or by following this repo.
@@ -17,7 +17,7 @@ The platform is currently supporting the following features:
 
 | Features      | Windows          | Linux   |    MacOs  	|
 | ------------- |:-------------:| :---------:|:----------------:|
-|  String IoC extraction | 	✅	| ❌   	 | ❌ |
+|  String IoC extraction | 	✅	| ❌   	 | ❌ |
 | Process Tree | 	✅		|   ❌  	 |	 ❌ 	|
 | Process Graph  | ✅	| ❌  |	❌	| 
 | Process Scan | ✅	| ❌ |❌	|
@@ -99,13 +99,12 @@ I am also performing whitebox pentests to improve the SecOps dimension.
 Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
 # Wiki 📚
-The full documentation can be found here : https://k1nd0ne.github.io
+The full documentation will be available soon.
 
 # Next Release goals 📋
-- Celery Task timeout in case of corrupted memory dump
 - Visual confirmation of what to not look (legit process highlight integration)
 - Recode MalConfScan for volatility3
-- RipRaw integration for linux analysis. 
+- ISF Database.
 
 # Global goals 📋
 - Add missing modules to the windows memory analysis.
