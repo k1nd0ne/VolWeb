@@ -1,4 +1,4 @@
-from .tasks import start_memory_analysis, dump_memory_pid, app, dump_memory_file
+from .tasks import clamav_file, start_memory_analysis, dump_memory_pid, app, dump_memory_file
 from django.http import StreamingHttpResponse, FileResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -292,6 +292,8 @@ def dump_process(request):
                 return JsonResponse({'message': "exist"})
             task_res = dump_memory_pid.delay(str(case_id.id),str(pid))
             file_path = task_res.get()
+            clamav_task = clamav_file.delay(str(case_id.id),file_path)
+            print(clamav_task.get())
             if file_path != "ERROR":
                 #create ProcessDump model :
                 Dump = form.save()

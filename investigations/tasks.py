@@ -64,6 +64,21 @@ def dump_memory_pid(case_id,pid):
         print("Error processing memory dump ")
         return "ERROR"
 
+@app.task(name="clamav_file")
+def clamav_file(case_id,filepath):
+    filepath = f'Cases/Results/process_dump_{case_id}/{filepath}'
+    try:
+        output = subprocess.check_output(['clamdscan', '-v','--fdpass', '--stream', filepath],timeout=120)
+        return (False,"")
+    except subprocess.CalledProcessError as e:
+        if e.returncode == 1:
+            return (True,e.output.decode().splitlines()[0].split(" ")[1])
+        elif e.returncode == 2:
+            return (True,"Unable to check for viruses")
+
+    except Exception as e:
+        return (True,"Unable to check for viruses. Unknown Error")
+    
 
 """Dumpfile (single file)"""
 @app.task(name="dump_memory_file")

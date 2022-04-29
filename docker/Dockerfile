@@ -9,6 +9,9 @@ ENV PYTHONDONTWRITEBYTECODE 1
 RUN apt-get update \
     && apt-get install -y netcat
 
+RUN apt-get install -y clamav
+RUN apt-get install -y clamdscan
+COPY clamd.conf /etc/clamav
 
 # Create an app user in the app group. 
 RUN useradd --user-group --create-home --no-log-init --shell /bin/bash app
