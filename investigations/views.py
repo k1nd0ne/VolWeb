@@ -292,7 +292,7 @@ def dump_process(request):
                 return JsonResponse({'message': "exist"})
             task_res = dump_memory_pid.delay(str(case_id.id),str(pid))
             file_path = task_res.get()
-            clamav_task = clamav_file.delay(str(case_id.id),file_path)
+            clamav_task = clamav_file.delay(f'Cases/Results/process_dump_{case_id.id}/{file_path}')
             is_malicious,threat = clamav_task.get()
             if file_path != "ERROR":
                 #create ProcessDump model :
@@ -311,7 +311,7 @@ def dump_process(request):
 
 @login_required
 def dump_file(request):
-    """Dump a file
+    """Dump a file and do a virus scan
 
         Arguments:
         request : http request object
@@ -330,12 +330,16 @@ def dump_file(request):
                 return JsonResponse({'message': "exist"})
             task_res = dump_memory_file.delay(str(case_id.id),offset)
             file_path = task_res.get()
+            clamav_task = clamav_file.delay(f'Cases/Results/file_dump_{case_id.id}/{file_path}')
+            is_malicious,threat = clamav_task.get()
             if file_path != "ERROR":
                 #create ProcessDump model :
                 Dump = form.save()
                 Dump.filename = file_path
+                Dump.is_malicious = is_malicious
+                Dump.threat = threat
                 Dump.save()
-                files = serialize("json",FileDump.objects.filter(file_dump_id = Dump.file_dump_id), fields=('offset','filename'))
+                files = serialize("json",FileDump.objects.filter(file_dump_id = Dump.file_dump_id), fields=('offset','filename','is_malicious','threat'))
                 return JsonResponse({'message': "success",'files': files })
             else:
                 return JsonResponse({'message': "failed"})

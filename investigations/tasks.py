@@ -65,8 +65,7 @@ def dump_memory_pid(case_id,pid):
         return "ERROR"
 
 @app.task(name="clamav_file")
-def clamav_file(case_id,filepath):
-    filepath = f'Cases/Results/process_dump_{case_id}/{filepath}'
+def clamav_file(filepath):
     try:
         output = subprocess.check_output(['clamdscan', '-v','--fdpass', '--stream', filepath],timeout=120)
         return (False,"")

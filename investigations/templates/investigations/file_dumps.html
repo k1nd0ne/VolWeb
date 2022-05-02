@@ -4,6 +4,7 @@
   <thead>
     <tr>
       <th scope="col">FileName</th>
+      <th scope="col">Malicious</th>
       <th scope="col">Offset</th>
       <th scope="col">Action</th>
     </tr>
@@ -12,6 +13,15 @@
     {% for file in files %}
     <tr>
       <td class="w-50">{{file.filename}}</td>
+      <td class="w-50">
+        {% if file.is_malicious %}
+        <div class="mytooltip">{{file.is_malicious}}
+          <span class="mytooltiptext">{{file.threat}}</span>
+        </div> 
+        {% else %}
+          {{file.is_malicious}}
+        {% endif %}       
+      </td>
       <td class="w-25 text-danger">{{file.offset}}</td>
       <td class="w-25">
         <button type="button" class="btn btn-dark border border-dark" onclick="DownloadFile('{{file.file_dump_id}}','{{file.filename}}')">Download</button>
