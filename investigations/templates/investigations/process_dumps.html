@@ -1,8 +1,50 @@
+<style>
+  .mytooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.mytooltip .mytooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.mytooltip .mytooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.mytooltip:hover .mytooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+  </style>
+
 <div class=table-responsive>
 <table class="table table-light table-sm" id="dump_table">
   <thead>
     <tr>
       <th scope="col">FileName</th>
+      <th scope="col">Malicious</th>
       <th scope="col">PID</th>
       <th scope="col">Action</th>
     </tr>
@@ -11,6 +53,15 @@
     {% for dump in dumps %}
     <tr>
       <td class="w-50">{{dump.filename}}</td>
+      <td class="w-50">
+        {% if dump.is_malicious %}
+        <div class="mytooltip">{{dump.is_malicious}}
+          <span class="mytooltiptext">{{dump.threat}}</span>
+        </div> 
+        {% else %}
+          {{dump.is_malicious}}
+        {% endif %}       
+      </td>
       <td class="w-25 text-danger">{{dump.pid}}</td>
       <td class="w-25">
         <button type="button" class="btn btn-dark border border-dark" onclick="DownloadDump('{{dump.process_dump_id}}','{{dump.filename}}')">Download</button>

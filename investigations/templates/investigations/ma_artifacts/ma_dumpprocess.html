@@ -56,11 +56,16 @@ function DemandDump(case_id){
         $('#proc-success-message').html("Your process was successfully dumped");
         $('.toast-proc-success').toast('show');
         JSON.parse(response['dumps']).forEach(function insert(item){
-          $("#dump_table tbody").append("<tr>\
-            <td>"+item['fields']['filename'] + "</td>\
-            <td class='text-danger'>"+item['fields']['pid'] + "</td>\
-            <td><button type='button' class='btn btn-dark border boder-dark' onclick=\"DownloadDump('" + item['pk'] + "','"+item['fields']['filename'] + "')\">Download</button></td>\
-        </tr>");
+          let element = "<tr><td>"+item['fields']['filename'] + "</td>";
+          if(item['fields']['is_malicious']){
+            element += "<td><div class='mytooltip'>"+item['fields']['is_malicious']+"<span class='mytooltiptext'>"+item['fields']['threat']+"</span></div></td>";
+          }
+          else{
+            element += "<td>"+item['fields']['is_malicious']+"</td>";
+          }
+          element += "<td class='text-danger'>"+item['fields']['pid'] + "</td>\
+            <td><button type='button' class='btn btn-dark border boder-dark' onclick=\"DownloadDump('" + item['pk'] + "','"+item['fields']['filename'] + "')\">Download</button></td></tr>";
+          $("#dump_table tbody").append(element);  
         });
       }
       if (response['message'] == "error")
