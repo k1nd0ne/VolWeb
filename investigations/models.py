@@ -45,7 +45,7 @@ class FileDump(models.Model):
         UploadInvestigation,
         on_delete=models.CASCADE,
     )
-    offset = models.IntegerField()
+    offset = models.BigIntegerField()
     filename = models.CharField(max_length = 255)
     is_malicious = models.BooleanField(default=False)
     threat = models.CharField(max_length= 255,default="")

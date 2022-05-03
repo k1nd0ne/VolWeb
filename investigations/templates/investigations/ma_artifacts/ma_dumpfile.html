@@ -66,7 +66,7 @@ function DemandFileDump(case_id){
             element += "<td>"+item['fields']['is_malicious']+"</td>";
           }
           element += "<td class='text-danger'>"+item['fields']['offset'] + "</td>\
-            <td><button type='button' class='btn btn-dark border boder-dark' onclick=\"DownloadDump('" + item['pk'] + "','"+item['fields']['filename'] + "')\">Download</button></td></tr>";
+            <td><button type='button' class='btn btn-dark border boder-dark' onclick=\"DownloadFile('" + item['pk'] + "','"+item['fields']['filename'] + "')\">Download</button></td></tr>";
           $("#file_table tbody").append(element);  
         });
       }
