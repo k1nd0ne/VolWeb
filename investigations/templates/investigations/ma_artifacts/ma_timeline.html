@@ -1,9 +1,5 @@
 <!-- Investigation malware_analysis_timeline -->
-<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target=#collapseTimeline>
-  TimeLine Explorer
-</button>
-
-<div class="collapse mt-5" id="collapseTimeline">
+<div class="collapse mt-5 Timeline plugin">
   <div style="height:20rem;" class="  text-white"id="container-timeline"></div>
   <div class="d-inline">
     <input class="form-control mb-3" id="searchTimeline" type="text" placeholder="Search..">
@@ -20,11 +16,14 @@
       </tr>
     </thead>
     <tbody id="TimelineTab">
-      {% for events in timeline %}
+      {% for event in Timeliner %}
       <tr>
-        {% for key,value in events.items %}
-        <td>{{value}}</td>
-        {% endfor %}
+        <td>{{event.AccessedDate}}</td>
+        <td>{{event.ChangedDate}}</td>
+        <td>{{event.CreatedDate}}</td>
+        <td>{{event.Description}}</td>
+        <td>{{event.ModifiedDate}}</td>
+        <td>{{event.Plugin}}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -40,7 +39,7 @@
     try {
     let lightSwitch = document.getElementById("lightSwitch");
     // create data
-    var data = JSON.parse("{{linechart|escapejs}}");
+    var data = JSON.parse("{{TimeLineChart.graph|escapejs}}");
     // create a chart
     var chart = anychart.line();
     // create a line series and set the data

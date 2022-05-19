@@ -1,13 +1,9 @@
 <!-- Investigation malware_analysis_malfind -->
-<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target=#collapseMalfind>
-  Malfind
-</button>
-
-<div class="collapse mt-5" id="collapseMalfind">
+<div class="collapse mt-5 Malfind plugin">
   <div class="d-inline">
     <input class="form-control mb-3" id="searchMalfind" type="text" placeholder="Search..">
   </div>
-  {% for matches in malfind %}
+  {% for matches in Malfind %}
 
   <div id="malfind-btn" class="accordion accordion-flush" id="accordionFlush{{ forloop.counter }}">
     <div class="accordion-item">

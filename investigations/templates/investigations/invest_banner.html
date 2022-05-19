@@ -1,17 +1,22 @@
 <!-- Investigation Information Banner -->
-<div class="row mt-3">
-  <div class="card-font col-12">
-    <li class="list-group-item card-font bg-light">
-      <h3 class="h3 text-dark">{{case.title}}</h3>
-      <ul>
-        <li class="text-dark">Operating System : <span class="text-dark">{{case.os_version}}</span></li>
-        <li class="text-dark">Analyst(s) : <span class="text-dark">{{case.investigators}}</span></li>
-        <li class="text-dark">Description : <span class="text-dark">{{case.description}}</span></li>
-        <li class="text-dark">Filename : <span class="text-dark">{{case.name}}</span></li>
-        <li class="text-dark">md5 : <span class="text-dark">{{hash.md5}}</span></li>
-        <li class="text-dark">sha1 : <span class="text-dark">{{hash.sha1}}</span></li>
-        <li class="text-dark">sha256 : <span class="text-dark">{{hash.sha256}}</span></li>
-      </ul>
-    </li>
+<div class="row mt-3 plugin Case">
+  <div class="col-12">
+    <ul class="list-group list-group-item bg-light">
+      <li class="list-group-item bg-light border-dark"><span class="text-dark">OS : {{case.os_version}}</span></li>
+      <li class="list-group-item bg-light border-dark"><span class="text-dark">Analyst(s) : {{case.investigators}}</span></li>
+      <li class="list-group-item bg-light border-dark"><span class="text-dark">Description : {{case.description}}</span></li>
+      <li class="list-group-item bg-light border-dark"><span class="text-dark">Filename : {{case.name}}</span></li>
+      <li class="list-group-item bg-light border-dark"><span class="text-dark">md5 : {{ImageSignature.md5}}</span></li>
+      <li class="list-group-item bg-light border-dark"><span class="text-dark">sha1 : {{ImageSignature.sha1}}</span></li>
+      <li class="list-group-item bg-light border-dark"><span class="text-dark">sha256 : {{ImageSignature.sha256}}</span></li>
+    </ul>
+
   </div>
+
+    <div class="col-12 bg-light">
+        <h5 class="h5 text-dark">Process Dumps</h5>
+        {% include "investigations/process_dumps.html"%}
+        <h5 class="h5 text-dark">File Dumps</h5>
+        {% include "investigations/file_dumps.html"%}
+    </div>
 </div>

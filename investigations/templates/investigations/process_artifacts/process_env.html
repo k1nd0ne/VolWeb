@@ -1,9 +1,5 @@
 <!-- Investigation process_env artifacts -->
-<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnv" aria-expanded="false" aria-controls="collapseEnv">
-  Process Env Variables
-</button>
-
-<div class="collapse mt-5 text-white" id="collapseEnv">
+<div class="mt-5 Envars plugin text-white">
   <h6 class="h6">Process Environnement Variables</h6>
   <div class="d-inline">
     <input class="form-control mb-3" id="searchEnv" type="text" placeholder="Search..">
@@ -19,7 +15,7 @@
       </tr>
     </thead>
     <tbody id="processEnv">
-      {% for process in envars %}
+      {% for process in Envars %}
       <tr>
         <td>{{process.Block}}</td>
         <td>{{process.PID}}</td>
@@ -30,5 +26,4 @@
       {% endfor %}
     </tbody>
   </table>
-
 </div>

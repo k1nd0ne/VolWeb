@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.core.serializers import serialize
 from celery.result import AsyncResult
 from django.contrib import messages
-import json, os, uuid, datetime
+import json, os, uuid
 from iocs.models import IOC
 from os.path import exists
 from .models import *
@@ -75,14 +75,6 @@ def newinvest(request):
                 FileFolder.save()
                 if int(end):
                     res = JsonResponse({'data':'Uploaded Successfully','existingPath': fileName})
-                    try:
-                        activity = Activity.objects.get(date=datetime.datetime.now().date())
-                        activity.count = activity.count + 1
-                    except Activity.DoesNotExist:
-                        activity = Activity()
-                        activity.date = datetime.datetime.now().date()
-                        activity.count = 1
-                    activity.save()
                 else:
                     res = JsonResponse({'existingPath': fileName})
                 return res
@@ -96,15 +88,8 @@ def newinvest(request):
                             if int(end):
                                 model_id.eof = int(end)
                                 model_id.save()
+                                model_id.update_activity()
                                 res = JsonResponse({'data':'Uploaded Successfully','existingPath':model_id.existingPath})
-                                try:
-                                    activity = Activity.objects.get(date=datetime.datetime.now().date())
-                                    activity.count = activity.count + 1
-                                except Activity.DoesNotExist:
-                                    activity = Activity()
-                                    activity.date = datetime.datetime.now().date()
-                                    activity.count = 1
-                                activity.save()
                             else:
                                 res = JsonResponse({'existingPath':model_id.existingPath})
                                 return res
@@ -201,12 +186,7 @@ def remove_analysis(request):
         if form.is_valid():
             id = form.cleaned_data['sa_case_id']
             case = UploadInvestigation.objects.get(pk=id)
-            case_json = 'Cases/Results/'+str(case.id)+'.json'
             case_memdump = 'Cases/' + str(case.name)
-            try:
-                subprocess.check_output(['rm', case_json])
-            except:
-                pass
             try:
                 subprocess.check_output(['rm', case_memdump])
             except:
@@ -256,15 +236,43 @@ def reviewinvest(request):
         if form.is_valid():
             id = form.cleaned_data['sa_case_id']
             case = UploadInvestigation.objects.get(pk=id)
-            with open('Cases/Results/'+str(case.id)+'.json') as f:
-                context = json.load(f)
+            context = {}
             context['case'] = case
-            dump_process_form = DumpMemory()
-            download_dump_form = DownloadDump()
-            dump_file_form = DumpFile()
-            download_file_form = DownloadFile()
-            download_hive_form = DownloadHive()
-            context.update({'dl_hive_form':download_hive_form,'dl_dump_form': download_dump_form, 'dump_file_form': dump_file_form, 'download_file_form': download_file_form, 'form': dump_process_form, 'dumps':ProcessDump.objects.filter(case_id = id), 'files':FileDump.objects.filter(case_id = id)})
+
+            #Forms
+            forms ={
+                'dl_hive_form':DownloadHive(),
+                'dl_dump_form': DownloadDump(),
+                'dump_file_form': DumpFile(),
+                'download_file_form': DownloadFile(),
+                'form': DumpMemory(),
+            }
+            #Models
+            models = {
+                'dumps':ProcessDump.objects.filter(case_id = id),
+                'files':FileDump.objects.filter(case_id = id),
+                'ImageSignature' : ImageSignature.objects.get(investigation_id = id),
+                'PsScan': PsScan.objects.filter(investigation_id = id),
+                'PsTree': PsTree.objects.get(investigation_id = id),
+                'CmdLine': CmdLine.objects.filter(investigation_id = id),
+                'Privs': Privs.objects.filter(investigation_id = id),
+                'Envars': Envars.objects.filter(investigation_id = id),
+                'NetScan': NetScan.objects.filter(investigation_id = id),
+                'NetStat': NetStat.objects.filter(investigation_id = id),
+                'NetGraph' : NetGraph.objects.get(investigation_id = id),
+                'Hashdump': Hashdump.objects.filter(investigation_id = id),
+                'Lsadump':Lsadump.objects.filter(investigation_id = id),
+                'Cachedump': Cachedump.objects.filter(investigation_id = id),
+                'HiveList': HiveList.objects.filter(investigation_id = id),
+                'Timeliner': Timeliner.objects.filter(investigation_id = id),
+                'TimeLineChart': TimeLineChart.objects.get(investigation_id = id),
+                'SkeletonKeyCheck' : SkeletonKeyCheck.objects.filter(investigation_id = id),
+                'Malfind' : Malfind.objects.filter(investigation_id = id),
+                'FileScan' : FileScan.objects.filter(investigation_id = id),
+                'Strings' : Strings.objects.filter(investigation_id = id),
+            }
+            context.update(forms)
+            context.update(models)
             return render(request, 'investigations/reviewinvest.html',context)
         else:
             form = ManageInvestigation()
@@ -357,7 +365,7 @@ def download_hive(request):
                 #Checking the extension (need to audit the application to see if R/LFI  or data exfiltration is possible )
                 ext = os.path.basename(file_path).split('.')[-1].lower()
                 if ext in ['hive']:
-                    response = FileResponse(open('Cases/Results/'+file_path, 'rb'))
+                    response = FileResponse(open('Cases/files/'+file_path, 'rb'))
                     response['content_type'] = "application/octet-stream"
                     response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
                     response['filename'] = file_path
