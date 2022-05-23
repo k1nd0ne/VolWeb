@@ -1,8 +1,9 @@
 from celery import Celery
 import os
+from VolWeb.keyconfig import Secrets
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'VolWeb.settings')
 app = Celery('investigations',
-             broker=os.getenv('BROKER_URL'),
+             broker=Secrets.BROKER_URL,
              backend='rpc://',
              include=['investigations.tasks'])
 
