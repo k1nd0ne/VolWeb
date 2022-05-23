@@ -10,3 +10,4 @@ class Database:
 
 class Secrets:
     SECRET_KEY = os.getenv('DJANGO_SECRET')
+    BROKER_URL = os.getenv('BROKER_URL')

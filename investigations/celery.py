@@ -2,7 +2,7 @@ from celery import Celery
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'VolWeb.settings')
 app = Celery('investigations',
-             broker='amqp://admin:mypass@rabbitmq3:5672//',
+             broker=os.getenv('BROKER_URL'),
              backend='rpc://',
              include=['investigations.tasks'])
 

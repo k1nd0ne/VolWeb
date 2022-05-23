@@ -111,8 +111,8 @@ class CmdLine(models.Model):
             on_delete=models.CASCADE,
         )
     PID = models.BigIntegerField(null = True)
-    Process = models.CharField(max_length=500, null = True)
-    Args = models.CharField(max_length=500, null = True)
+    Process = models.TextField(null = True)
+    Args = models.TextField(null = True)
 
 
 class Privs(models.Model):
@@ -121,11 +121,11 @@ class Privs(models.Model):
             on_delete=models.CASCADE,
         )
     PID = models.BigIntegerField(null = True)
-    Process = models.CharField(max_length=500, null = True)
+    Process = models.TextField(null = True)
     Value = models.BigIntegerField(null = True)
-    Privilege = models.CharField(max_length=500, null = True)
-    Attributes = models.CharField(max_length=500, null = True)
-    Description = models.CharField(max_length=500, null = True)
+    Privilege = models.TextField(null = True)
+    Attributes = models.TextField(null = True)
+    Description = models.TextField(null = True)
 
 class Envars(models.Model):
     investigation = models.ForeignKey(
@@ -133,11 +133,11 @@ class Envars(models.Model):
             on_delete=models.CASCADE,
         )
     PID = models.BigIntegerField(null = True)
-    Process = models.CharField(max_length=500, null = True)
-    Block = models.CharField(max_length=500, null = True)
-    Variable = models.CharField(max_length=500, null = True)
-    Value = models.CharField(max_length=500, null = True)
-    Description = models.CharField(max_length=500, null = True)
+    Process = models.TextField(null = True)
+    Block = models.TextField(null = True)
+    Variable = models.TextField(null = True)
+    Value = models.TextField(null = True)
+    Description = models.TextField(null = True)
 
 
 class NetScan(models.Model):
@@ -146,15 +146,15 @@ class NetScan(models.Model):
             on_delete=models.CASCADE,
         )
     Offset = models.BigIntegerField(null = True)
-    Proto = models.CharField(max_length=500, null = True)
-    LocalAddr = models.CharField(max_length=500, null = True)
-    LocalPort = models.CharField(max_length=500, null = True)
-    ForeignAddr = models.CharField(max_length=500, null = True)
-    ForeignPort = models.CharField(max_length=500, null = True)
-    State = models.CharField(max_length=500, null = True)
+    Proto = models.TextField(null = True)
+    LocalAddr = models.TextField(null = True)
+    LocalPort = models.TextField(null = True)
+    ForeignAddr = models.TextField(null = True)
+    ForeignPort = models.TextField(null = True)
+    State = models.TextField(null = True)
     PID = models.BigIntegerField(null = True)
-    Owner = models.CharField(max_length=500, null = True)
-    Created = models.CharField(max_length=500, null = True)
+    Owner = models.TextField(null = True)
+    Created = models.TextField(null = True)
 
 class NetStat(models.Model):
     investigation = models.ForeignKey(
@@ -162,25 +162,25 @@ class NetStat(models.Model):
             on_delete=models.CASCADE,
         )
     Offset = models.BigIntegerField(null = True)
-    Proto = models.CharField(max_length=500, null = True)
-    LocalAddr = models.CharField(max_length=500, null = True)
-    LocalPort = models.CharField(max_length=500, null = True)
-    ForeignAddr = models.CharField(max_length=500, null = True)
-    ForeignPort = models.CharField(max_length=500, null = True)
-    State = models.CharField(max_length=500, null = True)
+    Proto = models.TextField(null = True)
+    LocalAddr = models.TextField(null = True)
+    LocalPort = models.TextField(null = True)
+    ForeignAddr = models.TextField(null = True)
+    ForeignPort = models.TextField(null = True)
+    State = models.TextField(null = True)
     PID = models.BigIntegerField(null = True)
-    Owner = models.CharField(max_length=500, null = True)
-    Created = models.CharField(max_length=500, null = True)
+    Owner = models.TextField(null = True)
+    Created = models.TextField(null = True)
 
 class Hashdump(models.Model):
     investigation = models.ForeignKey(
             UploadInvestigation,
             on_delete=models.CASCADE,
         )
-    User = models.CharField(max_length=500, null = True)
+    User = models.TextField(null = True)
     rid = models.BigIntegerField(null = True)
-    lmhash = models.CharField(max_length=500, null = True)
-    nthash = models.CharField(max_length=500, null = True)
+    lmhash = models.TextField(null = True)
+    nthash = models.TextField(null = True)
 
 
 class Lsadump(models.Model):
@@ -188,9 +188,9 @@ class Lsadump(models.Model):
             UploadInvestigation,
             on_delete=models.CASCADE,
         )
-    Key = models.CharField(max_length=500, null = True)
-    Secret = models.CharField(max_length=1000, null = True)
-    Hex = models.CharField(max_length=500, null = True)
+    Key = models.TextField(null = True)
+    Secret = models.TextField(null = True)
+    Hex = models.TextField(null = True)
     def save(self, *args, **kwargs):
         self.Secret = base64.b64encode(bytes(self.Secret, 'utf-8'))
         super().save(*args, **kwargs)
@@ -200,31 +200,31 @@ class Cachedump(models.Model):
             UploadInvestigation,
             on_delete=models.CASCADE,
         )
-    username = models.CharField(max_length=500, null = True)
-    domain = models.CharField(max_length=500, null = True)
-    domain_name = models.CharField(max_length=500, null = True)
-    hash = models.CharField(max_length=500, null = True)
+    username = models.TextField(null = True)
+    domain = models.TextField(null = True)
+    domain_name = models.TextField(null = True)
+    hash = models.TextField(null = True)
 
 class HiveList(models.Model):
     investigation = models.ForeignKey(
             UploadInvestigation,
             on_delete=models.CASCADE,
         )
-    FileFullPath = models.CharField(max_length=500, null = True)
+    FileFullPath = models.TextField(null = True)
     Offset = models.BigIntegerField(null = True)
-    Fileoutput = models.CharField(max_length=500, null = True)
+    Fileoutput = models.TextField(null = True)
 
 class Timeliner(models.Model):
     investigation = models.ForeignKey(
             UploadInvestigation,
             on_delete=models.CASCADE,
         )
-    Plugin = models.CharField(max_length=500, null = True)
-    Description = models.CharField(max_length=500, null = True)
-    AccessedDate = models.CharField(max_length=500, null = True)
-    ChangedDate = models.CharField(max_length=500, null = True)
-    CreatedDate = models.CharField(max_length=500, null = True)
-    ModifiedDate = models.CharField(max_length=500, null = True)
+    Plugin = models.TextField(null = True)
+    Description = models.TextField(null = True)
+    AccessedDate = models.TextField(null = True)
+    ChangedDate = models.TextField(null = True)
+    CreatedDate = models.TextField(null = True)
+    ModifiedDate = models.TextField(null = True)
 
 class SkeletonKeyCheck(models.Model):
     investigation = models.ForeignKey(
@@ -232,10 +232,10 @@ class SkeletonKeyCheck(models.Model):
             on_delete=models.CASCADE,
         )
     PID = models.BigIntegerField(null = True)
-    Process = models.CharField(max_length=500, null = True)
-    SkeletonKeyFound = models.CharField(max_length=500, null = True)
-    rc4HmacInitialize = models.CharField(max_length=500, null = True)
-    rc4HmacDecrypt = models.CharField(max_length=500, null = True)
+    Process = models.TextField(null = True)
+    SkeletonKeyFound = models.TextField(null = True)
+    rc4HmacInitialize = models.TextField(null = True)
+    rc4HmacDecrypt = models.TextField(null = True)
 
 class Malfind(models.Model):
     investigation = models.ForeignKey(
@@ -244,16 +244,16 @@ class Malfind(models.Model):
         )
 
     PID = models.BigIntegerField(null = True)
-    Process = models.CharField(max_length=500, null = True)
+    Process = models.TextField(null = True)
     StartVPN = models.BigIntegerField(null = True)
     EndVPN = models.BigIntegerField(null = True)
-    Tag = models.CharField(max_length=500, null = True)
-    Protection = models.CharField(max_length=500, null = True)
+    Tag = models.TextField(null = True)
+    Protection = models.TextField(null = True)
     CommitCharge = models.BigIntegerField(null = True)
     PrivateMemory = models.BigIntegerField(null = True)
-    Fileoutput = models.CharField(max_length=500, null = True)
-    Hexdump  = models.CharField(max_length=1000, null = True)
-    Disasm = models.CharField(max_length=1000, null = True)
+    Fileoutput = models.TextField(null = True)
+    Hexdump  = models.TextField(null = True)
+    Disasm = models.TextField(null = True)
 
 class FileScan(models.Model):
     investigation = models.ForeignKey(
@@ -261,7 +261,7 @@ class FileScan(models.Model):
             on_delete=models.CASCADE,
         )
     Offset = models.BigIntegerField(null = True)
-    Name = models.CharField(max_length=500, null = True)
+    Name = models.TextField(null = True)
     Size = models.BigIntegerField(null = True)
 
 class Strings(models.Model):
@@ -269,6 +269,6 @@ class Strings(models.Model):
             UploadInvestigation,
             on_delete=models.CASCADE,
         )
-    String = models.CharField(max_length=500, null = True)
+    String = models.TextField(null = True)
     PhysicalAddress = models.BigIntegerField(null = True)
-    Result = models.CharField(max_length=500, null = True)
+    Result = models.TextField(null = True)

@@ -49,9 +49,8 @@ services:
     image: rabbitmq:3.9.13
     ports:
       - "5672:5672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=mypass
+    env_file:
+      - ./secret/volweb.env
   worker:
     build:
       context: ../
