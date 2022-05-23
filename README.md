@@ -5,7 +5,7 @@
 Volweb is a digital forensic memory analysis platform.  
 The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responders and digital forensics investigators.  
 VolWeb is based on volatility3, and this platform will evolve with the framework development.
-This project is under active development, and this readme may or may not reflect the most up-to-date documentation. 
+This project is under active development, and this readme may or may not reflect the most up-to-date documentation.
 
 Blog : https://www.forensicxlab.com/VolWeb.html
 
@@ -19,7 +19,7 @@ The platform is currently supporting the following features:
 | ------------- |:-------------:| :---------:|:----------------:|
 |  String IoC extraction | 	✅	| ❌   	 | ❌ |
 | Process Tree | 	✅		|   ❌  	 |	 ❌ 	|
-| Process Graph  | ✅	| ❌  |	❌	| 
+| Process Graph  | ✅	| ❌  |	❌	|
 | Process Scan | ✅	| ❌ |❌	|
 | Process Dump  | ✅	|❌ |	❌|
 | Process Env |✅ |❌ | ❌|
@@ -100,6 +100,49 @@ Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
 # Wiki 📚
 The full documentation will be available soon.
+
+# Contributing
+
+To contribute to the project you'll need make a pull-request on the dev branch.
+
+To setup the dev environment follow these steps :
+
+## Configure docker dev environment
+```
+cd docker
+docker-compose -f docker-compose-dev.yml up
+```
+
+## Launch celery
+```
+celery -b "amqp://admin:mypass@localhost:5672" -A investigations worker --loglevel=INFO
+```
+
+## Configure django
+Edit the VolWeb/setting.py and comment/uncomment the dev settings
+
+```
+...
+######DEV SETTINGS#################
+SECRET_KEY = "SuperSecretDevKey"  # <- uncomment
+DEBUG = True                      # <- uncomment
+###################################
+
+
+######PRODUCTION SETTINGS##########
+#SECRET_KEY = Secrets.SECRET_KEY  # <- comment
+#DEBUG = False                    # <- comment
+###################################
+...
+```
+
+```
+BROKER_URL="amqp://admin:mypass@localhost:5672" python3 manage.py runserver
+```
+
+Once your feature has been developed, update the settings to production and test your code with the production docker-compose.yaml
+Don't forget to clean the case directory.
+
 
 # Next Release goals 📋
 - Visual confirmation of what to not look (legit process highlight integration)
