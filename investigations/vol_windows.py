@@ -85,7 +85,8 @@ def dump_process(dump_path, pid, output_path):
     plugin_list = volatility3.framework.list_plugins()
     base_config_path = "plugins"
     context = contexts.Context()
-    context.config['plugins.PsList.pid'] = int(pid)
+    pid_list = List[int]
+    context.config['plugins.PsList.pid'] = [int(pid)]
     context.config['plugins.PsList.dump'] = True
     constructed = build_context(dump_path, context, base_config_path, plugin_list['windows.pslist.PsList'], output_path)
     if constructed:
@@ -95,7 +96,7 @@ def dump_process(dump_path, pid, output_path):
     for artifact in result:
         artifact = { x.translate({32:None}) : y
             for x, y in artifact.items()}
-    return result['Fileoutput']
+    return artifact['Fileoutput']
 
 def dump_file(dump_path, offset, output_path):
     """Dump the file requested by the user"""
@@ -106,7 +107,6 @@ def dump_file(dump_path, offset, output_path):
     else:
         logger.info(f"Plugins are loaded without failure")
     plugin_list = volatility3.framework.list_plugins()
-    logger.info(plugin_list)
     base_config_path = "plugins"
     context = contexts.Context()
     context.config['plugins.DumpFiles.virtaddr'] = int(offset)

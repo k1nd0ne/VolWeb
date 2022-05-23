@@ -112,10 +112,7 @@ To setup the dev environment follow these steps :
 cd docker
 docker-compose -f docker-compose-dev.yml up
 ```
-## Launch celery
-```
-celery -b "amqp://admin:mypass@localhost:5672" -A investigations worker --loglevel=INFO
-```
+
 ## Configure django
 Edit the VolWeb/setting.py and comment/uncomment the dev settings
 ```
@@ -132,9 +129,17 @@ DEBUG = True                      # <- uncomment
 ###################################
 ...
 ```
-
+Run migrations and launch the webservice.
 ```
+python3 manage.py makemigrations
+python3 manage.py migrate
+python3 manage.py initadmin
 BROKER_URL="amqp://admin:mypass@localhost:5672" python3 manage.py runserver
+```
+
+## Launch celery
+```
+celery -b "amqp://admin:mypass@localhost:5672" -A investigations worker --loglevel=INFO
 ```
 
 Once your feature has been developed, update the settings to production and test your code with the production docker-compose.yaml
