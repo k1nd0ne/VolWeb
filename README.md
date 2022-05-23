@@ -103,7 +103,7 @@ The full documentation will be available soon.
 
 # Contributing
 
-To contribute to the project you'll need make a pull-request on the dev branch.
+To contribute to the project you'll need to make a pull-request on the dev branch.
 
 To setup the dev environment follow these steps :
 
@@ -112,15 +112,12 @@ To setup the dev environment follow these steps :
 cd docker
 docker-compose -f docker-compose-dev.yml up
 ```
-
 ## Launch celery
 ```
 celery -b "amqp://admin:mypass@localhost:5672" -A investigations worker --loglevel=INFO
 ```
-
 ## Configure django
 Edit the VolWeb/setting.py and comment/uncomment the dev settings
-
 ```
 ...
 ######DEV SETTINGS#################
