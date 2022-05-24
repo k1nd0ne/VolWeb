@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/title2.png" alt="VolWeb Title"/>
+<img src="https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/volweblogo.png"  width="200" height="300" alt="VolWeb Title"/>
 </p>
 
 Volweb is a digital forensic memory analysis platform.  
 The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responders and digital forensics investigators.  
 VolWeb is based on volatility3, and this platform will evolve with the framework development.
-This project is under active development, and this readme may or may not reflect the most up-to-date documentation. 
+This project is under active development, and this readme may or may not reflect the most up-to-date documentation.
 
 Blog : https://www.forensicxlab.com/VolWeb.html
 
@@ -19,7 +19,7 @@ The platform is currently supporting the following features:
 | ------------- |:-------------:| :---------:|:----------------:|
 |  String IoC extraction | 	✅	| ❌   	 | ❌ |
 | Process Tree | 	✅		|   ❌  	 |	 ❌ 	|
-| Process Graph  | ✅	| ❌  |	❌	| 
+| Process Graph  | ✅	| ❌  |	❌	|
 | Process Scan | ✅	| ❌ |❌	|
 | Process Dump  | ✅	|❌ |	❌|
 | Process Env |✅ |❌ | ❌|
@@ -100,6 +100,35 @@ Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
 # Wiki 📚
 The full documentation will be available soon.
+
+# Contributing
+
+To contribute to the project you'll need to make a pull-request on the dev branch.
+
+To setup the dev environment follow these steps :
+
+## Configure docker dev environment
+```
+cd docker
+docker-compose -f docker-compose-dev.yml up
+```
+
+Run migrations and launch the webservice.
+
+```
+python3 manage.py makemigrations
+python3 manage.py migrate
+python3 manage.py initadmin
+python3 manage.py runserver
+```
+
+## Launch celery
+```
+celery -A investigations worker --loglevel=INFO
+```
+
+Once your feature has been developed, update the settings to production and test your code with the production docker-compose.yaml
+Don't forget to clean the case directory.
 
 # Next Release goals 📋
 - Visual confirmation of what to not look (legit process highlight integration)

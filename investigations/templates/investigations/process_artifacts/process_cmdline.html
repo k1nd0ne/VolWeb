@@ -1,8 +1,5 @@
 <!-- Investigation process_cmdline artifacts -->
-<button onclick="triggerContextMenu()" class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCmdLine" aria-expanded="false" aria-controls="collapsCmdLine">
-  Process Command Line
-</button>
-<div class="text-white collapse mt-5" id="collapseCmdLine">
+<div class="text-white plugin CmdLine mt-5">
   <h6 class="h6">Process Command Line</h6>
   <div class="d-inline">
     <input class="form-control mb-3" id="searchCmdLine" type="text" placeholder="Search..">
@@ -16,7 +13,7 @@
       </tr>
     </thead>
     <tbody id="cmdline">
-      {% for process in cmdline %}
+      {% for process in CmdLine %}
       <tr>
         <td class="w-25">{{process.PID }}</td>
         <td class="w-25" >{{process.Process}}</td>

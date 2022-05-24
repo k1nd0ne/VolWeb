@@ -1,8 +1,5 @@
 <!-- Investigation registry_hivelist artifacts -->
-<button onclick="triggerContextMenu()" class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHiveList" aria-expanded="false" aria-controls="collapsCmdLine">
-  HiveList
-</button>
-<div class="text-white collapse mt-5" id="collapseHiveList">
+<div class="text-white mt-5 plugin HiveList">
   <table id="hivelistTable" class="table table-light  card-font hivelist">
     <thead>
       <tr>
@@ -13,16 +10,16 @@
       </tr>
     </thead>
     <tbody id="hivelist">
-      {% for entry in hivelist %}
+      {% for entry in HiveList %}
       <tr>
         <td>{{entry.FileFullPath}}</td>
         <td>{{entry.Offset}}</td>
-        <td>{{entry.File_output}}</td>
-        {% if entry.File_output == "Disabled" %}
+        <td>{{entry.Fileoutput}}</td>
+        {% if entry.Fileoutput == "Disabled" %}
         <td>Download Unavailable</td>
         {% else %}
         <td>
-          <button type="button" class="btn btn-dark border border-white" onclick="DownloadHive('{{entry.File_output}}')">Download</button>
+          <button type="button" class="btn btn-dark border border-white" onclick="DownloadHive('{{entry.Fileoutput}}')">Download</button>
         </td>
         {% endif %}
 

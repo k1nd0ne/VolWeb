@@ -19,7 +19,6 @@
             </div>
           </div>
           <div class="col-sm-12 col-md-4 col-lg-4">
-
             <div class="mb-3"><label class="form-label" for="service_price"><strong>OS *</strong><br></label>
               {{form.os_version}}
             </div>
@@ -31,7 +30,7 @@
             <div class="form-group mb-3">
               {% for u in Users %}
               <a onclick="ToggleInvestigator('{{u.username}}');" href="#">
-                <span id="badge_{{u.username}}" class="badge text-muted" style="margin-right: 10px;color: rgb(0,0,0);border: 1px solid rgb(0,0,0) ;">{{u.username}}</span>
+                <span id="badge_{{u.username}}" class="badge text-muted" style="margin-right: 10px;background-color: rgb(255,255,255);border: 1px solid rgb(0,0,0) ;">{{u.username}}</span>
               </a>
             </div>
             {% endfor %}
@@ -61,11 +60,11 @@
             investigators.value += u + ' ';
           }
           badge.classList.remove("text-muted");
-          badge.classList.add("text-dark");
+          badge.classList.add("text-success");
         }
         else{
           investigators.value = investigators.value.replace(u,"").replace(' ','');
-          badge.classList.remove("text-dark");
+          badge.classList.remove("text-success");
           badge.classList.add("text-muted");
         }
         theme();

@@ -1,8 +1,5 @@
 <!-- Investigation process_privileges artifacts -->
-<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePriv" aria-expanded="false" aria-controls="collapsePriv">
-  Process Privileges
-</button>
-<div class="collapse mt-5" id="collapsePriv">
+<div class="mt-5 Privs plugin">
   <h6 class="h6">Process Privileges</h6>
   <div class="d-inline">
     <input class="form-control mb-3" id="searchPriv" type="text" placeholder="Search..">
@@ -19,7 +16,7 @@
       </tr>
     </thead>
     <tbody id="processPriv">
-      {% for process in privileges %}
+      {% for process in Privs %}
       <tr>
         <td>{{process.PID}}</td>
         <td>{{process.Process}}</td>

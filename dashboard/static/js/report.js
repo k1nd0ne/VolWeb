@@ -102,23 +102,12 @@
       $('#report_table_filescan').append(TrFileS);
     }
 
-    function ReportProcessTree(){
-      document.getElementById('searchProcess').value = "";
-      $('#searchProcess').keyup();
-      var TheadProcess = $('table.processtree > tbody > tr.highlight').clone();
-      var TrFileProcess = $('table.processtree > thead').clone();
-      $('#report_table_processtree').append(TheadProcess);
-      $('#report_table_processtree').append(TrFileProcess);
-    }
-
     function ReportCachedump(){
       var TheadCacheDump = $('table.cachedump > tbody > tr.highlight').clone();
       var TrTimeCacheDump = $('table.cachedump > thead').clone();
       $('#report_table_cachedump').append(TheadCacheDump);
       $('#report_table_cachedump').append(TrTimeCacheDump);
     }
-
-
 
     function GenerateReport(case_name,os,description,filename){
       const { jsPDF } = window.jspdf;
@@ -145,20 +134,6 @@
         margin: { top: 65 },
         html: '#report_table_process_scan',
       });
-
-      doc.setFontSize(15);
-      doc.text("Process Tree Artifacts:",10,doc.autoTable.previous.finalY + 10);
-      doc.setFontSize(10);
-      ReportProcessTree();
-      doc.setLineWidth(0.2);
-      doc.line(10, 45, 200, 45);
-      doc.autoTable({
-        rowPageBreak: 'auto',
-        styles: { cellPadding: 0.5, fontSize: 8},
-        startY: doc.autoTable.previous.finalY + 15,
-        html: '#report_table_processtree',
-      });
-
 
       doc.setFontSize(15);
       doc.text("Process Command Line Artifacts :",10,doc.autoTable.previous.finalY + 10);

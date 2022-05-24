@@ -1,7 +1,4 @@
-<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target=#collapseCacheDump>
-  CacheDump
-</button>
-<div class="collapse mt-5" id="collapseCacheDump">
+<div class="collapse mt-5 plugin CacheDump">
   <table id="processCacheTable" class="table table-light table-hover card-font cachedump">
     <thead>
       <tr>
@@ -12,7 +9,7 @@
       </tr>
     </thead>
     <tbody id="CacheDumpTab">
-      {% for elem in cachedump %}
+      {% for elem in Cachedump %}
       <tr>
         {% for item in elem %}
         <td>{{item }}</td>

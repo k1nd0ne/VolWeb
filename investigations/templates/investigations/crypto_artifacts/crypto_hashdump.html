@@ -1,7 +1,4 @@
-<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target=#collapseHashDump>
-  HashDump
-</button>
-<div class="collapse mt-5" id="collapseHashDump">
+<div class="collapse mt-5 plugin HashDump">
   <table id="processHashTable" class="table table-light table-hover card-font hashdump">
     <thead>
       <tr>
@@ -12,7 +9,7 @@
       </tr>
     </thead>
     <tbody id="HashDumpTab">
-      {% for elem in hashdump %}
+      {% for elem in Hashdump %}
       <tr>
         <td>{{elem.User}}</td>
         <td>{{elem.rid}}</td>

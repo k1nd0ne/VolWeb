@@ -1,9 +1,4 @@
-<!-- Investigation process_scan artifacts -->
-<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcessScan" aria-expanded="false" aria-controls="collapseProcessScan">
-  Process Scan
-</button>
-
-<div class="collapse mt-5" id="collapseProcessScan">
+<div class="mt-5 PsScan plugin">
   <h6 class="h6">Process Scan</h6>
   <div class="d-inline">
     <input class="form-control mb-3" id="searchProcessScan" type="text" placeholder="Search..">
@@ -24,7 +19,7 @@
       </tr>
     </thead>
     <tbody id="processScan">
-      {% for process in psscan %}
+      {% for process in PsScan %}
       <tr>
         <td>{{process.PID}}</td>
         <td>{{process.PPID}}</td>
@@ -40,5 +35,4 @@
       {% endfor %}
     </tbody>
   </table>
-
 </div>

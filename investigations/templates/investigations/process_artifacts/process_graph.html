@@ -1,13 +1,10 @@
 <!-- Investigation process_graph artifacts -->
-
-<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcessGraph" aria-expanded="false" aria-controls="collapseProcessGraph">
-  Process Tree Graph
-</button>
-<div class="collapse mt-5 text-white card-font" id="collapseProcessGraph">
+<div class="mt-5 text-white card-font plugin PsTree">
   <div style="height:80rem;" class="text-white" id="container"></div>
   <script>
       // create data
-      var data = JSON.parse("{{graph|escapejs}}");
+      console.log("{{PsTree.graph|escapejs}}")
+      var data = JSON.parse("{{PsTree.graph|escapejs}}");
       // create a data tree
       treeData = anychart.data.tree(data, "as-tree");
       // create a chart and set the data
@@ -26,7 +23,11 @@
         treechart.background().fill("#f8f9fa");
       }
 
-      treechart.tooltip().format("{%name}\n\npid: {%pid}");
+      treechart.tooltip().format("{%name}\n\n \
+      pid: {%PID}\n \
+      Create Time : {%CreateTime}\n \
+      Exite Time : {%ExitTime}\n \
+      Threads : {%Threads}");
       treechart.draw();
 
       function change_treegraph(){

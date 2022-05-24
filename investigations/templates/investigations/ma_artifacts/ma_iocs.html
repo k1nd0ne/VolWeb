@@ -1,8 +1,5 @@
 <!-- Investigation malware_analysis_iocs-->
-<button class="btn btn-dark border border-dark" type="button" data-bs-toggle="collapse" data-bs-target=#collapseIOC>
-  IOCs
-</button>
-<div class="collapse mt-5" id="collapseIOC">
+<div class="collapse mt-5 plugin IOC">
   <div class="d-inline">
     <input class="form-control mb-3" id="searchIOC" type="text" placeholder="Search..">
   </div>
@@ -15,11 +12,11 @@
       </tr>
     </thead>
     <tbody id="IOCTab">
-      {% for files in iocmatch %}
+      {% for match in Strings %}
       <tr>
-        {% for key,value in files.items %}
-        <td><p>{{value}}<p></td>
-          {% endfor %}
+        <td>{{match.PhysicalAddress}}</td>
+        <td>{{match.Result}}</td>
+        <td>{{match.String}}</td>
       </tr>
         {% endfor %}
       </tbody>
