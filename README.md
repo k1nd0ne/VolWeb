@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/volweblogo.png"  width="200" height="300" alt="VolWeb Title"/>
+<img src="https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/volweblogo.png"  width="200" height="250" alt="VolWeb Title"/>
 </p>
 
 Volweb is a digital forensic memory analysis platform.  
