@@ -24,14 +24,6 @@
                     <div class="mb-3"><label class="form-label" for="client_description"><strong>Value *</strong><br></label>{{form.value}}</div>
                         <div class="form-group mb-3">
                           <div class="mb-3"><label class="form-label" for="service_price"><strong>Linked analysis *</strong><br></label>
-                            <!-- <select class="form-select">
-                                  <optgroup label="Choose an analysis">
-                                      <option>Select an investigation</option>
-                                    {% for i in investigations %}
-                                      <option id="select_{{i.id}}" value="{{i.id}}">{{i.title}} ({{i.os_version}})</option>
-                                    {% endfor %}
-                                  </optgroup>
-                              </select> -->
                               {{form.linkedInvestigation}}
                           </div>
                     </div><button class="btn btn-primary" id="submit">Create</button>
