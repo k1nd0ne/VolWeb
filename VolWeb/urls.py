@@ -25,5 +25,7 @@ urlpatterns = [
     path('', include('dashboard.urls')),
     path('investigations/', include('investigations.urls')),
     path('iocs/', include('iocs.urls')),
+    path('symobls/', include('symbols.urls')),
+
 
 ]

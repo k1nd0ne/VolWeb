@@ -3,7 +3,7 @@ import datetime, base64
 #OS CHOICE
 CHOICES = (
         ('Windows', 'Windows'),
-#        ('Linux', 'Linux'), <- not implemented yet
+        ('Linux', 'Linux'),
 #        ('MacOs', 'MacOs'), <- not implemented yet
     )
 

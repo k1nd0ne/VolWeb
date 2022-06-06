@@ -1,0 +1,43 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block content%}
+<div class="container-fluid"><a class="btn btn-link link-primary mb-3" role="button" target="_parent" href="{% url 'symbols'%}"><i class="fas fa-arrow-left"></i>&nbsp;Back</a>
+    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-dark mb-0">Add a new symbol</h3>
+    </div>
+    <form method="POST">
+      {% csrf_token %}
+        <div class="card bg-light border border-dark border-sm shadow mb-3">
+            <div class="card-header py-3">
+                <p class="text-dark m-0 fw-bold">Fill in the required fields *</p>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8 col-lg-8">
+                        <div class="mb-3"><label class="form-label" for="service_name"><strong>Name *</strong></label>{{form.name}}</div>
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-4">
+                        <div class="mb-3"><label class="form-label" for="service_price"><strong>OS *</strong><br></label>{{form.os}}</div>
+                    </div>
+                </div>
+                <div class="mb-3"><label class="form-label" for="client_description"><strong>Description *</strong><br></label>{{form.description}}</div>
+                <div class="mb-3"><label class="form-label" for="service_client_end_date"><strong>ISF *</strong><br></label>
+                  {{form.symbols_file}}
+                </div>
+                <button class="btn btn-primary" id="submit">Create</button>
+            </div>
+        </div>
+        <div class="text-end mb-3"></div>
+    </form>
+</div>
+
+<script>
+
+$(document).ready(function(){
+  $('.container').show();
+  $('.container-fluid').show();
+  $('.spinner-main').hide();
+});
+
+</script>
+  {% endblock content %}

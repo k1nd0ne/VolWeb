@@ -14,9 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    			  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-    			  crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{% static '/css/Login-Form-Clean.css' %}">
     <link rel="stylesheet" href="{% static '/css/styles.css' %}">
 </head>
@@ -47,7 +45,11 @@
                       active
                       {% endif %}
                       " href="{% url 'iocs' %}">IOCs</a></li>
-                    <li class="nav-item d-none"><a class="nav-link text-muted" href="#">Symbols</a></li>
+                      <li class="nav-item"><a class="nav-link text-dark
+                        {% if request.get_full_path == '/symbols/'%}
+                        active
+                        {% endif %}
+                        " href="{% url 'symbols' %}">Symbols</a></li>
                 </ul>
             </div>
 
