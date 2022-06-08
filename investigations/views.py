@@ -11,6 +11,7 @@ import json, os, uuid
 from iocs.models import IOC
 from os.path import exists
 from .models import *
+from symbols.models import Symbols
 from .forms import *
 import subprocess
 
@@ -128,7 +129,17 @@ def get_invest(request):
                 iocs = serialize('python', list(i), ensure_ascii=False, fields=('value','context'))
             except ObjectDoesNotExist:
                 iocs = {'message':'N/A'}
-            return JsonResponse({'message': "success", 'result':response,'iocs':iocs})
+            try:
+                u = UploadInvestigation.objects.get(pk=id)
+                s = u.linked_isf
+                if s:
+                    isf = serialize('json',[s, ], fields=('name','description'))
+                else:
+                    isf = {'message':'N/A'}
+
+            except ObjectDoesNotExist:
+                isf = {'message':'N/A'}
+            return JsonResponse({'message': "success", 'result':response,'iocs':iocs,'isf':isf})
         else:
             return JsonResponse({'message': "error"})
 

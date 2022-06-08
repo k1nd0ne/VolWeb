@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .forms import *
 from .models import Symbols
@@ -11,10 +12,10 @@ def symbols(request):
 
         Comment: Display all of the ISF file imported;
         """
-    return render(request,'symbols/symbols.html',{'symbols':Symbols.objects.all()})
+    return render(request,'symbols/symbols.html',{'symbols':Symbols.objects.all(),'form': BindSymbol()})
 
 @login_required
-def addsymbols(request):
+def add_symbols(request):
     """Symbols creation page
 
         Arguments:
@@ -28,10 +29,10 @@ def addsymbols(request):
             form.save()
             return redirect('/symbols/')
     form = NewSymbolsForm()
-    return render(request,'symbols/addsymbols.html',{'form':form})
+    return render(request,'symbols/add_symbols.html',{'form':form})
 
 @login_required
-def customsymbols(request):
+def custom_symbols(request):
     """Modify the description of an ISF file
 
         Arguments:
@@ -42,16 +43,14 @@ def customsymbols(request):
         POST : Apply the modifications
         """
     if request.method == 'GET':
-        form = ManageSymbols(request.GET)
+        form = GetSymbols(request.GET)
         if form.is_valid():
             id = form.cleaned_data['symbols_id']
             symbols_record = Symbols.objects.get(pk=id)
             custom_form = CustomSymbolsForm(instance=symbols_record)
-            return render(request,'symbols/customsymbols.html',{'form': custom_form, 'symbols_id':id,'file':symbols_record.symbols_file})
+            return render(request,'symbols/custom_symbols.html',{'form': custom_form, 'symbols_id':id,'file':symbols_record.symbols_file})
     if request.method == 'POST':
         form = CustomSymbolsForm(request.POST, request.FILES)
-        print(request.POST)
-        print(request.FILES)
         if form.is_valid():
             symbols_record = Symbols.objects.get(pk=form.cleaned_data['symbols_id'])
             symbols_record.name = form.cleaned_data['name']
@@ -63,7 +62,7 @@ def customsymbols(request):
             print(form.errors)
 
 @login_required
-def deletesymbols(request):
+def delete_symbols(request):
     """Delete a ISF file
 
         Arguments:
@@ -75,11 +74,31 @@ def deletesymbols(request):
     if request.method == "POST":
         form = ManageSymbols(request.POST)
         if form.is_valid():
-            id = form.cleaned_data['symbols_id']
-            # Delete the model
-            isf  = Symbols.objects.get(pk=id)
+            isf = form.cleaned_data['symbols']
             isf.delete()
             return redirect('/symbols/')
         else:
             #Return a error django message (need to setup toast)
             return redirect('/symbols/')
+
+@login_required
+def bind_symbols(request):
+    """Delete a ISF file
+
+        Arguments:
+        request : http request object
+
+        Comments:
+        Delete the ISF File selected by the user.
+        """
+    if request.method == "POST":
+        form = BindSymbol(request.POST)
+        if form.is_valid():
+            isf  = form.cleaned_data['symbols']
+            case = form.cleaned_data['linkedInvestigation']
+            case.linked_isf = isf
+            case.save()
+            return JsonResponse({'message': "success"})
+        else:
+            print("caca")
+            return JsonResponse({'message': "error"})

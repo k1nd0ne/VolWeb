@@ -9,7 +9,7 @@
         <code>Symbols</code>
       </div>
       <div class="col-12 col-lg-auto mt-3 mb-3 mb-lg-0">
-          <a href="{% url 'addsymbols' %}" type="button" class="btn border-sm border-light btn-dark btn-sm">+ Add new symbols</a>
+          <a href="{% url 'add_symbols' %}" type="button" class="btn border-sm border-light btn-dark btn-sm">+ Add new symbols</a>
       </div>
       <div class="col-12 mt-3 mb-3 mb-lg-0" role="search">
         <input type="search" id="searchSymb" class="form-control" placeholder="Search for symbols tables" aria-label="Search">
@@ -36,11 +36,14 @@
                   <td>{{s.description}}</td>
                   <td>{{s.os}}</td>
                   <td>
-                    <form style="all: unset;" id="reviewform" action="{% url 'customsymbols' %}" method="GET">
+                    <a class="btn border border-light btn-success btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#BindModal" onclick="$('#id_symbols').val({{s.id}});">Bind</a>
+                    <form style="all: unset;" id="reviewform" action="{% url 'custom_symbols' %}" method="GET">
                       <input type="hidden" name="symbols_id" value="{{s.id}}">
                       <input class="btn border border-light btn-dark btn-sm" type="submit" style="margin-right: 10px;" value="Edit">
                     </form>
                     <a class="btn border border-light btn-danger btn-sm" role="button" onclick="DeleteSymbols({{s.id}})">Delete</a>
+
+                  </td>
                   </tr>
                   {% endfor %}
                   {% endif %}
@@ -52,14 +55,35 @@
 </div>
 <form action="" method="POST">
   {% csrf_token %}
-  <script>
+</form>
+<div class="modal fade" id="BindModal" tabindex="-1" aria-labelledby="downloadDump" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-light ">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title">Select the investigation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <div class="modal-body">
+          <div class="form-group">
+            {{form.linkedInvestigation}}
+            {{form.symbols}}
+          </div>
+          <div id="alert-box" class="text-danger"></div>
+        </div>
+        <div class="modal-footer bg-light">
+          <input class="btn btn-dark border-light" type="submit" onclick="Bind()" value="Bind">
+        </div>
+    </div>
+  </div>
+</div>
+{% include "investigations/toasts.html" %}
 
+  <script>
     $(document).ready(function(){
       $('.container').show();
       $('.container-fluid').show();
       $('.spinner-main').hide();
-      //Process Env SearchBar
-
+      //Symbols search bar
       $("#searchSymb").on("keyup", function() {
         var value = $(this).val().toLowerCase();
         $("#symbolsTable tr").filter(function() {
@@ -68,15 +92,52 @@
       });
     });
 
-    //Ask for IOC deletion
+    function Bind(){
+      const symbols_id = $('#id_symbols').val()
+      var selected_case = $('#id_linkedInvestigation option:selected').val()
+      if(selected_case){
+        $('#alert-box').html("");
+        $('#BindModal').modal('hide')
+        const csrf = document.getElementsByName('csrfmiddlewaretoken');
+        const fd = new FormData();
+        fd.append('csrfmiddlewaretoken', csrf[0].value);
+        fd.append('symbols', symbols_id);
+        fd.append('linkedInvestigation', selected_case);
+        $.ajax({
+          type:'POST',
+          url: "{% url 'bind_symbols' %}",
+          enctype: 'multipart/form-data',
+          data: fd,
+          beforeSend: function(){
+          },
+          success: function(response){
+            if (response['message'] == "success"){
+              $('#proc-success-message').html("Your ISF is now linked to " + $('#id_linkedInvestigation option:selected').text());
+              $('.toast-proc-success').toast('show');
+            }
+          },
+          error: function(error){
+            $('#proc-failed-message').html("Something went wrong ! ");
+            $('.toast-proc-failed').toast('show');
+          },
+          cache: false,
+          contentType : false,
+          processData: false
+        });
+      }
+      else{
+        $('#alert-box').html("Please select an investigation");
+      }
+    }
+    //Ask for symbols deletion
     function DeleteSymbols(id){
       const csrf = document.getElementsByName('csrfmiddlewaretoken');
       const fd = new FormData();
       fd.append('csrfmiddlewaretoken', csrf[0].value);
-      fd.append('symbols_id', id);
+      fd.append('symbols', id);
       $.ajax({
         type:'POST',
-        url: "{% url 'deletesymbols' %}",
+        url: "{% url 'delete_symbols' %}",
         enctype: 'multipart/form-data',
         data: fd,
         beforeSend: function(){

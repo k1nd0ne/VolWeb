@@ -84,6 +84,17 @@
 
               </tbody>
             </table>
+            <table class="table table-light table-hover table-sm">
+              <thead>
+                <tr>
+                  <th>Binded ISF</th>
+                  <th>Name</th>
+                </tr>
+              </thead>
+              <tbody id="isf-table">
+
+              </tbody>
+            </table>
         </div>
       </div>
       <div class="card bg-light border-sm border-dark">
@@ -179,6 +190,29 @@
                 });
                 $('#ioc-table').html(table_entry)
               }
+
+              if(response['isf']['message']){
+                $('#isf-table').html("\
+                <tr>\
+                  <td class='text-warning'>No ISF linked to this case</td>\
+                  <td></td>\
+                </tr>\
+                "
+                )
+              }
+              else {
+                table_entry = "";
+                $.parseJSON(response['isf']).forEach(function(item){
+                  table_entry += "\
+                  <tr>\
+                    <td>"+ item.fields.name +"</td>\
+                    <td>"+ item.fields.description +"</td>\
+                  </tr>\
+                  "
+                });
+                $('#isf-table').html(table_entry)
+              }
+
             }
             if (response['message'] == "error")
             {

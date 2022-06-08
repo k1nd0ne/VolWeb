@@ -1,4 +1,5 @@
 from django.db import models
+from symbols.models import Symbols
 import datetime, base64
 #OS CHOICE
 CHOICES = (
@@ -9,6 +10,11 @@ CHOICES = (
 
 class UploadInvestigation(models.Model):
     id = models.AutoField(primary_key=True)
+    linked_isf = models.ForeignKey(
+        Symbols,
+        on_delete=models.SET_NULL,
+        null=True
+    )
     title = models.CharField(max_length=500)
     os_version = models.CharField(max_length=50, choices = CHOICES)
     investigators = models.CharField(max_length=500)
