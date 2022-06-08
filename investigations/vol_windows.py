@@ -85,7 +85,6 @@ def dump_process(dump_path, pid, output_path):
     plugin_list = volatility3.framework.list_plugins()
     base_config_path = "plugins"
     context = contexts.Context()
-    pid_list = List[int]
     context.config['plugins.PsList.pid'] = [int(pid)]
     context.config['plugins.PsList.dump'] = True
     constructed = build_context(dump_path, context, base_config_path, plugin_list['windows.pslist.PsList'], output_path)
