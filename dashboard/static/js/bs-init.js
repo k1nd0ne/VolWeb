@@ -46,3 +46,12 @@ if (document.getElementById('indcount')) {
             console.error(countUp.error);
         }
   }
+
+	if (document.getElementById('symcount')) {
+	        const countUp = new CountUp('symcount', document.getElementById("symcount").getAttribute("countTosym"));
+	        if (!countUp.error) {
+	            countUp.start();
+	        } else {
+	            console.error(countUp.error);
+	        }
+	  }

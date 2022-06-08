@@ -19,13 +19,13 @@
           <a class="link-dark" href=# onclick="DisplayInvestigation('{{i.id}}')">
              <li id="{{i.id}}" class="invest-card list-group-item d-flex flex-row justify-content-left align-items-center bg-light border-sm border-dark mt-1">
               {% if i.os_version == "Windows" %}
-                <i class="fab fa-windows text-info d-xxl-flex" style="font-size: 20px;margin-right: 10px;"></i>
+                <i class="fab fa-windows text-info d-xxl-flex" style="font-size: 25px;margin-right: 10px;"></i>
               {% endif %}
               {% if i.os_version == "Linux" %}
-                <code><i class="fab fa-linux d-xxl-flex" style="font-size: 20px;margin-right: 10px;"></i></code>
+                <code><i class="fab fa-linux d-xxl-flex" style="font-size: 25px;margin-right: 10px;"></i></code>
               {% endif %}
               {% if i.os_version == "MacOs" %}
-                <i class="fab fa-apple text-dark d-xxl-flex" style="font-size: 20px;margin-right: 10px;"></i>
+                <i class="fab fa-apple text-dark d-xxl-flex" style="font-size: 25px;margin-right: 10px;"></i>
               {% endif %}
                <span class="text-light" style="margin-right: 10px;">{{i.title}}</span>
                <div id="pb_{{i.id}}" class="ms-auto">

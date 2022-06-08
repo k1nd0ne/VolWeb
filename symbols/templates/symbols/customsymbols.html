@@ -21,10 +21,11 @@
                     </div>
                 </div>
                 <div class="mb-3"><label class="form-label" for="client_description"><strong>Description *</strong><br></label>{{form.description}}</div>
-                <div class="mb-3"><label class="form-label" for="service_client_end_date"><strong>ISF *</strong><br></label>
-                  {{form.symbols_file}}
+                <div class="mb-3"><label class="form-label" for="service_client_end_date"><strong>ISF :</strong><br></label>
+                  {{file}}
                 </div>
-                <button class="btn btn-primary" id="submit">Create</button>
+                {{form.symbols_id}}
+                <button class="btn btn-primary" id="submit">Save</button>
             </div>
         </div>
         <div class="text-end mb-3"></div>
@@ -34,6 +35,7 @@
 <script>
 
 $(document).ready(function(){
+  $('#id_symbols_id').val('{{symbols_id}}');
   $('.container').show();
   $('.container-fluid').show();
   $('.spinner-main').hide();

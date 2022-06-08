@@ -3,3 +3,5 @@ docker/nginx/log/
 db.sqlite3
 investigations/.DS_Store
 .DS_Store
+
+*.json

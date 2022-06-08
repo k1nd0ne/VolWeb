@@ -16,8 +16,7 @@ def iocs(request):
 
         Comment: Display all of the iocs
         """
-    form = ManageIOC()
-    return render(request,'iocs/iocs.html',{'iocs':IOC.objects.all(), 'investigations':UploadInvestigation.objects.all(), 'form':form})
+    return render(request,'iocs/iocs.html',{'iocs':IOC.objects.all(), 'investigations':UploadInvestigation.objects.all()})
 
 @login_required
 def newioc(request):
@@ -56,6 +55,7 @@ def customioc(request):
             return render(request,'iocs/customioc.html',{'form': custom_form, 'ioc_id':id, 'investigations':UploadInvestigation.objects.all()})
     if request.method == 'POST':
         form = SaveCustomIOC(request.POST)
+        print(request.POST)
         if form.is_valid():
             ioc_record = IOC.objects.get(pk=form.cleaned_data['ioc_id'])
             ioc_record.name = form.cleaned_data['name']

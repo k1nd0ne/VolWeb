@@ -12,7 +12,7 @@
           <a href="{% url 'addsymbols' %}" type="button" class="btn border-sm border-light btn-dark btn-sm">+ Add new symbols</a>
       </div>
       <div class="col-12 mt-3 mb-3 mb-lg-0" role="search">
-        <input type="search" class="form-control" placeholder="Search for a kernel version" aria-label="Search">
+        <input type="search" id="searchSymb" class="form-control" placeholder="Search for symbols tables" aria-label="Search">
       </div>
 </div>
 <div class="container mt-4">
@@ -25,9 +25,10 @@
                   <th>Name</th>
                   <th>Description</th>
                   <th>Operating system</th>
+                  <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="symbolsTable">
                 {% if symbols %}
                 {% for s in symbols %}
                 <tr>
@@ -35,11 +36,11 @@
                   <td>{{s.description}}</td>
                   <td>{{s.os}}</td>
                   <td>
-                    <form style="all: unset;" id="reviewform" action="{% url 'customioc' %}" method="GET">
-                      <input type="hidden" name="ioc_id" value="{{ioc.id}}">
+                    <form style="all: unset;" id="reviewform" action="{% url 'customsymbols' %}" method="GET">
+                      <input type="hidden" name="symbols_id" value="{{s.id}}">
                       <input class="btn border border-light btn-dark btn-sm" type="submit" style="margin-right: 10px;" value="Edit">
                     </form>
-                    <a class="btn border border-light btn-danger btn-sm" role="button" onclick="DeleteIOC({{ioc.id}})">Delete</a>
+                    <a class="btn border border-light btn-danger btn-sm" role="button" onclick="DeleteSymbols({{s.id}})">Delete</a>
                   </tr>
                   {% endfor %}
                   {% endif %}
@@ -49,13 +50,48 @@
           </div>
         </div>
 </div>
-
+<form action="" method="POST">
+  {% csrf_token %}
   <script>
+
     $(document).ready(function(){
       $('.container').show();
       $('.container-fluid').show();
       $('.spinner-main').hide();
+      //Process Env SearchBar
+
+      $("#searchSymb").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#symbolsTable tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
     });
+
+    //Ask for IOC deletion
+    function DeleteSymbols(id){
+      const csrf = document.getElementsByName('csrfmiddlewaretoken');
+      const fd = new FormData();
+      fd.append('csrfmiddlewaretoken', csrf[0].value);
+      fd.append('symbols_id', id);
+      $.ajax({
+        type:'POST',
+        url: "{% url 'deletesymbols' %}",
+        enctype: 'multipart/form-data',
+        data: fd,
+        beforeSend: function(){
+        },
+        success: function(response){
+          location.reload();
+        },
+        error: function(error){
+
+        },
+        cache: false,
+        contentType : false,
+        processData: false
+      });
+    }
 
   </script>
   {% endblock content %}

@@ -28,8 +28,8 @@
     </div>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-1"></div>
-            <div class="col-3">
+          <div class="col-1"></div>
+            <div class="col-2">
                 <div class="card bg-light border border-dark">
                     <div class="card-body">
                         <h4 class="card-title text-dark">Analysis</h4>
@@ -37,11 +37,19 @@
                     </div>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <div class="card bg-light border border-dark">
                     <div class="card-body">
                         <h4 class="card-title text-dark">IOCs</h4>
                         <h6 class="fs-1 text-danger card-subtitle mb-2" id="indcount" countToind="{{iocs}}"></h6><a class="text-dark card-link" href="{% url 'iocs' %}">View&gt;</a><a class="text-dark card-link" href="{% url 'newioc' %}">Create&gt;</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="card bg-light border border-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-dark">Symbol Tables</h4>
+                        <h6 class="fs-1 text-success card-subtitle mb-2" id="symcount" countToSym="{{symbols}}"></h6><a class="text-dark card-link" href="{% url 'symbols' %}">View&gt;</a><a class="text-dark card-link" href="{% url 'addsymbols' %}">Create&gt;</a>
                     </div>
                 </div>
             </div>
