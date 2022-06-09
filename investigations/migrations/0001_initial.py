@@ -112,6 +112,8 @@ class Migration(migrations.Migration):
                 ('pid', models.BigIntegerField()),
                 ('filename', models.CharField(max_length=255)),
                 ('case_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='investigations.uploadinvestigation')),
+                ('is_malicious', models.BooleanField(default=False)),
+                ('threat',models.CharField(max_length=255,default="")),
             ],
         ),
         migrations.CreateModel(
@@ -245,6 +247,8 @@ class Migration(migrations.Migration):
                 ('offset', models.BigIntegerField(null=True)),
                 ('filename', models.CharField(max_length=255)),
                 ('case_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='investigations.uploadinvestigation')),
+                ('is_malicious', models.BooleanField(default=False)),
+                ('threat',models.CharField(max_length=255,default="")),
             ],
         ),
         migrations.CreateModel(

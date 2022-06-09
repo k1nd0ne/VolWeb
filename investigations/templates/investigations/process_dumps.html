@@ -3,6 +3,7 @@
   <thead>
     <tr>
       <th scope="col">FileName</th>
+      <th scope="col">Malicious</th>
       <th scope="col">PID</th>
       <th scope="col">Action</th>
     </tr>
@@ -11,6 +12,15 @@
     {% for dump in dumps %}
     <tr>
       <td class="w-50">{{dump.filename}}</td>
+      <td class="w-50">
+        {% if dump.is_malicious %}
+        <div class="mytooltip">{{dump.is_malicious}}
+          <span class="mytooltiptext">{{dump.threat}}</span>
+        </div> 
+        {% else %}
+          {{dump.is_malicious}}
+        {% endif %}       
+      </td>
       <td class="w-25 text-danger">{{dump.pid}}</td>
       <td class="w-25">
         <button type="button" class="btn btn-dark border border-dark" onclick="DownloadDump('{{dump.process_dump_id}}','{{dump.filename}}')">Download</button>
