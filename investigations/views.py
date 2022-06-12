@@ -11,7 +11,8 @@ import json, os, uuid
 from iocs.models import IOC
 from os.path import exists
 from investigations.models import *
-from windows_engine.models import *
+import windows_engine.models as windows_engine
+import linux_engine.models as linux_engine
 from symbols.models import Symbols
 from investigations.forms import *
 import subprocess
@@ -251,40 +252,47 @@ def reviewinvest(request):
             context = {}
             context['case'] = case
 
-            #Forms
-            forms ={
-                'dl_hive_form':DownloadHive(),
-                'dl_dump_form': DownloadDump(),
-                'dump_file_form': DumpFile(),
-                'download_file_form': DownloadFile(),
-                'form': DumpMemory(),
-            }
-            #Models
-            models = {
-                'dumps':ProcessDump.objects.filter(case_id = id),
-                'files':FileDump.objects.filter(case_id = id),
-                'ImageSignature' : ImageSignature.objects.get(investigation_id = id),
-                'PsScan': PsScan.objects.filter(investigation_id = id),
-                'PsTree': PsTree.objects.get(investigation_id = id),
-                'CmdLine': CmdLine.objects.filter(investigation_id = id),
-                'Privs': Privs.objects.filter(investigation_id = id),
-                'Envars': Envars.objects.filter(investigation_id = id),
-                'NetScan': NetScan.objects.filter(investigation_id = id),
-                'NetStat': NetStat.objects.filter(investigation_id = id),
-                'NetGraph' : NetGraph.objects.get(investigation_id = id),
-                'Hashdump': Hashdump.objects.filter(investigation_id = id),
-                'Lsadump':Lsadump.objects.filter(investigation_id = id),
-                'Cachedump': Cachedump.objects.filter(investigation_id = id),
-                'HiveList': HiveList.objects.filter(investigation_id = id),
-                'Timeliner': Timeliner.objects.filter(investigation_id = id),
-                'TimeLineChart': TimeLineChart.objects.get(investigation_id = id),
-                'SkeletonKeyCheck' : SkeletonKeyCheck.objects.filter(investigation_id = id),
-                'Malfind' : Malfind.objects.filter(investigation_id = id),
-                'FileScan' : FileScan.objects.filter(investigation_id = id),
-                'Strings' : Strings.objects.filter(investigation_id = id),
-            }
-            context.update(forms)
-            context.update(models)
+            if case.os_version == "Windows":
+                #Forms
+                forms ={
+                    'dl_hive_form':DownloadHive(),
+                    'dl_dump_form': DownloadDump(),
+                    'dump_file_form': DumpFile(),
+                    'download_file_form': DownloadFile(),
+                    'form': DumpMemory(),
+                }
+                #Models
+                models = {
+                    'dumps': windows_engine.ProcessDump.objects.filter(case_id = id),
+                    'files': windows_engine.FileDump.objects.filter(case_id = id),
+                    'ImageSignature' : ImageSignature.objects.get(investigation_id = id),
+                    'PsScan': windows_engine.PsScan.objects.filter(investigation_id = id),
+                    'PsTree': windows_engine.PsTree.objects.get(investigation_id = id),
+                    'CmdLine': windows_engine.CmdLine.objects.filter(investigation_id = id),
+                    'Privs': windows_engine.Privs.objects.filter(investigation_id = id),
+                    'Envars': windows_engine.Envars.objects.filter(investigation_id = id),
+                    'NetScan': windows_engine.NetScan.objects.filter(investigation_id = id),
+                    'NetStat': windows_engine.NetStat.objects.filter(investigation_id = id),
+                    'NetGraph' : windows_engine.NetGraph.objects.get(investigation_id = id),
+                    'Hashdump': windows_engine.Hashdump.objects.filter(investigation_id = id),
+                    'Lsadump':windows_engine.Lsadump.objects.filter(investigation_id = id),
+                    'Cachedump': windows_engine.Cachedump.objects.filter(investigation_id = id),
+                    'HiveList': windows_engine.HiveList.objects.filter(investigation_id = id),
+                    'Timeliner': windows_engine.Timeliner.objects.filter(investigation_id = id),
+                    'TimeLineChart': windows_engine.TimeLineChart.objects.get(investigation_id = id),
+                    'SkeletonKeyCheck' : windows_engine.SkeletonKeyCheck.objects.filter(investigation_id = id),
+                    'Malfind' : windows_engine.Malfind.objects.filter(investigation_id = id),
+                    'FileScan' : windows_engine.FileScan.objects.filter(investigation_id = id),
+                    'Strings' : windows_engine.Strings.objects.filter(investigation_id = id),
+                }
+                context.update(forms)
+                context.update(models)
+            else:
+                models = {
+                    'ImageSignature' : ImageSignature.objects.get(investigation_id = id),
+                    'PsList':linux_engine.PsList.objects.filter(investigation_id = id)
+                }
+                context.update(models)
             return render(request, 'investigations/reviewinvest.html',context)
         else:
             form = ManageInvestigation()

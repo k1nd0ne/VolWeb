@@ -159,7 +159,6 @@ class FileUpload {
     $('#submit').on('click', (event) => {
         event.preventDefault();
         var uploader = new FileUpload(document.querySelector('#fileupload'))
-        console.log(document.querySelector('#fileupload'));
         uploader.upload();
     });
 })(jQuery);
