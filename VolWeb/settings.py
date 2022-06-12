@@ -20,6 +20,8 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
+    'linux_engine.apps.LinuxEngineConfig',
+    'windows_engine.apps.WindowsEngineConfig',
     'dashboard.apps.DashboardConfig',
     'investigations.apps.InvestigationsConfig',
     'iocs.apps.IocsConfig',

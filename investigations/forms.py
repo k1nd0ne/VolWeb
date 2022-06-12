@@ -1,5 +1,6 @@
 from django import forms
-from .models import UploadInvestigation, ProcessDump, FileDump
+from investigations.models import UploadInvestigation
+from windows_engine.models import ProcessDump, FileDump
 from django.forms import ModelForm, TextInput, Textarea, FileField, Select
 
 class UploadFileForm(forms.ModelForm):

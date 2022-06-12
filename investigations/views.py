@@ -10,9 +10,10 @@ from django.contrib import messages
 import json, os, uuid
 from iocs.models import IOC
 from os.path import exists
-from .models import *
+from investigations.models import *
+from windows_engine.models import *
 from symbols.models import Symbols
-from .forms import *
+from investigations.forms import *
 import subprocess
 
 @login_required
