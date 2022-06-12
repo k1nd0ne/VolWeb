@@ -7,11 +7,27 @@
         table.addClass("highlight");
       }
     });
-      //ProcessScan SearchBar
+
+    $('#BashTable').on('click', 'tbody tr', function(event) {
+      var table = $(this);
+      if (table.hasClass("highlight")){
+        table.removeClass("highlight");
+      }
+      else{
+        table.addClass("highlight");
+      }
+    });
 
       $("#searchProcessList").on("keyup", function() {
         var value = $(this).val().toLowerCase();
         $("#processList tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+
+      $("#searchBash").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#Bash tr").filter(function() {
           $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
         });
       });
@@ -32,8 +48,18 @@
         $('.PsList').show();
       });
 
+      $("#PsTreeLink").on("click", function(){
+        $('.plugin').hide();
+        $('.PsTree').show();
+      });
+
       $("#CaseLink").on("click", function(){
         $('.plugin').hide();
         $('.Case').show();
+      });
+
+      $("#BashLink").on("click", function(){
+        $('.plugin').hide();
+        $('.Bash').show();
       });
     });

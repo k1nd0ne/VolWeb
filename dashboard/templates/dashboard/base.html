@@ -15,15 +15,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{% static '/css/Login-Form-Clean.css' %}">
     <link rel="stylesheet" href="{% static '/css/styles.css' %}">
 </head>
 {% cookiebanner_modal 'cookiebanner' %}
-</div>
 <span class="spinner-main spinner-border spinner-border-sm spinner" role="status"></span>
-<body style="background: rgb(255,255,255);">
+<body>
     <nav class="text-dark navbar navbar-light navbar-expand-md shadow-sm">
-        <div class="container-fluid"><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button><a href="{% url 'investigations' %}"><img src="{% static '/img/volweblogo2.png' %}" width="70"></a>
+        <div class="container-fluid bg-dark">
+          <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1">
+            <span class="visually-hidden">Toggle navigation</span>
+            <span class="navbar-toggler-icon"></span>
+          </button><a href="{% url 'investigations' %}">
+          <img src="{% static '/img/volweblogo2.png' %}" width="70"></a>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link text-dark
@@ -105,6 +108,10 @@
         });
 
         document.querySelectorAll(".border-dark").forEach((element) => {
+          element.className = element.className.replace(/border-dark/g, "border-light");
+        });
+
+        document.querySelectorAll(".nav").forEach((element) => {
           element.className = element.className.replace(/border-dark/g, "border-light");
         });
 

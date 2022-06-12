@@ -37,6 +37,9 @@ def run_volweb_routine_linux(dump_path, case_id, case, isf):
     volweb_knowledge_base = {
     #Process
         'PsList' : {'plugin' : plugin_list['linux.pslist.PsList']},
+        'PsTree' : {'plugin' : plugin_list['linux.pstree.PsTree']},
+        'Bash' : {'plugin' : plugin_list['linux.bash.Bash']},
+
     }
 
     """Progress Function"""
@@ -93,4 +96,28 @@ def run_volweb_routine_linux(dump_path, case_id, case, isf):
                     artifact['Offset'] = artifact['Offset(V)']
                     del(artifact['Offset(V)'])
                 apps.get_model("linux_engine", runable)(investigation_id = case_id, **artifact).save()
+
+    """STEP 3.2 : Contruct and inject the graphs"""
+    def rename(node):
+        if len(node['__children']) == 0:
+            node['children'] = node['__children']
+            node['name'] = node['COMM']
+            del(node['__children'])
+            del(node['COMM'])
+        else:
+            node['children'] = node['__children']
+            node['name'] = node['COMM']
+            del(node['__children'])
+            del(node['COMM'])
+            for children in node['children']:
+                rename(children)
+
+    json_pstree_artifact = []
+    if volweb_knowledge_base['PsTree']['result']:
+        pstree_artifact = volweb_knowledge_base['PsTree']['result']
+        for tree in pstree_artifact:
+            rename(tree)
+        json_pstree_artifact = json.dumps(pstree_artifact)
+
+    apps.get_model("linux_engine", "PsTree")(investigation_id = case_id, graph = json_pstree_artifact).save()
     return PARTIAL_RESULTS

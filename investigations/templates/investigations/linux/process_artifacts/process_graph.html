@@ -1,0 +1,45 @@
+<!-- Investigation process_graph artifacts -->
+<div class="mt-5 text-white card-font plugin PsTree">
+  <div style="height:80rem;" class="text-white" id="container"></div>
+  <script>
+      // create data
+      var data = JSON.parse("{{PsTree.graph|escapejs}}");
+      // create a data tree
+      treeData = anychart.data.tree(data, "as-tree");
+      // create a chart and set the data
+      var treechart = anychart.sunburst(treeData);
+
+      // set the chart title
+      treechart.title("Process_Tree");
+      // set the container id
+      treechart.container("container");
+      // initiate drawing the chart
+
+      if (lightSwitch.checked) {
+        treechart.background().fill("#212529");
+      }
+      else{
+        treechart.background().fill("#f8f9fa");
+      }
+
+      treechart.tooltip().format("{%name}\n\n \
+      pid: {%PID}\n");
+      treechart.draw();
+
+      function change_treegraph(){
+        if (lightSwitch.checked) {
+          treechart.background().fill("#212529");
+        }
+
+        else{
+          treechart.background().fill("#f8f9fa");
+        }
+      }
+
+      $(document).ready(function(){
+        change_treegraph();
+        lightSwitch.addEventListener("change", change_treegraph);
+      });
+
+  </script>
+</div>

@@ -18,3 +18,14 @@ class PsList(models.Model):
     COMM = models.CharField(max_length = 255,null = True)
     PID = models.BigIntegerField(null = True)
     PPID = models.BigIntegerField(null = True)
+
+class Bash(models.Model):
+    investigation = models.ForeignKey(
+            UploadInvestigation,
+            on_delete=models.CASCADE,
+            related_name="linux_bash_investigation"
+        )
+    PID = models.BigIntegerField(null = True)
+    Process = models.CharField(max_length = 255,null = True)
+    CommandTime = models.CharField(max_length = 255,null = True)
+    Command = models.CharField(max_length = 500,null = True)

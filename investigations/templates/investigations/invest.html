@@ -4,11 +4,10 @@
 <div class="container-fluid " style="margin-top: 50px;">
   <div class="row">
     <div class="col-md-4 border-end" style="border-right-width: 3px;border-right-style: solid;overflow-y: scroll;overflow-x: hidden;min-height: 82vh;max-height: 82vh;">
-      <input type="search" id="myInput" style="width: 100%;" placeholder="Search"><a class="link-dark" href="{% url 'newinvest'%}">
-        <div class="d-flex flex-row justify-content-center align-items-center bg-light border border-dark" style="border-width: 3px;margin-top: 5px;">
-          <i class="icon ion-ios-plus-empty d-xxl-flex text-dark" style="font-size: 50px;"></i>
-        </div>
-      </a>
+      <input type="search" id="myInput" style="width: 100%;" placeholder="Search">
+      <div class="d-grid gap-2">
+      <a class="btn border-sm border-light btn-dark btn-sm mt-2" href="{% url 'newinvest'%}">+ New Analysis</a>
+      </div>
       <div id="cards">
         {% if investigations %}
         <script>
@@ -49,10 +48,10 @@
       </div>
 
     </div>
-    <div id="actions" class="col-md-8" style="height: 80vh;">
+    <div id="actions" class="col-md-8">
       <span class="spinner-invest spinner-border spinner-border-sm spinner" role="status"></span>
       {% if investigations %}
-      <div class="card bg-light border-sm border-dark" style="height: 65vh;">
+      <div class="card bg-light border-sm border-dark" style="height: 30vh;">
         <div class="card-header">
           <h5 class="mb-0">Details</h5>
         </div>

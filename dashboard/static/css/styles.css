@@ -22,6 +22,16 @@ a {
   stroke: #fff;
 }
 
+body {
+  height: 100%;
+  padding: 0;
+  background-image: url("../images/bg.svg");
+  background-color: #ffffffdd;
+  background-size: cover;
+  background-repeat: repeat;
+}
+
+
 .spinner-invest {
   z-index: 2;
   position: relative;
@@ -33,7 +43,7 @@ a {
   stroke: #fff;
 }
 
-.container, .container-fluid, {
+.container, .container-fluid {
   display: none;
 }
 @keyframes blink {
