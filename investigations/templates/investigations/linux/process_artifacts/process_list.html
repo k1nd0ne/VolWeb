@@ -1,0 +1,24 @@
+<div class="mt-5 PsList plugin">
+  <h6 class="h6">Process List</h6>
+  <div class="d-inline">
+    <input class="form-control mb-3" id="searchProcessList" type="text" placeholder="Search..">
+  </div>
+  <table id="processListTable" class="table table-light  card-font processlist">
+    <thead>
+      <tr>
+        <th scope="col">PID</th>
+        <th scope="col">PPID</th>
+        <th scope="col">COMM</th>
+      </tr>
+    </thead>
+    <tbody id="processScan">
+      {% for process in PsList %}
+      <tr>
+        <td>{{process.PID}}</td>
+        <td>{{process.PPID}}</td>
+        <td>{{process.COMM}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

@@ -83,6 +83,8 @@
             <!-- Investigation Banner -->
             {% include "investigations/invest_banner.html" %}
 
+            <!-- Process Artifacts -->
+            {% include "investigations/linux/process_artifacts/process_list.html" %}
         </main>
       {% endif %}
   </div>
@@ -112,7 +114,10 @@
 			  crossorigin="anonymous"></script>
   <script type="module" src="https://unpkg.com/jspdf@2.0.0/dist/jspdf.umd.min.js"></script>
   <script type="module" src="{% static 'js/jspdf.plugin.autotable.js'%}"></script>
+  {% if case.os_version == "Windows" %}
   <script src="{% static 'js/report.js'%}"></script>
   <script src="{% static 'js/windows.js'%}"></script>
-
+  {% else %}
+  <script src="{% static 'js/linux.js'%}"></script>
+  {% endif %}
   {% endblock content %}
