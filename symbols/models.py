@@ -1,5 +1,6 @@
 from django.db import models
-import os as los
+import os
+import shutil
 CHOICES = (
         ('Windows', 'Windows'),
         ('Linux', 'Linux'),
@@ -17,9 +18,8 @@ class Symbols(models.Model):
     def __str__(self):
         return str(self.name)
     def save(self, *args, **kwargs):
-    # Call standard save
         super(Symbols, self).save(*args, **kwargs)
-        name = los.path.basename(self.symbols_file.name)
+        name = os.path.basename(self.symbols_file.name)
         if self.os == "Windows":
             new_path = '/'.join([UPLOAD_PATH, str(self.id),"windows",name])
             vol_path = '/'.join([UPLOAD_PATH, str(self.id)])
@@ -27,7 +27,12 @@ class Symbols(models.Model):
             new_path = '/'.join([UPLOAD_PATH, str(self.id),"linux",name])
             vol_path = '/'.join([UPLOAD_PATH, str(self.id)])
 
-        los.makedirs(los.path.dirname(new_path))
-        los.rename(self.symbols_file.name, new_path)
+        os.makedirs(os.path.dirname(new_path))
+        os.rename(self.symbols_file.name, new_path)
         self.symbols_file.name = new_path
         super(Symbols, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        path = os.sep.join(self.symbols_file.name.split(os.sep)[:-2])
+        shutil.rmtree(path)
+        super(Symbols, self).delete(*args, **kwargs)

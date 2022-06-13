@@ -170,7 +170,7 @@
       //NetStat Search funtion
       $("#searchNetworkStat").on("keyup", function() {
           var value = $(this).val().toLowerCase();
-          $("#network tr").filter(function() {
+          $("#netstat tr").filter(function() {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
           });
         });

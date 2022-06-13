@@ -8,34 +8,10 @@ VolWeb is based on volatility3, and this platform will evolve with the framework
 This project is under active development, and this readme may or may not reflect the most up-to-date documentation.
 
 Blog : https://www.forensicxlab.com/VolWeb.html
+Demo : file:///Users/k1nd0ne/work/forensicxlab.github.io/VolDemo.html
 
 **Volweb is still in development and will evolve quickly.**  
 Update communications will be via twitter or by following this repo.
-
-## Features ✅
-The platform is currently supporting the following features:
-
-| Features      | Windows          | Linux   |    MacOs  	|
-| ------------- |:-------------:| :---------:|:----------------:|
-|  String IoC extraction | 	✅	| ❌   	 | ❌ |
-| Process Tree | 	✅		|   ❌  	 |	 ❌ 	|
-| Process Graph  | ✅	| ❌  |	❌	|
-| Process Scan | ✅	| ❌ |❌	|
-| Process Dump  | ✅	|❌ |	❌|
-| Process Env |✅ |❌ | ❌|
-| Process Cmdline | ✅| ❌|❌ |
-| Process Privileges |✅ | ❌| ❌|
-| Network Scan |✅ |❌ |❌ |
-| Network Stat |✅ |❌ |❌ |
-| Network Graph |✅ |❌ |❌ |
-| Hash Dump |✅ |❌ |❌ |
-| Lsa/Cache Dump |✅ |❌ |❌ |
-| Skeleton key check |✅ |❌ |❌ |
-| Dll List |✅ | ❌|❌ |
-| File scan |✅ | ❌|❌ |
-| Timeline Explorer |✅ |❌ |❌ |
-| Malware finder |✅ | ❌| ❌|
-| Automatic Report Generation |✅ | ❌|❌|
 
 
 ## Getting Started 🛠️
@@ -104,7 +80,6 @@ The full documentation will be available soon.
 # Contributing
 
 To contribute to the project you'll need to make a pull-request on the dev branch.
-
 To setup the dev environment follow these steps :
 
 ## Configure docker dev environment
@@ -130,14 +105,7 @@ celery -A investigations worker --loglevel=INFO
 Once your feature has been developed, update the settings to production and test your code with the production docker-compose.yaml
 Don't forget to clean the case directory.
 
-# Next Release goals 📋
-- Visual confirmation of what to not look (legit process highlight integration)
-- Recode MalConfScan for volatility3
-- ISF Database.
+**Volweb is in active development your features may take time to be integrated**  
 
-# Global goals 📋
-- Add missing modules to the windows memory analysis.
-- Mac OS support
-- Linux support
-- Import multiple IOC from a CSV
-- Export IOCs to a CSV for qualification and integration to Threat Intelligence Platforms
+# Next Release goals 📋
+Checkout the roadmap : https://github.com/k1nd0ne/VolWeb/projects/1
