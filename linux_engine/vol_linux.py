@@ -38,8 +38,13 @@ def run_volweb_routine_linux(dump_path, case_id, case, isf):
     #Process
         'PsList' : {'plugin' : plugin_list['linux.pslist.PsList']},
         'PsTree' : {'plugin' : plugin_list['linux.pstree.PsTree']},
-        'Bash' : {'plugin' : plugin_list['linux.bash.Bash']},
+        'ProcMaps' : {'plugin' : plugin_list['linux.proc.Maps']},
 
+    #Malware analysis
+        'Bash' : {'plugin' : plugin_list['linux.bash.Bash']},
+        'Lsof' : {'plugin' : plugin_list['linux.lsof.Lsof']},
+        'TtyCheck' : {'plugin' : plugin_list['linux.tty_check.tty_check']},
+        'Elfs' : {'plugin' : plugin_list['linux.elfs.Elfs']},
     }
 
     """Progress Function"""

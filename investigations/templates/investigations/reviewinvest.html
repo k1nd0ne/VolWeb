@@ -85,8 +85,17 @@
 
             <!-- Process Artifacts -->
             {% include "investigations/linux/process_artifacts/process_list.html" %}
+            {% include "investigations/linux/process_artifacts/process_maps.html" %}
             {% include "investigations/linux/process_artifacts/process_graph.html" %}
+            {% include "investigations/linux/process_artifacts/elfs.html" %}
+
+            <!-- Malware analysis Artifacts -->
             {% include "investigations/linux/ma_artifacts/bash.html" %}
+            {% include "investigations/linux/ma_artifacts/lsof.html" %}
+            {% include "investigations/linux/ma_artifacts/tty_check.html" %}
+
+
+
 
 
         </main>

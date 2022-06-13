@@ -292,7 +292,11 @@ def reviewinvest(request):
                     'ImageSignature' : ImageSignature.objects.get(investigation_id = id),
                     'PsList':linux_engine.PsList.objects.filter(investigation_id = id),
                     'PsTree': linux_engine.PsTree.objects.get(investigation_id = id),
-                    'Bash': linux_engine.Bash.objects.filter(investigation_id = id)
+                    'Bash': linux_engine.Bash.objects.filter(investigation_id = id),
+                    'ProcMaps': linux_engine.ProcMaps.objects.filter(investigation_id = id),
+                    'Lsof': linux_engine.Lsof.objects.filter(investigation_id = id),
+                    'TtyCheck': linux_engine.TtyCheck.objects.filter(investigation_id = id),
+                    'Elfs': linux_engine.Elfs.objects.filter(investigation_id = id),
                 }
                 context.update(models)
             return render(request, 'investigations/reviewinvest.html',context)
