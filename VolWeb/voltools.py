@@ -3,7 +3,7 @@ from typing import Dict, Type, Union, Any, List, Tuple
 from volatility3.framework import contexts, interfaces
 from volatility3 import plugins
 from volatility3.framework.plugins import construct_plugin
-from volatility3.framework import automagic
+from volatility3.framework import automagic, constants
 from volatility3.cli import text_renderer
 from volatility3.framework.renderers import format_hints
 import datetime, hashlib, io, tempfile, json, os, subprocess

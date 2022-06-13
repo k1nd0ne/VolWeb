@@ -130,7 +130,9 @@ def run_volweb_routine_windows(dump_path, case_id, case):
     PARTIAL_RESULTS = False
     logger.info('Starting VolWeb Engine')
     volatility3.framework.require_interface_version(2, 0, 0)
-
+    if case.linked_isf:
+        path = os.sep.join(case.linked_isf.symbols_file.name.split(os.sep)[:-2])
+        volatility3.symbols.__path__.append(os.path.abspath(path))
     """Import available plugings from the native framework"""
     failures = volatility3.framework.import_files(plugins, True)
     if failures:

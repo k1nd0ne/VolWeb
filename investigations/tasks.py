@@ -49,7 +49,7 @@ def windows_memory_analysis(dump_path,case):
 
 """Linux Memory Analysis (Not implemented yet)"""
 def linux_memory_analysis(dump_path, case):
-    PARTIAL_RESULTS = run_volweb_routine_linux(dump_path,case.id,case,case.linked_isf)
+    PARTIAL_RESULTS = run_volweb_routine_linux(dump_path,case.id,case)
     case.percentage = "100"
     if PARTIAL_RESULTS:
         case.status = "4"

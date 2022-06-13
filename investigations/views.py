@@ -120,7 +120,7 @@ def get_invest(request):
     if request.method == 'GET':
         form = ManageInvestigation(request.GET)
         if form.is_valid():
-            id = form.cleaned_data['sa_case_id']
+            id = form.cleaned_data['sa_case_id'].id
             try:
                 u = UploadInvestigation.objects.get(pk=id)
                 response = serialize('python', [u], ensure_ascii=False, fields=('title','name', 'investigators', 'description', 'status', 'percentage'))
@@ -173,8 +173,7 @@ def start_analysis(request):
     if request.method == 'POST':
         form = ManageInvestigation(request.POST)
         if form.is_valid():
-            id = form.cleaned_data['sa_case_id']
-            case = UploadInvestigation.objects.get(pk=id)
+            case = form.cleaned_data['sa_case_id']
             case.status = "1"
             case.percentage = "0"
             result = start_memory_analysis.delay('Cases/'+str(case.name),case.id)
@@ -197,8 +196,7 @@ def remove_analysis(request):
     if request.method == 'POST':
         form = ManageInvestigation(request.POST)
         if form.is_valid():
-            id = form.cleaned_data['sa_case_id']
-            case = UploadInvestigation.objects.get(pk=id)
+            case = form.cleaned_data['sa_case_id']
             case_memdump = 'Cases/' + str(case.name)
             try:
                 subprocess.check_output(['rm', case_memdump])
@@ -223,8 +221,7 @@ def cancel_analysis(request):
     if request.method == 'POST':
         form = ManageInvestigation(request.POST)
         if form.is_valid():
-            id = form.cleaned_data['sa_case_id']
-            case = UploadInvestigation.objects.get(pk=id)
+            case = form.cleaned_data['sa_case_id']
             case.status = "0"
             task_id = case.taskid
             app.control.terminate(task_id)
@@ -247,8 +244,8 @@ def reviewinvest(request):
     if request.method == 'GET':
         form = ManageInvestigation(request.GET)
         if form.is_valid():
-            id = form.cleaned_data['sa_case_id']
-            case = UploadInvestigation.objects.get(pk=id)
+            case = form.cleaned_data['sa_case_id']
+            id = case.id
             context = {}
             context['case'] = case
 
