@@ -8,7 +8,7 @@ VolWeb is based on volatility3, and this platform will evolve with the framework
 This project is under active development, and this readme may or may not reflect the most up-to-date documentation.
 
 Blog : https://www.forensicxlab.com/VolWeb.html
-Demo : file:///Users/k1nd0ne/work/forensicxlab.github.io/VolDemo.html
+Demo : https://www.forensicxlab.com/VolDemo.html
 
 **Volweb is still in development and will evolve quickly.**  
 Update communications will be via twitter or by following this repo.
