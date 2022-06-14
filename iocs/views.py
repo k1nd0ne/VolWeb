@@ -16,8 +16,7 @@ def iocs(request):
 
         Comment: Display all of the iocs
         """
-    form = ManageIOC()
-    return render(request,'iocs/iocs.html',{'iocs':IOC.objects.all(), 'investigations':UploadInvestigation.objects.all(), 'form':form})
+    return render(request,'iocs/iocs.html',{'iocs':IOC.objects.all(), 'investigations':UploadInvestigation.objects.all()})
 
 @login_required
 def newioc(request):

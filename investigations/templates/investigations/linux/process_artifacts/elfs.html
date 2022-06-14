@@ -1,0 +1,28 @@
+<div class="mt-5 Elfs plugin">
+  <h6 class="h6">Process ELF files</h6>
+  <div class="d-inline">
+    <input class="form-control mb-3" id="searchElfs" type="text" placeholder="Search..">
+  </div>
+  <table id="ElfsTable" class="table table-light  card-font Elfs">
+    <thead>
+      <tr>
+        <th scope="col">Start</th>
+        <th scope="col">End</th>
+        <th scope="col">File Path</th>
+        <th scope="col">Process</th>
+        <th scope="col">PID</th>
+      </tr>
+    </thead>
+    <tbody id="Elfs">
+      {% for process in ProcMaps %}
+      <tr>
+        <td>{{process.Start}}</td>
+        <td>{{process.End}}</td>
+        <td>{{process.FilePath}}</td>
+        <td>{{process.Process}}</td>
+        <td>{{process.PID}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

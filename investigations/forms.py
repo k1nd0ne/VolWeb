@@ -1,5 +1,6 @@
 from django import forms
-from .models import UploadInvestigation, ProcessDump, FileDump
+from investigations.models import UploadInvestigation
+from windows_engine.models import ProcessDump, FileDump
 from django.forms import ModelForm, TextInput, Textarea, FileField, Select
 
 class UploadFileForm(forms.ModelForm):
@@ -15,8 +16,7 @@ class UploadFileForm(forms.ModelForm):
         }
 
 class ManageInvestigation(forms.Form):
-     sa_case_id = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
-        'class': 'd-none',}))
+    sa_case_id = forms.ModelChoiceField(queryset=UploadInvestigation.objects.all(), required=True, widget=forms.TextInput(attrs={'type':'hidden'}))
 
 class DumpMemory(forms.ModelForm):
     class Meta:

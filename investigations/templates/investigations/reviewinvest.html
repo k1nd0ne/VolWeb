@@ -39,96 +39,67 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/fonts/css/anychart-font.min.css"/>
 <div class="container-fluid main" id="main">
   <div class="row flex-nowrap">
-      <div class="col-auto px-0">
-          <div id="sidebar" class="collapse collapse-horizontal border-light">
-              <div id="sidebar-nav" class="list-group border-0 rounded-0 text-sm-start min-vh-100">
-                <a href="#" id="CaseLink" class="bg-light list-group-item d-inline-block text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi-briefcase"></i> <span class="text-dark">Case</span></a>
+      {% if case.os_version == "Windows" %}
+        {% include "investigations/windows/sidebar.html" %}
+        <main class="col ps-md-2 pt-2">
+            <a href="#" data-bs-target="#sidebar" data-bs-toggle="collapse" class="text-dark border rounded-3 p-1 text-decoration-none"><i class="bi bi-arrow-left-right bi-lg py-2 p-1"></i>Plugins</a>
+            <!-- Investigation Banner -->
+            {% include "investigations/invest_banner.html" %}
 
-                <a href="#collapseProcess" class="bg-light list-group-item d-inline-block text-truncate" data-bs-toggle="collapse" data-bs-parent="#sidebar"><i class="text-dark bi bi-cpu"></i> <span class="text-dark">Process</span> </a>
-                  <div class="collapse show" id="collapseProcess">
-                    <ul class="list-group-item bg-light">
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="PsScanLink" href="#" class="text-dark">PsScan</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="PsTreeLink" href="#" class="text-dark">PsTree</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="PrivsLink" href="#" class="text-dark">Privs</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="CmdLineLink" href="#" class="text-dark">CmdLine</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="EnvarsLink" href="#" class="text-dark">Envars</a></li>
-                    <ul>
-                  </div>
+            <!-- Process Artifacts -->
+            {% include "investigations/windows/process_artifacts/process_scan.html" %}
+            {% include "investigations/windows/process_artifacts/process_graph.html" %}
+            {% include "investigations/windows/process_artifacts/process_privileges.html" %}
+            {% include "investigations/windows/process_artifacts/process_cmdline.html" %}
+            {% include "investigations/windows/process_artifacts/process_env.html" %}
 
-                  <a href="#collapseNetwork" class="bg-light list-group-item d-inline-block text-truncate" data-bs-toggle="collapse" data-bs-parent="#sidebar"><i class="text-dark bi bi-diagram-3"></i> <span class="text-dark">Network</span> </a>
-                  <div class="collapse show" id="collapseNetwork">
-                    <ul class="list-group-item bg-light">
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="NetGraphLink" href="#" class="text-dark">NetGraph</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="NetScanLink" href="#" class="text-dark">NetScan</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="NetStatLink" href="#" class="text-dark">NetStat</a></li>
-                    <ul>
-                  </div>
+            <!-- Network Artifacts -->
+            {% include "investigations/windows/network_artifacts/network_scan.html" %}
+            {% include "investigations/windows/network_artifacts/network_stat.html" %}
+            {% include "investigations/windows/network_artifacts/network_graph.html" %}
 
+            <!-- Cyrpto Artifacts -->
+            {% include "investigations/windows/crypto_artifacts/crypto_hashdump.html" %}
+            {% include "investigations/windows/crypto_artifacts/crypto_lsadump.html" %}
+            {% include "investigations/windows/crypto_artifacts/crypto_cachedump.html" %}
 
-                  <a href="#collapseCrypto" class="bg-light list-group-item d-inline-block text-truncate" data-bs-toggle="collapse" data-bs-parent="#sidebar"><i class="text-dark bi bi-fingerprint"></i> <span class="text-dark">Cryptography</span> </a>
-                  <div class="collapse show" id="collapseCrypto">
-                    <ul class="list-group-item bg-light">
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="HashDumpLink" href="#" class="text-dark">HashDump</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="LsaDumpLink" href="#" class="text-dark">LsaDump</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="CacheDumpLink" href="#" class="text-dark">CacheDump</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="SkeletonLink" href="#" class="text-dark">SkeletonKeyCheck</a></li>
-                    <ul>
-                  </div>
+            <!-- Registry Artifacts -->
+            {% include "investigations/windows/reg_artifacts/reg_hivelist.html" %}
 
-                  <a href="#collapseReg" class="bg-light list-group-item d-inline-block text-truncate" data-bs-toggle="collapse" data-bs-parent="#sidebar"><i class="text-dark bi bi-grid-3x3-gap"></i> <span class="text-dark">Registry</span> </a>
-                  <div class="collapse show" id="collapseReg">
-                    <ul class="list-group-item bg-light">
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="HiveListLink" href="#" class="text-dark">HiveList</a></li>
-                    <ul>
-                  </div>
+            <!-- Malware analysis Artifacts -->
+            {% include "investigations/windows/ma_artifacts/ma_timeline.html" %}
+            {% include "investigations/windows/ma_artifacts/ma_skeleton.html" %}
+            {% include "investigations/windows/ma_artifacts/ma_iocs.html" %}
+            {% include "investigations/windows/ma_artifacts/ma_malfind.html" %}
+            {% include "investigations/windows/ma_artifacts/ma_filescan.html" %}
+            {% include "investigations/windows/ma_artifacts/ma_dumpprocess.html" %}
+            {% include "investigations/windows/ma_artifacts/ma_dumpfile.html" %}
 
-                  <a href="#collapseMalware" class="bg-light list-group-item d-inline-block text-truncate" data-bs-toggle="collapse" data-bs-parent="#sidebar"><i class="text-dark bi bi-bug-fill"></i> <span class="text-dark">Malware-ology</span> </a>
-                  <div class="collapse show" id="collapseMalware">
-                    <ul class="list-group-item bg-light">
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="TimelineLink" href="#" class="text-dark">Timeline</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="IOCLink" href="#" class="text-dark">IOCs</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="MalfindLink" href="#" class="text-dark">Malfind</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a id="FileScanLink" href="#" class="text-dark">FileScan</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a data-bs-toggle="modal" data-bs-target=#downloadDump href="#" class="text-dark">DumpProcess</a></li>
-                      <li class="bg-light list-group-horizontal-md text-truncate" data-bs-parent="#sidebar"><i class="text-dark bi bi bi-box"></i> <a href="#" data-bs-toggle="modal" data-bs-target=#downloadFile class="text-dark">DumpFile</a></li>
+        </main>
+      {% else %}
+        {% include "investigations/linux/sidebar.html" %}
+        <main class="col ps-md-2 pt-2">
+            <a href="#" data-bs-target="#sidebar" data-bs-toggle="collapse" class="text-dark border rounded-3 p-1 text-decoration-none"><i class="bi bi-arrow-left-right bi-lg py-2 p-1"></i>Plugins</a>
+            <!-- Investigation Banner -->
+            {% include "investigations/invest_banner.html" %}
 
-                    <ul>
-                  </div>
+            <!-- Process Artifacts -->
+            {% include "investigations/linux/process_artifacts/process_list.html" %}
+            {% include "investigations/linux/process_artifacts/process_maps.html" %}
+            {% include "investigations/linux/process_artifacts/process_graph.html" %}
+            {% include "investigations/linux/process_artifacts/elfs.html" %}
 
-              </div>
-          </div>
-      </div>
-      <main class="col ps-md-2 pt-2">
-          <a href="#" data-bs-target="#sidebar" data-bs-toggle="collapse" class="text-dark border rounded-3 p-1 text-decoration-none"><i class="bi bi-arrow-left-right bi-lg py-2 p-1"></i>Plugins</a>
-          <!-- Investigation Banner -->
-          {% include "investigations/invest_banner.html" %}
+            <!-- Malware analysis Artifacts -->
+            {% include "investigations/linux/ma_artifacts/bash.html" %}
+            {% include "investigations/linux/ma_artifacts/lsof.html" %}
+            {% include "investigations/linux/ma_artifacts/tty_check.html" %}
 
 
-          {% include "investigations/process_artifacts/process_scan.html" %}
-          {% include "investigations/process_artifacts/process_graph.html" %}
-          {% include "investigations/process_artifacts/process_privileges.html" %}
-          {% include "investigations/process_artifacts/process_cmdline.html" %}
-          {% include "investigations/process_artifacts/process_env.html" %}
 
-          {% include "investigations/network_artifacts/network_scan.html" %}
-          {% include "investigations/network_artifacts/network_stat.html" %}
-          {% include "investigations/network_artifacts/network_graph.html" %}
 
-          {% include "investigations/crypto_artifacts/crypto_hashdump.html" %}
-          {% include "investigations/crypto_artifacts/crypto_lsadump.html" %}
-          {% include "investigations/crypto_artifacts/crypto_cachedump.html" %}
 
-          {% include "investigations/reg_artifacts/reg_hivelist.html" %}
-
-          {% include "investigations/ma_artifacts/ma_timeline.html" %}
-          {% include "investigations/ma_artifacts/ma_skeleton.html" %}
-          {% include "investigations/ma_artifacts/ma_iocs.html" %}
-          {% include "investigations/ma_artifacts/ma_malfind.html" %}
-          {% include "investigations/ma_artifacts/ma_filescan.html" %}
-          {% include "investigations/ma_artifacts/ma_dumpprocess.html" %}
-          {% include "investigations/ma_artifacts/ma_dumpfile.html" %}
-
-      </main>
+        </main>
+      {% endif %}
   </div>
 </div>
 
@@ -156,366 +127,10 @@
 			  crossorigin="anonymous"></script>
   <script type="module" src="https://unpkg.com/jspdf@2.0.0/dist/jspdf.umd.min.js"></script>
   <script type="module" src="{% static 'js/jspdf.plugin.autotable.js'%}"></script>
-  <script src="{% static 'js/report.js'%}"></script>
-  <script>
-
-
-    $('#processCacheTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-
-
-    $('#processTreeTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-    $('#processScanTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-    $('#processEnvTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-    $('#processCmdTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-    $('#processPrivilegesTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-
-    $('#processNetworkTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-
-    $('#TimelineTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-
-    $('#FileScanTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-    $('#IOCTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-    $('#processHashTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-
-    $('#processCacheTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-    $('#processLsaTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-    $('#processNetworkStatTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
-
-
-
-    //Process Scan Search function
-    $(document).ready(function(){
-      $('.container').show();
-      $('.container-fluid').show();
-      $('.plugin').hide();
-      $('.Case').show();
-      $('.spinner-main').hide();
-      $('.toast-other').toast('show');
-
-      $('#main').show();
-      $('#loading').hide();
-
-      $("#searchProcess").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#process tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-      //NetStat Search funtion
-      $("#searchNetworkStat").on("keyup", function() {
-          var value = $(this).val().toLowerCase();
-          $("#network tr").filter(function() {
-            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-          });
-        });
-
-      //Malfind Search function
-
-      $("#searchMalfind").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#malfind-btn button").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-      //TimeLine SearchBar
-      $("#searchTimeline").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#TimelineTab tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) !== -1)
-        })
-      });
-
-      //CmdLine SearchBar
-
-      $("#searchCmdLine").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#cmdline tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-      //Network SearchBar
-
-      $("#searchNetwork").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#network tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-
-      //ProcessScan SearchBar
-
-      $("#searchProcessScan").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#processScan tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-
-
-      //Process Privileges SearchBar
-
-      $("#searchPriv").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#processPriv tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-
-      //Process Env SearchBar
-
-      $("#searchEnv").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#processEnv tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-
-      //FileScan SearchBar
-
-      $("#searchFileScan").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#FileScanTab tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-
-      //IOC SearchBar
-
-      $("#searchIOC").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#IOCTab tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-
-      $("#PsScanLink").on("click", function(){
-        $('.plugin').hide();
-        $('.PsScan').show();
-      });
-
-      $("#PrivsLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Privs').show();
-      });
-
-      $("#PsTreeLink").on("click", function(){
-        $('.plugin').hide();
-        $('.PsTree').show();
-      });
-
-      $("#CmdLineLink").on("click", function(){
-        $('.plugin').hide();
-        $('.CmdLine').show();
-      });
-
-      $("#EnvarsLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Envars').show();
-      });
-
-      $("#NetGraphLink").on("click", function(){
-        $('.plugin').hide();
-        $('.NetGraph').show();
-      });
-
-
-      $("#NetScanLink").on("click", function(){
-        $('.plugin').hide();
-        $('.NetScan').show();
-      });
-
-
-      $("#NetStatLink").on("click", function(){
-        $('.plugin').hide();
-        $('.NetStat').show();
-      });
-
-      $("#HashDumpLink").on("click", function(){
-        $('.plugin').hide();
-        $('.HashDump').show();
-      });
-
-
-      $("#LsaDumpLink").on("click", function(){
-        $('.plugin').hide();
-        $('.LsaDump').show();
-      });
-
-      $("#CacheDumpLink").on("click", function(){
-        $('.plugin').hide();
-        $('.CacheDump').show();
-      });
-
-      $("#SkeletonLink").on("click", function(){
-        $('.plugin').hide();
-        $('.SkeletonKeyCheck').show();
-      });
-
-      $("#HiveListLink").on("click", function(){
-        $('.plugin').hide();
-        $('.HiveList').show();
-      });
-
-      $("#TimelineLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Timeline').show();
-      });
-
-      $("#IOCLink").on("click", function(){
-        $('.plugin').hide();
-        $('.IOC').show();
-      });
-
-      $("#MalfindLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Malfind').show();
-      });
-
-      $("#FileScanLink").on("click", function(){
-        $('.plugin').hide();
-        $('.FileScan').show();
-      });
-
-      $("#CaseLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Case').show();
-      });
-    });
-  </script>
+  {% if case.os_version == "Windows" %}
+  <script src="{% static 'js/windows_report.js'%}"></script>
+  <script src="{% static 'js/windows.js'%}"></script>
+  {% else %}
+  <script src="{% static 'js/linux.js'%}"></script>
+  {% endif %}
   {% endblock content %}

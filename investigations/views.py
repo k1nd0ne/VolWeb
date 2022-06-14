@@ -10,8 +10,11 @@ from django.contrib import messages
 import json, os, uuid
 from iocs.models import IOC
 from os.path import exists
-from .models import *
-from .forms import *
+from investigations.models import *
+import windows_engine.models as windows_engine
+import linux_engine.models as linux_engine
+from symbols.models import Symbols
+from investigations.forms import *
 import subprocess
 
 @login_required
@@ -117,7 +120,7 @@ def get_invest(request):
     if request.method == 'GET':
         form = ManageInvestigation(request.GET)
         if form.is_valid():
-            id = form.cleaned_data['sa_case_id']
+            id = form.cleaned_data['sa_case_id'].id
             try:
                 u = UploadInvestigation.objects.get(pk=id)
                 response = serialize('python', [u], ensure_ascii=False, fields=('title','name', 'investigators', 'description', 'status', 'percentage'))
@@ -128,7 +131,17 @@ def get_invest(request):
                 iocs = serialize('python', list(i), ensure_ascii=False, fields=('value','context'))
             except ObjectDoesNotExist:
                 iocs = {'message':'N/A'}
-            return JsonResponse({'message': "success", 'result':response,'iocs':iocs})
+            try:
+                u = UploadInvestigation.objects.get(pk=id)
+                s = u.linked_isf
+                if s:
+                    isf = serialize('json',[s, ], fields=('name','description'))
+                else:
+                    isf = {'message':'N/A'}
+
+            except ObjectDoesNotExist:
+                isf = {'message':'N/A'}
+            return JsonResponse({'message': "success", 'result':response,'iocs':iocs,'isf':isf})
         else:
             return JsonResponse({'message': "error"})
 
@@ -160,8 +173,7 @@ def start_analysis(request):
     if request.method == 'POST':
         form = ManageInvestigation(request.POST)
         if form.is_valid():
-            id = form.cleaned_data['sa_case_id']
-            case = UploadInvestigation.objects.get(pk=id)
+            case = form.cleaned_data['sa_case_id']
             case.status = "1"
             case.percentage = "0"
             result = start_memory_analysis.delay('Cases/'+str(case.name),case.id)
@@ -184,8 +196,7 @@ def remove_analysis(request):
     if request.method == 'POST':
         form = ManageInvestigation(request.POST)
         if form.is_valid():
-            id = form.cleaned_data['sa_case_id']
-            case = UploadInvestigation.objects.get(pk=id)
+            case = form.cleaned_data['sa_case_id']
             case_memdump = 'Cases/' + str(case.name)
             try:
                 subprocess.check_output(['rm', case_memdump])
@@ -210,8 +221,7 @@ def cancel_analysis(request):
     if request.method == 'POST':
         form = ManageInvestigation(request.POST)
         if form.is_valid():
-            id = form.cleaned_data['sa_case_id']
-            case = UploadInvestigation.objects.get(pk=id)
+            case = form.cleaned_data['sa_case_id']
             case.status = "0"
             task_id = case.taskid
             app.control.terminate(task_id)
@@ -234,45 +244,58 @@ def reviewinvest(request):
     if request.method == 'GET':
         form = ManageInvestigation(request.GET)
         if form.is_valid():
-            id = form.cleaned_data['sa_case_id']
-            case = UploadInvestigation.objects.get(pk=id)
+            case = form.cleaned_data['sa_case_id']
+            id = case.id
             context = {}
             context['case'] = case
 
-            #Forms
-            forms ={
-                'dl_hive_form':DownloadHive(),
-                'dl_dump_form': DownloadDump(),
-                'dump_file_form': DumpFile(),
-                'download_file_form': DownloadFile(),
-                'form': DumpMemory(),
-            }
-            #Models
-            models = {
-                'dumps':ProcessDump.objects.filter(case_id = id),
-                'files':FileDump.objects.filter(case_id = id),
-                'ImageSignature' : ImageSignature.objects.get(investigation_id = id),
-                'PsScan': PsScan.objects.filter(investigation_id = id),
-                'PsTree': PsTree.objects.get(investigation_id = id),
-                'CmdLine': CmdLine.objects.filter(investigation_id = id),
-                'Privs': Privs.objects.filter(investigation_id = id),
-                'Envars': Envars.objects.filter(investigation_id = id),
-                'NetScan': NetScan.objects.filter(investigation_id = id),
-                'NetStat': NetStat.objects.filter(investigation_id = id),
-                'NetGraph' : NetGraph.objects.get(investigation_id = id),
-                'Hashdump': Hashdump.objects.filter(investigation_id = id),
-                'Lsadump':Lsadump.objects.filter(investigation_id = id),
-                'Cachedump': Cachedump.objects.filter(investigation_id = id),
-                'HiveList': HiveList.objects.filter(investigation_id = id),
-                'Timeliner': Timeliner.objects.filter(investigation_id = id),
-                'TimeLineChart': TimeLineChart.objects.get(investigation_id = id),
-                'SkeletonKeyCheck' : SkeletonKeyCheck.objects.filter(investigation_id = id),
-                'Malfind' : Malfind.objects.filter(investigation_id = id),
-                'FileScan' : FileScan.objects.filter(investigation_id = id),
-                'Strings' : Strings.objects.filter(investigation_id = id),
-            }
-            context.update(forms)
-            context.update(models)
+            if case.os_version == "Windows":
+                #Forms
+                forms ={
+                    'dl_hive_form':DownloadHive(),
+                    'dl_dump_form': DownloadDump(),
+                    'dump_file_form': DumpFile(),
+                    'download_file_form': DownloadFile(),
+                    'form': DumpMemory(),
+                }
+                #Models
+                models = {
+                    'dumps': windows_engine.ProcessDump.objects.filter(case_id = id),
+                    'files': windows_engine.FileDump.objects.filter(case_id = id),
+                    'ImageSignature' : ImageSignature.objects.get(investigation_id = id),
+                    'PsScan': windows_engine.PsScan.objects.filter(investigation_id = id),
+                    'PsTree': windows_engine.PsTree.objects.get(investigation_id = id),
+                    'CmdLine': windows_engine.CmdLine.objects.filter(investigation_id = id),
+                    'Privs': windows_engine.Privs.objects.filter(investigation_id = id),
+                    'Envars': windows_engine.Envars.objects.filter(investigation_id = id),
+                    'NetScan': windows_engine.NetScan.objects.filter(investigation_id = id),
+                    'NetStat': windows_engine.NetStat.objects.filter(investigation_id = id),
+                    'NetGraph' : windows_engine.NetGraph.objects.get(investigation_id = id),
+                    'Hashdump': windows_engine.Hashdump.objects.filter(investigation_id = id),
+                    'Lsadump':windows_engine.Lsadump.objects.filter(investigation_id = id),
+                    'Cachedump': windows_engine.Cachedump.objects.filter(investigation_id = id),
+                    'HiveList': windows_engine.HiveList.objects.filter(investigation_id = id),
+                    'Timeliner': windows_engine.Timeliner.objects.filter(investigation_id = id),
+                    'TimeLineChart': windows_engine.TimeLineChart.objects.get(investigation_id = id),
+                    'SkeletonKeyCheck' : windows_engine.SkeletonKeyCheck.objects.filter(investigation_id = id),
+                    'Malfind' : windows_engine.Malfind.objects.filter(investigation_id = id),
+                    'FileScan' : windows_engine.FileScan.objects.filter(investigation_id = id),
+                    'Strings' : windows_engine.Strings.objects.filter(investigation_id = id),
+                }
+                context.update(forms)
+                context.update(models)
+            else:
+                models = {
+                    'ImageSignature' : ImageSignature.objects.get(investigation_id = id),
+                    'PsList':linux_engine.PsList.objects.filter(investigation_id = id),
+                    'PsTree': linux_engine.PsTree.objects.get(investigation_id = id),
+                    'Bash': linux_engine.Bash.objects.filter(investigation_id = id),
+                    'ProcMaps': linux_engine.ProcMaps.objects.filter(investigation_id = id),
+                    'Lsof': linux_engine.Lsof.objects.filter(investigation_id = id),
+                    'TtyCheck': linux_engine.TtyCheck.objects.filter(investigation_id = id),
+                    'Elfs': linux_engine.Elfs.objects.filter(investigation_id = id),
+                }
+                context.update(models)
             return render(request, 'investigations/reviewinvest.html',context)
         else:
             form = ManageInvestigation()
@@ -292,7 +315,6 @@ def dump_process(request):
         """
     if request.method == 'POST':
         form = DumpMemory(request.POST)
-        print(request.POST)
         if form.is_valid():
             case_id = form.cleaned_data['case_id']
             pid = form.cleaned_data['pid']

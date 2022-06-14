@@ -3,7 +3,6 @@
   <div style="height:80rem;" class="text-white" id="container"></div>
   <script>
       // create data
-      console.log("{{PsTree.graph|escapejs}}")
       var data = JSON.parse("{{PsTree.graph|escapejs}}");
       // create a data tree
       treeData = anychart.data.tree(data, "as-tree");

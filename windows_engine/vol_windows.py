@@ -1,8 +1,9 @@
 import logging
-from .models import *
+from investigations.models import *
+from windows_engine.models import *
 from iocs.models import *
 from django.apps import apps
-from .voltools import *
+from VolWeb.voltools import *
 from volatility3.framework.exceptions import *
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -125,11 +126,13 @@ def dump_file(dump_path, offset, output_path):
             for x, y in artifact.items()}
     return result[0]['Result']
 
-def run_volweb_routine(dump_path, case_id, case):
+def run_volweb_routine_windows(dump_path, case_id, case):
     PARTIAL_RESULTS = False
     logger.info('Starting VolWeb Engine')
     volatility3.framework.require_interface_version(2, 0, 0)
-
+    if case.linked_isf:
+        path = os.sep.join(case.linked_isf.symbols_file.name.split(os.sep)[:-2])
+        volatility3.symbols.__path__.append(os.path.abspath(path))
     """Import available plugings from the native framework"""
     failures = volatility3.framework.import_files(plugins, True)
     if failures:
@@ -184,7 +187,7 @@ def run_volweb_routine(dump_path, case_id, case):
     TimeLineChart.objects.filter(investigation_id = case_id).delete()
     Strings.objects.filter(investigation_id = case_id).delete()
     for runable in volweb_knowledge_base:
-        apps.get_model("investigations", runable).objects.filter(investigation_id = case_id).delete()
+        apps.get_model("windows_engine", runable).objects.filter(investigation_id = case_id).delete()
         context = contexts.Context()
         logger.info(f"Constructing context for {runable} ")
         """Add pluging argument for hivelist"""
@@ -225,7 +228,7 @@ def run_volweb_routine(dump_path, case_id, case):
                 if 'Offset(V)' in artifact:
                     artifact['Offset'] = artifact['Offset(V)']
                     del(artifact['Offset(V)'])
-                apps.get_model("investigations", runable)(investigation_id = case_id, **artifact).save()
+                apps.get_model("windows_engine", runable)(investigation_id = case_id, **artifact).save()
 
     """STEP 3.2 : Contruct and inject the graphs"""
     def rename(node):

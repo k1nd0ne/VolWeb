@@ -28,6 +28,7 @@ services:
     volumes:
       - cases:/home/app/web/Cases/
       - staticfiles:/home/app/web/staticfiles
+      - symbols:/home/app/web/symbols/uploads
 
   nginx:
     container_name: nginx
@@ -64,7 +65,9 @@ services:
     volumes:
       - cases:/home/app/web/Cases/
       - staticfiles:/home/app/web/staticfiles
+      - symbols:/home/app/web/symbols/uploads
 volumes:
   postgres-data:
   staticfiles:
   cases:
+  symbols:

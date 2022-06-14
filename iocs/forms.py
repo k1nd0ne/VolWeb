@@ -1,5 +1,6 @@
 from django import forms
 from .models import IOC
+from investigations.models import UploadInvestigation
 from django.forms import ModelForm, TextInput, Textarea, ModelChoiceField, Select
 
 #This ModelForm is made to create a new IOC
@@ -13,7 +14,6 @@ class NewIOCForm(forms.ModelForm):
              'context' : TextInput(attrs={'class':'form-control','rows':"4",'placeholder':'Context to qualify the IOC','required':'""'}),
              'linkedInvestigation': Select(attrs={'class': 'form-control'}),
          }
-        linkedInvestigation = forms.ModelChoiceField(queryset=IOC.objects.all(), required=True)
 #This form is used when editing or deleting an IOC
 class ManageIOC(forms.Form):
      ioc_id = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
@@ -31,4 +31,3 @@ class SaveCustomIOC(forms.ModelForm):
         'context' : TextInput(attrs={'class':'form-control','rows':"4",'placeholder':'Context to qualify the IOC','required':'""'}),
         'linkedInvestigation': Select(attrs={'class': 'form-control'}),
         }
-        linkedInvestigation = forms.ModelChoiceField(queryset=IOC.objects.all(), required=True)
