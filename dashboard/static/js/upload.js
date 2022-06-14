@@ -1,3 +1,10 @@
+/*
+The FileUpload Javascript function:
+  - Manage the form errors
+  - Upload file chunk by chunk
+/!\ This function needs a rework along with the linked investigations views /!\
+*/
+
 class FileUpload {
 
     constructor(input) {

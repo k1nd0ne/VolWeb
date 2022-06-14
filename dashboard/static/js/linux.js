@@ -1,165 +1,169 @@
-    $('#processListTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+/* highlight functionnality */
+$('#processListTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#processMapsTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#TtyCheckTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#BashTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#ElfsTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#LsofTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#TtyCheck').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+
+/* Search bar Functionnality for each plugin */
+  $("#searchProcessList").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#processList tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
-    $('#processMapsTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+  $("#searchBash").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#Bash tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
-    $('#TtyCheckTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+  $("#searchProcessMaps").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#processMaps tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
-    $('#BashTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+  $("#searchLsof").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#Lsof tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
-    $('#ElfsTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+  $("#searchTtyCheck").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#TtyCheck tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
-    $('#LsofTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+  $("#searchElfs").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#Elfs tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
-    $('#TtyCheck').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
+  $(document).ready(function(){
+    $('.container').show();
+    $('.container-fluid').show();
+    $('.plugin').hide();
+    $('.Case').show();
+    $('.spinner-main').hide();
+    $('.toast-other').toast('show');
 
-      $("#searchProcessList").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#processList tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
+    $('#main').show();
+    $('#loading').hide();
 
-      $("#searchBash").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#Bash tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
+/* Sidebar user interaction management : Display the resquested plugin and hide the previous one */
 
-      $("#searchProcessMaps").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#processMaps tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
+  $("#PsListLink").on("click", function(){
+    $('.plugin').hide();
+    $('.PsList').show();
+  });
 
-      $("#searchLsof").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#Lsof tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
+  $("#PsTreeLink").on("click", function(){
+    $('.plugin').hide();
+    $('.PsTree').show();
+  });
 
-      $("#searchTtyCheck").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#TtyCheck tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
+  $("#CaseLink").on("click", function(){
+    $('.plugin').hide();
+    $('.Case').show();
+  });
 
-      $("#searchElfs").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#Elfs tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
+  $("#BashLink").on("click", function(){
+    $('.plugin').hide();
+    $('.Bash').show();
+  });
 
-      //Process Scan Search function
-      $(document).ready(function(){
-        $('.container').show();
-        $('.container-fluid').show();
-        $('.plugin').hide();
-        $('.Case').show();
-        $('.spinner-main').hide();
-        $('.toast-other').toast('show');
+  $("#ProcMapsLink").on("click", function(){
+    $('.plugin').hide();
+    $('.ProcMaps').show();
+  });
 
-        $('#main').show();
-        $('#loading').hide();
+  $("#LsofLink").on("click", function(){
+    $('.plugin').hide();
+    $('.Lsof').show();
+  });
 
-      $("#PsListLink").on("click", function(){
-        $('.plugin').hide();
-        $('.PsList').show();
-      });
+  $("#TtyCheckLink").on("click", function(){
+    $('.plugin').hide();
+    $('.TtyCheck').show();
+  });
 
-      $("#PsTreeLink").on("click", function(){
-        $('.plugin').hide();
-        $('.PsTree').show();
-      });
+  $("#ElfsLink").on("click", function(){
+    $('.plugin').hide();
+    $('.Elfs').show();
+  });
 
-      $("#CaseLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Case').show();
-      });
-
-      $("#BashLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Bash').show();
-      });
-
-      $("#ProcMapsLink").on("click", function(){
-        $('.plugin').hide();
-        $('.ProcMaps').show();
-      });
-
-      $("#LsofLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Lsof').show();
-      });
-
-      $("#TtyCheckLink").on("click", function(){
-        $('.plugin').hide();
-        $('.TtyCheck').show();
-      });
-
-      $("#ElfsLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Elfs').show();
-      });
-
-    });
+});

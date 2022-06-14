@@ -7,7 +7,6 @@ app = Celery('investigations',
              backend='rpc://',
              include=['investigations.tasks'])
 
-# Optional configuration, see the application user guide.
 app.conf.update(
     result_expires=3600,
 )
