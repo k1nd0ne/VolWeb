@@ -14,15 +14,18 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-sm-12 col-md-8 col-lg-8">
-                        <div class="mb-3"><label class="form-label" for="service_name"><strong>Name *</strong></label>{{form.name}}</div>
+                        <div class="mb-3"><label class="form-label"><strong>Name *</strong></label>{{form.name}}</div>
                     </div>
                     <div class="col-sm-12 col-md-4 col-lg-4">
-                        <div class="mb-3"><label class="form-label" for="service_price"><strong>OS *</strong><br></label>{{form.os}}</div>
+                        <div class="mb-3"><label class="form-label" ><strong>OS *</strong><br></label>{{form.os}}</div>
                     </div>
                 </div>
-                <div class="mb-3"><label class="form-label" for="client_description"><strong>Description *</strong><br></label>{{form.description}}</div>
-                <div class="mb-3"><label class="form-label" for="service_client_end_date"><strong>ISF :</strong><br></label>
+                <div class="mb-3"><label class="form-label"><strong>Description *</strong><br></label>{{form.description}}</div>
+                <div class="mb-3"><label class="form-label"><strong>ISF :</strong><br></label>
                   {{file}}
+                </div>
+                <div class="mb-3"><label class="form-label">
+                  <strong class="text-warning">Warning : If you change anything, your ISF will be unbind from the investigations it was linked to.</strong><br></label>
                 </div>
                 {{form.symbols_id}}
                 <button class="btn btn-primary" id="submit">Save</button>

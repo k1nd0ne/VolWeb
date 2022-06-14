@@ -12,7 +12,7 @@ def symbols(request):
 
         Comment: Display all of the ISF file imported;
         """
-    return render(request,'symbols/symbols.html',{'symbols':Symbols.objects.all(),'form': BindSymbol()})
+    return render(request,'symbols/symbols.html',{'symbols':Symbols.objects.all(),'bind_form': BindSymbol(),'unbind_form':UnbindSymbol()})
 
 @login_required
 def add_symbols(request):
@@ -57,6 +57,11 @@ def custom_symbols(request):
             symbols_record.os = form.cleaned_data['os']
             symbols_record.description = form.cleaned_data['description']
             symbols_record.save()
+            #Unbind from all investigation
+            cases = UploadInvestigation.objects.filter(linked_isf = symbols_record)
+            for case in cases:
+                case.linked_isf = None
+                case.save()
             return redirect('/symbols/')
         else:
             print(form.errors)
@@ -94,11 +99,31 @@ def bind_symbols(request):
     if request.method == "POST":
         form = BindSymbol(request.POST)
         if form.is_valid():
-            isf  = form.cleaned_data['symbols']
-            case = form.cleaned_data['linkedInvestigation']
+            isf  = form.cleaned_data['bind_symbols']
+            case = form.cleaned_data['bind_investigation']
             case.linked_isf = isf
             case.save()
             return JsonResponse({'message': "success"})
         else:
-            print("caca")
+            return JsonResponse({'message': "error"})
+
+@login_required
+def unbind_symbols(request):
+    """Delete a ISF file
+
+        Arguments:
+        request : http request object
+
+        Comments:
+        Delete the ISF File selected by the user.
+        """
+    if request.method == "POST":
+        form = UnbindSymbol(request.POST)
+        if form.is_valid():
+            isf  = form.cleaned_data['unbind_symbols']
+            case = form.cleaned_data['unbind_investigation']
+            case.linked_isf = None
+            case.save()
+            return JsonResponse({'message': "success"})
+        else:
             return JsonResponse({'message': "error"})

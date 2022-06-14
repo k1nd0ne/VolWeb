@@ -35,7 +35,10 @@ class GetSymbols(forms.Form):
 class ManageSymbols(forms.Form):
          symbols = forms.ModelChoiceField(queryset=Symbols.objects.all(), required=True, widget=forms.TextInput(attrs={'type':'hidden'}))
 
-#This form is used when editing or deleting an IOC
 class BindSymbol(forms.Form):
-    symbols = forms.ModelChoiceField(queryset=Symbols.objects.all(), required=True, widget=forms.TextInput(attrs={'type':'hidden'}))
-    linkedInvestigation = forms.ModelChoiceField(queryset=UploadInvestigation.objects.all(), required=True, widget=forms.Select(attrs={'class': 'form-control'}))
+    bind_symbols = forms.ModelChoiceField(queryset=Symbols.objects.all(), required=True, widget=forms.TextInput(attrs={'type':'hidden'}))
+    bind_investigation = forms.ModelChoiceField(queryset=UploadInvestigation.objects.all(), required=True, widget=forms.Select(attrs={'class': 'form-control'}))
+
+class UnbindSymbol(forms.Form):
+    unbind_symbols = forms.ModelChoiceField(queryset=Symbols.objects.all(), required=True, widget=forms.TextInput(attrs={'type':'hidden'}))
+    unbind_investigation = forms.ModelChoiceField(queryset=UploadInvestigation.objects.all(), required=True, widget=forms.Select(attrs={'class': 'form-control'}))

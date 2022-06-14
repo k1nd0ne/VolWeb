@@ -315,7 +315,6 @@ def dump_process(request):
         """
     if request.method == 'POST':
         form = DumpMemory(request.POST)
-        print(request.POST)
         if form.is_valid():
             case_id = form.cleaned_data['case_id']
             pid = form.cleaned_data['pid']

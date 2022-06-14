@@ -26,8 +26,8 @@ class Symbols(models.Model):
         else:
             new_path = '/'.join([UPLOAD_PATH, str(self.id),"linux",name])
             vol_path = '/'.join([UPLOAD_PATH, str(self.id)])
-
-        os.makedirs(os.path.dirname(new_path))
+        if not os.path.exists(os.path.dirname(new_path)):
+            os.makedirs(os.path.dirname(new_path))
         os.rename(self.symbols_file.name, new_path)
         self.symbols_file.name = new_path
         super(Symbols, self).save(*args, **kwargs)
