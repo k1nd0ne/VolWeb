@@ -1,357 +1,357 @@
+/* highlight functionnality */
+$('#processCacheTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
 
 
-    $('#processCacheTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
 
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+$('#processTreeTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#processScanTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#processEnvTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#processCmdTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#processPrivilegesTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+
+$('#processNetworkTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+
+$('#TimelineTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+
+$('#FileScanTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#IOCTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#processHashTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+
+$('#processCacheTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#processLsaTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$('#processNetworkStatTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
+$(document).ready(function(){
+  $('.container').show();
+  $('.container-fluid').show();
+  $('.plugin').hide();
+  $('.Case').show();
+  $('.spinner-main').hide();
+  $('.toast-other').toast('show');
+
+  $('#main').show();
+  $('#loading').hide();
+
+  /* Search bar Functionnality for each plugin */
+  $("#searchProcess").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#process tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  //NetStat Search funtion
+  $("#searchNetworkStat").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#netstat tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
     });
 
+  //Malfind Search function
 
-
-    $('#processTreeTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+  $("#searchMalfind").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#malfind-btn button").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
-    $('#processScanTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+  //TimeLine SearchBar
+  $("#searchTimeline").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#TimelineTab tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) !== -1)
+    })
+  });
+
+  //CmdLine SearchBar
+
+  $("#searchCmdLine").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#cmdline tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
-    $('#processEnvTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+  //Network SearchBar
+
+  $("#searchNetwork").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#network tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
-    $('#processCmdTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+
+  //ProcessScan SearchBar
+
+  $("#searchProcessScan").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#processScan tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
-    $('#processPrivilegesTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+
+
+  //Process Privileges SearchBar
+
+  $("#searchPriv").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#processPriv tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
 
-    $('#processNetworkTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+  //Process Env SearchBar
+
+  $("#searchEnv").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#processEnv tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
 
-    $('#TimelineTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+  //FileScan SearchBar
+
+  $("#searchFileScan").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#FileScanTab tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
 
-    $('#FileScanTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
+  //IOC SearchBar
+
+  $("#searchIOC").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#IOCTab tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+  });
 
-    $('#IOCTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
+  /* Sidebar user interaction management : Display the resquested plugin and hide the previous one */
 
-    $('#processHashTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
+  $("#PsScanLink").on("click", function(){
+    $('.plugin').hide();
+    $('.PsScan').show();
+  });
 
+  $("#PrivsLink").on("click", function(){
+    $('.plugin').hide();
+    $('.Privs').show();
+  });
 
-    $('#processCacheTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
+  $("#PsTreeLink").on("click", function(){
+    $('.plugin').hide();
+    $('.PsTree').show();
+  });
 
-    $('#processLsaTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
+  $("#CmdLineLink").on("click", function(){
+    $('.plugin').hide();
+    $('.CmdLine').show();
+  });
 
-    $('#processNetworkStatTable').on('click', 'tbody tr', function(event) {
-      var table = $(this);
-      if (table.hasClass("highlight")){
-        table.removeClass("highlight");
-      }
-      else{
-        table.addClass("highlight");
-      }
-    });
+  $("#EnvarsLink").on("click", function(){
+    $('.plugin').hide();
+    $('.Envars').show();
+  });
 
-    //Process Scan Search function
-    $(document).ready(function(){
-      $('.container').show();
-      $('.container-fluid').show();
-      $('.plugin').hide();
-      $('.Case').show();
-      $('.spinner-main').hide();
-      $('.toast-other').toast('show');
-
-      $('#main').show();
-      $('#loading').hide();
-
-      $("#searchProcess").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#process tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-      //NetStat Search funtion
-      $("#searchNetworkStat").on("keyup", function() {
-          var value = $(this).val().toLowerCase();
-          $("#netstat tr").filter(function() {
-            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-          });
-        });
-
-      //Malfind Search function
-
-      $("#searchMalfind").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#malfind-btn button").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-      //TimeLine SearchBar
-      $("#searchTimeline").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#TimelineTab tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) !== -1)
-        })
-      });
-
-      //CmdLine SearchBar
-
-      $("#searchCmdLine").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#cmdline tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-      //Network SearchBar
-
-      $("#searchNetwork").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#network tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
+  $("#NetGraphLink").on("click", function(){
+    $('.plugin').hide();
+    $('.NetGraph').show();
+  });
 
 
-      //ProcessScan SearchBar
-
-      $("#searchProcessScan").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#processScan tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
+  $("#NetScanLink").on("click", function(){
+    $('.plugin').hide();
+    $('.NetScan').show();
+  });
 
 
+  $("#NetStatLink").on("click", function(){
+    $('.plugin').hide();
+    $('.NetStat').show();
+  });
 
-      //Process Privileges SearchBar
-
-      $("#searchPriv").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#processPriv tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-
-
-      //Process Env SearchBar
-
-      $("#searchEnv").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#processEnv tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
+  $("#HashDumpLink").on("click", function(){
+    $('.plugin').hide();
+    $('.HashDump').show();
+  });
 
 
-      //FileScan SearchBar
+  $("#LsaDumpLink").on("click", function(){
+    $('.plugin').hide();
+    $('.LsaDump').show();
+  });
 
-      $("#searchFileScan").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#FileScanTab tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
+  $("#CacheDumpLink").on("click", function(){
+    $('.plugin').hide();
+    $('.CacheDump').show();
+  });
 
+  $("#SkeletonLink").on("click", function(){
+    $('.plugin').hide();
+    $('.SkeletonKeyCheck').show();
+  });
 
-      //IOC SearchBar
+  $("#HiveListLink").on("click", function(){
+    $('.plugin').hide();
+    $('.HiveList').show();
+  });
 
-      $("#searchIOC").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#IOCTab tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
+  $("#TimelineLink").on("click", function(){
+    $('.plugin').hide();
+    $('.Timeline').show();
+  });
 
+  $("#IOCLink").on("click", function(){
+    $('.plugin').hide();
+    $('.IOC').show();
+  });
 
-      $("#PsScanLink").on("click", function(){
-        $('.plugin').hide();
-        $('.PsScan').show();
-      });
+  $("#MalfindLink").on("click", function(){
+    $('.plugin').hide();
+    $('.Malfind').show();
+  });
 
-      $("#PrivsLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Privs').show();
-      });
+  $("#FileScanLink").on("click", function(){
+    $('.plugin').hide();
+    $('.FileScan').show();
+  });
 
-      $("#PsTreeLink").on("click", function(){
-        $('.plugin').hide();
-        $('.PsTree').show();
-      });
-
-      $("#CmdLineLink").on("click", function(){
-        $('.plugin').hide();
-        $('.CmdLine').show();
-      });
-
-      $("#EnvarsLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Envars').show();
-      });
-
-      $("#NetGraphLink").on("click", function(){
-        $('.plugin').hide();
-        $('.NetGraph').show();
-      });
-
-
-      $("#NetScanLink").on("click", function(){
-        $('.plugin').hide();
-        $('.NetScan').show();
-      });
-
-
-      $("#NetStatLink").on("click", function(){
-        $('.plugin').hide();
-        $('.NetStat').show();
-      });
-
-      $("#HashDumpLink").on("click", function(){
-        $('.plugin').hide();
-        $('.HashDump').show();
-      });
-
-
-      $("#LsaDumpLink").on("click", function(){
-        $('.plugin').hide();
-        $('.LsaDump').show();
-      });
-
-      $("#CacheDumpLink").on("click", function(){
-        $('.plugin').hide();
-        $('.CacheDump').show();
-      });
-
-      $("#SkeletonLink").on("click", function(){
-        $('.plugin').hide();
-        $('.SkeletonKeyCheck').show();
-      });
-
-      $("#HiveListLink").on("click", function(){
-        $('.plugin').hide();
-        $('.HiveList').show();
-      });
-
-      $("#TimelineLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Timeline').show();
-      });
-
-      $("#IOCLink").on("click", function(){
-        $('.plugin').hide();
-        $('.IOC').show();
-      });
-
-      $("#MalfindLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Malfind').show();
-      });
-
-      $("#FileScanLink").on("click", function(){
-        $('.plugin').hide();
-        $('.FileScan').show();
-      });
-
-      $("#CaseLink").on("click", function(){
-        $('.plugin').hide();
-        $('.Case').show();
-      });
-    });
+  $("#CaseLink").on("click", function(){
+    $('.plugin').hide();
+    $('.Case').show();
+  });
+});
