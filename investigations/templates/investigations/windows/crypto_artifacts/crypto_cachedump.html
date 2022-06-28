@@ -12,9 +12,10 @@
     <tbody id="CacheDumpTab">
       {% for elem in Cachedump %}
       <tr>
-        {% for item in elem %}
-        <td>{{item }}</td>
-        {% endfor %}
+        <td>{{elem.Username}}</td>
+        <td>{{elem.Domain}}</td>
+        <td>{{elem.Domainname}}</td>
+        <td>{{elem.Hash}}</td>
       </tr>
       {% endfor %}
     </tbody>

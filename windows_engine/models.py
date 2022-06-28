@@ -170,10 +170,11 @@ class Cachedump(models.Model):
             on_delete=models.CASCADE,
             related_name="windows_cachedump_investigation"
         )
-    username = models.TextField(null = True)
-    domain = models.TextField(null = True)
-    domain_name = models.TextField(null = True)
-    hash = models.TextField(null = True)
+    Domain = models.TextField(null = True)
+    Domainname = models.TextField(null = True)
+    Hash = models.TextField(null = True)
+    Username = models.TextField(null = True)
+
 
 class HiveList(models.Model):
     investigation = models.ForeignKey(
