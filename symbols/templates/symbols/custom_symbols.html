@@ -27,7 +27,6 @@
                 <div class="mb-3"><label class="form-label">
                   <strong class="text-warning">Warning : If you change anything, your ISF will be unbind from the investigations it was linked to.</strong><br></label>
                 </div>
-                {{form.symbols_id}}
                 <button class="btn btn-primary" id="submit">Save</button>
             </div>
         </div>
@@ -38,7 +37,6 @@
 <script>
 
 $(document).ready(function(){
-  $('#id_symbols_id').val('{{symbols_id}}');
   $('.container').show();
   $('.container-fluid').show();
   $('.spinner-main').hide();

@@ -49,12 +49,13 @@ def customioc(request, pk):
     ioc_record = IOC.objects.get(pk=pk)
     if request.method == 'GET':
             custom_form = IOCForm(instance=ioc_record)
-            return render(request,'iocs/customioc.html',{'form': custom_form, 'investigations':UploadInvestigation.objects.all()})
     if request.method == 'POST':
         form = IOCForm(request.POST, ioc_record)
         if form.is_valid():
             ioc_record.save()
             return redirect('/iocs/')
+    return render(request,'iocs/customioc.html',{'form': custom_form, 'investigations':UploadInvestigation.objects.all()})
+
 
 
 @login_required

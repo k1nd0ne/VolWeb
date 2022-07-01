@@ -32,7 +32,7 @@ def add_symbols(request):
     return render(request,'symbols/add_symbols.html',{'form':form})
 
 @login_required
-def custom_symbols(request):
+def custom_symbols(request, pk):
     """Modify the description of an ISF file
 
         Arguments:
@@ -42,21 +42,13 @@ def custom_symbols(request):
         GET : Load the form page with intanced fields.
         POST : Apply the modifications
         """
+    symbols_record = Symbols.objects.get(pk=pk)
     if request.method == 'GET':
-        form = GetSymbols(request.GET)
-        if form.is_valid():
-            id = form.cleaned_data['symbols_id']
-            symbols_record = Symbols.objects.get(pk=id)
-            custom_form = CustomSymbolsForm(instance=symbols_record)
-            return render(request,'symbols/custom_symbols.html',{'form': custom_form, 'symbols_id':id,'file':symbols_record.symbols_file})
+        custom_form = SymbolsForm(instance=symbols_record)
     if request.method == 'POST':
-        form = CustomSymbolsForm(request.POST, request.FILES)
+        form = SymbolsForm(request.POST, request.FILES, instance=symbols_record)
         if form.is_valid():
-            symbols_record = Symbols.objects.get(pk=form.cleaned_data['symbols_id'])
-            symbols_record.name = form.cleaned_data['name']
-            symbols_record.os = form.cleaned_data['os']
-            symbols_record.description = form.cleaned_data['description']
-            symbols_record.save()
+            form.save()
             #Unbind from all investigation
             cases = UploadInvestigation.objects.filter(linked_isf = symbols_record)
             for case in cases:
@@ -65,6 +57,7 @@ def custom_symbols(request):
             return redirect('/symbols/')
         else:
             print(form.errors)
+    return render(request,'symbols/custom_symbols.html',{'form': custom_form, 'symbols_id':id,'file':symbols_record.symbols_file})
 
 @login_required
 def delete_symbols(request):
