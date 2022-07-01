@@ -24,11 +24,11 @@ def add_symbols(request):
         Comment: Import an ISF;
         """
     if request.method == "POST":
-        form = NewSymbolsForm(request.POST, request.FILES)
+        form = SymbolsForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('/symbols/')
-    form = NewSymbolsForm()
+    form = SymbolsForm()
     return render(request,'symbols/add_symbols.html',{'form':form})
 
 @login_required
