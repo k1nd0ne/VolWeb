@@ -50,7 +50,7 @@ def customioc(request, pk):
     if request.method == 'GET':
             custom_form = IOCForm(instance=ioc_record)
     if request.method == 'POST':
-        form = IOCForm(request.POST, ioc_record)
+        form = IOCForm(request.POST, instance=ioc_record)
         if form.is_valid():
             ioc_record.save()
             return redirect('/iocs/')
