@@ -26,7 +26,6 @@
                           <div class="mb-3"><label class="form-label" for="service_price"><strong>Linked analysis *</strong><br></label>
                             {{form.linkedInvestigation}}
                           </div>
-                          {{form.ioc_id}}
                     </div><button class="btn btn-primary" id="submit">Save</button>
                 </div>
             </div>
@@ -36,7 +35,6 @@
 
     <script>
     $(document).ready(function(){
-      $('#id_ioc_id').val('{{ioc_id}}');
       $('.container').show();
       $('.container-fluid').show();
       $('.spinner-main').hide();

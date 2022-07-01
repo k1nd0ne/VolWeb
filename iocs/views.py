@@ -28,15 +28,15 @@ def newioc(request):
         Comment: Create a new IOC if the form is correct.
         """
     if request.method == "POST":
-        form = NewIOCForm(request.POST)
+        form = IOCForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('/iocs/')
-    form = NewIOCForm()
+    form = IOCForm()
     return render(request,'iocs/newioc.html',{'form': form, 'investigations':UploadInvestigation.objects.all()})
 
 @login_required
-def customioc(request):
+def customioc(request, pk):
     """Modify an ioc
 
         Arguments:
@@ -46,21 +46,13 @@ def customioc(request):
         GET : Load the form page with intanced fields.
         POST : Apply the modifications
         """
+    ioc_record = IOC.objects.get(pk=pk)
     if request.method == 'GET':
-        form = ManageIOC(request.GET)
-        if form.is_valid():
-            id = form.cleaned_data['ioc_id']
-            ioc_record = IOC.objects.get(pk=id)
-            custom_form = SaveCustomIOC(instance=ioc_record)
-            return render(request,'iocs/customioc.html',{'form': custom_form, 'ioc_id':id, 'investigations':UploadInvestigation.objects.all()})
+            custom_form = IOCForm(instance=ioc_record)
+            return render(request,'iocs/customioc.html',{'form': custom_form, 'investigations':UploadInvestigation.objects.all()})
     if request.method == 'POST':
-        form = SaveCustomIOC(request.POST)
+        form = IOCForm(request.POST, ioc_record)
         if form.is_valid():
-            ioc_record = IOC.objects.get(pk=form.cleaned_data['ioc_id'])
-            ioc_record.name = form.cleaned_data['name']
-            ioc_record.context = form.cleaned_data['context']
-            ioc_record.value = form.cleaned_data['value']
-            ioc_record.linkedInvestigation = form.cleaned_data['linkedInvestigation']
             ioc_record.save()
             return redirect('/iocs/')
 

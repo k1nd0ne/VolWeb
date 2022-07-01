@@ -34,8 +34,7 @@
               <td>{{ioc.context}}</td>
               <td>{{ioc.linkedInvestigation.title}}</td>
               <td>
-                <form style="all: unset;" id="reviewform" action="{% url 'customioc' %}" method="GET">
-                  <input type="hidden" name="ioc_id" value="{{ioc.id}}">
+                <form style="all: unset;" id="reviewform" action="{% url 'customioc' ioc.id %}" method="GET">
                   <input class="btn border border-light btn-dark btn-sm" type="submit" style="margin-right: 10px;" value="Edit">
                 </form>
                 <a class="btn border border-light btn-danger btn-sm" role="button" onclick="DeleteIOC({{ioc.id}})">Delete</a>
