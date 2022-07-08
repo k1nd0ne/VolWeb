@@ -31,7 +31,7 @@ def dlllist_task(case_id: int,pid: int) -> list:
     return DictRenderer().render(constructed.run())
 
 @app.task(name="handles_task")
-def handles_task(case_id: int,pid: int,case) -> list:
+def handles_task(case_id: int,pid: int) -> list:
     case = UploadInvestigation.objects.get(pk=case_id)
     path = 'Cases/' + case.existingPath
     plugin_list,context = init_volatility()

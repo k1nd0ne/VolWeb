@@ -55,3 +55,9 @@ class DllListForm(forms.Form):
         'class': 'd-none','value':'n/a'}))
      case_id = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
         'class': 'd-none','value':'n/a'}))
+
+class HandlesForm(forms.Form):
+     id = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
+        'class': 'd-none','value':'n/a'}))
+     case_id = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
+        'class': 'd-none','value':'n/a'}))

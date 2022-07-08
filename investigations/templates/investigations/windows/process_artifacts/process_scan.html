@@ -7,6 +7,7 @@
       </div>
       <div id="processScanModalContent">
         {% include "investigations/windows/process_artifacts/process_dlls.html" %}
+        {% include "investigations/windows/process_artifacts/process_handles.html" %}
       </div>
     </div>
   </div>
@@ -48,6 +49,8 @@
         <td>
           <a class="btn border border-light btn-sm" role="button"
             onclick="event.stopPropagation(); DllList('{{case.id}}','{{process.pk}}');">Dll List</a>
+          <a class="btn border border-light btn-sm" role="button"
+            onclick="event.stopPropagation(); Handles('{{case.id}}','{{process.pk}}');">Handles List</a>
         </td>
       </tr>
       {% endfor %}
@@ -57,7 +60,12 @@
 {% csrf_token %}
 
 <script>
-
+  function hideModalContent() {
+    let content = $("#processScanModalContent .plugin");
+    for (elem of content){
+      elem.style.display = "none";
+    }
+  }
   function DllList(case_id , pk) {
     const csrf = document.getElementsByName('csrfmiddlewaretoken');
     const fd = new FormData();
@@ -76,7 +84,9 @@
         $("#dlllistBody tr").remove();
       },
       success: function (response) {
-        document.getElementById("modal-title").innerHTML = "Dll List"
+        hideModalContent();
+        document.getElementsByClassName("Dlllist")[0].style.display = "block";
+        document.getElementById("modal-title").innerHTML = "Dll List";
         for( dll of response['message']){
           let body = document.querySelector('#dlllistBody');
           let row = body.insertRow();
@@ -100,4 +110,49 @@
       processData: false
     });
   }
+  function Handles(case_id , pk) {
+    const csrf = document.getElementsByName('csrfmiddlewaretoken');
+    const fd = new FormData();
+    fd.append('csrfmiddlewaretoken', csrf[0].value);
+    fd.append('id', pk);
+    fd.append('case_id', case_id);
+    $.ajax({
+      type: 'POST',
+      url: "{% url 'handles' %}",
+      enctype: 'multipart/form-data',
+      data: fd,
+      beforeSend: function () {
+        $('.spinner-main').show();
+        $('#proc-message').html("Your Handles List request was taken into account");
+        $('.toast-proc').toast('show');
+        $("#handlesBody tr").remove();
+      },
+      success: function (response) {
+        hideModalContent();
+        document.getElementsByClassName("Handles")[0].style.display = "block";
+        document.getElementById("modal-title").innerHTML = "Handles List"
+        for( dll of response['message']){
+          let body = document.querySelector('#handlesBody');
+          let row = body.insertRow();
+          let fields = document.getElementsByClassName("handles_field");
+          for(field of fields){
+            let cell = row.insertCell();
+            cell.innerHTML = dll[field.innerHTML];
+          }   
+        }
+        $('.spinner-main').hide();
+        $("#showProcessScanModal").modal("show");
+      },
+      error: function (error) {
+        console.log(error);
+        $('.spinner-main').hide();
+        $('#proc-error-message').html("DllList request error");
+        $('.toast-proc-error').toast('show');
+      },
+      cache: false,
+      contentType: false,
+      processData: false
+    });
+  }
+
 </script>

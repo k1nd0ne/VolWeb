@@ -1,4 +1,4 @@
-from windows_engine.tasks import dlllist_task
+from windows_engine.tasks import dlllist_task, handles_task
 from .tasks import start_memory_analysis, dump_memory_pid, app, dump_memory_file
 from django.http import StreamingHttpResponse, FileResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -476,7 +476,7 @@ def dlllist(request):
         Arguments:
         request : http request object
         Comments:
-        Start analysis with virustotal.
+        Start analysis with dlllist module.
         If the analysis is already running show status.
         If the analysis is done show results
         """
@@ -493,6 +493,34 @@ def dlllist(request):
                 worker = dlllist_task.delay(case_id, processes[0].PID)
                 result = worker.get()
                 windows_engine.DllList.objects.create(process=processes[0],dlls=result)
+            return JsonResponse({'message': result})
+        else:
+            print("invalid")
+            return JsonResponse({'message': "error"})
+
+@login_required
+def handles(request):
+    """Handles
+        Arguments:
+        request : http request object
+        Comments:
+        Start analysis with handles module.
+        If the analysis is already running show status.
+        If the analysis is done show results
+        """
+    if request.method == "POST":
+        form = HandlesForm(request.POST)
+        if form.is_valid():
+            id = form.cleaned_data['id']
+            case_id = form.cleaned_data['case_id']
+            processes = windows_engine.PsScan.objects.filter(pk=id)
+            handle_list = windows_engine.Handles.objects.filter(process__pk=id)
+            if len(handle_list) >= 1:
+                result = handle_list[0].handles
+            else:
+                worker = handles_task.delay(case_id, processes[0].PID)
+                result = worker.get()
+                windows_engine.Handles.objects.create(process=processes[0],handles=result)
             return JsonResponse({'message': result})
         else:
             print("invalid")

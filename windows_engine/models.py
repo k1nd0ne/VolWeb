@@ -257,3 +257,10 @@ class DllList(models.Model):
             on_delete=models.CASCADE,
         )
     dlls = models.JSONField(default="")
+
+class Handles(models.Model):
+    process = models.ForeignKey(
+            PsScan,
+            on_delete=models.CASCADE,
+        )
+    handles = models.JSONField(default="")
