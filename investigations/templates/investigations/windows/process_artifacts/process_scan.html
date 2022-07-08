@@ -1,3 +1,16 @@
+<div class="modal fade" id="showProcessScanModal" tabindex="-1" aria-labelledby="showProcessScanModal" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content bg-light">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title" id="modal-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div id="processScanModalContent">
+        {% include "investigations/windows/process_artifacts/process_dlls.html" %}
+      </div>
+    </div>
+  </div>
+</div>
 <div class="mt-5 PsScan plugin">
   <h6 class="h6">Process Scan</h6>
   <div class="d-inline">
@@ -16,6 +29,7 @@
         <th scope="col">Wow64</th>
         <th scope="col">CreateTime</th>
         <th scope="col">ExitTime</th>
+        <th scope="col">Actions</th>
       </tr>
     </thead>
     <tbody id="processScan">
@@ -31,8 +45,59 @@
         <td>{{process.Wow64}}</td>
         <td>{{process.CreateTime}}</td>
         <td>{{process.ExitTime}}</td>
+        <td>
+          <a class="btn border border-light btn-sm" role="button"
+            onclick="event.stopPropagation(); DllList('{{case.id}}','{{process.pk}}');">Dll List</a>
+        </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+{% csrf_token %}
+
+<script>
+
+  function DllList(case_id , pk) {
+    const csrf = document.getElementsByName('csrfmiddlewaretoken');
+    const fd = new FormData();
+    fd.append('csrfmiddlewaretoken', csrf[0].value);
+    fd.append('id', pk);
+    fd.append('case_id', case_id);
+    $.ajax({
+      type: 'POST',
+      url: "{% url 'dlllist' %}",
+      enctype: 'multipart/form-data',
+      data: fd,
+      beforeSend: function () {
+        $('.spinner-main').show();
+        $('#proc-message').html("Your DllList request was taken into account");
+        $('.toast-proc').toast('show');
+        $("#dlllistBody tr").remove();
+      },
+      success: function (response) {
+        document.getElementById("modal-title").innerHTML = "Dll List"
+        for( dll of response['message']){
+          let body = document.querySelector('#dlllistBody');
+          let row = body.insertRow();
+          let fields = document.getElementsByClassName("dlllist_field");
+          for(field of fields){
+            let cell = row.insertCell();
+            cell.innerHTML = dll[field.innerHTML];
+          }   
+        }
+        $('.spinner-main').hide();
+        $("#showProcessScanModal").modal("show");
+      },
+      error: function (error) {
+        console.log(error);
+        $('.spinner-main').hide();
+        $('#proc-error-message').html("DllList request error");
+        $('.toast-proc-error').toast('show');
+      },
+      cache: false,
+      contentType: false,
+      processData: false
+    });
+  }
+</script>

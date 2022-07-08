@@ -1,3 +1,4 @@
+from windows_engine.tasks import dlllist_task
 from .tasks import start_memory_analysis, dump_memory_pid, app, dump_memory_file
 from django.http import StreamingHttpResponse, FileResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -467,4 +468,32 @@ def download_file(request):
                 messages.add_message(request,messages.ERROR,'Failed to fetch the requested file')
 
         else:
+            return JsonResponse({'message': "error"})
+
+@login_required
+def dlllist(request):
+    """DllList
+        Arguments:
+        request : http request object
+        Comments:
+        Start analysis with virustotal.
+        If the analysis is already running show status.
+        If the analysis is done show results
+        """
+    if request.method == "POST":
+        form = DllListForm(request.POST)
+        if form.is_valid():
+            id = form.cleaned_data['id']
+            case_id = form.cleaned_data['case_id']
+            processes = windows_engine.PsScan.objects.filter(pk=id)
+            dll_list = windows_engine.DllList.objects.filter(process__pk=id)
+            if len(dll_list) >= 1:
+                result = dll_list[0].dlls
+            else:
+                worker = dlllist_task.delay(case_id, processes[0].PID)
+                result = worker.get()
+                windows_engine.DllList.objects.create(process=processes[0],dlls=result)
+            return JsonResponse({'message': result})
+        else:
+            print("invalid")
             return JsonResponse({'message': "error"})

@@ -249,3 +249,11 @@ class Strings(models.Model):
     String = models.TextField(null = True)
     PhysicalAddress = models.BigIntegerField(null = True)
     Result = models.TextField(null = True)
+
+
+class DllList(models.Model):
+    process = models.ForeignKey(
+            PsScan,
+            on_delete=models.CASCADE,
+        )
+    dlls = models.JSONField(default="")

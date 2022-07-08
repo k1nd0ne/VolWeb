@@ -7,7 +7,6 @@ from VolWeb.voltools import DictRenderer, file_handler
 
 def init_volatility():
     volatility3.framework.require_interface_version(2,0,0)
-    #TODO Try to load only dlllist
     failures = volatility3.framework.import_files(volatility3.plugins, True)
     plugin_list = volatility3.framework.list_plugins()
     context = volatility3.framework.contexts.Context()
@@ -20,9 +19,9 @@ def construct_plugin(context,plugin,path):
     context.config['automagic.LayerStacker.single_location'] = "file://" + os.getcwd() + "/" + path
     return volatility3.framework.plugins.construct_plugin(context, automagics, plugin, "plugins", None, file_handler("Cases/files"))
 
-@app.task(name="dlllist")
-def dlllist(id: int,pid: int) -> list:
-    case = UploadInvestigation.objects.get(pk=id)
+@app.task(name="dlllist_task")
+def dlllist_task(case_id: int,pid: int) -> list:
+    case = UploadInvestigation.objects.get(pk=case_id)
     path = 'Cases/' + case.existingPath
     plugin_list,context = init_volatility()
     plugin = plugin_list["windows.dlllist.DllList"]
@@ -31,9 +30,9 @@ def dlllist(id: int,pid: int) -> list:
     constructed = construct_plugin(context,plugin,path)
     return DictRenderer().render(constructed.run())
 
-@app.task(name="handles")
-def handles(id: int,pid: int) -> list:
-    case = UploadInvestigation.objects.get(pk=id)
+@app.task(name="handles_task")
+def handles_task(case_id: int,pid: int,case) -> list:
+    case = UploadInvestigation.objects.get(pk=case_id)
     path = 'Cases/' + case.existingPath
     plugin_list,context = init_volatility()
     plugin = plugin_list["windows.handles.Handles"]

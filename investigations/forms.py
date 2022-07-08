@@ -49,3 +49,9 @@ class DownloadFile(forms.Form):
 class DownloadHive(forms.Form):
      filename = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
         'class': 'd-none','value':'n/a'}))
+
+class DllListForm(forms.Form):
+     id = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
+        'class': 'd-none','value':'n/a'}))
+     case_id = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
+        'class': 'd-none','value':'n/a'}))
