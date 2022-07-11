@@ -60,12 +60,15 @@
 {% csrf_token %}
 
 <script>
+  // Hide all the elements of the modal
   function hideModalContent() {
     let content = $("#processScanModalContent .plugin");
     for (elem of content){
       elem.style.display = "none";
     }
   }
+
+  // Send ddllist request to the server
   function DllList(case_id , pk) {
     const csrf = document.getElementsByName('csrfmiddlewaretoken');
     const fd = new FormData();
@@ -110,6 +113,8 @@
       processData: false
     });
   }
+
+  // Send handles request to the server
   function Handles(case_id , pk) {
     const csrf = document.getElementsByName('csrfmiddlewaretoken');
     const fd = new FormData();
