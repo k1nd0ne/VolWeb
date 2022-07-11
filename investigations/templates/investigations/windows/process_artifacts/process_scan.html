@@ -60,6 +60,7 @@
 {% csrf_token %}
 
 <script>
+  var resultat = [];
   // Hide all the elements of the modal
   function hideModalContent() {
     let content = $("#processScanModalContent .plugin");
@@ -90,13 +91,13 @@
         hideModalContent();
         document.getElementsByClassName("Dlllist")[0].style.display = "block";
         document.getElementById("modal-title").innerHTML = "Dll List";
-        for( dll of response['message']){
+        for( dll of JSON.parse(response['message'])){
           let body = document.querySelector('#dlllistBody');
           let row = body.insertRow();
           let fields = document.getElementsByClassName("dlllist_field");
           for(field of fields){
             let cell = row.insertCell();
-            cell.innerHTML = dll[field.innerHTML];
+            cell.innerHTML = dll['fields'][field.innerHTML];
           }   
         }
         $('.spinner-main').hide();
@@ -136,13 +137,13 @@
         hideModalContent();
         document.getElementsByClassName("Handles")[0].style.display = "block";
         document.getElementById("modal-title").innerHTML = "Handles List"
-        for( dll of response['message']){
+        for( dll of JSON.parse(response['message'])){
           let body = document.querySelector('#handlesBody');
           let row = body.insertRow();
           let fields = document.getElementsByClassName("handles_field");
           for(field of fields){
             let cell = row.insertCell();
-            cell.innerHTML = dll[field.innerHTML];
+            cell.innerHTML = dll['fields'][field.innerHTML];
           }   
         }
         $('.spinner-main').hide();
@@ -151,7 +152,7 @@
       error: function (error) {
         console.log(error);
         $('.spinner-main').hide();
-        $('#proc-error-message').html("DllList request error");
+        $('#proc-error-message').html("Handles request error");
         $('.toast-proc-error').toast('show');
       },
       cache: false,

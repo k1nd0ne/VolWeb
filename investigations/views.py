@@ -485,14 +485,12 @@ def dlllist(request):
         if form.is_valid():
             id = form.cleaned_data['id']
             case_id = form.cleaned_data['case_id']
-            processes = windows_engine.PsScan.objects.filter(pk=id)
             dll_list = windows_engine.DllList.objects.filter(process__pk=id)
-            if len(dll_list) >= 1:
-                result = dll_list[0].dlls
-            else:
-                worker = dlllist_task.delay(case_id, processes[0].PID)
-                result = worker.get()
-                windows_engine.DllList.objects.create(process=processes[0],dlls=result)
+            if len(dll_list) == 0:
+                worker = dlllist_task.delay(case_id, id)
+                worker.get()
+                dll_list = windows_engine.DllList.objects.filter(process__pk=id)
+            result = serialize('json',dll_list)
             return JsonResponse({'message': result})
         else:
             print("invalid")
@@ -513,14 +511,12 @@ def handles(request):
         if form.is_valid():
             id = form.cleaned_data['id']
             case_id = form.cleaned_data['case_id']
-            processes = windows_engine.PsScan.objects.filter(pk=id)
             handle_list = windows_engine.Handles.objects.filter(process__pk=id)
-            if len(handle_list) >= 1:
-                result = handle_list[0].handles
-            else:
-                worker = handles_task.delay(case_id, processes[0].PID)
-                result = worker.get()
-                windows_engine.Handles.objects.create(process=processes[0],handles=result)
+            if len(handle_list) == 0:
+                worker = handles_task.delay(case_id, id)
+                worker.get()
+                handle_list = windows_engine.Handles.objects.filter(process__pk=id)
+            result = serialize('json',handle_list)
             return JsonResponse({'message': result})
         else:
             print("invalid")

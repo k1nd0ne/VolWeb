@@ -256,11 +256,22 @@ class DllList(models.Model):
             PsScan,
             on_delete=models.CASCADE,
         )
-    dlls = models.JSONField(default="")
+    PID = models.IntegerField()
+    Base = models.BigIntegerField()
+    Name = models.TextField()
+    Path = models.TextField()
+    Size = models.BigIntegerField()
+    LoadTime = models.CharField(max_length=255,null=True)
+    File_output = models.CharField(max_length=500)
 
 class Handles(models.Model):
     process = models.ForeignKey(
             PsScan,
             on_delete=models.CASCADE,
         )
-    handles = models.JSONField(default="")
+    PID = models.IntegerField()
+    Offset = models.BigIntegerField()
+    Name = models.TextField(null=True)
+    HandleValue = models.IntegerField()
+    GrantedAccess = models.BigIntegerField()
+    Type = models.CharField(max_length=255)
