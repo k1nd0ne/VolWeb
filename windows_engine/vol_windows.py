@@ -161,6 +161,8 @@ def run_volweb_routine_windows(dump_path, case_id, case):
 
     #Registry
         'HiveList' : {'plugin' : plugin_list['windows.registry.hivelist.HiveList']},
+        'UserAssist' : {'plugin': plugin_list['windows.registry.userassist.UserAssist']},
+
     #Malware analysis
         'Timeliner': {'plugin' : plugin_list['timeliner.Timeliner']},
         'Malfind' : {'plugin' : plugin_list['windows.malfind.Malfind']},
@@ -170,7 +172,7 @@ def run_volweb_routine_windows(dump_path, case_id, case):
     """Progress Function"""
     def update_progress(case):
         MODULES_TO_RUN = len(volweb_knowledge_base) + 2
-        percentage = str(format(float(case.percentage) + float(100/MODULES_TO_RUN), '.2f'))
+        percentage = str(format(float(case.percentage) + float(100/MODULES_TO_RUN), '.0f'))
         logger.info(f"Status : {percentage} %")
         case.percentage = percentage
         case.save()
@@ -219,7 +221,7 @@ def run_volweb_routine_windows(dump_path, case_id, case):
 
     """STEP 3.1 : We can now inject the results inside the django database"""
     for runable in volweb_knowledge_base:
-        if runable != 'PsTree':
+        if runable != 'PsTree' and runable != 'UserAssist':
             for artifact in volweb_knowledge_base[runable]['result']:
                 artifact = { x.translate({32:None}) : y
                     for x, y in artifact.items()}
@@ -228,6 +230,7 @@ def run_volweb_routine_windows(dump_path, case_id, case):
                 if 'Offset(V)' in artifact:
                     artifact['Offset'] = artifact['Offset(V)']
                     del(artifact['Offset(V)'])
+
                 apps.get_model("windows_engine", runable)(investigation_id = case_id, **artifact).save()
 
     """STEP 3.2 : Contruct and inject the graphs"""
@@ -253,6 +256,10 @@ def run_volweb_routine_windows(dump_path, case_id, case):
             rename(tree)
         json_pstree_artifact = json.dumps(pstree_artifact)
 
+
+
+
+
     if volweb_knowledge_base['NetScan']['result'] or volweb_knowledge_base['NetStat']['result']:
         json_netgraph_artifact = json.dumps(generate_network_graph(volweb_knowledge_base['NetScan']['result'] + volweb_knowledge_base['NetStat']['result']))
 
@@ -262,4 +269,28 @@ def run_volweb_routine_windows(dump_path, case_id, case):
     PsTree(investigation_id = case_id, graph = json_pstree_artifact).save()
     NetGraph(investigation_id = case_id, graph = json_netgraph_artifact).save()
     TimeLineChart(investigation_id = case_id, graph = json_timelinegraph_artifact).save()
+
+    def UserAssistFill(list,case_id):
+        for artifact in list:
+            artifact = { x.translate({32:None}) : y
+                for x, y in artifact.items()}
+            apps.get_model("windows_engine", 'UserAssist')(investigation_id = case_id,
+                HiveOffset = artifact['HiveOffset'],
+                HiveName =  artifact['HiveName'],
+                Path = artifact['Path'],
+                LastWriteTime = artifact['LastWriteTime'],
+                Type = artifact['Type'],
+                Name =artifact['Name'],
+                ID = artifact['ID'],
+                Count = artifact['Count'],
+                FocusCount = artifact['FocusCount'],
+                TimeFocused = artifact['TimeFocused'],
+                LastUpdated = artifact['LastUpdated'],
+                RawData  = artifact['RawData']).save()
+            if artifact['__children']:
+                UserAssistFill(artifact['__children'],case_id)
+
+    if volweb_knowledge_base['UserAssist']['result']:
+        UserAssistFill(volweb_knowledge_base['UserAssist']['result'],case_id)
+
     return PARTIAL_RESULTS

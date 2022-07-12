@@ -275,6 +275,7 @@ def reviewinvest(request):
                     'Lsadump':windows_engine.Lsadump.objects.filter(investigation_id = id),
                     'Cachedump': windows_engine.Cachedump.objects.filter(investigation_id = id),
                     'HiveList': windows_engine.HiveList.objects.filter(investigation_id = id),
+                    'UserAssist': windows_engine.UserAssist.objects.filter(investigation_id = id),
                     'Timeliner': windows_engine.Timeliner.objects.filter(investigation_id = id),
                     'TimeLineChart': windows_engine.TimeLineChart.objects.get(investigation_id = id),
                     'SkeletonKeyCheck' : windows_engine.SkeletonKeyCheck.objects.filter(investigation_id = id),

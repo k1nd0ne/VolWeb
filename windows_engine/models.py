@@ -230,6 +230,29 @@ class Malfind(models.Model):
     Hexdump  = models.TextField(null = True)
     Disasm = models.TextField(null = True)
 
+
+
+class UserAssist(models.Model):
+    investigation = models.ForeignKey(
+            UploadInvestigation,
+            on_delete=models.CASCADE,
+            related_name="windows_userassist_investigation"
+        )
+    HiveOffset = models.BigIntegerField(null = True)
+    HiveName = models.TextField(null = True)
+    Path = models.TextField(null = True)
+    LastWriteTime = models.TextField(null = True)
+    Type = models.TextField(null = True)
+    Name = models.TextField(null = True)
+    ID = models.TextField(null = True)
+    Count = models.TextField(null = True)
+    FocusCount = models.TextField(null = True)
+    TimeFocused = models.TextField(null = True)
+    LastUpdated = models.TextField(null = True)
+    RawData  = models.TextField(null = True)
+
+
+
 class FileScan(models.Model):
     investigation = models.ForeignKey(
             UploadInvestigation,

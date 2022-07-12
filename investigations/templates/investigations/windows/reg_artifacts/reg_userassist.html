@@ -1,0 +1,41 @@
+<!-- Investigation UserAssist artifacts -->
+<div class="mt-5 UserAssist plugin text-white">
+  <h6 class="h6 text-dark">User Assist</h6>
+  <div class="d-inline">
+    <input class="form-control mb-3" id="searchUserAssist" type="text" placeholder="Search..">
+  </div>
+  <table id="UserAssistTable" class="table table-light  card-font userassist">
+    <thead>
+      <tr>
+        <th scope="col">HiveOffset</th>
+        <th scope="col">HiveName</th>
+        <th scope="col">Path</th>
+        <th scope="col">LastWriteTime</th>
+        <th scope="col">Type</th>
+        <th scope="col">Name</th>
+        <th scope="col">ID</th>
+        <th scope="col">Count</th>
+        <th scope="col">FocusCount</th>
+        <th scope="col">TimeFocused</th>
+        <th scope="col">LastUpdated</th>
+      </tr>
+    </thead>
+    <tbody id="UserAssist">
+      {% for process in UserAssist %}
+      <tr>
+        <td>{{process.HiveOffset}}</td>
+        <td>{{process.HiveName}}</td>
+        <td>{{process.Path}}</td>
+        <td>{{process.LastWriteTime}}</td>
+        <td>{{process.Type}}</td>
+        <td>{{process.Name}}</td>
+        <td>{{process.ID}}</td>
+        <td>{{process.Count}}</td>
+        <td>{{process.FocusCount}}</td>
+        <td>{{process.TimeFocused}}</td>
+        <td>{{process.LastUpdated}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

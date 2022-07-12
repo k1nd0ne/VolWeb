@@ -33,6 +33,17 @@ $('#processScanTable').on('click', 'tbody tr', function(event) {
   }
 });
 
+
+$('#UserAssistTable').on('click', 'tbody tr', function(event) {
+  var table = $(this);
+  if (table.hasClass("highlight")){
+    table.removeClass("highlight");
+  }
+  else{
+    table.addClass("highlight");
+  }
+});
+
 $('#processEnvTable').on('click', 'tbody tr', function(event) {
   var table = $(this);
   if (table.hasClass("highlight")){
@@ -200,6 +211,15 @@ $(document).ready(function(){
     });
   });
 
+  //UserAssist SearchBar
+
+  $("#searchUserAssist").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#UserAssist tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
   //Network SearchBar
 
   $("#searchNetwork").on("keyup", function() {
@@ -328,6 +348,11 @@ $(document).ready(function(){
   $("#HiveListLink").on("click", function(){
     $('.plugin').hide();
     $('.HiveList').show();
+  });
+
+  $("#UserAssistLink").on("click", function(){
+    $('.plugin').hide();
+    $('.UserAssist').show();
   });
 
   $("#TimelineLink").on("click", function(){
