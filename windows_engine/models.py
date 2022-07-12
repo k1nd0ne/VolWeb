@@ -272,3 +272,29 @@ class Strings(models.Model):
     String = models.TextField(null = True)
     PhysicalAddress = models.BigIntegerField(null = True)
     Result = models.TextField(null = True)
+
+
+class DllList(models.Model):
+    process = models.ForeignKey(
+            PsScan,
+            on_delete=models.CASCADE,
+        )
+    PID = models.IntegerField()
+    Base = models.BigIntegerField()
+    Name = models.TextField()
+    Path = models.TextField()
+    Size = models.BigIntegerField()
+    LoadTime = models.CharField(max_length=255,null=True)
+    File_output = models.CharField(max_length=500)
+
+class Handles(models.Model):
+    process = models.ForeignKey(
+            PsScan,
+            on_delete=models.CASCADE,
+        )
+    PID = models.IntegerField()
+    Offset = models.BigIntegerField()
+    Name = models.TextField(null=True)
+    HandleValue = models.IntegerField()
+    GrantedAccess = models.BigIntegerField()
+    Type = models.CharField(max_length=255)

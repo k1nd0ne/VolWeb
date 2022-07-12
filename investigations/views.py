@@ -1,3 +1,4 @@
+from windows_engine.tasks import dlllist_task, handles_task
 from .tasks import start_memory_analysis, dump_memory_pid, app, dump_memory_file
 from django.http import StreamingHttpResponse, FileResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -468,4 +469,56 @@ def download_file(request):
                 messages.add_message(request,messages.ERROR,'Failed to fetch the requested file')
 
         else:
+            return JsonResponse({'message': "error"})
+
+@login_required
+def dlllist(request):
+    """DllList
+        Arguments:
+        request : http request object
+        Comments:
+        Start analysis with dlllist module.
+        If the analysis is already running show status.
+        If the analysis is done show results
+        """
+    if request.method == "POST":
+        form = DllListForm(request.POST)
+        if form.is_valid():
+            id = form.cleaned_data['id']
+            case_id = form.cleaned_data['case_id']
+            dll_list = windows_engine.DllList.objects.filter(process__pk=id)
+            if len(dll_list) == 0:
+                worker = dlllist_task.delay(case_id, id)
+                worker.get()
+                dll_list = windows_engine.DllList.objects.filter(process__pk=id)
+            result = serialize('json',dll_list)
+            return JsonResponse({'message': result})
+        else:
+            print("invalid")
+            return JsonResponse({'message': "error"})
+
+@login_required
+def handles(request):
+    """Handles
+        Arguments:
+        request : http request object
+        Comments:
+        Start analysis with handles module.
+        If the analysis is already running show status.
+        If the analysis is done show results
+        """
+    if request.method == "POST":
+        form = HandlesForm(request.POST)
+        if form.is_valid():
+            id = form.cleaned_data['id']
+            case_id = form.cleaned_data['case_id']
+            handle_list = windows_engine.Handles.objects.filter(process__pk=id)
+            if len(handle_list) == 0:
+                worker = handles_task.delay(case_id, id)
+                worker.get()
+                handle_list = windows_engine.Handles.objects.filter(process__pk=id)
+            result = serialize('json',handle_list)
+            return JsonResponse({'message': result})
+        else:
+            print("invalid")
             return JsonResponse({'message': "error"})
