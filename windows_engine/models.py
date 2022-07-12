@@ -55,12 +55,12 @@ class PsScan(models.Model):
             on_delete=models.CASCADE,
             related_name="windows_psscan_investigation"
         )
-    PID = models.BigIntegerField(null = True)
-    PPID = models.BigIntegerField(null = True)
+    PID = models.IntegerField(null = True)
+    PPID = models.IntegerField(null = True)
     ImageFileName = models.CharField(max_length = 255,null = True)
     Offset = models.BigIntegerField(null = True)
-    Threads = models.BigIntegerField(null = True)
-    Handles = models.BigIntegerField(null = True)
+    Threads = models.IntegerField(null = True)
+    Handles = models.IntegerField(null = True)
     SessionId = models.BigIntegerField(null = True)
     Wow64 = models.BooleanField()
     CreateTime = models.CharField(max_length = 255,null = True)
@@ -73,7 +73,7 @@ class CmdLine(models.Model):
             on_delete=models.CASCADE,
             related_name="windows_cmdline_investigation"
         )
-    PID = models.BigIntegerField(null = True)
+    PID = models.IntegerField(null = True)
     Process = models.TextField(null = True)
     Args = models.TextField(null = True)
 
@@ -84,7 +84,7 @@ class Privs(models.Model):
             on_delete=models.CASCADE,
             related_name="windows_privs_investigation"
         )
-    PID = models.BigIntegerField(null = True)
+    PID = models.IntegerField(null = True)
     Process = models.TextField(null = True)
     Value = models.BigIntegerField(null = True)
     Privilege = models.TextField(null = True)
@@ -97,7 +97,7 @@ class Envars(models.Model):
             on_delete=models.CASCADE,
             related_name="windows_envars_investigation"
         )
-    PID = models.BigIntegerField(null = True)
+    PID = models.IntegerField(null = True)
     Process = models.TextField(null = True)
     Block = models.TextField(null = True)
     Variable = models.TextField(null = True)
@@ -118,7 +118,7 @@ class NetScan(models.Model):
     ForeignAddr = models.TextField(null = True)
     ForeignPort = models.TextField(null = True)
     State = models.TextField(null = True)
-    PID = models.BigIntegerField(null = True)
+    PID = models.IntegerField(null = True)
     Owner = models.TextField(null = True)
     Created = models.TextField(null = True)
 
@@ -135,7 +135,7 @@ class NetStat(models.Model):
     ForeignAddr = models.TextField(null = True)
     ForeignPort = models.TextField(null = True)
     State = models.TextField(null = True)
-    PID = models.BigIntegerField(null = True)
+    PID = models.IntegerField(null = True)
     Owner = models.TextField(null = True)
     Created = models.TextField(null = True)
 
@@ -205,7 +205,7 @@ class SkeletonKeyCheck(models.Model):
             on_delete=models.CASCADE,
             related_name="windows_skc_investigation"
         )
-    PID = models.BigIntegerField(null = True)
+    PID = models.IntegerField(null = True)
     Process = models.TextField(null = True)
     SkeletonKeyFound = models.TextField(null = True)
     rc4HmacInitialize = models.TextField(null = True)
@@ -218,7 +218,7 @@ class Malfind(models.Model):
             related_name="windows_malfind_investigation"
         )
 
-    PID = models.BigIntegerField(null = True)
+    PID = models.IntegerField(null = True)
     Process = models.TextField(null = True)
     StartVPN = models.BigIntegerField(null = True)
     EndVPN = models.BigIntegerField(null = True)
@@ -252,7 +252,6 @@ class UserAssist(models.Model):
     RawData  = models.TextField(null = True)
 
 
-
 class FileScan(models.Model):
     investigation = models.ForeignKey(
             UploadInvestigation,
@@ -272,3 +271,33 @@ class Strings(models.Model):
     String = models.TextField(null = True)
     PhysicalAddress = models.BigIntegerField(null = True)
     Result = models.TextField(null = True)
+
+class DllList(models.Model):
+    investigation = models.ForeignKey(
+            UploadInvestigation,
+            on_delete=models.CASCADE,
+            related_name="windows_dllist_investigation"
+        )
+    Process = models.TextField(null=True)
+    PID = models.IntegerField(null=True)
+    Base = models.BigIntegerField(null=True)
+    Name = models.TextField(null=True)
+    Path = models.TextField(null=True)
+    Size = models.BigIntegerField(null=True)
+    LoadTime = models.CharField(max_length=255,null=True)
+    Fileoutput = models.CharField(max_length=500)
+
+
+class Handles(models.Model):
+    investigation = models.ForeignKey(
+            UploadInvestigation,
+            on_delete=models.CASCADE,
+            related_name="windows_handles_investigation"
+        )
+    Process = models.TextField(null=True)
+    PID = models.IntegerField()
+    Offset = models.BigIntegerField()
+    Name = models.TextField(null=True)
+    HandleValue = models.IntegerField()
+    GrantedAccess = models.BigIntegerField()
+    Type = models.CharField(max_length=255)

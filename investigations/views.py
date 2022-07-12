@@ -266,6 +266,8 @@ def reviewinvest(request):
                     'PsScan': windows_engine.PsScan.objects.filter(investigation_id = id),
                     'PsTree': windows_engine.PsTree.objects.get(investigation_id = id),
                     'CmdLine': windows_engine.CmdLine.objects.filter(investigation_id = id),
+                    'Handles': windows_engine.Handles.objects.filter(investigation_id = id),
+                    'DllList': windows_engine.DllList.objects.filter(investigation_id = id),
                     'Privs': windows_engine.Privs.objects.filter(investigation_id = id),
                     'Envars': windows_engine.Envars.objects.filter(investigation_id = id),
                     'NetScan': windows_engine.NetScan.objects.filter(investigation_id = id),

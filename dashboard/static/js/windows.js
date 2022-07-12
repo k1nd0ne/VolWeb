@@ -1,163 +1,3 @@
-/* highlight functionnality */
-$('#processCacheTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-
-
-$('#processTreeTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-$('#processScanTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-
-$('#UserAssistTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-$('#processEnvTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-$('#processCmdTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-$('#processPrivilegesTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-
-$('#processNetworkTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-
-$('#TimelineTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-
-$('#FileScanTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-$('#IOCTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-$('#processHashTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-
-$('#processCacheTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-$('#processLsaTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
-$('#processNetworkStatTable').on('click', 'tbody tr', function(event) {
-  var table = $(this);
-  if (table.hasClass("highlight")){
-    table.removeClass("highlight");
-  }
-  else{
-    table.addClass("highlight");
-  }
-});
-
 $(document).ready(function(){
   $('.container').show();
   $('.container-fluid').show();
@@ -168,6 +8,17 @@ $(document).ready(function(){
 
   $('#main').show();
   $('#loading').hide();
+
+  /* highlight functionnality */
+  $('.artifacts').on('click', 'tbody tr', function(event) {
+    var table = $(this);
+    if (table.hasClass("highlight")){
+      table.removeClass("highlight");
+    }
+    else{
+      table.addClass("highlight");
+    }
+  });
 
   /* Search bar Functionnality for each plugin */
   $("#searchProcess").on("keyup", function() {
@@ -379,4 +230,14 @@ $(document).ready(function(){
     $('.plugin').hide();
     $('.Case').show();
   });
+});
+
+$("#DllListLink").on("click", function(){
+  $('.plugin').hide();
+  $('.DllList').show();
+});
+
+$("#HandlesLink").on("click", function(){
+  $('.plugin').hide();
+  $('.Handles').show();
 });

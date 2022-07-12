@@ -150,6 +150,8 @@ def run_volweb_routine_windows(dump_path, case_id, case):
         'CmdLine' : {'plugin' : plugin_list['windows.cmdline.CmdLine']},
         'Privs' : {'plugin': plugin_list['windows.privileges.Privs']},
         'Envars' : {'plugin': plugin_list['windows.envars.Envars']},
+        'DllList' : {'plugin': plugin_list['windows.dlllist.DllList']},
+        'Handles' : {'plugin': plugin_list['windows.handles.Handles']},
     #Network
         'NetScan' : {'plugin': plugin_list['windows.netstat.NetStat']},
         'NetStat' : {'plugin': plugin_list['windows.netscan.NetScan']},
@@ -255,9 +257,6 @@ def run_volweb_routine_windows(dump_path, case_id, case):
         for tree in pstree_artifact:
             rename(tree)
         json_pstree_artifact = json.dumps(pstree_artifact)
-
-
-
 
 
     if volweb_knowledge_base['NetScan']['result'] or volweb_knowledge_base['NetStat']['result']:

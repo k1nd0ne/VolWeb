@@ -1,0 +1,35 @@
+<!-- Investigation process_dlllist artifacts -->
+<div class="mt-5 DllList plugin text-white">
+  <h6 class="h6">dll list</h6>
+  <div class="d-inline">
+    <input class="form-control mb-3" id="searchdll" type="text" placeholder="Search..">
+  </div>
+  <table class="table table-light artifacts card-font dlllist">
+    <thead>
+      <tr>
+        <th scope="col">Process</th>
+        <th scope="col">PID</th>
+        <th scope="col">Base</th>
+        <th scope="col">Name</th>
+        <th scope="col">Path</th>
+        <th scope="col">Size</th>
+        <th scope="col">LoadTime</th>
+        <th scope="col">Fileoutput</th>
+      </tr>
+    </thead>
+    <tbody id="dlllist">
+      {% for process in DllList %}
+      <tr>
+        <td>{{process.Process}}</td>
+        <td>{{process.PID}}</td>
+        <td>{{process.Base}}</td>
+        <td>{{process.Name}}</td>
+        <td>{{process.Path}}</td>
+        <td>{{process.Size}}</td>
+        <td>{{process.LoadTime}}</td>
+        <td>{{process.Fileoutput}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
