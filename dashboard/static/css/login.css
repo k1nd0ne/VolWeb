@@ -6,7 +6,7 @@
   max-width: 320px;
   width: 90%;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: #172A3A;
   padding: 40px;
   border-radius: 4px;
   color: #505e6c;
@@ -69,8 +69,7 @@
 body {
   height: 100%;
   padding: 0;
-  background-image: url("../img/Volweb.svg.2022_03_02_20_47_51.0%20copy.svg");
-  background-color: #ffffffdd;
+  background: url("../images/bg.svg"), #081327;
   background-size: cover;
 }
 

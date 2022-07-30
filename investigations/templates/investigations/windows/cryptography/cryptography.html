@@ -1,0 +1,141 @@
+<div class="tab-pane fade" role="tabpanel" id="tab-3">
+  <div class="row">
+    <div class="col-6">
+      {% if Hashdump %}
+      {% for elem in Hashdump %}
+      <div class="card shadow border-start-primary py-2 mt-2" style="background: rgba(0,0,0,0.25);border-style: none;">
+        <div class="card-body" style="color: rgb(255,255,255);border-style: none;">
+          <div class="row align-items-center no-gutters">
+            <div class="col-auto"><i class="fas fa-user fa-2x text-gray-600"></i></div>
+            <div class="col me-2">
+              <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span style="color: var(--bs-pink);">Plugin : HASHDUMP<br></span></div>
+              <div class="text-dark fw-bold mb-0 p_info" style="color: rgb(255,255,255);"><span style="color: rgb(255,255,255);">Username : {{elem.User}}
+                <br>RID : {{elem.rid}}
+                <br>lmhash :&nbsp;{{elem.lmhash}}
+                <br>nthash :&nbsp;{{elem.nthash}}
+                <br>
+              </span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div class="card shadow border-start-primary py-2 mt-2" style="background: rgba(0,0,0,0.25);border-style: none;">
+        <div class="card-body" style="color: rgb(255,255,255);border-style: none;">
+          <div class="row align-items-center no-gutters">
+            <div class="col-auto"><i class="fas fa-user fa-2x text-gray-600"></i></div>
+            <div class="col me-2">
+              <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span style="color: var(--bs-pink);">Plugin : HASHDUMP<br></span></div>
+              <div class="text-dark fw-bold mb-0 p_info" style="color: rgb(255,255,255);"><span style="color: rgb(255,255,255);">Nothing found<br>
+              </span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if Cachedump %}
+      {% for elem in Cachedump %}
+      <div class="card shadow border-start-primary py-2 mt-2" style="background: rgba(0,0,0,0.25);border-style: none;">
+        <div class="card-body" style="color: rgb(255,255,255);border-style: none;">
+          <div class="row align-items-center no-gutters">
+            <div class="col-auto"><i class="fas fa-user fa-2x text-gray-600"></i></div>
+            <div class="col me-2">
+              <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span style="color: var(--bs-pink);">Plugin : CACHEDUMP<br></span></div>
+              <div class="text-dark fw-bold mb-0 p_info" style="color: rgb(255,255,255);"><span style="color: rgb(255,255,255);">Username : {{elem.Username}}<br>
+                Domain : {{elem.Domain}}<br>
+                Domain Name : {{elem.Domainname}}<br>
+                Hash :&nbsp;{{elem.Hash}}<br>
+              </span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div class="card shadow border-start-primary py-2 mt-2" style="background: rgba(0,0,0,0.25);border-style: none;">
+        <div class="card-body" style="color: rgb(255,255,255);border-style: none;">
+          <div class="row align-items-center no-gutters">
+            <div class="col-auto"><i class="fas fa-user fa-2x text-gray-600"></i></div>
+            <div class="col me-2">
+              <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span style="color: var(--bs-pink);">Plugin : CACHEDUMP<br></span></div>
+              <div class="text-dark fw-bold mb-0 p_info" style="color: rgb(255,255,255);"><span style="color: rgb(255,255,255);">Nothing found<br>
+              </span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="col-6">
+      <div class="card py-2 mt-2" style="background: rgba(0,0,0,0.25);border-style: none;">
+        <div class="card-body">
+          <h4 class="card-title">LSA Dump</h4>
+          <div class="table-responsive text-break fw-lighter">
+            <table class="table table-sm">
+              <thead style="color: var(--bs-light);">
+                <tr>
+                  <th>Key</th>
+                  <th>Secret</th>
+                  <th>Hex</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if Lsadump %}
+                {% for elem in Lsadump %}
+                <tr>
+                  <td>{{elem.Key}}</td>
+                  <td>{{elem.Secret}}</td>
+                  <td>{{elem.Hex}}</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                  <td>Nothing found.</td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="card py-2 mt-2" style="background: rgba(0,0,0,0.25);border-style: none;">
+        <div class="card-body">
+          <h4 class="card-title">Skeleton Key Check</h4>
+          <div class="table-responsive text-break fw-lighter">
+            <table class="table table-sm">
+              <thead style="color: var(--bs-light);">
+                <tr>
+                  <th>PID</th>
+                  <th>Process</th>
+                  <th>Skeleton Key Found</th>
+                  <th>rc4HmacInitialize</th>
+                  <th>rc4HmacDecrypt</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if SkeletonKeyCheck %}
+                {% for entry in SkeletonKeyCheck %}
+                  <tr>
+                    <td>{{entry.PID }}</td>
+                    <td>{{entry.Process}}</td>
+                    <td>{{entry.SkeletonKeyFound}}</td>
+                    <td>{{entry.rc4HmacInitialize}}</td>
+                    <td>{{entry.rc4HmacDecrypt}}</td>
+                  </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                  <td>Nothing found.</td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

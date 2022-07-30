@@ -28,7 +28,7 @@ def investigations(request):
     First entry point to visualise all of the investigations
     """
     form = ManageInvestigation()
-    return render(request,'investigations/invest.html',{'investigations': UploadInvestigation.objects.all(), 'form': form})
+    return render(request,'investigations/investigations.html',{'investigations': UploadInvestigation.objects.all(), 'form': form})
 
 @login_required
 def newinvest(request):
@@ -243,6 +243,7 @@ def reviewinvest(request):
         """
     if request.method == 'GET':
         form = ManageInvestigation(request.GET)
+        print(request.GET)
         if form.is_valid():
             case = form.cleaned_data['sa_case_id']
             id = case.id
@@ -301,8 +302,10 @@ def reviewinvest(request):
                 context.update(models)
             return render(request, 'investigations/reviewinvest.html',context)
         else:
+            print(form.errors)
             form = ManageInvestigation()
-            return render(request,'investigations/invest.html',{'investigations': UploadInvestigation.objects.all(), 'form': form})
+
+            return render(request,'investigations/investigations.html',{'investigations': UploadInvestigation.objects.all(), 'form': form})
 
 @login_required
 def dump_process(request):

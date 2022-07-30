@@ -1,44 +1,32 @@
-<div class="toast-container" style="position: absolute; bottom: 0; right: 0;">
-  <!-- Toast to show if the process dump request as been take into account -->
-  <div class="toast toast-proc fade hide bg-light">
-    <div class="p-1">
-      <div class="toast-success">
-        <span class="align-middle">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="2O" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
-            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
-            <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
-          </svg>
-        </span>
-        <span id="proc-message" class="align-middle"></span>
+<div class="toast-container" style="position: absolute; bottom: 0; right: 0; margin-right:10px;">
+
+  <div class="toast toast-proc-info align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div id="proc-message-info" class="toast-body">
       </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
   </div>
 
-  <div class="toast toast-proc-success fade hide bg-light" id="toast_procdump_good">
-    <div class="p-1">
-      <div class="toast-success">
-        <span class="align-middle">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
-            <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
-          </svg>
-        </span>
-        <span id="proc-success-message" class="align-middle"></span>
+
+  <div class="toast toast-proc-success toast-proc align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div id="proc-success-message" class="toast-body">
       </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
   </div>
 
-  <div class="toast toast-proc-failed fade hide bg-light" id="toast_procdump_good">
-    <div class="p-1">
-      <div class="toast-success">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-exclamation" viewBox="0 0 16 16">
-          <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.553.553 0 0 1-1.1 0L7.1 4.995z"/>
-        </svg>
-        <span id="proc-failed-message" class="align-middle"></span>
+  <div class="toast toast-proc-failed toast-proc align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div id="proc-failed-message" class="toast-body">
       </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
   </div>
 
-  <div class="toast toast-proc-error bg-light fade hide" id="toast_procdump_good">
+
+  <!-- <div class="toast toast-proc-error bg-light fade hide" id="toast_procdump_good">
     <div class="p-1">
       <div class="toast-success">
         <span class="align-middle">
@@ -52,5 +40,5 @@
         <span id="proc-error-message" class="align-middle"></span>
       </div>
     </div>
-  </div>
+  </div> -->
 </div>

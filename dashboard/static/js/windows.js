@@ -1,51 +1,67 @@
 $(document).ready(function(){
-  $('.container').show();
-  $('.container-fluid').show();
   $('.plugin').hide();
-  $('.Case').show();
-  $('.spinner-main').hide();
   $('.toast-other').toast('show');
 
-  $('#main').show();
-  $('#loading').hide();
 
-  /* highlight functionnality */
-  $('.artifacts').on('click', 'tbody tr', function(event) {
-    var table = $(this);
-    if (table.hasClass("highlight")){
-      table.removeClass("highlight");
-    }
-    else{
-      table.addClass("highlight");
-    }
-  });
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
 
-  /* Search bar Functionnality for each plugin */
-  $("#searchProcess").on("keyup", function() {
+  /* ################################ REGISTRY SCRIPTS ################################ */
+
+  $("#search_registry").on("keyup", function() {
     var value = $(this).val().toLowerCase();
-    $("#process tr").filter(function() {
+    $("#UserAssist tr").filter(function() {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
 
-  //NetStat Search funtion
-  $("#searchNetworkStat").on("keyup", function() {
-      var value = $(this).val().toLowerCase();
-      $("#netstat tr").filter(function() {
-        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+
+  function DownloadHive(filename){
+      const csrf = document.getElementsByName('csrfmiddlewaretoken');
+      const fd = new FormData();
+      fd.append('csrfmiddlewaretoken', csrf[0].value);
+      fd.append('filename', filename);
+      $.ajax({
+        type:'POST',
+        url: "{% url 'download_hive' %}",
+        enctype: 'multipart/form-data',
+        data: fd,
+        beforeSend: function(){
+          $('#proc-message').html("Requesting download...");
+          $('.toast-proc').toast('show');
+        },
+        success: function(data){
+          //Convert the Byte Data to BLOB object.
+                    var blob = new Blob([data], { type: "application/octetstream" });
+                    //Check the Browser type and download the File.
+                    var isIE = false || !!document.documentMode;
+                    if (isIE) {
+                        window.navigator.msSaveBlob(blob, filename);
+                    } else {
+                        var url = window.URL || window.webkitURL;
+                        link = url.createObjectURL(blob);
+                        var a = $("<a />");
+                        a.attr("download", filename);
+                        a.attr("href", link);
+                        $("body").append(a);
+                        a[0].click();
+                        $("body").remove(a);
+                    }
+        },
+        error: function(error){
+          $('#proc-error-message').html("Download failed ! :(");
+          $('.toast-proc-error').toast('show');
+        },
+        cache: false,
+        contentType : false,
+        processData: false
       });
-    });
+  }
 
-  //Malfind Search function
 
-  $("#searchMalfind").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#malfind-btn button").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-  //TimeLine SearchBar
+    /* ################################ TIMELINE SCRIPTS ################################ */
   $("#searchTimeline").on("keyup", function() {
     var value = $(this).val().toLowerCase();
     $("#TimelineTab tr").filter(function() {
@@ -53,68 +69,10 @@ $(document).ready(function(){
     })
   });
 
-  //CmdLine SearchBar
 
-  $("#searchCmdLine").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#cmdline tr").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-  //UserAssist SearchBar
-
-  $("#searchUserAssist").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#UserAssist tr").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-  //Network SearchBar
-
-  $("#searchNetwork").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#network tr").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-
-  //ProcessScan SearchBar
-
-  $("#searchProcessScan").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#processScan tr").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-
-
-  //Process Privileges SearchBar
-
-  $("#searchPriv").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#processPriv tr").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-
-  //Process Env SearchBar
-
-  $("#searchEnv").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#processEnv tr").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-
+    /* ################################ FILES SCRIPTS ################################ */
   //FileScan SearchBar
-
-  $("#searchFileScan").on("keyup", function() {
+  $("#search_files").on("keyup", function() {
     var value = $(this).val().toLowerCase();
     $("#FileScanTab tr").filter(function() {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
@@ -122,122 +80,5 @@ $(document).ready(function(){
   });
 
 
-  //IOC SearchBar
 
-  $("#searchIOC").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#IOCTab tr").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-  /* Sidebar user interaction management : Display the resquested plugin and hide the previous one */
-
-  $("#PsScanLink").on("click", function(){
-    $('.plugin').hide();
-    $('.PsScan').show();
-  });
-
-  $("#PrivsLink").on("click", function(){
-    $('.plugin').hide();
-    $('.Privs').show();
-  });
-
-  $("#PsTreeLink").on("click", function(){
-    $('.plugin').hide();
-    $('.PsTree').show();
-  });
-
-  $("#CmdLineLink").on("click", function(){
-    $('.plugin').hide();
-    $('.CmdLine').show();
-  });
-
-  $("#EnvarsLink").on("click", function(){
-    $('.plugin').hide();
-    $('.Envars').show();
-  });
-
-  $("#NetGraphLink").on("click", function(){
-    $('.plugin').hide();
-    $('.NetGraph').show();
-  });
-
-
-  $("#NetScanLink").on("click", function(){
-    $('.plugin').hide();
-    $('.NetScan').show();
-  });
-
-
-  $("#NetStatLink").on("click", function(){
-    $('.plugin').hide();
-    $('.NetStat').show();
-  });
-
-  $("#HashDumpLink").on("click", function(){
-    $('.plugin').hide();
-    $('.HashDump').show();
-  });
-
-
-  $("#LsaDumpLink").on("click", function(){
-    $('.plugin').hide();
-    $('.LsaDump').show();
-  });
-
-  $("#CacheDumpLink").on("click", function(){
-    $('.plugin').hide();
-    $('.CacheDump').show();
-  });
-
-  $("#SkeletonLink").on("click", function(){
-    $('.plugin').hide();
-    $('.SkeletonKeyCheck').show();
-  });
-
-  $("#HiveListLink").on("click", function(){
-    $('.plugin').hide();
-    $('.HiveList').show();
-  });
-
-  $("#UserAssistLink").on("click", function(){
-    $('.plugin').hide();
-    $('.UserAssist').show();
-  });
-
-  $("#TimelineLink").on("click", function(){
-    $('.plugin').hide();
-    $('.Timeline').show();
-  });
-
-  $("#IOCLink").on("click", function(){
-    $('.plugin').hide();
-    $('.IOC').show();
-  });
-
-  $("#MalfindLink").on("click", function(){
-    $('.plugin').hide();
-    $('.Malfind').show();
-  });
-
-  $("#FileScanLink").on("click", function(){
-    $('.plugin').hide();
-    $('.FileScan').show();
-  });
-
-  $("#CaseLink").on("click", function(){
-    $('.plugin').hide();
-    $('.Case').show();
-  });
-});
-
-$("#DllListLink").on("click", function(){
-  $('.plugin').hide();
-  $('.DllList').show();
-});
-
-$("#HandlesLink").on("click", function(){
-  $('.plugin').hide();
-  $('.Handles').show();
 });

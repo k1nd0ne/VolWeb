@@ -1,15 +1,27 @@
 {% extends "dashboard/base.html" %}
 {% load static %}
 {% block content%}
+<style>
+  .form-control, .form-select {
+    color: var(--bs-gray-100);
+    background: var(--bs-primary-rgb);
+  }
+
+  .card, .card-header{
+    background: rgba(0,0,0,0.25);
+    border-style: none;
+  }
+
+</style>
 <div class="container"><a class="btn btn-link link-primary mb-3" role="button" target="_parent" href="{% url 'investigations' %}"><i class="fas fa-arrow-left"></i>&nbsp;Back</a>
   <div class="d-sm-flex justify-content-between align-items-center mb-4">
-    <h3 class="text-dark mb-0">New investigation</h3>
+    <h3 class="mb-0">New investigation</h3>
   </div>
   <form id="upload-form" action="">
     {% csrf_token %}
-    <div class="card bg-light border border-dark border-sm shadow mb-3">
+    <div class="card border-sm shadow mb-3" style="background: rgba(0,0,0,0.25);border-style: none;">
       <div class="card-header py-3">
-        <p class="text-dark m-0 fw-bold">Fill in the required fields *</p>
+        <p class="m-0 fw-bold">Fill in the required fields *</p>
       </div>
       <div class="card-body">
         <div class="row">
@@ -50,6 +62,7 @@
     <div id="uploaded_files"></div>
     <!-- The alert box displaying the error messages if the form is not valid -->
     <div id="alert-box" class="text-dark not-visible"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
       function ToggleInvestigator(u){
         var badge = document.getElementById('badge_'+u);

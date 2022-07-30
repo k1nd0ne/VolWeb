@@ -1,241 +1,90 @@
 {% load static %}
 {% load cookiebanner %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>VolWeb</title>
-    <link rel="icon" type="image/x-icon" href="{% static 'images/favico.svg'%}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <title>Dashboard - VolWeb</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="{% static '/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static '/css/fontawesome5-overrides.min.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="{% static '/css/styles.css' %}">
+
 </head>
 {% cookiebanner_modal 'cookiebanner' %}
-<span class="spinner-main spinner-border spinner-border-sm spinner" role="status"></span>
-<body>
-    <nav class="text-dark navbar navbar-light navbar-expand-md shadow-sm">
-        <div class="container-fluid bg-dark">
-          <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1">
-            <span class="visually-hidden">Toggle navigation</span>
-            <span class="navbar-toggler-icon"></span>
-          </button><a href="{% url 'investigations' %}">
-          <img src="{% static '/img/volweblogo2.png' %}" width="70"></a>
-            <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link text-dark
+
+
+<!-- <span class="spinner-main spinner-border spinner-border-sm spinner" role="status"></span> -->
+<body id="page-top">
+    <div id="wrapper">
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0" style="background: var(--bs-primary-rgb);">
+            <div class="container-fluid d-flex flex-column p-0">
+                <hr class="sidebar-divider my-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-icon">
+                      <img width="53" height="67" src="{% static '/img/volweb.svg' %}">
+                    </div>
+                </a>
+                <ul class="navbar-nav text-light" id="accordionSidebar">
+                    <li class="nav-item"><a class="nav-link
                       {% if request.get_full_path == '/'%}
                       active
                       {% endif %}
-                      "
-                      href="{% url 'dashboard' %}">Dashboard</a></li>
+                      " href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
 
-                    <li class="nav-item"><a class="nav-link text-dark
+                    <li class="nav-item"><a class="nav-link
                       {% if request.get_full_path == '/investigations/'%}
                       active
                       {% endif %}
-                      "
-                    href="{% url 'investigations' %}">Analysis</a></li>
+                      " href="{% url 'investigations' %}"><i class="fas fa-suitcase"></i><span>Investigations</span></a></li>
 
-                    <li class="nav-item"><a class="nav-link text-dark
+                    <li class="nav-item"><a class="nav-link
+                      {% if request.get_full_path == '/symbols/'%}
+                      active
+                      {% endif %}
+                      " href="{% url 'symbols' %}"><i class="fas fa-table"></i><span>Symbols</span></a></li>
+
+
+                    <li class="nav-item"><a class="nav-link
                       {% if request.get_full_path == '/iocs/'%}
                       active
                       {% endif %}
-                      " href="{% url 'iocs' %}">IOCs</a></li>
-                      <li class="nav-item"><a class="nav-link text-dark
-                        {% if request.get_full_path == '/symbols/'%}
-                        active
-                        {% endif %}
-                        " href="{% url 'symbols' %}">Symbols</a></li>
+                      " href="{% url 'iocs' %}"><i class="fas fa-fingerprint"></i><span>IOCs</span></a>
+                        <div class="nav-item dropdown no-arrow" style="width: 10px;"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">&nbsp;<i class="fas fa-user"></i><span>{{ user.get_username }}</span></a>
+                            <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end animated--fade-in"><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></div>
+                        </div>
+                    </li>
                 </ul>
+                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
+        </nav>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content" style="background: url(&quot;{% static '/images/bg.svg' %}&quot;), #081327;">
+              <div class="spinner-main d-flex flex-column align-items-center justify-content-center">
+                 <div class="row">
+                   {% include "dashboard/spinner.html" %}
+                  </div>
+                  <div class="row">
+                    <strong>Loading...</strong>
+                  </div>
+              </div>
 
-            <div class="dropdown">
-              <a aria-expanded="false" data-bs-toggle="dropdown" href="#" style="color: rgb(0,0,0);margin-right: 20px;" class="text-dark">{{ user.get_username }}&nbsp;
-              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
-                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
-              </svg>
-              </a>
-                <div class="dropdown-menu"><a class="dropdown-item" href="{% url 'logout' %}" style="width: 2;">Log out</a></div>
+              {% block content %}
+
+              {% endblock %}
             </div>
-            <div class="form-check form-switch ms-auto me-3">
-              <label class="form-check-label ms-3" for="lightSwitch">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="25"
-                  height="25"
-                  fill="currentColor"
-                  class="bi bi-brightness-high"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"
-                  />
-                </svg>
-              </label>
-              <input class="form-check-input" type="checkbox" id="lightSwitch" />
-            </div>
-        </div>
-    </nav>
-
-    <script>
-    /**
-     *  Light Switch @version v0.1.3
-     */
-
-    function theme() {
-      let lightSwitch = document.getElementById("lightSwitch");
-      if (!lightSwitch) {
-        return;
-      }
-
-      /**
-       * @function darkmode
-       * @summary: changes the theme to 'dark mode' and save settings to local stroage.
-       * Basically, replaces/toggles every CSS class that has '-light' class with '-dark'
-       */
-      function darkMode() {
-        document.body.classList.add("bg-dark");
-
-        document.querySelectorAll(".bg-light").forEach((element) => {
-          element.className = element.className.replace(/-light/g, "-dark");
-        });
-
-        document.querySelectorAll(".border-dark").forEach((element) => {
-          element.className = element.className.replace(/border-dark/g, "border-light");
-        });
-
-        document.querySelectorAll(".nav").forEach((element) => {
-          element.className = element.className.replace(/border-dark/g, "border-light");
-        });
-
-        document.querySelectorAll(".table").forEach((element) => {
-          element.className = element.className.replace(/table-light/g, "table-dark");
-        });
-
-        if (document.body.classList.contains("text-dark")) {
-          document.body.classList.replace("text-dark", "text-light");
-        } else {
-          document.body.classList.add("text-light");
-        }
-
-        document.querySelectorAll(".text-dark").forEach((element) => {
-          element.className = element.className.replace(/-dark/g, "-light");
-        });
-
-        document.querySelectorAll(".table-light").forEach((element) => {
-          element.className = element.className.replace(/-dark/g, "-light");
-        });
-
-        // set light switch input to true
-        if (! lightSwitch.checked) {
-          lightSwitch.checked = true;
-        }
-        localStorage.setItem("lightSwitch", "dark");
-      }
-
-      /**
-       * @function lightmode
-       * @summary: changes the theme to 'light mode' and save settings to local stroage.
-       */
-      function lightMode() {
-        document.querySelectorAll(".bg-dark").forEach((element) => {
-          element.className = element.className.replace(/-dark/g, "-light");
-        });
-
-        document.body.classList.add("bg-light");
-
-        document.querySelectorAll(".border-light").forEach((element) => {
-          element.className = element.className.replace(/border-light/g, "border-dark");
-        });
-
-
-        if (document.body.classList.contains("text-light")) {
-          document.body.classList.replace("text-light", "text-dark");
-        } else {
-          document.body.classList.add("text-dark");
-        }
-
-        document.querySelectorAll(".text-light").forEach((element) => {
-          element.className = element.className.replace(/-light/g, "-dark");
-        });
-
-        document.querySelectorAll(".table-dark").forEach((element) => {
-          element.className = element.className.replace(/table-dark/g, "table-light");
-        });
-
-        if (lightSwitch.checked) {
-          lightSwitch.checked = false;
-        }
-        localStorage.setItem("lightSwitch", "light");
-      }
-
-      /**
-       * @function onToggleMode
-       * @summary: the event handler attached to the switch. calling @darkMode or @lightMode depending on the checked state.
-       */
-      function onToggleMode() {
-        if (lightSwitch.checked) {
-          darkMode();
-        } else {
-          lightMode();
-        }
-      }
-
-      /**
-       * @function getSystemDefaultTheme
-       * @summary: get system default theme by media query
-       */
-      function getSystemDefaultTheme() {
-        const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
-        if (darkThemeMq.matches) {
-          return "dark";
-        }
-        return "light";
-      }
-
-      function setup() {
-        var settings = localStorage.getItem("lightSwitch");
-        if (settings == null) {
-          settings = getSystemDefaultTheme();
-        }
-
-        if (settings == "dark") {
-          lightSwitch.checked = true;
-        }
-
-        lightSwitch.addEventListener("change", onToggleMode);
-        onToggleMode();
-      }
-        setup();
-    }
-
-    $(document).ready(function(){
-        theme();
-    });
-
-</script>
-
-    {% block content %}
-
-
-    {% endblock %}
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
     <script src="{% static '/js/bs-init.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-
-
+    <script src="{% static '/js/theme.js' %}"></script>
 </body>
 
 </html>

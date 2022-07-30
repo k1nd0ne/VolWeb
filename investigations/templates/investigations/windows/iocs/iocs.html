@@ -1,0 +1,26 @@
+<div class="tab-pane fade" role="tabpanel" id="tab-18">
+  <div class="row">
+    <div class="col">
+      <div class="table-responsive fw-lighter">
+        <table class="table table-sm">
+          <thead style="color: var(--bs-light);">
+            <tr>
+              <th>Physical Address</th>
+              <th>Linked Process</th>
+              <th>Match String</th>
+            </tr>
+          </thead>
+          <tbody id="IOCTab">
+            {% for match in Strings %}
+            <tr>
+              <td>{{match.PhysicalAddress}}</td>
+              <td>{{match.Result}}</td>
+              <td>{{match.String}}</td>
+            </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,98 @@
+<div class="tab-pane fade" role="tabpanel" id="tab-2">
+  <div class="row">
+    <div class="col-12" style="margin-top: 10px;">
+      <div>
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#tab-9">Hive List</a></li>
+          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-10">UserAssist</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" role="tabpanel" id="tab-9">
+            <div class="table-responsive text-break fw-lighter">
+              <table class="table table-sm">
+                <thead style="color: var(--bs-light);">
+                  <tr>
+                    <th>FileFullPath</th>
+                    <th>Offset</th>
+                    <th>File Output</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody style="color: var(--bs-white);">
+                  {% if HiveList %}
+                  {% for entry in HiveList %}
+                  <tr>
+                    <td>{{entry.FileFullPath}}</td>
+                    <td>{{entry.Offset}}</td>
+                    <td>{{entry.Fileoutput}}</td>
+                    <td><button class="btn btn-primary btn-sm" type="button" onclick="DownloadHive('{{entry.Fileoutput}}')">Download</button></td>
+                  </tr>
+                  {% endfor %}
+                  {% else %}
+                  <tr>
+                    <td>Nothing found.</td>
+                  </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-pane fade" role="tabpanel" id="tab-10">
+            <div class="row mt-3">
+                <div class="col align-items-center no-gutters d-flex justify-content-between">
+                  <input type="search" id="search_registry" class="search-bar form-control" placeholder="Look for something" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
+                </div>
+            </div>
+            <div  class="table-responsive fw-lighter">
+              <table class="table table-sm">
+                <thead style="color: var(--bs-light);">
+                  <tr>
+                    <th>HiveOffset</th>
+                    <th>Hive Name</th>
+                    <th>Path</th>
+                    <th>Last Write Time</th>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>ID</th>
+                    <th>Count</th>
+                    <th>Focus Count</th>
+                    <th>Time Focused</th>
+                    <th>Last Updated</th>
+                  </tr>
+                </thead>
+                <tbody id="UserAssist">
+                  {% if UserAssist %}
+                  {% for process in UserAssist %}
+                  <tr>
+                    <td>{{process.HiveOffset}}</td>
+                    <td>{{process.HiveName}}</td>
+                    <td>{{process.Path}}</td>
+                    <td>{{process.LastWriteTime}}</td>
+                    <td>{{process.Type}}</td>
+                    <td>{{process.Name}}</td>
+                    <td>{{process.ID}}</td>
+                    <td>{{process.Count}}</td>
+                    <td>{{process.FocusCount}}</td>
+                    <td>{{process.TimeFocused}}</td>
+                    <td>{{process.LastUpdated}}</td>
+                  </tr>
+                  {% endfor %}
+                  {% else %}
+                  <tr>
+                    <td>Nothing found.</td>
+                  </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form id="form1" action="{% url 'download_hive' %}" method="POST">
+  {% csrf_token %}
+  {{dl_hive_form.filename}}
+</form>

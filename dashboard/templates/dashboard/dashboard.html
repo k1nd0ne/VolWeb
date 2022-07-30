@@ -1,160 +1,129 @@
 {% extends "dashboard/base.html" %}
 {% load static %}
 {% block content%}
-  <div class="container-fluid" style="margin-top: 50px;">
-        <div class="row">
-            <div class="col-md-8">
-              <div id="chart" class="opacity-75" style="height:30rem;"></div>
-            </div>
-            <div class="col-md-4">
-                <div class="table-responsive">
-                    <table class="table table-light">
-                        <thead>
-                            <tr>
-                                <th>Forensics Analysts</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                          {% for u in Users %}
-                          <tr>
-                              <td>{{u.username}}</td>
-                          </tr>
-                          {% endfor %}
-                        </tbody>
-                    </table>
+<div class="container" style="background: rgba(255,255,255,0);color: var(--bs-primary-rgb);">
+    <div class="d-sm-flex justify-content-between align-items-center mb-4"></div>
+    <div class="row">
+        <div class="col-lg-12 col-xl-12">
+            <div class="card shadow mb-4" style="background: rgba(0,0,0,0.25);color: rgb(255,255,255);">
+                <div class="card-header d-flex justify-content-between align-items-center" style="background: rgba(0,0,0,0.25);">
+                    <h6 class="text-primary fw-bold m-0" style="color: rgb(232,232,232);">Investigations over time</h6>
+                    <!-- <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
+                        <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
+                            <p class="text-center dropdown-header">dropdown header:</p><a class="dropdown-item" href="#">&nbsp;Action</a><a class="dropdown-item" href="#">&nbsp;Another action</a>
+                            <div class="dropdown-divider"></div><a class="dropdown-item" href="#">&nbsp;Something else here</a>
+                        </div>
+                    </div> Can be usefull later-->
+                </div>
+                <div class="card-body">
+                  <div id="chart" class="opacity-75" style="height:30rem;"></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="container-fluid">
-        <div class="row">
-          <div class="col-1"></div>
-            <div class="col-2">
-                <div class="card bg-light border border-dark">
-                    <div class="card-body">
-                        <h4 class="card-title text-dark">Analysis</h4>
-                        <h6 class="fs-1 text-primary card-subtitle mb-2" id="memcount" countTomem="{{investigations}}"></h6><a class="card-link text-dark" href="{% url 'investigations' %}">View&gt;</a><a class=" text-dark card-link" href="{% url 'newinvest' %}">Create&gt;</a>
+    <div class="row">
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card shadow border-start-primary py-2" style="background: rgba(0,0,0,0.25);border-style: none;">
+                <div class="card-body" style="color: rgb(255,255,255);border-style: none;">
+                    <div class="row align-items-center no-gutters">
+                        <div class="col me-2">
+                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span>Investigations</span></div>
+                            <div class="text-white fw-bold h5 mb-0" id="memcount" countTomem="{{investigations}}" style="color: rgb(255,255,255);">
+                            </div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-briefcase fa-2x text-gray-600"></i></div>
                     </div>
                 </div>
             </div>
-            <div class="col-2">
-                <div class="card bg-light border border-dark">
-                    <div class="card-body">
-                        <h4 class="card-title text-dark">IOCs</h4>
-                        <h6 class="fs-1 text-danger card-subtitle mb-2" id="indcount" countToind="{{iocs}}"></h6><a class="text-dark card-link" href="{% url 'iocs' %}">View&gt;</a><a class="text-dark card-link" href="{% url 'newioc' %}">Create&gt;</a>
+        </div>
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card shadow border-start-success py-2" style="background: rgba(0,0,0,0.25);border-style: none;">
+                <div class="card-body">
+                    <div class="row align-items-center no-gutters">
+                        <div class="col me-2">
+                            <div class="text-uppercase text-success fw-bold text-xs mb-1"><span style="color: var(--bs-cyan);">Symbols</span></div>
+                            <div class="text-white fw-bold h5 mb-0" id="symcount" countToSym="{{symbols}}"></div>
+                        </div>
+                        <div class="col-auto"><i class="fab fa-connectdevelop fa-2x text-gray-600"></i></div>
                     </div>
                 </div>
             </div>
-            <div class="col-2">
-                <div class="card bg-light border border-dark">
-                    <div class="card-body">
-                        <h4 class="card-title text-dark">ISF</h4>
-                        <h6 class="fs-1 text-success card-subtitle mb-2" id="symcount" countToSym="{{symbols}}"></h6><a class="text-dark card-link" href="{% url 'symbols' %}">View&gt;</a><a class="text-dark card-link" href="{% url 'add_symbols' %}">Create&gt;</a>
+        </div>
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card shadow border-start-success py-2" style="background: rgba(0,0,0,0.25);border-style: none;">
+                <div class="card-body">
+                    <div class="row align-items-center no-gutters">
+                        <div class="col me-2">
+                            <div class="text-uppercase text-success fw-bold text-xs mb-1"><span style="color: var(--bs-purple);">String based IOCs</span></div>
+                            <div class="text-white fw-bold h5 mb-0" id="indcount" countToind="{{iocs}}"></div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-fingerprint fa-2x text-gray-600"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card shadow border-start-warning py-2" style="background: rgba(0,0,0,0.25);border-style: none;">
+                <div class="card-body">
+                    <div class="row align-items-center no-gutters">
+                        <div class="col me-2">
+                            <div class="text-uppercase text-warning fw-bold text-xs mb-1"><span>Investigation TEAM</span></div>
+                            <div class="text-dark fw-bold h5 mb-0"><span style="color: rgb(255,255,255);">18 people</span></div>
+                        </div>
+                        <div class="col-auto"><i class="fab fa-teamspeak fa-2x text-gray-600"></i></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
     <script src="{% static 'js/countup.min.js'%}"></script>
     <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js"></script>
     <script>
-    let lightSwitch = document.getElementById("lightSwitch");
-    // create data
-    var data = [];
-    var data_raw = JSON.parse("{{Activity|escapejs}}");
-    for (var i in data_raw){
-      data.push([data_raw[i]["pk"],data_raw[i]["fields"]["count"]]);
-    }
+      // create data
+      var data = [];
+      var data_raw = JSON.parse("{{Activity|escapejs}}");
+      for (var i in data_raw){
+        data.push([data_raw[i]["pk"],data_raw[i]["fields"]["count"]]);
+      }
 
-    // create a chart
-    chart = anychart.line();
-    // adjust chart settings
-     var title = chart.title();
-     // enable title
-     title.enabled(true);
-     // set title text
-     title.useHtml(true);
-    var title_x = chart.xAxis().title();
-    title_x.enabled(true);
-    title_x.useHtml(true);
-
-
-    var title_y = chart.yAxis().title();
-    title_y.enabled(true);
-    title_y.useHtml(true);
-
-
-    if (lightSwitch.checked) {
-      title.text(
-        "<a style=\"color:white; \">Analysis Activities</a>"
-      );
-      title_x.text(
-        "<a style=\"color:white; \">Date</a>"
-      );
-      title_y.text(
-        "<a style=\"color:white; \">Analysis</a>"
-      );
-      chart.background().fill("#212529");
-    }
-
-    else{
-      title.text(
-        "<a style=\"color:black; \">Analysis Activities</a>"
-      );
-      title_x.text(
-        "<a style=\"color:black; \">Date</a>"
-      );
-      title_y.text(
-        "<a style=\"color:black; \">Analysis</a>"
-      );
-      chart.background().fill("#f8f9fa");
-    }
-
-
-
-
-    // create a line series and set the data
-    var series = chart.spline(data);
-    series.stroke('3 #32d3bc 0.8');
-    // set the container id
-    chart.container("chart");
-    function change_graph(){
-      if (lightSwitch.checked) {
-        title.text(
-          "<a style=\"color:white; \">Analysis Activities</a>"
-        );
+      // create a chart
+      chart = anychart.line();
+      // adjust chart settings
+       var title = chart.title();
+       // disable title
+       title.enabled(false);
+       // set title text
+       title.useHtml(true);
+      var title_x = chart.xAxis().title();
+      title_x.enabled(true);
+      title_x.useHtml(true);
+      var title_y = chart.yAxis().title();
+      title_y.enabled(true);
+      title_y.useHtml(true);
         title_x.text(
           "<a style=\"color:white; \">Date</a>"
         );
         title_y.text(
           "<a style=\"color:white; \">Analysis</a>"
         );
-        chart.background().fill("#212529");
-      }
+        chart.background().fill("#00000040");
+      // create a line series and set the data
+      var series = chart.spline(data);
+      series.stroke('3 #32d3bc 0.8');
+      // set the container id
+      chart.container("chart");
+      // Get animation.
+      var animationSettings = chart.animation();
 
-      else{
-        title.text(
-          "<a style=\"color:black; \">Analysis Activities</a>"
-        );
-        title_x.text(
-          "<a style=\"color:black; \">Date</a>"
-        );
-        title_y.text(
-          "<a style=\"color:black; \">Analysis</a>"
-        );
-        chart.background().fill("#f8f9fa");
-      }
-    }
-
-    // initiate drawing the chart
-    chart.draw();
-      $(document).ready(function(){
-        change_graph();
-        lightSwitch.addEventListener("change", change_graph);
-        $('.container').show();
-        $('.container-fluid').show();
-        $('.spinner-main').hide();
-
-      });
+      animationSettings.duration(1000);
+      animationSettings.enabled(true);
+      // initiate drawing the chart
+      chart.draw();
+        $(document).ready(function(){
+          $('.container').show();
+          $('.container-fluid').show();
+          $('.spinner-main').hide();
+        });
     </script>
 {% endblock content %}

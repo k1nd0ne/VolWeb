@@ -1,0 +1,218 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block content%}
+<div class="container d-flex flex-wrap justify-content-center">
+      <div class="d-flex align-items-center mt-3 mb-3 mb-lg-0 me-lg-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-bezier2" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M1 2.5A1.5 1.5 0 0 1 2.5 1h1A1.5 1.5 0 0 1 5 2.5h4.134a1 1 0 1 1 0 1h-2.01c.18.18.34.381.484.605.638.992.892 2.354.892 3.895 0 1.993.257 3.092.713 3.7.356.476.895.721 1.787.784A1.5 1.5 0 0 1 12.5 11h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5H6.866a1 1 0 1 1 0-1h1.711a2.839 2.839 0 0 1-.165-.2C7.743 11.407 7.5 10.007 7.5 8c0-1.46-.246-2.597-.733-3.355-.39-.605-.952-1-1.767-1.112A1.5 1.5 0 0 1 3.5 5h-1A1.5 1.5 0 0 1 1 3.5v-1zM2.5 2a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm10 10a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z"/>
+        </svg>
+        <code>Symbols (ISF)</code>
+      </div>
+      <div class="col-12 col-lg-auto mt-3 mb-3 mb-lg-0">
+          <a href="{% url 'add_symbols' %}" type="button" class="btn border-sm border-light btn-dark btn-sm">+ Add new symbols</a>
+      </div>
+      <div class="col-12 mt-3 mb-3 mb-lg-0" role="search">
+        <input type="search" id="searchSymb" class="form-control" placeholder="Search for symbols tables" aria-label="Search">
+      </div>
+</div>
+<div class="container mt-4">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <table class="table table-light">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Operating system</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="symbolsTable">
+                {% if symbols %}
+                {% for s in symbols %}
+                <tr>
+                  <td>{{s.name}}</td>
+                  <td>{{s.description}}</td>
+                  <td>{{s.os}}</td>
+                  <td>
+                    <a class="btn border border-light btn-success btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#BindModal" onclick="$('#id_bind_symbols').val({{s.id}});">Bind</a>
+                    <a class="btn border border-light btn-warning btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#UnbindModal" onclick="$('#id_unbind_symbols').val({{s.id}});">Unbind</a>
+                    <form style="all: unset;" id="reviewform" action="{% url 'custom_symbols' s.id %}" method="GET">
+                      <input class="btn border border-light btn-dark btn-sm" type="submit" value="Edit">
+                    </form>
+                    <a class="btn border border-light btn-danger btn-sm" role="button" onclick="DeleteSymbols({{s.id}})">Delete</a>
+
+                  </td>
+                  </tr>
+                  {% endfor %}
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+</div>
+<form action="" method="POST">
+  {% csrf_token %}
+</form>
+<div class="modal fade" id="BindModal" tabindex="-1" aria-labelledby="downloadDump" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-light ">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title">Select the investigation to bind</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <div class="modal-body">
+          <div class="form-group">
+            {{bind_form.bind_investigation}}
+            {{bind_form.bind_symbols}}
+          </div>
+          <div id="alert-box" class="text-danger"></div>
+        </div>
+        <div class="modal-footer bg-light">
+          <input class="btn btn-dark border-light" type="submit" onclick="Bind()" value="Bind">
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="UnbindModal" tabindex="-1" aria-labelledby="downloadDump" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-light ">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title">Select the investigation to unbind</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <div class="modal-body">
+          <div class="form-group">
+            {{unbind_form.unbind_investigation}}
+            {{unbind_form.unbind_symbols}}
+          </div>
+          <div id="alert-box" class="text-danger"></div>
+        </div>
+        <div class="modal-footer bg-light">
+          <input class="btn btn-dark border-light" type="submit" onclick="Unbind()" value="Unbind">
+        </div>
+    </div>
+  </div>
+</div>
+{% include "investigations/toasts.html" %}
+
+  <script>
+    $(document).ready(function(){
+      $('.container').show();
+      $('.container-fluid').show();
+      $('.spinner-main').hide();
+      //Symbols search bar
+      $("#searchSymb").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#symbolsTable tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+
+    function Bind(){
+      const symbols_id = $('#id_bind_symbols').val()
+      var selected_case = $('#id_bind_investigation option:selected').val()
+      if(selected_case){
+        $('#alert-box').html("");
+        $('#BindModal').modal('hide')
+        const csrf = document.getElementsByName('csrfmiddlewaretoken');
+        const fd = new FormData();
+        fd.append('csrfmiddlewaretoken', csrf[0].value);
+        fd.append('bind_symbols', symbols_id);
+        fd.append('bind_investigation', selected_case);
+        $.ajax({
+          type:'POST',
+          url: "{% url 'bind_symbols' %}",
+          enctype: 'multipart/form-data',
+          data: fd,
+          beforeSend: function(){
+          },
+          success: function(response){
+            if (response['message'] == "success"){
+              $('#proc-success-message').html("Your ISF is now linked to '" + $('#id_bind_investigation option:selected').text()) + "'";
+              $('.toast-proc-success').toast('show');
+            }
+          },
+          error: function(error){
+            $('#proc-failed-message').html("Something went wrong ! ");
+            $('.toast-proc-failed').toast('show');
+          },
+          cache: false,
+          contentType : false,
+          processData: false
+        });
+      }
+      else{
+        $('#alert-box').html("Please select an investigation");
+      }
+    }
+
+    function Unbind(){
+      const symbols_id = $('#id_unbind_symbols').val()
+      var selected_case = $('#id_unbind_investigation option:selected').val()
+      if(selected_case){
+        $('#alert-box').html("");
+        $('#UnbindModal').modal('hide')
+        const csrf = document.getElementsByName('csrfmiddlewaretoken');
+        const fd = new FormData();
+        fd.append('csrfmiddlewaretoken', csrf[0].value);
+        fd.append('unbind_symbols', symbols_id);
+        fd.append('unbind_investigation', selected_case);
+        $.ajax({
+          type:'POST',
+          url: "{% url 'unbind_symbols' %}",
+          enctype: 'multipart/form-data',
+          data: fd,
+          beforeSend: function(){
+          },
+          success: function(response){
+            if (response['message'] == "success"){
+              $('#proc-success-message').html("Your ISF is now unlinked from '" + $('#id_unbind_investigation option:selected').text() + "'");
+              $('.toast-proc-success').toast('show');
+            }
+          },
+          error: function(error){
+            $('#proc-failed-message').html("Something went wrong ! ");
+            $('.toast-proc-failed').toast('show');
+          },
+          cache: false,
+          contentType : false,
+          processData: false
+        });
+      }
+      else{
+        $('#alert-box').html("Please select an investigation");
+      }
+    }
+
+    //Ask for symbols deletion
+    function DeleteSymbols(id){
+      const csrf = document.getElementsByName('csrfmiddlewaretoken');
+      const fd = new FormData();
+      fd.append('csrfmiddlewaretoken', csrf[0].value);
+      fd.append('symbols', id);
+      $.ajax({
+        type:'POST',
+        url: "{% url 'delete_symbols' %}",
+        enctype: 'multipart/form-data',
+        data: fd,
+        beforeSend: function(){
+        },
+        success: function(response){
+          location.reload();
+        },
+        error: function(error){
+
+        },
+        cache: false,
+        contentType : false,
+        processData: false
+      });
+    }
+
+  </script>
+  {% endblock content %}
