@@ -1,0 +1,38 @@
+<!---
+Filename : envars.html
+Analysis type : Windows
+Description :
+Included in the "reviewinvest.html", this file represent the "Environment variables" tab.
+--->
+<div class="tab-pane fade" role="tabpanel" id="tab-5">
+  <div class="col mt-2 align-items-center no-gutters d-flex justify-content-between">
+    <input type="search" id="searchEnv" class="search-bar form-control" placeholder="Look for something" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
+  </div>
+  <div class="table-responsive text-break fw-lighter">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th scope="col">Block</th>
+          <th scope="col">PID</th>
+          <th scope="col">Process</th>
+          <th scope="col">Variable</th>
+          <th scope="col">Value</th>
+        </tr>
+      </thead>
+      <tbody id="processEnv">
+        {% for process in Envars %}
+        <tr  class="pid pid_{{process.PID}} d-none">
+          <td>{{process.Block}}</td>
+          <td>{{process.PID}}</td>
+          <td>{{process.Process}}</td>
+          <td>{{process.Variable}}</td>
+          <td class="w-50">{{process.Value}}</td>
+        </tr>
+        {% endfor %}
+        <tr class="default-td d-none">
+          <td >Nothing was found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

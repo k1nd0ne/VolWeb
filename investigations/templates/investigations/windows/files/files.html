@@ -1,3 +1,10 @@
+<!---
+Filename : files.html
+Analysis type : Windows
+Description :
+  Included in the "reviewinvest.html", this file represent the "Files" tab.
+  The user can try to dump a file. If successfull, a zipfile containing the dumped file(s) is downloaded
+--->
 <div class="tab-pane fade" role="tabpanel" id="tab-16">
   <div class="row">
     <div class="col">
@@ -15,13 +22,20 @@
             </tr>
           </thead>
           <tbody id="FileScanTab">
+            <!--- We Display all the files --->
             {% if FileScan %}
             {% for files in FileScan %}
               <tr>
                 <td class="w-25" >{{files.Offset }}</td>
                 <td class="w-50 text-break">{{files.Name}}</td>
                 <td>{{files.Size}}</td>
-                <td class="text-center"><button class="btn btn-primary btn-sm" type="button">Try dump</button></td>
+                <td class="text-center">
+                  <!-- This is where the different states for a file dump are represented -->
+                  <button class="btn btn-primary btn-sm fdump-try-{{files.Offset}}" onclick="DemandFileDump('{{files.Offset}}','{{case.id}}')" type="button">Try dump</button>
+                  <button class="btn btn-info btn-sm d-none fdump-load-{{files.Offset}}" type="button"><span class="spinner-border spinner-border-sm" role="status"></span></button>
+                  <button onclick="DownloadFile('{{files.Offset}}')" class="btn btn-success btn-sm d-none fdump-ok-{{files.Offset}}" type="button">Download</button>
+                  <button class="btn-danger d-none btn-sm fdump-ko-{{files.Offset}}" type="button" disabled="disabled">X</button>
+                </td>
               </tr>
               {% endfor %}
               {% else %}
@@ -35,7 +49,84 @@
     </div>
   </div>
 </div>
+<script>
 
+  function DownloadFile(file_id){
+    /*
+    Description:
+      We have a file_id (FileDump model) we request to download the associated zipfile
+      Triggered by "DemandFileDump"
+    */
+    $('#action-form').attr('action', '{% url 'download_file' %}');
+    $("#action-form").append("<input class='d-none' name='id' value="+file_id+">");
+    $("#action-form").submit();
+  }
 
-<button class="btn btn-info btn-sm" type="button">Running&nbsp;<span class="spinner-border spinner-border-sm" role="status"></span></button>
-<button class="btn btn-success btn-sm" type="button">Download</button>
+  function DemandFileDump(offset, case_id){
+    /*
+    Description:
+      The user clicked on the "Download" button
+      We ask celery to try to dump the file via a task.
+      If the output is a success, then a "Dumpfile" model was created and the associated id is returned.
+      The "DownloadFile" function is then triggered to download the associated zipfile.
+      Else, the appropriate error message is displayed. Which means that volatility3 couln't dump the file
+      or that the input was inappropriate.
+    */
+    const csrf = document.getElementsByName('csrfmiddlewaretoken');
+    const fd = new FormData();
+    fd.append('csrfmiddlewaretoken', csrf[0].value);
+    fd.append('case_id', case_id);
+    fd.append('offset', offset);
+    $.ajax({
+      type:'POST',
+      url: "{% url 'dump_file' %}",
+      enctype: 'multipart/form-data',
+      data: fd,
+      beforeSend: function(){
+        $('.fdump-try-'+offset).addClass("d-none");
+        $('.fdump-load-'+offset).removeClass("d-none");
+        $('#proc-message-info').html("Trying to dump your file...");
+        $('.toast-proc-info').toast('show');
+      },
+      success: function(response){
+        if (response['message'] == "success") {
+          $('#proc-success-message').html("Your file was successfully dumped");
+          $('.toast-proc-success').toast('show');
+          $('.fdump-load-'+offset).addClass("d-none");
+          $('.fdump-ok-'+offset).removeClass("d-none");
+          file_id = response['id']
+          DownloadFile(file_id)
+        }
+
+        if (response['message'] == "error")
+        {
+          $('#proc-error-message').html("The offset provided is not valid");
+          $('.toast-proc-error').toast('show');
+        }
+
+        if (response['message'] == "failed"){
+          $('.fdump-load-'+offset).addClass("d-none");
+          $('.fdump-ko-'+offset).removeClass("d-none");
+          $('#proc-failed-message').html("The requested file could not be dumped");
+          $('.toast-proc-failed').toast('show');
+        }
+
+        if (response['message'] == "exist"){
+          $('#proc-success-message').html("Your file was successfully dumped");
+          $('.toast-proc-success').toast('show');
+          $('.fdump-load-'+offset).addClass("d-none");
+          $('.fdump-ok-'+offset).removeClass("d-none");
+          dump_id = response['id']
+          DownloadFile(dump_id)
+        }
+      },
+      error: function(error){
+        $('#proc-failed-message').html("Could not dump the file requested.");
+        $('.toast-proc-failed').toast('show');
+      },
+      cache: false,
+      contentType : false,
+      processData: false
+    });
+  }
+</script>

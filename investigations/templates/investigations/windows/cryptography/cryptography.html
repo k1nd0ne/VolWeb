@@ -1,6 +1,16 @@
+<!---
+Filename : cryptography.html
+Analysis type : Windows
+Description : Included in the "reviewinvest.html", this file represent the "Cryptography" tab.
+--->
+
+
 <div class="tab-pane fade" role="tabpanel" id="tab-3">
   <div class="row">
+
+    <!-- Begining of left Column (Cards) -->
     <div class="col-6">
+        <!--- Represent the Hashdump cards -->
       {% if Hashdump %}
       {% for elem in Hashdump %}
       <div class="card shadow border-start-primary py-2 mt-2" style="background: rgba(0,0,0,0.25);border-style: none;">
@@ -35,6 +45,7 @@
       </div>
       {% endif %}
 
+      <!--- Represent the CacheDump cards -->
       {% if Cachedump %}
       {% for elem in Cachedump %}
       <div class="card shadow border-start-primary py-2 mt-2" style="background: rgba(0,0,0,0.25);border-style: none;">
@@ -69,6 +80,8 @@
       {% endif %}
     </div>
 
+
+    <!-- Begining of rigth Column (LSADUMP + SkeletonKeyCheck) -->
     <div class="col-6">
       <div class="card py-2 mt-2" style="background: rgba(0,0,0,0.25);border-style: none;">
         <div class="card-body">

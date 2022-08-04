@@ -2,61 +2,56 @@
 {% load static %}
 {% block content%}
 <div class="container">
-  <div class="row">
-    <div class="col-md-6"><code class="d-lg-flex justify-content-lg-start align-items-lg-center"><img class="d-lg-flex justify-content-lg-start" src="{% static '/img/hand.png' %}" style="width: 50px;height: 50px;">&nbsp;Indicators of Compromise</code></div>
-    <div class="col d-lg-flex justify-content-lg-end align-items-lg-center">
-      <a class="d-lg-flex" href="{% url 'newioc' %}">
-          <i class="icon ion-ios-plus-empty d-xxl-flex text-dark" style="font-size: 50px;"></i>
-      </a>
+  <div class="row" style="margin-bottom: 20px;">
+    <div class="col align-items-center no-gutters d-flex justify-content-between" style="margin-top: 10px;">
+      <h4 style="color: var(--bs-white);"><i class="fas fa-fingerprint"></i>&nbsp;String based IOCs</h4><a href="{% url 'newioc' %}" class="btn btn-primary btn-sm" type="button">+ Add new IOC</a>
     </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col align-items-center no-gutters d-flex justify-content-between"><input type="search" id="searchbar" class="search-bar form-control" placeholder="Search IOC" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);"></div>
+  </div>
+  <div class="row mb-3">
+    <div class="col align-items-center no-gutters d-flex justify-content-between">
+      <div class="col-2" style="color: var(--bs-body-bg);background: var(--bs-gray-900);"><span class="invest-header">&nbsp;Name</span></div>
+      <div class="col-2" style="color: var(--bs-body-bg);background: var(--bs-gray-900);"><span class="invest-header">&nbsp;Context</span></div>
+      <div class="col-4" style="color: var(--bs-body-bg);background: var(--bs-gray-900);"><span class="invest-header">&nbsp;Value</span></div>
+      <div class="col-2" style="color: var(--bs-body-bg);background: var(--bs-gray-900);"><span class="invest-header">Linked Investigation</span></div>
+      <div class="col-2" style="color: var(--bs-body-bg);background: var(--bs-gray-900);"><span class="invest-header">Actions</span></div>
+    </div>
+  </div>
+  {% if iocs %}
+  {% for ioc in iocs %}
+  <div class="row" data-role="iocs">
+    <div class="col-12 align-items-center no-gutters d-flex justify-content-between"><a class="col-12 align-items-center no-gutters d-flex justify-content-between invest-cell border-bottom open-menu" href="#" style="padding-top: 10px;padding-bottom: 10px;">
+      <div class="col-2 align-items-center d-flex" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header">{{ioc.name}}</span></div>
+      <div class="col-2 align-items-center d-flex" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header">{{ioc.context}}</span></div>
+      <div class="col-4 align-items-center d-flex" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header">{{ioc.value}}</span></div>
+      <div class="col-2" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header" style="color: var(--bs-gray-500);">{{ioc.linkedInvestigation.title}}</span></div>
+      <div class="col-2 align-items-center d-flex" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);">
+        <form style="all: unset;" id="reviewform" action="{% url 'customioc' ioc.id %}" method="GET">
+          <input class="btn border border-light btn-dark btn-sm" type="submit" style="margin-right: 10px;" value="Edit">
+        </form>
+        <button class="btn border border-light btn-danger btn-sm" role="button" onclick="DeleteIOC({{ioc.id}})">Delete</button>
+      </div>
+    </a>
+
   </div>
 </div>
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <div class="table-responsive">
-        <table class="table table-light">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Value</th>
-              <th>Context</th>
-              <th>Linked Investigations</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% if iocs %}
-            {% for ioc in iocs %}
-            <tr>
-              <td>{{ioc.name}}</td>
-              <td>{{ioc.value}}</td>
-              <td>{{ioc.context}}</td>
-              <td>{{ioc.linkedInvestigation.title}}</td>
-              <td>
-                <form style="all: unset;" id="reviewform" action="{% url 'customioc' ioc.id %}" method="GET">
-                  <input class="btn border border-light btn-dark btn-sm" type="submit" style="margin-right: 10px;" value="Edit">
-                </form>
-                <a class="btn border border-light btn-danger btn-sm" role="button" onclick="DeleteIOC({{ioc.id}})">Delete</a>
-              </tr>
-              {% endfor %}
-              {% endif %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+{% endfor %}
+{% endif %}
+
+</div>
+
   <form action="" method="POST">
     {% csrf_token %}
   </form>
   <script>
-    $(document).ready(function(){
-      $('.container').show();
-      $('.container-fluid').show();
-      $('.spinner-main').hide();
+    $("#searchbar").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $('div[data-role="iocs"]').filter(function() {
+        $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
+      });
     });
-
     //Ask for IOC deletion
     function DeleteIOC(id){
       const csrf = document.getElementsByName('csrfmiddlewaretoken');
@@ -81,6 +76,7 @@
         processData: false
       });
     }
+
 
   </script>
   {% endblock content %}

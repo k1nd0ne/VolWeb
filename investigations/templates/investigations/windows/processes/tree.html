@@ -1,5 +1,11 @@
-<!-- Investigation process_graph artifacts -->
-<div class="mt-5 text-white card-font plugin PsTree">
+<!---
+Filename : tree.html
+Analysis type : Windows
+Description :
+Included in the "reviewinvest.html", this file represent the "Tree" tab.
+It is using anychart to display an enhanced visualisation of the PsTree volatility3 plugin.
+--->
+<div class="tab-pane fade" role="tabpanel" id="tab-19">
   <div style="height:80rem;" class="text-white" id="container"></div>
   <script>
       // create data
@@ -14,13 +20,10 @@
       // set the container id
       treechart.container("container");
       // initiate drawing the chart
-
-      if (lightSwitch.checked) {
-        treechart.background().fill("#212529");
-      }
-      else{
-        treechart.background().fill("#f8f9fa");
-      }
+      treechart.background().fill("#081327");
+      var animationSettings = treechart.animation();
+      animationSettings.duration(2000);
+      animationSettings.enabled(true);
 
       treechart.tooltip().format("{%name}\n\n \
       pid: {%PID}\n \
@@ -29,20 +32,6 @@
       Threads : {%Threads}");
       treechart.draw();
 
-      function change_treegraph(){
-        if (lightSwitch.checked) {
-          treechart.background().fill("#212529");
-        }
-
-        else{
-          treechart.background().fill("#f8f9fa");
-        }
-      }
-
-      $(document).ready(function(){
-        change_treegraph();
-        lightSwitch.addEventListener("change", change_treegraph);
-      });
 
   </script>
 </div>

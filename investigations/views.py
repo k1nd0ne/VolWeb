@@ -1,13 +1,14 @@
 from .tasks import start_memory_analysis, dump_memory_pid, app, dump_memory_file
-from django.http import StreamingHttpResponse, FileResponse, JsonResponse
+from django.http import HttpResponse, FileResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.core.serializers import serialize
 from celery.result import AsyncResult
 from django.contrib import messages
-import json, os, uuid
+import json, os, uuid, subprocess, mimetypes
+from zipfile import ZipFile
 from iocs.models import IOC
 from os.path import exists
 from investigations.models import *
@@ -15,7 +16,6 @@ import windows_engine.models as windows_engine
 import linux_engine.models as linux_engine
 from symbols.models import Symbols
 from investigations.forms import *
-import subprocess
 
 @login_required
 def investigations(request):
@@ -145,21 +145,6 @@ def get_invest(request):
         else:
             return JsonResponse({'message': "error"})
 
-
-@login_required
-def get_status(request):
-    """Update analysis status
-
-        Arguments:
-        request : http request object
-
-        Comment:
-        When an analysis is in progress, the percentage and status are updated in the progress bar.
-        """
-    if request.method == 'GET':
-        invest = serialize("json", UploadInvestigation.objects.all(), fields=('status','percentage'))
-        return JsonResponse({'message': "success","response":invest})
-
 @login_required
 def start_analysis(request):
     """Start the analysis
@@ -224,7 +209,7 @@ def cancel_analysis(request):
             case = form.cleaned_data['sa_case_id']
             case.status = "0"
             task_id = case.taskid
-            app.control.terminate(task_id)
+            app.control.revoke(task_id, terminate=True,signal='SIGKILL')
             case.save()
             return JsonResponse({'message': "success"})
         else:
@@ -302,9 +287,7 @@ def reviewinvest(request):
                 context.update(models)
             return render(request, 'investigations/reviewinvest.html',context)
         else:
-            print(form.errors)
             form = ManageInvestigation()
-
             return render(request,'investigations/investigations.html',{'investigations': UploadInvestigation.objects.all(), 'form': form})
 
 @login_required
@@ -325,7 +308,8 @@ def dump_process(request):
             case_id = form.cleaned_data['case_id']
             pid = form.cleaned_data['pid']
             if len(ProcessDump.objects.filter(pid = pid, case_id = case_id)) > 0:
-                return JsonResponse({'message': "exist"})
+                file_path = ProcessDump.objects.get(case_id=case_id, pid=pid)
+                return JsonResponse({'message': "exist", 'id': file_path.process_dump_id})
             task_res = dump_memory_pid.delay(str(case_id.id),str(pid))
             file_path = task_res.get()
             if file_path != "ERROR":
@@ -333,8 +317,8 @@ def dump_process(request):
                 Dump = form.save()
                 Dump.filename = file_path
                 Dump.save()
-                dumps = serialize("json",ProcessDump.objects.filter(process_dump_id = Dump.process_dump_id), fields=('pid','filename'))
-                return JsonResponse({'message': "success",'dumps': dumps })
+                dump_id = Dump.process_dump_id
+                return JsonResponse({'message': "success",'id': dump_id })
             else:
                 return JsonResponse({'message': "failed"})
         else:
@@ -359,16 +343,30 @@ def dump_file(request):
             case_id = form.cleaned_data['case_id']
             offset = form.cleaned_data['offset']
             if len(FileDump.objects.filter(offset = offset, case_id = case_id)) > 0:
-                return JsonResponse({'message': "exist"})
+                file = FileDump.objects.get(case_id=case_id, offset=offset)
+                return JsonResponse({'message': "exist", 'id': file.file_dump_id})
             task_res = dump_memory_file.delay(str(case_id.id),offset)
-            file_path = task_res.get()
-            if file_path != "ERROR":
+            files = task_res.get()
+            if files == "ERROR":
+                return JsonResponse({'message': "failed"})
+
+            to_zip = []
+            for file in files:
+                if file['Result'] != "Error dumping file":
+                    to_zip.append(file['Result'])
+            if to_zip:
+                #Creating our zip file
+                zip_file_name = str(uuid.uuid4())+".zip"
+                path = 'Cases/Results/file_dump_'+str(case_id.id)+"/"
+                with ZipFile(path+zip_file_name,'w') as zip:
+                    for file in to_zip:
+                        zip.write(path+file)
                 #create ProcessDump model :
                 Dump = form.save()
-                Dump.filename = file_path
+                Dump.filename = zip_file_name
                 Dump.save()
-                files = serialize("json",FileDump.objects.filter(file_dump_id = Dump.file_dump_id), fields=('offset','filename'))
-                return JsonResponse({'message': "success",'files': files })
+                file_id = Dump.file_dump_id
+                return JsonResponse({'message': "success",'id': file_id})
             else:
                 return JsonResponse({'message': "failed"})
         else:
@@ -389,22 +387,19 @@ def download_hive(request):
         form = DownloadHive(request.POST)
         if form.is_valid():
             file_path = form.cleaned_data['filename']
-            try:
-                #Checking the extension (need to audit the application to see if R/LFI  or data exfiltration is possible )
-                ext = os.path.basename(file_path).split('.')[-1].lower()
-                if ext in ['hive']:
-                    response = FileResponse(open('Cases/files/'+file_path, 'rb'))
-                    response['content_type'] = "application/octet-stream"
-                    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
-                    response['filename'] = file_path
-                    return response
-                else:
-                    messages.add_message(request,messages.ERROR,'You can not download such file.')
-            except:
-                messages.add_message(request,messages.ERROR,'Failed to fetch the requested process')
-
+            ext = os.path.basename(file_path).split('.')[-1].lower()
+            if ext in ['hive']:
+                filename = file_path
+                file_path = "Cases/files/"+file_path
+                path = open(file_path, 'rb')
+                mime_type, _ = mimetypes.guess_type(file_path)
+                response = HttpResponse(path, content_type=mime_type)
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+            else:
+                return reviewinvest(request)
         else:
-            return JsonResponse({'message': "error"})
+            return reviewinvest(request)
 
 @login_required
 def download_dump(request):
@@ -424,22 +419,20 @@ def download_dump(request):
             Dump = ProcessDump.objects.get(process_dump_id = dump_id)
             file_path = Dump.filename
             case_path = 'Cases/Results/process_dump_'+str(Dump.case_id.id)
-            try:
-                #Checking the extension (need to audit the application to see if R/LFI  or data exfiltration is possible )
-                ext = os.path.basename(file_path).split('.')[-1].lower()
-                if ext not in ['py', 'db',  'sqlite3']:
-                    response = FileResponse(open(case_path+'/'+file_path, 'rb'))
-                    response['content_type'] = "application/octet-stream"
-                    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
-                    response['filename'] = file_path
-                    return response
-                else:
-                    messages.add_message(request,messages.ERROR,'You can not download such file.')
-            except:
-                messages.add_message(request,messages.ERROR,'Failed to fetch the requested process')
-
+            ext = os.path.basename(file_path).split('.')[-1].lower()
+            if ext in ['dmp']:
+                filename = file_path
+                file_path = case_path+"/"+file_path
+                path = open(file_path, 'rb')
+                mime_type, _ = mimetypes.guess_type(file_path)
+                response = HttpResponse(path, content_type=mime_type)
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+            else:
+                messages.add_message(request,messages.ERROR,'You can not download such file.')
         else:
-            return JsonResponse({'message': "error"})
+            print(request.POST)
+            return None
 
 @login_required
 def download_file(request):
@@ -453,24 +446,22 @@ def download_file(request):
         Get the file and return it.
         """
     if request.method == 'POST':
-        form = DownloadDump(request.POST)
+        form = DownloadFile(request.POST)
         if form.is_valid():
             file_id = form.cleaned_data['id']
             Dump = FileDump.objects.get(file_dump_id = file_id)
             file_path = Dump.filename
+            print(file_path)
             case_path = 'Cases/Results/file_dump_'+str(Dump.case_id.id)
-            try:
-                #Checking the extension (need to audit the application to see if R/LFI is possible)
-                ext = os.path.basename(file_path).split('.')[-1].lower()
-                if ext not in ['py', 'db',  'sqlite3']:
-                    response = FileResponse(open(case_path+"/"+file_path, 'rb'))
-                    response['content_type'] = "application/octet-stream"
-                    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
-                    return response
-                else:
-                    messages.add_message(request,messages.ERROR,'You can not download such file.')
-            except:
-                messages.add_message(request,messages.ERROR,'Failed to fetch the requested file')
-
+            ext = os.path.basename(file_path).split('.')[-1].lower()
+            if ext in ['zip']:
+                filename = file_path
+                file_path = case_path+"/"+file_path
+                path = open(file_path, 'rb')
+                mime_type, _ = mimetypes.guess_type(file_path)
+                response = HttpResponse(path, content_type=mime_type)
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
         else:
-            return JsonResponse({'message': "error"})
+            print(request.POST)
+            return None

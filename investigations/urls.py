@@ -6,7 +6,6 @@ urlpatterns = [
     path('reviewinvest/',views.reviewinvest, name='reviewinvest'),
     path('start_analysis/',views.start_analysis, name='start_analysis'),
     path('get_invest/',views.get_invest, name='get_invest'),
-    path('get_status/',views.get_status, name='get_status'),
     path('remove_analysis/',views.remove_analysis, name='remove_analysis'),
     path('cancel_analysis/',views.cancel_analysis, name='cancel_analysis'),
     path('dump_process/',views.dump_process, name='dump_process'),

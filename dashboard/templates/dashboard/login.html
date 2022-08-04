@@ -16,7 +16,7 @@
     <section class="login-clean">
         <form method="post">
             {% csrf_token %}
-            <div class="illustration"><img src="{% static '/img/volweblogo.png' %}" style="width: 150px;"></div>
+            <div class="illustration"><img src="{% static '/img/volweb.svg' %}" style="width: 150px;"></div>
             {{ form|crispy }}
             <div class="mb-3"><button class="btn btn-primary d-block w-100" type="submit">Log In</button></div><span style="text-align: center;font-size: 12px;">Please refer to your administrator to obtain an account</span>
         </form>

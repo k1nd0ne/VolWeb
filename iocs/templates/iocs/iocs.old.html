@@ -1,0 +1,86 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block content%}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6"><code class="d-lg-flex justify-content-lg-start align-items-lg-center"><img class="d-lg-flex justify-content-lg-start" src="{% static '/img/hand.png' %}" style="width: 50px;height: 50px;">&nbsp;Indicators of Compromise</code></div>
+    <div class="col d-lg-flex justify-content-lg-end align-items-lg-center">
+      <a class="d-lg-flex" href="{% url 'newioc' %}">
+          <i class="icon ion-ios-plus-empty d-xxl-flex text-dark" style="font-size: 50px;"></i>
+      </a>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="table-responsive">
+        <table class="table table-light">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Value</th>
+              <th>Context</th>
+              <th>Linked Investigations</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if iocs %}
+            {% for ioc in iocs %}
+            <tr>
+              <td>{{ioc.name}}</td>
+              <td>{{ioc.value}}</td>
+              <td>{{ioc.context}}</td>
+              <td>{{ioc.linkedInvestigation.title}}</td>
+              <td>
+                <form style="all: unset;" id="reviewform" action="{% url 'customioc' ioc.id %}" method="GET">
+                  <input class="btn border border-light btn-dark btn-sm" type="submit" style="margin-right: 10px;" value="Edit">
+                </form>
+                <a class="btn border border-light btn-danger btn-sm" role="button" onclick="DeleteIOC({{ioc.id}})">Delete</a>
+              </tr>
+              {% endfor %}
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form action="" method="POST">
+    {% csrf_token %}
+  </form>
+  <script>
+    $(document).ready(function(){
+      $('.container').show();
+      $('.container-fluid').show();
+      $('.spinner-main').hide();
+    });
+
+    //Ask for IOC deletion
+    function DeleteIOC(id){
+      const csrf = document.getElementsByName('csrfmiddlewaretoken');
+      const fd = new FormData();
+      fd.append('csrfmiddlewaretoken', csrf[0].value);
+      fd.append('ioc_id', id);
+      $.ajax({
+        type:'POST',
+        url: "{% url 'deleteioc' %}",
+        enctype: 'multipart/form-data',
+        data: fd,
+        beforeSend: function(){
+        },
+        success: function(response){
+          location.reload();
+        },
+        error: function(error){
+
+        },
+        cache: false,
+        contentType : false,
+        processData: false
+      });
+    }
+
+  </script>
+  {% endblock content %}

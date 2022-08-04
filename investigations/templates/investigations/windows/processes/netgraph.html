@@ -1,5 +1,12 @@
-<!-- Investigation network_scan artifacts -->
-<div class="collapse mt-5 plugin NetGraph">
+<!---
+Filename : netgraph.html
+Analysis type : Windows
+Description :
+Included in the "reviewinvest.html", this file represent the "NetGraph" tab.
+Using anychart, we display the combined results of netstat and netscan.
+--->
+
+<div class="tab-pane fade" role="tabpanel" id="tab-20">
   <div id="net_graph" style="height:50rem;"></div>
   <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-ui.min.js"></script>
   <link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/css/anychart-ui.min.css?hcode=a0c21fc77e1449cc86299c5faa067dc4"/>
@@ -7,7 +14,6 @@
   <script>
       // create data
       let lightSwitch = document.getElementById("lightSwitch");
-      try{
         var data = JSON.parse("{{NetGraph.graph|escapejs}}");
         // create a data tree
         // create a chart and set the data
@@ -16,49 +22,28 @@
         netchart.nodes().labels().format("{%id} ({%Owner(s)})");
         netchart.nodes().labels().fontSize(12);
         netchart.nodes().labels().fontWeight(600);
-        // set the chart title
-        netchart.title("Network Communications");
+
         // configure tooltips of nodes
         netchart.nodes().tooltip().useHtml(true);
         netchart.nodes().tooltip().format(
         "<span style='font-weight:bold'>Involved PIDs : {%Involved_PIDs}</span><br><spanstyle='font-weight:bold'>Owner : {%Owner(s)}</span><br><span style='font-weight:bold'>Local Ports: {%Local_Ports}</span>"
         );
-        // set the container id
+        netchart.background().fill("#081327");
+        var animationSettings = netchart.animation();
+        animationSettings.duration(1000);
+        animationSettings.enabled(true);
         netchart.container("net_graph");
+
         netchart.interactivity().scrollOnMouseWheel(false);
         netchart.interactivity().zoomOnMouseWheel(false);
         // add a zoom control panel
         var zoomController = anychart.ui.zoom();
         zoomController.target(netchart);
         zoomController.render();
-        if (lightSwitch.checked) {
-          netchart.background().fill("#212529");
-          netchart.nodes().labels().fontColor("#f8f9fa");
-        }
-        else{
-          netchart.background().fill("#f8f9fa");
-          netchart.nodes().labels().fontColor("#212529");
-        }
+
         // initiate drawing the chart
         netchart.draw();
-      }
-      catch(error){
-        console.log("Could not load network graph");
-      }
-      function change_netgraph(){
-        if (lightSwitch.checked) {
-          netchart.background().fill("#212529");
-          netchart.nodes().labels().fontColor("#f8f9fa");
-        }
 
-        else{
-          netchart.background().fill("#f8f9fa");
-          netchart.nodes().labels().fontColor("#212529");
-        }
-      }
-      $(document).ready(function(){
-        change_netgraph();
-        lightSwitch.addEventListener("change", change_netgraph);
-      });
+
   </script>
 </div>

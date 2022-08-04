@@ -55,6 +55,8 @@
   display: none;
 }
 
+
+
 .text-primary {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-primary-rgb), var(--bs-text-opacity)) !important;
@@ -193,6 +195,16 @@ thead, tbody {
   height: 50px;
   stroke: #fff;
 }
+
+.spinner-review {
+  z-index: 2;
+  position: absolute;
+  top: 30%;
+  left: 60%;
+  margin: -25px 0 0 -25px;
+}
+
+
 .open-menu {
   padding-top: 10px;
   padding-bottom: 10px;
@@ -218,8 +230,8 @@ thead, tbody {
     background-color: var(--bs-primary);
 }
 
-.toast-proc-faild{
-    background-color: var(--bs-danger-rgb);
+.toast-proc-failed{
+    background-color: var(--bs-danger);
 }
 
 .tab-pane.fade {

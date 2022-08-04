@@ -2,7 +2,6 @@ $(document).ready(function(){
   $('.plugin').hide();
   $('.toast-other').toast('show');
 
-
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
@@ -16,7 +15,6 @@ $(document).ready(function(){
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
-
 
   function DownloadHive(filename){
       const csrf = document.getElementsByName('csrfmiddlewaretoken');
@@ -61,7 +59,7 @@ $(document).ready(function(){
   }
 
 
-    /* ################################ TIMELINE SCRIPTS ################################ */
+  //TimeLine SearchBar
   $("#searchTimeline").on("keyup", function() {
     var value = $(this).val().toLowerCase();
     $("#TimelineTab tr").filter(function() {
@@ -69,8 +67,6 @@ $(document).ready(function(){
     })
   });
 
-
-    /* ################################ FILES SCRIPTS ################################ */
   //FileScan SearchBar
   $("#search_files").on("keyup", function() {
     var value = $(this).val().toLowerCase();
@@ -78,6 +74,68 @@ $(document).ready(function(){
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
+
+
+  //CmdLine SearchBar
+  $("#searchCmdLine").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#cmdline tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  //CmdLine SearchBar
+  $("#searchDllList").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#dlllist tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  //Privileges SearchBar
+  $("#searchPriv").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#processPriv tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  //Process Env SearchBar
+
+  $("#searchEnv").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#processEnv tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+
+  //Process Handles SearchBar
+
+  $("#searchHandles").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#processHandles tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+
+  //NetStat Search funtion
+  $("#searchNetworkStat").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#netstat tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+
+  //NetStat Search funtion
+  $("#searchNetworkScan").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#netscan tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+
 
 
 

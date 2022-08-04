@@ -1,3 +1,11 @@
+<!---
+Filename : registry.html
+Analysis type : Windows
+Description :
+Included in the "reviewinvest.html", this file represent the "Registry" Tab
+It is representing 2 Tabs : HiveList with download option and UserAssist plugin
+
+--->
 <div class="tab-pane fade" role="tabpanel" id="tab-2">
   <div class="row">
     <div class="col-12" style="margin-top: 10px;">
@@ -91,8 +99,13 @@
     </div>
   </div>
 </div>
-
 <form id="form1" action="{% url 'download_hive' %}" method="POST">
   {% csrf_token %}
   {{dl_hive_form.filename}}
 </form>
+<script>
+function DownloadHive(filename){
+    $('#id_filename').val(filename)
+    $('#form1').submit();
+}
+</script>

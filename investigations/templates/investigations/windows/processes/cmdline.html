@@ -1,0 +1,32 @@
+<!---
+Filename : cmdline.html
+Analysis type : Windows
+Description :
+Included in the "reviewinvest.html", this file represent the "Network" tab.
+Using anychart, we display the combined results of netstat and netscan in raw format.
+--->
+<div class="tab-pane fade" role="tabpanel" id="tab-21">
+  <div class="col mt-2 align-items-center no-gutters d-flex justify-content-between">
+    <input type="search" id="searchCmdLine" class="search-bar form-control" placeholder="Look for something" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
+  </div>
+  <div class="table-responsive text-break fw-lighter">
+    <table class="table table-sm processcmdline">
+      <thead>
+        <tr>
+          <th scope="col">PID</th>
+          <th scope="col">Process Name</th>
+          <th scope="col">Command</th>
+        </tr>
+      </thead>
+      <tbody id="cmdline">
+        {% for process in CmdLine %}
+        <tr class="pid pid_{{process.PID}} d-none">
+          <td class="w-25">{{process.PID }}</td>
+          <td class="w-25" >{{process.Process}}</td>
+          <td class="w-50">{{process.Args}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

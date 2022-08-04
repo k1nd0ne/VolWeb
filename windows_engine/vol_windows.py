@@ -116,7 +116,7 @@ def dump_file(dump_path, offset, output_path):
         logger.info("Cannot build")
     if constructed:
         result = DictRenderer().render(constructed.run())
-        if not result:
+        if len(result) < 1:
             del(context.config['plugins.DumpFiles.virtaddr'])
             context.config['plugins.DumpFiles.physaddr'] = int(offset)
             constructed = build_context(dump_path, context, base_config_path, plugin_list['windows.dumpfiles.DumpFiles'], output_path)
@@ -124,7 +124,7 @@ def dump_file(dump_path, offset, output_path):
     for artifact in result:
         artifact = { x.translate({32:None}) : y
             for x, y in artifact.items()}
-    return result[0]['Result']
+    return result
 
 def run_volweb_routine_windows(dump_path, case_id, case):
     PARTIAL_RESULTS = False

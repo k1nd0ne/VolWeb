@@ -5,6 +5,18 @@
   .main{
     background: #081327;
   }
+
+
+.far {
+  transition: .3s transform ease-in-out;
+}
+ .collapsed .far {
+  transform: rotate(-90deg);
+}
+
+
+
+
 </style>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
@@ -33,7 +45,7 @@
         <span>&nbsp;</span>
         <i class="fas fa-copy text-white" data-bs-toggle="tooltip" data-bss-tooltip="" data-bs-placement="left" title="Copy">
         </i>
-        <span style="color: var(--bs-body-color);">&nbsp;sha256 : {{ImageSignature.sha256}}&nbsp;</span>
+        <span style="color: var(--bs-body-color);">sha256 : {{ImageSignature.sha256}}&nbsp;</span>
         <br><span style="color: var(--bs-body-color);">&nbsp;</span>
       <i class="fas fa-copy text-white" data-bs-toggle="tooltip" data-bss-tooltip="" data-bs-placement="left" title="Copy"></i>
       <span style="color: var(--bs-body-color);">sha1 : {{ImageSignature.sha1}}&nbsp;</span><br><span style="color: var(--bs-body-color);">&nbsp;
@@ -49,6 +61,8 @@
       <div>
         <ul class="nav nav-tabs" role="tablist">
           <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#tab-1">Processes</a></li>
+          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-19">Tree</a></li>
+          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-20">NetGraph</a></li>
           <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2" style="color: var(--bs-indigo);">Registry</a></li>
           <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-3" style="color: var(--bs-purple);">Cryptography</a></li>
           <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-15" style="color: var(--bs-pink);">Timeline</a></li>
@@ -58,144 +72,83 @@
         <div class="tab-content">
           <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
             <div class="row">
-              <div class="col-3" style="margin-top: 10px;">
-                <div class="card" style="background: rgba(255,255,255,0);border-style: none;"><a data-bs-toggle="tooltip" data-bss-tooltip="" data-bs-placement="left" class="list-inline-item d-flex align-items-center process_pid" href="#" style="text-decoration: none;background: var(--bs-primary-rgb);" title="View more"><i class="far fa-arrow-alt-circle-down"></i><span style="margin-left: 10px;">cmd.exe - 4345</span></a>
-                  <div class="card-body process_pid_info" style="background: rgba(68,68,68,0);">
-                    <p class="card-text p_info">Offset :&nbsp;14017216<br>Threads :&nbsp;7<br>Handles :&nbsp;145<br>Session Id :&nbsp;1<br>Wow64 : True<br>Created time :&nbsp;2020-12-27T22:50:52<br>Exit time : None</p>
-                    <p class="card-text p_info"><button class="btn btn-primary btn-sm" type="button">Dump</button><button class="btn btn-primary btn-sm" type="button"><span class="spinner-border spinner-border-sm" role="status"></span></button><button class="btn btn-success btn-sm" type="button">Download</button></p>
+              <div class="col-2" style="margin-top: 10px;">
+
+                <div class="accordion" id="accordionExample">
+                  <div class="process-item">
+                      <a href="#" id="collapse_default" onclick="DisplayAll();" class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapse_default" aria-expanded="false" aria-controls="collapseOne" style="text-decoration: none;background: var(--bs-primary-rgb);">
+                          Display All
+                      </a>
+                    <div id="collapse_default" class="d-none accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                      <div class="accordion-body process_pid_info">
+                          <p class="card-text p_info"><button class="btn btn-primary btn-sm" type="button">Dump</button><button class="btn btn-primary btn-sm" type="button"><span class="spinner-border spinner-border-sm" role="status"></span></button><button class="btn btn-success btn-sm" type="button">Download</button></p>
+                      </div>
+                    </div>
                   </div>
+
+
+                  {% for process in PsScan %}
+                  <div class="process-item">
+                      <a href="#" id="collapse_{{process.PID}}" onclick="DisplayArtifacts('collapse_{{process.PID}}','pid_{{process.PID}}');" class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none;background: var(--bs-primary-rgb);">
+                        <i class="far fa-arrow-alt-circle-down"></i>
+                        <span class="text-truncate" style="margin-left: 10px; color: var(--bs-danger);">{{process.ImageFileName}} </span>
+                        <span  style="margin-left: 10px;"> - </span>
+                        <span class="text-truncate" style="margin-left: 10px; color: var(--bs-success)">{{process.PID}}</span>
+                      </a>
+                    <div id="collapse_{{process.id}}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                      <div class="accordion-body process_pid_info">
+                        <p class="card-text p_info">Offset :&nbsp;{{process.Offset}}
+                          <br>Threads :&nbsp;{{process.Threads}}
+                          <br>Handles :&nbsp;{{process.Handles}}
+                          <br>Session Id :&nbsp;{{process.SessionId}}
+                          <br>Wow64 : {{process.Wow64}}
+                          <br>Created time :&nbsp;{{process.CreateTime}}
+                          <br>Exit time : {{process.ExitTime}}</p>
+                          <p class="card-text p_info">
+                            <button onclick="DemandProcDump('{{process.PID}}','{{case.id}}')" class="btn btn-primary procdump-try-{{process.PID}} btn-sm" type="button">Dump</button>
+                            <button class="btn btn-primary d-none procdump-load-{{process.PID}} btn-sm" type="button"><span class="spinner-border spinner-border-sm" role="status"></span></button>
+                            <button class="btn btn-success d-none btn-sm procdump-ok-{{process.PID}}" type="button">Download</button></p>
+                            <button class="btn-danger d-none btn-sm procdump-ko-{{process.PID}}" type="button" disabled="disabled">X</button>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+
                 </div>
-                <div class="card"><a class="list-inline-item d-flex align-items-center" href="#" style="text-decoration: none;background: var(--bs-primary-rgb);"><i class="far fa-arrow-alt-circle-right"></i><span style="margin-left: 10px;">cmd.exe - 4345</span></a></div>
-                <div class="card"><a class="list-inline-item d-flex align-items-center" href="#" style="text-decoration: none;background: var(--bs-primary-rgb);"><i class="far fa-arrow-alt-circle-right"></i><span style="margin-left: 10px;">cmd.exe - 4345</span></a></div>
-                <div class="card"><a class="list-inline-item d-flex align-items-center" href="#" style="text-decoration: none;background: var(--bs-primary-rgb);"><i class="far fa-arrow-alt-circle-right"></i><span style="margin-left: 10px;">cmd.exe - 4345</span></a></div>
-                <div class="card"><a class="list-inline-item d-flex align-items-center" href="#" style="text-decoration: none;background: var(--bs-primary-rgb);"><i class="far fa-arrow-alt-circle-right"></i><span style="margin-left: 10px;">cmd.exe - 4345</span></a></div>
+
               </div>
-              <div class="col-9" style="margin-top: 10px;">
-                <div>
+              <div class="col-10" style="margin-top: 10px;">
+                <div class="spinner-review align-items-center justify-content-center no-gutters d-flex d-none">
+                      <svg height=50 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)"sodipodi:docname=side.svg version=1.1 viewBox="0 0 1.0868235 23.893361"width=10 xml:space=preserve xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd xmlns:svg=http://www.w3.org/2000/svg><sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7 inkscape:current-layer=layer1 inkscape:cx=-19.812001 inkscape:cy=42.777106 inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0 inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302 inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728 inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false /><defs id=defs2 /><g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"transform=translate(-106.95068,-6.8098632)><path class=svg-header-1 d="m 109.49242,7.1074427 c -4.79931,7.2235033 -5.68153,14.8989793 -0.24635,23.3033863"id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-2 d="m 109.79308,7.1113105 c -5.45682,7.2211055 -6.4599,14.8940335 -0.28009,23.2956505"id=path297 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-3 d="m 109.79731,7.1077022 c -4.86467,7.2233428 -5.7589,14.8986478 -0.2497,23.3028678"id=path3032 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:1px;stroke-opacity:1 /></g></svg>
+                      <strong>Getting artifacts</strong>
+                        <svg height=50 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)"sodipodi:docname=side.svg version=1.1 viewBox="0 0 1.0868235 23.893361"width=10 xml:space=preserve xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd xmlns:svg=http://www.w3.org/2000/svg><sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7 inkscape:current-layer=layer1 inkscape:cx=-21.388553 inkscape:cy=42.987313 inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0 inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302 inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728 inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false /><defs id=defs2 /><g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"transform=translate(-106.95068,-6.8098632)><path class=svg-header-1 d="m 105.49577,7.1074427 c 4.79931,7.2235033 5.68153,14.8989793 0.24635,23.3033863"id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-2 d="m 105.19511,7.1113105 c 5.45682,7.2211055 6.4599,14.8940335 0.28009,23.2956505"id=path297 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-3 d="m 105.19088,7.1077022 c 4.86467,7.2233428 5.7589,14.8986478 0.2497,23.3028678"id=path3032 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:1px;stroke-opacity:1 /></g></svg>
+                </div>
+                <div class="d-none processes_tab">
+
                   <ul class="nav nav-tabs" role="tablist">
-                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-4">Privileges</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#tab-4">Privileges</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-21">Command line</a></li>
                     <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-5">Environment variables</a></li>
                     <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-6">DLL List</a></li>
                     <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-7">Handles</a></li>
                     <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-8">Network</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#tab-17">MalFind</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link " role="tab" data-bs-toggle="tab" href="#tab-17">MalFind</a></li>
                   </ul>
-                  <div class="tab-content">
-                    <div class="tab-pane fade" role="tabpanel" id="tab-4">
-                      <div class="table-responsive text-break fw-lighter">
-                        <table class="table table-sm">
-                          <thead style="color: var(--bs-light);">
-                            <tr>
-                              <th>Privilege</th>
-                              <th>Description</th>
-                              <th>Attributes</th>
-                              <th>Value</th>
-                            </tr>
-                          </thead>
-                          <tbody style="color: var(--bs-white);">
-                            <tr>
-                              <td>SeCreateTokenPrivilege</td>
-                              <td>Increase quotas</td>
-                              <td>Present</td>
-                              <td>5</td>
-                            </tr>
-                            <tr>
-                              <td>SeCreateTokenPrivilege</td>
-                              <td>Increase quotas</td>
-                              <td>Present</td>
-                              <td>5</td>
-                            </tr>
-                            <tr>
-                              <td>SeCreateTokenPrivilege</td>
-                              <td>Increase quotas</td>
-                              <td>Present</td>
-                              <td>5</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div class="tab-pane fade" role="tabpanel" id="tab-5">
-                      <div class="table-responsive text-break fw-lighter">
-                        <table class="table table-sm">
-                          <thead style="color: var(--bs-light);">
-                            <tr>
-                              <th>Block</th>
-                              <th>Variable</th>
-                              <th>Value</th>
-                            </tr>
-                          </thead>
-                          <tbody style="color: var(--bs-white);">
-                            <tr>
-                              <td>0x481d70</td>
-                              <td>ALLUSERSPROFILE</td>
-                              <td>C:\ProgramData</td>
-                            </tr>
-                            <tr></tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div class="tab-pane fade" role="tabpanel" id="tab-6">
-                      <div class="table-responsive text-break fw-lighter">
-                        <table class="table table-sm">
-                          <thead style="color: var(--bs-light);">
-                            <tr>
-                              <th>Name</th>
-                              <th>Path</th>
-                              <th>Size</th>
-                              <th>LoadTime</th>
-                              <th>Base</th>
-                            </tr>
-                          </thead>
-                          <tbody style="color: var(--bs-white);">
-                            <tr>
-                              <td>ntdll.dll</td>
-                              <td>C:\Windows\SYSTEM32\ntdll.dll</td>
-                              <td>1740800</td>
-                              <td>None</td>
-                              <td>11989911120</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div class="tab-pane fade" role="tabpanel" id="tab-7">
-                      <div class="table-responsive text-break fw-lighter">
-                        <table class="table table-sm">
-                          <thead style="color: var(--bs-light);">
-                            <tr>
-                              <th>Offset</th>
-                              <th>Name</th>
-                              <th>Handle Value</th>
-                              <th>Granted Access</th>
-                              <th>Type</th>
-                            </tr>
-                          </thead>
-                          <tbody style="color: var(--bs-white);">
-                            <tr>
-                              <td>275427701241584</td>
-                              <td>System Pid 4</td>
-                              <td>4</td>
-                              <td>2097151</td>
-                              <td>Process</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div class="tab-pane fade" role="tabpanel" id="tab-8"><span>AnyChart network graph ici</span></div>
-                    <div class="tab-pane fade show  active" role="tabpanel" id="tab-17">
-                      <div class="row">
-                        <div class="col-6"><code>"<br>0x1430000: mov r10d, 0x80<br>0x1430006: movabs rax, 0x7feff13a138<br>0x1430010: jmp qword ptr [rax]<br>0x1430013: nop <br>0x1430014: mov r10d, 0x81<br>0x143001a: movabs rax, 0x7feff13a138<br>0x1430024: jmp qword ptr [rax]<br>0x1430027: nop <br>0x1430028: mov r10d, 0x82<br>0x143002e: movabs rax, 0x7feff13a138<br>0x1430038: jmp qword ptr [rax]<br>0x143003b: nop "</code></div>
-                        <div class="col-6"><code>"<br>41 ba 80 00 00 00 48 b8 A.....H.<br>38 a1 13 ff fe 07 00 00 8.......<br>48 ff 20 90 41 ba 81 00 H...A...<br>00 00 48 b8 38 a1 13 ff ..H.8...<br>fe 07 00 00 48 ff 20 90 ....H...<br>41 ba 82 00 00 00 48 b8 A.....H.<br>38 a1 13 ff fe 07 00 00 8.......<br>48 ff 20 90 41 ba 83 00 H...A..."</code></div>
-                      </div>
-                    </div>
+                  <div class="tab-content ">
+                    {% include "investigations/windows/processes/privileges.html" %}
+                    {% include "investigations/windows/processes/cmdline.html" %}
+                    {% include "investigations/windows/processes/envars.html" %}
+                    {% include "investigations/windows/processes/dlllist.html" %}
+                    {% include "investigations/windows/processes/handles.html" %}
+                    {% include "investigations/windows/processes/network.html" %}
+                    {% include "investigations/windows/processes/malfind.html" %}
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          {% include "investigations/windows/processes/tree.html" %}
+          {% include "investigations/windows/processes/netgraph.html" %}
           {% include "investigations/windows/registry/registry.html" %}
           {% include "investigations/windows/cryptography/cryptography.html" %}
           {% include "investigations/windows/timeline/timeline.html" %}
@@ -207,10 +160,113 @@
     </div>
   </div>
 </div>
+<form id="action-form" method="POST">
+  {% csrf_token %}
+</form>
 <script
 src="https://code.jquery.com/jquery-3.6.0.min.js"
 integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
 crossorigin="anonymous"></script>
+<script>
+
+
+  function DownloadDump(dump_id){
+    $('#action-form').attr('action', '{% url 'download_dump' %}');
+    $("#action-form").append("<input class='d-none' name='id' value="+dump_id+">");
+    $("#action-form").submit();
+  }
+
+  function DemandProcDump(pid, case_id){
+    const csrf = document.getElementsByName('csrfmiddlewaretoken');
+    const fd = new FormData();
+    fd.append('csrfmiddlewaretoken', csrf[0].value);
+    fd.append('case_id', case_id);
+    fd.append('pid', pid);
+    $.ajax({
+      type:'POST',
+      url: "{% url 'dump_process' %}",
+      enctype: 'multipart/form-data',
+      data: fd,
+      beforeSend: function(){
+        $('.procdump-try-'+pid).addClass("d-none");
+        $('.procdump-load-'+pid).removeClass("d-none");
+        $('#proc-message-info').html("Trying to dump the process...");
+        $('.toast-proc-info').toast('show');
+      },
+      success: function(response){
+        if (response['message'] == "success") {
+          $('#proc-success-message').html("Your file was successfully dumped.");
+          $('.toast-proc-success').toast('show');
+          $('.procdump-load-'+pid).addClass("d-none");
+          dump_id = response['id']
+          DownloadDump(dump_id)
+
+        }
+        if (response['message'] == "error")
+        {
+          $('#proc-failed-message').html("The PID provided is not valid");
+          $('.toast-proc-failed').toast('show');
+          $('.procdump-load-'+pid).addClass("d-none");
+          $('.procdump-try-'+pid).removeClass("d-none");
+        }
+
+        if (response['message'] == "failed"){
+          $('.procdump-load-'+pid).addClass("d-none");
+          $('.procdump-ko-'+pid).removeClass("d-none");
+          $('#proc-failed-message').html("The requested file could not be dumped");
+          $('.toast-proc-failed').toast('show');
+        }
+
+        if (response['message'] == "exist"){
+          $('#proc-success-message').html("Your file was successfully dumped");
+          $('.toast-proc-success').toast('show');
+          $('.procdump-load-'+pid).addClass("d-none");
+          dump_id = response['id']
+          DownloadDump(dump_id)
+        }
+
+      },
+      error: function(error){
+        $('#proc-failed-message').html("Could not dump the file requested.");
+        $('.toast-proc-failed').toast('show');
+      },
+      cache: false,
+      contentType : false,
+      processData: false
+    });
+  }
+
+  function DisplayArtifacts(collapse,process){
+
+      if($('#'+collapse).attr("aria-expanded") == "true"){
+        $('.pid').addClass('d-none');
+        $('.default-td').addClass('d-none');
+        $('.spinner-review').removeClass("d-none");
+        setTimeout(function(){
+            $('.processes_tab').removeClass('d-none');
+            $('.'+process).removeClass('d-none');
+            $('.default-td').removeClass('d-none');
+            $('.spinner-review').addClass("d-none");
+          }, 2000);
+      }
+    }
+
+    function DisplayAll(){
+
+        if($('#collapse_default').attr("aria-expanded") == "true"){
+          $('.pid').addClass('d-none');
+          $('.spinner-review').removeClass("d-none");
+          setTimeout(function(){
+            $('.processes_tab').removeClass('d-none');
+            $('.pid').removeClass('d-none');
+            $('.spinner-review').addClass("d-none");
+
+
+            }, 2000);
+        }
+      }
+</script>
+
 <script type="module" src="https://unpkg.com/jspdf@2.0.0/dist/jspdf.umd.min.js"></script>
 <script type="module" src="{% static 'js/jspdf.plugin.autotable.js'%}"></script>
 {% if case.os_version == "Windows" %}

@@ -1,0 +1,45 @@
+<!---
+Filename : dlllist.html
+Analysis type : Windows
+Description :
+Included in the "reviewinvest.html", this file represent the "DllList" tab.
+--->
+
+<div class="tab-pane fade" role="tabpanel" id="tab-6">
+  <div class="col mt-2 align-items-center no-gutters d-flex justify-content-between">
+    <input type="search" id="searchDllList" class="search-bar form-control" placeholder="Look for something" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
+  </div>
+  <div class="table-responsive text-break fw-lighter">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th scope="col">Process</th>
+          <th scope="col">PID</th>
+          <th scope="col">Base</th>
+          <th scope="col">Name</th>
+          <th scope="col">Path</th>
+          <th scope="col">Size</th>
+          <th scope="col">LoadTime</th>
+          <th scope="col">Fileoutput</th>
+        </tr>
+      </thead>
+      <tbody id="dlllist">
+        {% for process in DllList %}
+        <tr class="pid pid_{{process.PID}} d-none">
+          <td>{{process.Process}}</td>
+          <td>{{process.PID}}</td>
+          <td>{{process.Base}}</td>
+          <td>{{process.Name}}</td>
+          <td>{{process.Path}}</td>
+          <td>{{process.Size}}</td>
+          <td>{{process.LoadTime}}</td>
+          <td>{{process.Fileoutput}}</td>
+        </tr>
+        {% endfor %}
+        <tr class="default-td d-none">
+          <td >Nothing was found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

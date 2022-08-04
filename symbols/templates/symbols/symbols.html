@@ -1,108 +1,102 @@
 {% extends "dashboard/base.html" %}
 {% load static %}
 {% block content%}
+<style>
+  .bg-prim {
+    background-color: #172A3A;
+  }
+</style>
+
 <div class="container">
     <div class="row" style="margin-bottom: 20px;">
         <div class="col align-items-center no-gutters d-flex justify-content-between" style="margin-top: 10px;">
-            <h4 style="color: var(--bs-white);"><i class="fas fa-table"></i>&nbsp;Symbols (ISF)</h4><button class="btn btn-primary btn-sm" type="button">+ Add new symbols</button>
+            <h4 style="color: var(--bs-white);"><i class="fas fa-table"></i>&nbsp;Symbols (ISF)</h4><a href="{% url 'add_symbols' %}" class="btn btn-primary btn-sm" type="button">+ Add new symbols</a>
         </div>
     </div>
     <div class="row mb-3">
-        <div class="col align-items-center no-gutters d-flex justify-content-between"><input type="search" class="search-bar form-control" placeholder="Search symbols" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);"></div>
+        <div class="col align-items-center no-gutters d-flex justify-content-between"><input type="search" id="searchbar" class="search-bar form-control" placeholder="Search symbols" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);"></div>
     </div>
     <div class="row mb-3">
         <div class="col align-items-center no-gutters d-flex justify-content-between">
             <div class="col-2" style="color: var(--bs-body-bg);background: var(--bs-gray-900);"><span class="invest-header">&nbsp;Name</span></div>
             <div class="col-4" style="color: var(--bs-body-bg);background: var(--bs-gray-900);"><span class="invest-header">Description</span></div>
             <div class="col-2" style="color: var(--bs-body-bg);background: var(--bs-gray-900);"><span class="invest-header">Operating system</span></div>
+            <div class="col-4" style="color: var(--bs-body-bg);background: var(--bs-gray-900);"><span class="invest-header">Actions</span></div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-12 align-items-center no-gutters d-flex justify-content-between"><a class="col-12 align-items-center no-gutters d-flex justify-content-between invest-cell border-bottom open-menu" href="#" style="padding-top: 10px;padding-bottom: 10px;">
-                <div class="col-2 align-items-center d-flex" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header">Debian11-amd-64.json</span></div>
-                <div class="col-4" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header">Description du bazar</span></div>
-                <div class="col-2" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header" style="color: var(--bs-gray-500);">Window</span></div>
-            </a></div>
+    {% if symbols %}
+    {% for s in symbols %}
+    <div class="row" data-role="symbols">
+        <div class="col-12 align-items-center no-gutters d-flex justify-content-between">
+          <div class="col-12 align-items-center no-gutters d-flex justify-content-between border-bottom" style="padding-top: 10px;padding-bottom: 10px;">
+                <div class="col-2 align-items-center d-flex" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header">{{s.name}}</span></div>
+                <div class="col-4" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header">{{s.description}}</span></div>
+                <div class="col-2" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header" style="color: var(--bs-gray-500);">{{s.os}}</span></div>
+                <div class="col-4" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);">
+
+                  <button class="btn  btn-success btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#BindModal" onclick="$('#id_bind_symbols').val({{s.id}});">Bind</button>
+                  <button class="btn  btn-warning btn-sm" role="button" data-bs-toggle="modal" data-bs-target="#UnbindModal" onclick="$('#id_unbind_symbols').val({{s.id}});">Unbind</button>
+                  <form style="all: unset;" id="reviewform" action="{% url 'custom_symbols' s.id %}" method="GET">
+                    <input class="btn btn-dark btn-sm" type="submit" value="Edit">
+                  </form>
+                  <button class="btn  btn-danger btn-sm" role="button" onclick="DeleteSymbols({{s.id}})">Delete</button>
+                </div>
+            </div>
+          </div>
     </div>
+    {% endfor %}
+    {% endif %}
+</div>
+<form action="" method="POST">
+  {% csrf_token %}
+</form>
+<div class="modal fade" id="BindModal" tabindex="-1" aria-labelledby="downloadDump" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-prim ">
+      <div class="modal-header bg-prim">
+        <h5 class="modal-title">Select the investigation to bind</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <div class="modal-body">
+          <div class="form-group">
+            {{bind_form.bind_investigation}}
+            {{bind_form.bind_symbols}}
+          </div>
+          <div id="alert-box" class="text-danger"></div>
+        </div>
+        <div class="modal-footer bg-prim">
+          <input class="btn btn-dark border-light" type="submit" onclick="Bind()" value="Bind">
+        </div>
+    </div>
+  </div>
 </div>
 
-
-
-<div class="sidebar2">
-    <div class="dismiss" style="background: var(--bs-blue);"><i class="fa fa-caret-right"></i></div>
-    <div class="brand" style="padding-bottom: 14px;padding-top: 17px;"><i class="fa fa-windows" style="font-size: 43px;padding-right: 16px;"></i><a class="navbar-brand" href="index.html" style="color: var(--bs-pink);">Debian11-amd64</a></div>
-    <div class="col-md-10 mb-4" style="margin-left: 25px;margin-top: 20px;"><span style="color: var(--bs-cyan);">Description</span>
-        <p class="sidebar-text">Description of the isf</p>
-        <hr>
+<div class="modal fade" id="UnbindModal" tabindex="-1" aria-labelledby="downloadDump" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-prim ">
+      <div class="modal-header bg-prim">
+        <h5 class="modal-title">Select the investigation to unbind</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <div class="modal-body">
+          <div class="form-group">
+            {{unbind_form.unbind_investigation}}
+            {{unbind_form.unbind_symbols}}
+          </div>
+          <div id="alert-box" class="text-danger"></div>
+        </div>
+        <div class="modal-footer bg-prim">
+          <input class="btn btn-dark border-light" type="submit" onclick="Unbind()" value="Unbind">
+        </div>
     </div>
-    <div class="col-md-10 mb-4" style="margin-left: 25px;margin-top: 20px;"><span style="color: var(--bs-cyan);">File</span>
-        <p class="sidebar-text">debian11-amd-64.json</p>
-        <hr>
-    </div>
-    <div class="col-md-10 mb-4" style="margin-left: 25px;margin-top: 20px;"><span style="color: var(--bs-cyan);">Actions</span><a class="invest-card-link" href="#">
-            <div class="card shadow border-start-primary invest-card" style="background: rgba(0,0,0,0.25);border-style: none;margin-top: 10px;">
-                <div class="card-body" style="color: rgb(255,255,255);border-style: none;">
-                    <div class="row align-items-center no-gutters">
-                        <div class="col-auto"><i class="fas fa-link fa-2x text-gray-600"></i></div>
-                        <div class="col me-2">
-                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span style="color: var(--bs-purple);">Bind</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a><a class="invest-card-link" href="review_invest.html">
-            <div class="card shadow border-start-primary invest-card" style="background: rgba(0,0,0,0.25);border-style: none;margin-top: 10px;">
-                <div class="card-body" style="color: rgb(255,255,255);border-style: none;">
-                    <div class="row align-items-center no-gutters">
-                        <div class="col-auto"><i class="fas fa-unlink fa-2x text-gray-600"></i></div>
-                        <div class="col me-2">
-                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span style="color: var(--bs-cyan);">Unbind</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a><a class="invest-card-link" href="#">
-            <div class="card shadow border-start-primary invest-card" style="background: rgba(0,0,0,0.25);border-style: none;margin-top: 10px;">
-                <div class="card-body" style="color: rgb(255,255,255);border-style: none;">
-                    <div class="row align-items-center no-gutters">
-                        <div class="col-auto"><i class="far fa-edit fa-2x text-gray-600"></i></div>
-                        <div class="col me-2">
-                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span style="color: var(--bs-orange);">Edit</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a><a class="invest-card-link" href="#">
-            <div class="card shadow border-start-primary invest-card" style="background: rgba(0,0,0,0.25);border-style: none;margin-top: 10px;">
-                <div class="card-body" style="color: rgb(255,255,255);border-style: none;">
-                    <div class="row align-items-center no-gutters">
-                        <div class="col-auto"><i class="far fa-trash-alt fa-2x text-gray-600"></i></div>
-                        <div class="col me-2">
-                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span style="color: var(--bs-pink);">Delete</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a>
-        <hr>
-    </div>
+  </div>
 </div>
-<div class="overlay"></div>
-
-
-{% include "investigations/toasts.html" %}
 
   <script>
-    $(document).ready(function(){
-      $('.container').show();
-      $('.container-fluid').show();
-      $('.spinner-main').hide();
-      //Symbols search bar
-      $("#searchSymb").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#symbolsTable tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
+    $("#searchbar").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $('div[data-role="symbols"]').filter(function() {
+        $(this).toggle($(this).find('span').text().toLowerCase().indexOf(value) > -1)
       });
     });
 

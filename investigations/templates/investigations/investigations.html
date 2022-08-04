@@ -16,8 +16,7 @@
             <div class="col-4 invest-table-header"><span class="invest-header">&nbsp;File Name</span></div>
             <div class="col-2 invest-table-header"><span class="invest-header">&nbsp;Linked ISF</span></div>
             <div class="col-1 invest-table-header"><span class="invest-header">&nbsp;OS</span></div>
-            <div class="col-1 invest-table-header"><span class="invest-header">&nbsp;IOCs</span></div>
-            <div class="col-1 text-center invest-table-header"><span class="invest-header">&nbsp;Status</span></div>
+            <div class="col-2 text-center invest-table-header"><span class="invest-header">&nbsp;Status</span></div>
         </div>
     </div>
     {% if investigations %}
@@ -32,7 +31,7 @@
                 <div class="invest-cell col-2 align-items-center d-flex"><i class="fas fa-memory" style="font-size: 15px;transform: rotate(116deg);margin-right: 4px;"></i><span class="invest-header">{{i.title}}</span></div>
                 <div class="invest-cell col-4 text-truncate"><span class="invest-header">{{i.name}}</span></div>
                 {% if i.linked_isf %}
-                <div class="invest-cell col-2"><span class="invest-header" style="color: var(--bs-gray-500);">{{i.linked_isf.symbols_file}}</span></div>
+                <div class="invest-cell col-2"><span class="invest-header" style="color: var(--bs-gray-500);">{{i.linked_isf.name}}</span></div>
                 {% else %}
                 <div class="invest-cell col-2"><span class="invest-header" style="color: var(--bs-gray-500);">No linked ISF</span></div>
                 {% endif %}
@@ -46,22 +45,20 @@
                 {% if i.os_version == "MacOs" %}
                 <!--- Nothing yet -->
                 {% endif %}
-                <div class="invest-cell col-1"><span class="invest-header">&nbsp;2</span></div>
-
 
                 {% if i.status == '4' %}
-                <div class="col-1 text-center" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header" style="color: var(--bs-orange);">Partial results</span></div>
+                <div class="col-2 text-center" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header" style="color: var(--bs-orange);">Partial results</span></div>
                 {% elif i.status == '2' %}
-                <div class="col-1 text-center" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header" style="color: var(--bs-green);">Ready</span></div>
+                <div class="col-2 text-center" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header" style="color: var(--bs-green);">Ready</span></div>
                 {% elif i.status == '1' %}
-                <div class="col-1 text-center invest-item" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);">
+                <div class="col-2 text-center invest-item" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);">
                   <svg height=20.420578 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)"sodipodi:docname=side.svg version=1.1 viewBox="0 0 1.0868235 23.893361"width=4.6457891 xml:space=preserve xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd xmlns:svg=http://www.w3.org/2000/svg><sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7 inkscape:current-layer=layer1 inkscape:cx=-19.812001 inkscape:cy=42.777106 inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0 inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302 inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728 inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false /><defs id=defs2 /><g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"transform=translate(-106.95068,-6.8098632)><path class=svg-header-1 d="m 109.49242,7.1074427 c -4.79931,7.2235033 -5.68153,14.8989793 -0.24635,23.3033863"id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-2 d="m 109.79308,7.1113105 c -5.45682,7.2211055 -6.4599,14.8940335 -0.28009,23.2956505"id=path297 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-3 d="m 109.79731,7.1077022 c -4.86467,7.2233428 -5.7589,14.8986478 -0.2497,23.3028678"id=path3032 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:1px;stroke-opacity:1 /></g></svg>
                   <span class="invest-header">{{i.percentage}}%</span>
                     <svg height=20.420578 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)"sodipodi:docname=side.svg version=1.1 viewBox="0 0 1.0868235 23.893361"width=4.6457891 xml:space=preserve xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd xmlns:svg=http://www.w3.org/2000/svg><sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7 inkscape:current-layer=layer1 inkscape:cx=-21.388553 inkscape:cy=42.987313 inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0 inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302 inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728 inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false /><defs id=defs2 /><g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"transform=translate(-106.95068,-6.8098632)><path class=svg-header-1 d="m 105.49577,7.1074427 c 4.79931,7.2235033 5.68153,14.8989793 0.24635,23.3033863"id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-2 d="m 105.19511,7.1113105 c 5.45682,7.2211055 6.4599,14.8940335 0.28009,23.2956505"id=path297 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-3 d="m 105.19088,7.1077022 c 4.86467,7.2233428 5.7589,14.8986478 0.2497,23.3028678"id=path3032 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:1px;stroke-opacity:1 /></g></svg>
 
                 </div>
                 {% else %}
-                <div class="col-1" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header" style="color: var(--bs-pink);">Not started</span></div>
+                <div class="col-2 text-center" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header" style="color: var(--bs-pink);">Not started</span></div>
                 {% endif %}
             </a></div>
     </div>
@@ -139,13 +136,13 @@
 
 <form style="all: unset;" id='reviewform' action="{% url 'reviewinvest' %}" method="GET">
 </form>
+
 <form method="POST">
   {% csrf_token %}
 </form>
 
 
 <div class="overlay"></div>
-{% include "investigations/toasts.html" %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
 

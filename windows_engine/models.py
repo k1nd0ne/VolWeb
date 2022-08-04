@@ -9,7 +9,7 @@ class ProcessDump(models.Model):
         related_name="windows_processdump_investigation"
     )
     pid = models.BigIntegerField()
-    filename = models.CharField(max_length = 255)
+    filename = models.TextField(null = True)
 
 class FileDump(models.Model):
     file_dump_id = models.AutoField(primary_key=True)
@@ -20,7 +20,7 @@ class FileDump(models.Model):
 
     )
     offset = models.BigIntegerField(null = True)
-    filename = models.CharField(max_length = 255)
+    filename = models.TextField(null = True)
 
 
 class PsTree(models.Model):

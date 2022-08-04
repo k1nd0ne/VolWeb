@@ -16,6 +16,8 @@ def dump_memory_pid(case_id,pid):
         pass
     try:
         result = dump_process(dump_path, pid, output_path)
+        if result == "Error outputting file":
+            return "ERROR"
         return result
     except:
         print("Error processing memory dump ")
@@ -33,10 +35,13 @@ def dump_memory_file(case_id, offset):
     except:
         pass
     result = dump_file(dump_path, offset, output_path)
-    logger.info(f"Result : {result}")
-    return result
+    if len(result) > 0:
+        logger.info(f"Result : {result}")
+        return result
+    else:
+        return "ERROR"
 
-"""Windows automatic analysis"""
+"""Windows Memory analysis"""
 def windows_memory_analysis(dump_path,case):
     PARTIAL_RESULTS = run_volweb_routine_windows(dump_path,case.id,case)
     case.percentage = "100"
@@ -47,7 +52,7 @@ def windows_memory_analysis(dump_path,case):
     case.save()
     return
 
-"""Linux Memory Analysis (Not implemented yet)"""
+"""Linux Memory Analysis"""
 def linux_memory_analysis(dump_path, case):
     PARTIAL_RESULTS = run_volweb_routine_linux(dump_path,case.id,case)
     case.percentage = "100"

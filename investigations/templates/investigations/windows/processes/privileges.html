@@ -1,0 +1,49 @@
+<!---
+Filename : privileges.html
+Analysis type : Windows
+Description :
+Included in the "reviewinvest.html", this file represent the "Privileges" tab.
+--->
+<div class="tab-pane fade show  active" role="tabpanel" id="tab-4">
+  <div class="col mt-2 align-items-center no-gutters d-flex justify-content-between">
+    <input type="search" id="searchPriv" class="search-bar form-control" placeholder="Look for something" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
+  </div>
+  <div class="table-responsive text-break fw-lighter">
+    <table class="table table-sm">
+      <thead style="color: var(--bs-light);">
+        <tr>
+          <th scope="col">PID</th>
+          <th scope="col">Process Value</th>
+          <th scope="col">Privilege</th>
+          <th scope="col">Attributes</th>
+          <th scope="col">Description</th>
+          <th scope="col">Value</th>
+          <th scope="col">Tags</th>
+        </tr>
+      </thead>
+      <tbody id="processPriv">
+        {% for process in Privs %}
+        <tr class="pid pid_{{process.PID}} d-none">
+          <td>{{process.PID}}</td>
+          <td>{{process.Process}}</td>
+          <td>{{process.Privilege}}</td>
+          <td>{{process.Attributes}}</td>
+          <td>{{process.Description}}</td>
+          <td>{{process.Value}}</td>
+          <td>
+            <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
+                <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
+                    <p class="text-center dropdown-header">Tags</p><a class="dropdown-item" href="#"><strong class="badge bg-warning text-wrap text-warning">&nbsp;</strong> Suspicious</a><a class="dropdown-item" href="#">&nbsp;Evidence</a>
+                    <div class="dropdown-divider"></div><a class="dropdown-item" href="#">&nbsp;Delete tag</a>
+                </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+        <tr class="default-td d-none">
+          <td >Nothing was found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
