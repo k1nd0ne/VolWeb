@@ -1,0 +1,33 @@
+<!---
+Filename : bash.html
+Analysis type : Linux
+Description :
+Included in the "reviewinvest.html", this file represent the "Bash" tab.
+--->
+<div class="tab-pane fade" role="tabpanel" id="tab-6">
+  <div class="col mt-2 align-items-center no-gutters d-flex justify-content-between">
+    <input type="search" id="searchBash" class="search-bar form-control" placeholder="Look for something" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
+  </div>
+  <div class="table-responsive text-break fw-lighter">
+    <table class="table table-sm bash">
+      <thead>
+        <tr>
+          <th scope="col">PID</th>
+          <th scope="col">Process</th>
+          <th scope="col">CommandTime</th>
+          <th scope="col">Command</th>
+        </tr>
+      </thead>
+      <tbody id="Bash">
+        {% for entry in Bash %}
+        <tr class="pid pid_{{entry.PID}} d-none">
+          <td>{{entry.PID}}</td>
+          <td>{{entry.Process}}</td>
+          <td>{{entry.CommandTime}}</td>
+          <td>{{entry.Command}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

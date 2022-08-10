@@ -24,5 +24,6 @@ def dashboard(request):
     'Activity': activity, 'Users':User.objects.filter(is_superuser = False),
     'investigations':UploadInvestigation.objects.all().count(),
     'iocs':IOC.objects.all().count(),
-    'symbols':Symbols.objects.all().count()
+    'symbols':Symbols.objects.all().count(),
+    'team':User.objects.all().count()
     })

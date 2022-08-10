@@ -67,3 +67,12 @@ if (document.getElementById('indcount')) {
 	            console.error(countUp.error);
 	        }
 	  }
+
+	if (document.getElementById('teamcount')) {
+					const countUp = new CountUp('teamcount', document.getElementById("teamcount").getAttribute("countToteam"));
+					if (!countUp.error) {
+							countUp.start();
+					} else {
+							console.error(countUp.error);
+					}
+		}

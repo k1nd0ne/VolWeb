@@ -1,0 +1,33 @@
+<!---
+Filename : lsof.html
+Analysis type : Linux
+Description :
+Included in the "reviewinvest.html", this file represent the "Lsof" tab.
+--->
+<div class="tab-pane fade" role="tabpanel" id="tab-5">
+  <div class="col mt-2 align-items-center no-gutters d-flex justify-content-between">
+    <input type="search" id="searchLsof" class="search-bar form-control" placeholder="Look for something" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
+  </div>
+  <div class="table-responsive text-break fw-lighter">
+    <table class="table table-sm Lsof">
+      <thead>
+        <tr>
+          <th scope="col">FD</th>
+          <th scope="col">PID</th>
+          <th scope="col">Path</th>
+          <th scope="col">Process</th>
+        </tr>
+      </thead>
+      <tbody id="Lsof">
+        {% for entry in Lsof %}
+        <tr class="pid pid_{{entry.PID}} d-none">
+          <td>{{entry.FD}}</td>
+          <td>{{entry.PID}}</td>
+          <td>{{entry.Path}}</td>
+          <td>{{entry.Process}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

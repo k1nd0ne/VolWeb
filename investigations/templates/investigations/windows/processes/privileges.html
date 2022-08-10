@@ -18,7 +18,7 @@ Included in the "reviewinvest.html", this file represent the "Privileges" tab.
           <th scope="col">Attributes</th>
           <th scope="col">Description</th>
           <th scope="col">Value</th>
-          <th scope="col">Tags</th>
+          <th scope="col">Tag</th>
         </tr>
       </thead>
       <tbody id="processPriv">
@@ -33,8 +33,18 @@ Included in the "reviewinvest.html", this file represent the "Privileges" tab.
           <td>
             <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
                 <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
-                    <p class="text-center dropdown-header">Tags</p><a class="dropdown-item" href="#"><strong class="badge bg-warning text-wrap text-warning">&nbsp;</strong> Suspicious</a><a class="dropdown-item" href="#">&nbsp;Evidence</a>
-                    <div class="dropdown-divider"></div><a class="dropdown-item" href="#">&nbsp;Delete tag</a>
+                    <p class="text-center dropdown-header">Tag as</p>
+                    <a class="dropdown-item" href="#">
+                      <strong class="badge bg-warning text-wrap text-warning">&nbsp;</strong>
+                      &nbsp;Suspicious
+                    </a>
+                    <a class="dropdown-item" href="#" onclick="">
+                      <strong class="badge bg-danger text-wrap text-danger">&nbsp;</strong>
+                      &nbsp;Evidence
+                    </a>
+                    <div class="dropdown-divider">
+                    </div>
+                    <a class="dropdown-item" href="#">&nbsp;Clear tags</a>
                 </div>
             </div>
           </td>

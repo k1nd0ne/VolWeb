@@ -1,3 +1,12 @@
+<!---
+Filename : investigations.html
+Analysis type : Windows & Linux
+Description :
+Display all the investigations and their analysis status.
+The content is refreshed every 60 seconds using the "refresh()" function.
+When an investigation is clicked, the sidebar is showed with the appropriate actions based on the status.
+--->
+
 {% extends "dashboard/base.html" %}
 {% load static %}
 {% block content%}
@@ -189,7 +198,7 @@
       beforeSend: function(){
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
-        $('#proc-message-info').html("Strating...");
+        $('#proc-message-info').html("Starting...");
         $('.toast-proc-info').toast('show');
       },
       success: function(response){

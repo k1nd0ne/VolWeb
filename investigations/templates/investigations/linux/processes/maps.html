@@ -1,0 +1,45 @@
+<!---
+Filename : maps.html
+Analysis type : Linux
+Description :
+Included in the "reviewinvest.html", this file represent the "Maps" tab.
+--->
+<div class="tab-pane fade" role="tabpanel" id="tab-4">
+  <div class="col mt-2 align-items-center no-gutters d-flex justify-content-between">
+    <input type="search" id="searchProcessMaps" class="search-bar form-control" placeholder="Look for something" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
+  </div>
+  <div class="table-responsive text-break fw-lighter">
+    <table class="table table-sm processmaps">
+      <thead>
+        <tr>
+          <th scope="col">Start</th>
+          <th scope="col">End</th>
+          <th scope="col">File Path</th>
+          <th scope="col">Flags</th>
+          <th scope="col">Inode</th>
+          <th scope="col">Major</th>
+          <th scope="col">Minor</th>
+          <th scope="col">PID</th>
+          <th scope="col">PgOff</th>
+          <th scope="col">Process</th>
+        </tr>
+      </thead>
+      <tbody id="processMaps">
+        {% for process in ProcMaps %}
+        <tr class="pid pid_{{process.PID}} d-none">
+          <td>{{process.Start}}</td>
+          <td>{{process.End}}</td>
+          <td>{{process.FilePath}}</td>
+          <td>{{process.Flags}}</td>
+          <td>{{process.Inode}}</td>
+          <td>{{process.Major}}</td>
+          <td>{{process.Minor}}</td>
+          <td>{{process.PID}}</td>
+          <td>{{process.PgOff}}</td>
+          <td>{{process.Process}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

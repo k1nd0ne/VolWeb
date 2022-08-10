@@ -1,0 +1,33 @@
+<!---
+Filename : tty_check.html
+Analysis type : Linux
+Description :
+Included in the "reviewinvest.html", this file represent the "TtyCheck" tab.
+--->
+<div class="tab-pane fade" role="tabpanel" id="tab-7">
+  <div class="col mt-2 align-items-center no-gutters d-flex justify-content-between">
+    <input type="search" id="searchTtyCheck" class="search-bar form-control" placeholder="Look for something" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
+  </div>
+  <div class="table-responsive text-break fw-lighter">
+    <table class="table table-sm TtyCheck">
+      <thead>
+        <tr>
+          <th scope="col">Address</th>
+          <th scope="col">Module</th>
+          <th scope="col">Name</th>
+          <th scope="col">Symbol</th>
+        </tr>
+      </thead>
+      <tbody id="TtyCheck">
+        {% for entry in TtyCheck %}
+        <tr>
+          <td>{{entry.Address}}</td>
+          <td>{{entry.Module}}</td>
+          <td>{{entry.Name}}</td>
+          <td>{{entry.Symbol}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
