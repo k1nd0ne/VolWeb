@@ -1,6 +1,11 @@
 from django.db import models
 from investigations.models import *
 
+TAGS = (
+        ('Evidence', 'Evidence'),
+        ('Suspicious', 'Suspicious'),
+    )
+
 class ProcessDump(models.Model):
     process_dump_id = models.AutoField(primary_key=True)
     case_id = models.ForeignKey(
@@ -65,7 +70,7 @@ class PsScan(models.Model):
     Wow64 = models.BooleanField()
     CreateTime = models.CharField(max_length = 255,null = True)
     ExitTime = models.CharField(max_length = 255,null = True)
-    Fileoutput = models.CharField(max_length = 255,null = True)
+    Fileoutput = models.CharField(max_length = 255, null = True)
 
 class CmdLine(models.Model):
     investigation = models.ForeignKey(
@@ -76,6 +81,8 @@ class CmdLine(models.Model):
     PID = models.IntegerField(null = True)
     Process = models.TextField(null = True)
     Args = models.TextField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
+
 
 
 class Privs(models.Model):
@@ -90,6 +97,8 @@ class Privs(models.Model):
     Privilege = models.TextField(null = True)
     Attributes = models.TextField(null = True)
     Description = models.TextField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
+
 
 class Envars(models.Model):
     investigation = models.ForeignKey(
@@ -103,6 +112,7 @@ class Envars(models.Model):
     Variable = models.TextField(null = True)
     Value = models.TextField(null = True)
     Description = models.TextField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
 
 
 class NetScan(models.Model):
@@ -121,6 +131,7 @@ class NetScan(models.Model):
     PID = models.IntegerField(null = True)
     Owner = models.TextField(null = True)
     Created = models.TextField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
 
 class NetStat(models.Model):
     investigation = models.ForeignKey(
@@ -138,6 +149,7 @@ class NetStat(models.Model):
     PID = models.IntegerField(null = True)
     Owner = models.TextField(null = True)
     Created = models.TextField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
 
 class Hashdump(models.Model):
     investigation = models.ForeignKey(
@@ -149,6 +161,7 @@ class Hashdump(models.Model):
     rid = models.BigIntegerField(null = True)
     lmhash = models.TextField(null = True)
     nthash = models.TextField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
 
 
 class Lsadump(models.Model):
@@ -198,6 +211,7 @@ class Timeliner(models.Model):
     ChangedDate = models.TextField(null = True)
     CreatedDate = models.TextField(null = True)
     ModifiedDate = models.TextField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
 
 class SkeletonKeyCheck(models.Model):
     investigation = models.ForeignKey(
@@ -210,6 +224,7 @@ class SkeletonKeyCheck(models.Model):
     SkeletonKeyFound = models.TextField(null = True)
     rc4HmacInitialize = models.TextField(null = True)
     rc4HmacDecrypt = models.TextField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
 
 class Malfind(models.Model):
     investigation = models.ForeignKey(
@@ -250,6 +265,7 @@ class UserAssist(models.Model):
     TimeFocused = models.TextField(null = True)
     LastUpdated = models.TextField(null = True)
     RawData  = models.TextField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
 
 
 class FileScan(models.Model):
@@ -271,6 +287,8 @@ class Strings(models.Model):
     String = models.TextField(null = True)
     PhysicalAddress = models.BigIntegerField(null = True)
     Result = models.TextField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
+
 
 class DllList(models.Model):
     investigation = models.ForeignKey(
@@ -286,6 +304,7 @@ class DllList(models.Model):
     Size = models.BigIntegerField(null=True)
     LoadTime = models.CharField(max_length=255,null=True)
     Fileoutput = models.CharField(max_length=500)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
 
 
 class Handles(models.Model):
@@ -301,3 +320,4 @@ class Handles(models.Model):
     HandleValue = models.IntegerField()
     GrantedAccess = models.BigIntegerField()
     Type = models.CharField(max_length=255)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)

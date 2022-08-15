@@ -16,14 +16,44 @@ Using anychart, we display the combined results of netstat and netscan in raw fo
           <th scope="col">PID</th>
           <th scope="col">Process Name</th>
           <th scope="col">Command</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody id="cmdline">
         {% for process in CmdLine %}
         <tr class="pid pid_{{process.PID}} d-none">
-          <td class="w-25">{{process.PID }}</td>
-          <td class="w-25" >{{process.Process}}</td>
-          <td class="w-50">{{process.Args}}</td>
+          <td>{{process.PID }}</td>
+          <td >{{process.Process}}</td>
+          <td class="text-break">{{process.Args}}</td>
+          <td>
+            <div class="dropdown no-arrow">
+              {% if process.Tag == "Evidence"%}
+              <strong class="badge bg-danger text-wrap tag_evidence_{{process.id}}">Evidence</strong>
+              <strong class="badge bg-warning text-wrap d-none tag_suspicious_{{process.id}}">Suspicious</strong>
+              {% elif process.Tag == "Suspicious" %}
+              <strong class="badge bg-warning text-wrap tag_suspicious_{{process.id}}">Suspicious</strong>
+              <strong class="badge bg-danger text-wrap d-none tag_evidence_{{process.id}}">Evidence</strong>
+              {% else %}
+              <strong class="badge bg-danger text-wrap d-none tag_evidence_{{process.id}}">Evidence</strong>
+              <strong class="badge bg-warning text-wrap d-none tag_suspicious_{{process.id}}">Suspicious</strong>
+              {% endif %}
+              <button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
+                <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
+                    <p class="text-center dropdown-header">Tag as</p>
+                    <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'tag'%}&quot;, 'CmdLine', {{process.id}}, 'Suspicious')">
+                        <strong class="badge bg-warning text-wrap text-warning">&nbsp;</strong>
+                      &nbsp;Suspicious
+                    </a>
+                    <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'tag'%}&quot;, 'CmdLine', {{process.id}}, 'Evidence')">
+                      <strong class="badge bg-danger text-wrap text-danger">&nbsp;</strong>
+                      &nbsp;Evidence
+                    </a>
+                    <div class="dropdown-divider">
+                    </div>
+                    <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'tag'%}&quot;, 'CmdLine', {{process.id}}, 'Clear')">&nbsp;Clear tag</a>
+                </div>
+            </div>
+          </td>
         </tr>
         {% endfor %}
       </tbody>

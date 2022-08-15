@@ -4,43 +4,6 @@ from investigations.celery import app
 from windows_engine.vol_windows import *
 from linux_engine.vol_linux import *
 
-"""Process dump task"""
-@app.task(name="dump_memory_pid")
-def dump_memory_pid(case_id,pid):
-    case = UploadInvestigation.objects.get(pk=case_id)
-    dump_path = "Cases/" + case.name
-    output_path = 'Cases/Results/process_dump_'+case_id
-    try:
-        subprocess.check_output(['mkdir', output_path])
-    except:
-        pass
-    try:
-        result = dump_process(dump_path, pid, output_path)
-        if result == "Error outputting file":
-            return "ERROR"
-        return result
-    except:
-        print("Error processing memory dump ")
-        return "ERROR"
-
-"""Dumpfile (single file)"""
-@app.task(name="dump_memory_file")
-def dump_memory_file(case_id, offset):
-    case = UploadInvestigation.objects.get(pk=case_id)
-    dump_path = "Cases/" + case.name
-    data = []
-    output_path = 'Cases/Results/file_dump_'+case_id
-    try:
-        subprocess.check_output(['mkdir', output_path])
-    except:
-        pass
-    result = dump_file(dump_path, offset, output_path)
-    if len(result) > 0:
-        logger.info(f"Result : {result}")
-        return result
-    else:
-        return "ERROR"
-
 """Windows Memory analysis"""
 def windows_memory_analysis(dump_path,case):
     PARTIAL_RESULTS = run_volweb_routine_windows(dump_path,case.id,case)

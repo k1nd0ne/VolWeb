@@ -19,6 +19,7 @@ Description :
               <th>File</th>
               <th>Size</th>
               <th class="text-center" >Action</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="FileScanTab">
@@ -35,6 +36,35 @@ Description :
                   <button class="btn btn-info btn-sm d-none fdump-load-{{files.Offset}}" type="button"><span class="spinner-border spinner-border-sm" role="status"></span></button>
                   <button onclick="DownloadFile('{{files.Offset}}')" class="btn btn-success btn-sm d-none fdump-ok-{{files.Offset}}" type="button">Download</button>
                   <button class="btn-danger d-none btn-sm fdump-ko-{{files.Offset}}" type="button" disabled="disabled">X</button>
+                </td>
+                <td class="w-10">
+                  <div class="dropdown no-arrow">
+                    {% if files.Tag == "Evidence"%}
+                    <strong class="badge bg-danger text-wrap tag_evidence_{{files.id}}">Evidence</strong>
+                    <strong class="badge bg-warning text-wrap d-none tag_suspicious_{{files.id}}">Suspicious</strong>
+                    {% elif files.Tag == "Suspicious" %}
+                    <strong class="badge bg-warning text-wrap tag_suspicious_{{files.id}}">Suspicious</strong>
+                    <strong class="badge bg-danger text-wrap d-none tag_evidence_{{files.id}}">Evidence</strong>
+                    {% else %}
+                    <strong class="badge bg-danger text-wrap d-none tag_evidence_{{files.id}}">Evidence</strong>
+                    <strong class="badge bg-warning text-wrap d-none tag_suspicious_{{files.id}}">Suspicious</strong>
+                    {% endif %}
+                    <button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
+                      <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
+                          <p class="text-center dropdown-header">Tag as</p>
+                          <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'tag'%}&quot;, 'FileScan', {{files.id}}, 'Suspicious')">
+                              <strong class="badge bg-warning text-wrap text-warning">&nbsp;</strong>
+                            &nbsp;Suspicious
+                          </a>
+                          <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'tag'%}&quot;, 'FileScan', {{files.id}}, 'Evidence')">
+                            <strong class="badge bg-danger text-wrap text-danger">&nbsp;</strong>
+                            &nbsp;Evidence
+                          </a>
+                          <div class="dropdown-divider">
+                          </div>
+                          <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'tag'%}&quot;, 'FileScan', {{files.id}}, 'Clear')">&nbsp;Clear tag</a>
+                      </div>
+                  </div>
                 </td>
               </tr>
               {% endfor %}

@@ -126,17 +126,47 @@ Description : Included in the "reviewinvest.html", this file represent the "Cryp
                   <th>Skeleton Key Found</th>
                   <th>rc4HmacInitialize</th>
                   <th>rc4HmacDecrypt</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {% if SkeletonKeyCheck %}
-                {% for entry in SkeletonKeyCheck %}
+                {% for process in SkeletonKeyCheck %}
                   <tr>
-                    <td>{{entry.PID }}</td>
-                    <td>{{entry.Process}}</td>
-                    <td>{{entry.SkeletonKeyFound}}</td>
-                    <td>{{entry.rc4HmacInitialize}}</td>
-                    <td>{{entry.rc4HmacDecrypt}}</td>
+                    <td>{{process.PID }}</td>
+                    <td>{{process.Process}}</td>
+                    <td>{{process.SkeletonKeyFound}}</td>
+                    <td>{{process.rc4HmacInitialize}}</td>
+                    <td>{{process.rc4HmacDecrypt}}</td>
+                    <td class="w-10">
+                      <div class="dropdown no-arrow">
+                        {% if process.Tag == "Evidence"%}
+                        <strong class="badge bg-danger text-wrap tag_evidence_{{process.id}}">Evidence</strong>
+                        <strong class="badge bg-warning text-wrap d-none tag_suspicious_{{process.id}}">Suspicious</strong>
+                        {% elif process.Tag == "Suspicious" %}
+                        <strong class="badge bg-warning text-wrap tag_suspicious_{{process.id}}">Suspicious</strong>
+                        <strong class="badge bg-danger text-wrap d-none tag_evidence_{{process.id}}">Evidence</strong>
+                        {% else %}
+                        <strong class="badge bg-danger text-wrap d-none tag_evidence_{{process.id}}">Evidence</strong>
+                        <strong class="badge bg-warning text-wrap d-none tag_suspicious_{{process.id}}">Suspicious</strong>
+                        {% endif %}
+                        <button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
+                          <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
+                              <p class="text-center dropdown-header">Tag as</p>
+                              <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'tag'%}&quot;, 'SkeletonKeyCheck', {{process.id}}, 'Suspicious')">
+                                  <strong class="badge bg-warning text-wrap text-warning">&nbsp;</strong>
+                                &nbsp;Suspicious
+                              </a>
+                              <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'tag'%}&quot;, 'SkeletonKeyCheck', {{process.id}}, 'Evidence')">
+                                <strong class="badge bg-danger text-wrap text-danger">&nbsp;</strong>
+                                &nbsp;Evidence
+                              </a>
+                              <div class="dropdown-divider">
+                              </div>
+                              <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'tag'%}&quot;, 'SkeletonKeyCheck', {{process.id}}, 'Clear')">&nbsp;Clear tag</a>
+                          </div>
+                      </div>
+                    </td>
                   </tr>
                 {% endfor %}
                 {% else %}

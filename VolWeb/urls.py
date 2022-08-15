@@ -26,4 +26,5 @@ urlpatterns = [
     path('investigations/', include('investigations.urls')),
     path('iocs/', include('iocs.urls')),
     path('symbols/', include('symbols.urls')),
+    path('win/', include('windows_engine.urls')),
 ]
