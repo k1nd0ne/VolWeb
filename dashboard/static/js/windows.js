@@ -58,6 +58,7 @@ function GetReport(url, case_id){
         //We add style to the table
         $('#report_content_html table').addClass('table table-sm table-dark')
         $('#report_content_text').addClass('d-none')
+        $('#report_content_html').removeClass('d-none')
     },
     error: function(error){
       $('#proc-error-message').html("Could not generate report.");

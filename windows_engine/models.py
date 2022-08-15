@@ -277,6 +277,7 @@ class FileScan(models.Model):
     Offset = models.BigIntegerField(null = True)
     Name = models.TextField(null = True)
     Size = models.BigIntegerField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
 
 class Strings(models.Model):
     investigation = models.ForeignKey(

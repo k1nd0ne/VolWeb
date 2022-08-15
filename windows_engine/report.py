@@ -36,6 +36,13 @@ def report(case):
     userassist_suspicious = UserAssist.objects.filter(investigation=case, Tag="Suspicious")
     userassist_evidence = UserAssist.objects.filter(investigation=case, Tag="Evidence")
 
+    files_suspicious = FileScan.objects.filter(investigation=case, Tag="Suspicious")
+    files_evidence = FileScan.objects.filter(investigation=case, Tag="Evidence")
+
+    strings_suspicious = Strings.objects.filter(investigation=case, Tag="Suspicious")
+    strings_evidence = Strings.objects.filter(investigation=case, Tag="Evidence")
+
+
 
     #BEGIN HEADER#
     html = markdown.markdown("# 📄 Investigation report : "+case.title)
@@ -71,11 +78,17 @@ def report(case):
     html += markdown.markdown("The following artifacts were marked as **evidence** and should be considered as proof that is relevant to the investigation.")
     text += "The following artifacts were marked as **evidence** and should be considered as proof that is relevant to the investigation. \n"
 
+    if strings_evidence:
+        table = "PhysicalAddress  | Process | String |  \n ------------- | ------------- | -------------\n"
+        for process in strings_evidence:
+            table += f" {process.PhysicalAddress} | {process.Result} | {process.String} | \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
     if cmdline_evidence:
         table = "PID  | Process | Arguments | Source | \n ------------- | ------------- | ------------- | -------------\n"
         for process in cmdline_evidence:
             table += f" {process.PID} | {process.Process} | {process.Args} | Command line arguments \n"
-            text += f" {process.PID} | {process.Process} | {process.Args} | Command line arguments \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
@@ -125,12 +138,21 @@ def report(case):
         text += table
 
 
+
+    if files_evidence:
+        table = "Offset  | File | Size | Source  \n ------------- | ------------- | ------------- | -------------\n"
+        for process in files_evidence:
+            table += f"{process.Offset} | {process.Name} | {process.Size} | FileScan  \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
     if timeline_evidence:
         table = "AccessedDate  | ChangedDate | CreatedDate | Description | ModifiedDate | Plugin \n ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
         for process in timeline_evidence:
             table += f"{process.AccessedDate} | {process.ChangedDate} | {process.CreatedDate} | {process.Description} | {process.ModifiedDate} | {process.Plugin} |  \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
+
 
     # END EVIDENCE ITEMS #
 
@@ -142,17 +164,22 @@ def report(case):
     html += markdown.markdown("The following artifacts were marked as **suspicious** and should be considered by the reader for further investigation.")
     text += "The following artifacts were marked as **suspicious** and should be considered by the reader for further investigation. \n"
 
+    if strings_suspicious:
+        table = "PhysicalAddress  | Process | String |  \n ------------- | ------------- | -------------\n"
+        for process in strings_suspicious:
+            table += f" {process.PhysicalAddress} | {process.Result} | {process.String} | \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
     if cmdline_suspicious:
         table = "PID  | Process | Arguments | Source | \n ------------- | ------------- | ------------- | -------------\n"
         for process in cmdline_suspicious:
             table += f" {process.PID} | {process.Process} | {process.Args} | Command line arguments \n"
-            text += f" {process.PID} | {process.Process} | {process.Args} | Command line arguments \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
     if privs_suspicious:
         table = "PID  | Process Value | Privilege |  Attributes | Description | Value | Source | \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
-
         for process in privs_suspicious:
             table += f"{process.PID} | {process.Process} | {process.Privilege} | {process.Attributes} | {process.Description} | {process.Value} | Privileges \n"
         html += markdown.markdown(table, extensions=['tables'])
@@ -195,6 +222,12 @@ def report(case):
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
+    if files_suspicious:
+        table = "Offset  | File | Size | Source  \n ------------- | ------------- | ------------- | -------------\n"
+        for process in files_suspicious:
+            table += f"{process.Offset} | {process.Name} | {process.Size} | FileScan  \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
 
     if timeline_suspicious:
         table = "AccessedDate  | ChangedDate | CreatedDate | Description | ModifiedDate | Plugin \n ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
