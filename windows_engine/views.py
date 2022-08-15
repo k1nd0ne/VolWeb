@@ -6,6 +6,17 @@ from django.http import JsonResponse, HttpResponse
 from .forms import *
 import os, uuid, subprocess, mimetypes
 from zipfile import ZipFile
+from .report import report
+@login_required
+def win_report(request):
+    form = ReportForm(request.POST)
+    if form.is_valid():
+            case = form.cleaned_data['case_id']
+            html, text = report(case)
+            return JsonResponse({'message': "success",'html':html, 'text':text})
+    else:
+        return JsonResponse({'message': "error"})
+
 
 
 @login_required

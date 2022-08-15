@@ -1,0 +1,36 @@
+<!---
+Filename : report.html
+Analysis type : Windows
+Description :
+Included in the "reviewinvest.html", this file represent the "Report" tab.
+Generate the report based on the tagged items.
+The user can download the markdown version of the report.
+--->
+<style>
+  .card, .card-header{
+    background: rgba(0,0,0,0.25);
+    border-style: none;
+  }
+
+</style>
+<div class="tab-pane fade" role="tabpanel" id="tab-22">
+  <div class="container">
+    <div class="card shadow mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center py-3">
+            <p class="m-0 fw-bold">Report generated in MarkDown</p>
+            <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
+                <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
+                    <p class="text-center dropdown-header">View</p>
+                    <a class="dropdown-item" href="#" onclick=" $('#report_content_text').addClass('d-none'); $('#report_content_html').removeClass('d-none');">&nbsp;HTML</a>
+                    <a class="dropdown-item" href="#" onclick=" $('#report_content_html').addClass('d-none'); $('#report_content_text').removeClass('d-none');">&nbsp;Raw</a>
+                    <div class="dropdown-divider"></div><a class="dropdown-item" href="#"  onclick="GetReport(&quot;{% url 'win_report'%}&quot;, {{case.id}})">&nbsp;Re-Generate</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+          <div id="report_content_html"></div>
+          <pre id="report_content_text"></pre>
+        </div>
+    </div>
+  </div>
+</div>

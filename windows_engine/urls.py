@@ -7,4 +7,5 @@ urlpatterns = [
     path('download_file/',views.download_file, name='download_file'),
     path('download_hive/',views.download_hive, name='download_hive'),
     path('tag',views.tag, name='tag'),
+    path('win_report', views.win_report,name='win_report'),
  ]

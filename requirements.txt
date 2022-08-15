@@ -12,4 +12,4 @@ pefile==2021.9.3
 capstone==4.0.2
 redis==4.1.0
 django-cookiebanner==0.2.5
-reportlab==3.6.11
+markdown=3.4.1
