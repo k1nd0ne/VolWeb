@@ -7,8 +7,13 @@ from .forms import *
 import os, uuid, subprocess, mimetypes
 from zipfile import ZipFile
 from .report import report
+
+
 @login_required
 def win_report(request):
+    """
+    Generate the windows report
+    """
     form = ReportForm(request.POST)
     if form.is_valid():
             case = form.cleaned_data['case_id']
@@ -17,11 +22,10 @@ def win_report(request):
     else:
         return JsonResponse({'message': "error"})
 
-
-
 @login_required
 def tag(request):
-    """Tag a Windows artifact
+    """
+    Tag a Windows artifact
     """
     if request.method == 'POST':
         form = Tag(request.POST)
@@ -34,7 +38,6 @@ def tag(request):
                 item.Tag = "Suspicious"
             else:
                 item.Tag = None
-            print(item.Tag)
             item.save()
             return JsonResponse({'message': "success"})
         else:
@@ -194,7 +197,6 @@ def download_file(request):
             file_id = form.cleaned_data['id']
             Dump = FileDump.objects.get(file_dump_id = file_id)
             file_path = Dump.filename
-            print(file_path)
             case_path = 'Cases/Results/file_dump_'+str(Dump.case_id.id)
             ext = os.path.basename(file_path).split('.')[-1].lower()
             if ext in ['zip']:

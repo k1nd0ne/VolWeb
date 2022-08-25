@@ -16,7 +16,7 @@ class UploadFileForm(forms.ModelForm):
         }
 
 class ManageInvestigation(forms.Form):
-    sa_case_id = forms.ModelChoiceField(queryset=UploadInvestigation.objects.all(), required=True, widget=forms.TextInput(attrs={'type':'hidden'}))
+    sa_case_id = forms.ModelChoiceField(queryset=UploadInvestigation.objects.all())
 
 class DumpMemory(forms.ModelForm):
     class Meta:

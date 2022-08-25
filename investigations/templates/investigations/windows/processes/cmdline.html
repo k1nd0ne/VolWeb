@@ -23,8 +23,8 @@ Using anychart, we display the combined results of netstat and netscan in raw fo
         {% for process in CmdLine %}
         <tr class="pid pid_{{process.PID}} d-none">
           <td>{{process.PID }}</td>
-          <td >{{process.Process}}</td>
-          <td class="text-break">{{process.Args}}</td>
+          <td>{{process.Process}}</td>
+          <td class="w-50">{{process.Args}}</td>
           <td>
             <div class="dropdown no-arrow">
               {% if process.Tag == "Evidence"%}

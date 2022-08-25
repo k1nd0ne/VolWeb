@@ -11,7 +11,7 @@ class SymbolsForm(forms.ModelForm):
         widgets = {
              'name': TextInput(attrs={'class':'form-control','placeholder': 'Usually the distribution name and kernel version','required':'""'}),
              'os': Select(attrs={'class': 'form-control','required':'""'}),
-             'description' : Textarea(attrs={'class':'form-control','rows':"4",'placeholder':'Detailed informations about this ISF','required':'""'}),
+             'description' : Textarea(attrs={'class':'form-control','rows':"4",'placeholder':'Detailed information about this ISF','required':'""'}),
              'symbols_file' : FileInput(attrs={'class': 'form-control'}),
          }
 

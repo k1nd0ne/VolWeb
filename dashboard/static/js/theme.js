@@ -3,9 +3,9 @@
 
   var sidebar = document.querySelector('.sidebar');
   var sidebarToggles = document.querySelectorAll('#sidebarToggle, #sidebarToggleTop');
-  
+
   if (sidebar) {
-    
+
     var collapseEl = sidebar.querySelector('.collapse');
     var collapseElementList = [].slice.call(document.querySelectorAll('.sidebar .collapse'))
     var sidebarCollapseList = collapseElementList.map(function (collapseEl) {
@@ -40,9 +40,9 @@
   }
 
   // Prevent the content wrapper from scrolling when the fixed side navigation hovered over
-  
+
   var fixedNaigation = document.querySelector('body.fixed-nav .sidebar');
-  
+
   if (fixedNaigation) {
     fixedNaigation.on('mousewheel DOMMouseScroll wheel', function(e) {
       var vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
@@ -57,9 +57,9 @@
   }
 
   var scrollToTop = document.querySelector('.scroll-to-top');
-  
+
   if (scrollToTop) {
-    
+
     // Scroll to top button appear
     window.addEventListener('scroll', function() {
       var scrollDistance = window.pageYOffset;

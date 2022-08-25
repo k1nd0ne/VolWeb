@@ -1,7 +1,6 @@
-import os, subprocess
+import os, subprocess, uuid
 import windows_engine.models as windows_engine
 import linux_engine.models as linux_engine
-
 from .tasks import start_memory_analysis, app
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -26,8 +25,7 @@ def investigations(request):
     Comment:
     First entry point to visualise all of the investigations
     """
-    form = ManageInvestigation()
-    return render(request,'investigations/investigations.html',{'investigations': UploadInvestigation.objects.all(), 'form': form})
+    return render(request,'investigations/investigations.html',{'investigations': UploadInvestigation.objects.all()})
 
 @login_required
 def newinvest(request):
@@ -227,7 +225,6 @@ def reviewinvest(request):
         """
     if request.method == 'GET':
         form = ManageInvestigation(request.GET)
-        print(request.GET)
         if form.is_valid():
             case = form.cleaned_data['sa_case_id']
             id = case.id
@@ -238,10 +235,6 @@ def reviewinvest(request):
                 #Forms
                 forms ={
                     'dl_hive_form':DownloadHive(),
-                    'dl_dump_form': DownloadDump(),
-                    'dump_file_form': DumpFile(),
-                    'download_file_form': DownloadFile(),
-                    'form': DumpMemory(),
                 }
                 #Models
                 models = {
@@ -286,5 +279,4 @@ def reviewinvest(request):
                 context.update(models)
             return render(request, 'investigations/reviewinvest.html',context)
         else:
-            form = ManageInvestigation()
-            return render(request,'investigations/investigations.html',{'investigations': UploadInvestigation.objects.all(), 'form': form})
+            return render(request,'investigations/investigations.html',{'investigations': UploadInvestigation.objects.all()})

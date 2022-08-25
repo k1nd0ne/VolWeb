@@ -54,7 +54,6 @@ function GetReport(url, case_id){
     success: function(data){
         $('#report_content_html').html(data['html'])
         $('#report_content_text').html(data['text'])
-        console.log(data['text'])
         //We add style to the table
         $('#report_content_html table').addClass('table table-sm table-dark')
         $('#report_content_text').addClass('d-none')

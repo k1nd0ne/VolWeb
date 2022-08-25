@@ -38,7 +38,7 @@ Alway use the #action-form to perform any post request
 
 <div class="container-fluid main" style="margin-top: 7px;">
   <div class="row d-flex align-items-center">
-    <div class="col-auto align-items-center d-flex"><i class="fas fa-memory fs-1 text-light tada animated justify-content-center"></i></div>
+    <div class="col-auto align-items-center d-flex"><i class="fas fa-eye fs-1 text-danger justify-content-center"></i></div>
     <div class="col-auto" style="border-right-color: rgb(255,255,255);">
       <h5 class="text-truncate" style="color: var(--bs-blue);">{{case.title}}</h5>
     </div>
@@ -49,19 +49,19 @@ Alway use the #action-form to perform any post request
       </i>
       <span class="text-truncate hash" style="margin-left: 12px;">
         <span>&nbsp;</span>
-        <a href="#" onclick="copy('{{ImageSignature.sha256}}','#tooltip-1')">
+        <a href="#" style="text-decoration:none;" onclick="copy('{{ImageSignature.sha256}}','#tooltip-1')">
           <i id="tooltip-1" class="fas fa-copy text-white" data-bs-toggle="tooltip" data-bss-tooltip="" data-bs-placement="left" title="Copy">
           </i>
         </a>
         <span style="color: var(--bs-body-color);">sha256 : {{ImageSignature.sha256}}&nbsp;</span>
         <br><span style="color: var(--bs-body-color);">&nbsp;</span>
-      <a href="#" onclick="copy('{{ImageSignature.sha1}}','#tooltip-2')">
+      <a href="#" style="text-decoration:none;" onclick="copy('{{ImageSignature.sha1}}','#tooltip-2')">
         <i id="tooltip-2" class="fas fa-copy text-white" data-bs-toggle="tooltip" data-bss-tooltip="" data-bs-placement="left" title="Copy">
         </i>
       </a>
       <span style="color: var(--bs-body-color);">sha1 : {{ImageSignature.sha1}}&nbsp;</span><br><span style="color: var(--bs-body-color);">&nbsp;
       </span>
-      <a href="#" onclick="copy('{{ImageSignature.md5}}','#tooltip-3')">
+      <a href="#" style="text-decoration:none;" onclick="copy('{{ImageSignature.md5}}','#tooltip-3')">
         <i id="tooltip-3" class="fas fa-copy text-white" data-bs-toggle="tooltip" data-bss-tooltip="" data-bs-placement="left" title="Copy">
         </i>
       </a>
@@ -102,7 +102,7 @@ Alway use the #action-form to perform any post request
                   <div class="process-item">
                       <a href="#" id="collapse_{{process.PID}}" onclick="DisplayArtifacts('collapse_{{process.PID}}','pid_{{process.PID}}');" class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none;background: var(--bs-primary-rgb);">
                         <i class="far fa-arrow-alt-circle-down"></i>
-                        <span class="text-truncate" style="margin-left: 10px; color: var(--bs-danger);">{{process.COMM}} </span>
+                        <span class="text-truncate text-white" style="margin-left: 10px;">{{process.COMM}} </span>
                         <span  style="margin-left: 10px;"> - </span>
                         <span class="text-truncate" style="margin-left: 10px; color: var(--bs-success)">{{process.PID}}</span>
                       </a>
@@ -192,7 +192,7 @@ Alway use the #action-form to perform any post request
                   <div class="process-item">
                       <a href="#" id="collapse_{{process.PID}}" onclick="DisplayArtifacts('collapse_{{process.PID}}','pid_{{process.PID}}');" class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none;background: var(--bs-primary-rgb);">
                         <i class="far fa-arrow-alt-circle-down"></i>
-                        <span class="text-truncate" style="margin-left: 10px; color: var(--bs-danger);">{{process.ImageFileName}} </span>
+                        <span class="text-truncate text-white" style="margin-left: 10px;">{{process.ImageFileName}} </span>
                         <span  style="margin-left: 10px;"> - </span>
                         <span class="text-truncate" style="margin-left: 10px; color: var(--bs-success)">{{process.PID}}</span>
                       </a>
