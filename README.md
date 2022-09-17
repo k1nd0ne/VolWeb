@@ -4,11 +4,11 @@
 
 Volweb is a digital forensic memory analysis platform.  
 The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responders and digital forensics investigators.  
+
 VolWeb is based on volatility3, and this platform will evolve with the framework development.
 This project is under active development, and this readme may or may not reflect the most up-to-date documentation.
 
-Blog : https://www.forensicxlab.com/VolWeb.html
-Demo : https://www.forensicxlab.com/VolDemo.html
+Tool demo : https://www.forensicxlab.com/posts/cyberdefenders_brave/
 
 **Volweb is still in development and will evolve quickly.**  
 Update communications will be via twitter or by following this repo.
@@ -20,13 +20,7 @@ In order to deploy Volweb, you should follow these steps:
 
 Download the latest release: https://github.com/k1nd0ne/VolWeb/releases
 
-Then, navigate to the VolWeb directory and edit the **./docker/secret/volweb.env** file and add the secret information to the following fields:
-
-```
-POSTGRES_USER=USER_HERE
-POSTGRES_PASSWORD=PASSWORD_HERE
-DJANGO_SECRET=SECRET_KEY_HERE
-```
+Then, navigate to the VolWeb directory and edit the **./docker/secret/volweb.env** file and add the different secret information.
 
 Next, add your ssl certificate into the **nginx/ssl** folder (generated via certbot or openssl for example):
 ```
@@ -43,10 +37,8 @@ docker-compose build
 docker-compose up -d
 ```
 
-The ngnix logs can be found in the **/ngnix/log** folder.
-
+The nginx logs can be found in the **/ngnix/log** folder.
 By default the admin and user accounts created will have the following credentials:
-
 ```
 admin:password
 user:password
@@ -67,19 +59,24 @@ docker-compose down --rmi all --volumes
 ```
 
 ## Issues ⚠️
-If you have found an issue, please raise it.
-I am performing one sprint every month to fix discovered bugs.
-I am also performing whitebox pentests to improve the SecOps dimension.
+If you have found an issue, please raise it by opening an issue on github.
 
-### Contact 📬
+
+## Contact 📬
 Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
 # Wiki 📚
-The full documentation will be available soon.
+The full documentation will be available in the beta release of the project.
 
 # Contributing
 
-To contribute to the project you'll need to make a pull-request on the dev branch.
+The project is opened for contribution, please follow the guideline bellow :
+
+In order to contribute :
+- Make a proposition first by opening an issue.
+- **OR** contact me directly via k1nd0ne@mail.com.
+
+## Setup your dev environment
 To setup the dev environment follow these steps :
 
 ## Configure docker dev environment
@@ -108,4 +105,5 @@ Don't forget to clean the case directory.
 **Volweb is in active development your features may take time to be integrated**  
 
 # Next Release goals 📋
+
 Checkout the roadmap : https://github.com/k1nd0ne/VolWeb/projects/1
