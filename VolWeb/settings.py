@@ -16,6 +16,8 @@ from .keyconfig import Database, Secrets, Debug
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = Secrets.SECRET_KEY
 DEBUG = Debug.DEBUG_MODE
+
+
 ALLOWED_HOSTS = ['*']
 
 # Application definition

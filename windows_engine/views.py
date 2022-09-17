@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from VolWeb.voltools import file_sha256, vt_check_file_hash
 from django.contrib.auth.decorators import login_required
 from windows_engine.tasks import dump_memory_pid, app, dump_memory_file
 from django.apps import apps
@@ -125,6 +126,43 @@ def dump_file(request):
                 return JsonResponse({'message': "failed"})
         else:
             return JsonResponse({'message': "error"})
+
+
+@login_required
+def vt_hash_check(request):
+    """
+    Check file score on virus total
+    """
+    if request.method == 'POST':
+        form = DumpFile(request.POST)
+
+        if form.is_valid():
+            case_id = form.cleaned_data['case_id']
+            offset = form.cleaned_data['offset']
+            task_res = dump_memory_file.delay(str(case_id.id),offset)
+            files = task_res.get()
+            if files == "ERROR":
+                return JsonResponse({'message': "failed_2"})
+            path = 'Cases/Results/file_dump_'+str(case_id.id)+"/"
+            for file in files:
+                if file['Result'] != "Error dumping file":
+                    sha256 = file_sha256(path+file['Result'])
+                    result, message = vt_check_file_hash(sha256)
+                    if not result:
+                        continue
+                    else:
+                        result.update({'message': "success"})
+                        return JsonResponse(result)
+                else:
+                    return JsonResponse({'message': "failed_2"})
+            return JsonResponse({'message': "failed_1", 'error':message})
+
+        else:
+            return JsonResponse({'message': "error"})
+
+
+
+
 
 @login_required
 def download_hive(request):

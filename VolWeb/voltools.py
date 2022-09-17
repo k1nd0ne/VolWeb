@@ -1,4 +1,4 @@
-import volatility3
+import volatility3, datetime, hashlib, io, tempfile, json, os, subprocess, vt
 from typing import Dict, Type, Union, Any, List, Tuple
 from volatility3.framework import contexts, interfaces
 from volatility3 import plugins
@@ -6,12 +6,10 @@ from volatility3.framework.plugins import construct_plugin
 from volatility3.framework import automagic, constants
 from volatility3.cli import text_renderer
 from volatility3.framework.renderers import format_hints
-import datetime, hashlib, io, tempfile, json, os, subprocess
+from .keyconfig import Secrets
 
 class GraphException(Exception):
     """Class to allow filtering of the graph generation errors"""
-
-
 
 def file_handler(output_dir):
     class CLIFileHandler(interfaces.plugins.FileHandlerInterface):
@@ -199,6 +197,26 @@ def memory_image_hash(dump_path):
     return signatures
 
 
+def file_sha256(path):
+    """Compute memory image signature.
+    Args:
+        path: A string indicating the file path
+    Returns:
+        sh256 of the file
+    """
+    BLOCKSIZE = 65536            # Read the file in 64kb chunks.
+    sha256 = hashlib.sha256()
+    try:
+        with open(path, 'rb') as afile:
+            buf = afile.read(BLOCKSIZE)
+            while len(buf) > 0:
+                sha256.update(buf)
+                buf = afile.read(BLOCKSIZE)
+        return format(sha256.hexdigest())
+    except:
+        return 'error'
+
+
 def generate_network_graph(data):
     graph_data = {'nodes':[], 'edges':[]}
     for entrie in data:
@@ -244,6 +262,32 @@ def generate_network_graph(data):
 
     return graph_data
 
+def vt_check_file_hash(hash):
+    client = vt.Client(Secrets.VT_API_KEY)
+    try:
+        file = client.get_object("/files/"+hash)
+        client.close()
+        result = file.last_analysis_stats
+        result.update({'SHA256': file.sha256})
+        try:
+            result.update({'meaningful_name': file.meaningful_name})
+        except:
+            pass
+        try:
+            result.update({'crowdsourced_yara_results': file.crowdsourced_yara_results} )
+        except:
+            pass
+        try:
+            result.update({'sandbox_verdicts' : file.sandbox_verdicts})
+        except:
+            pass
+        return result, "success"
+    except vt.error.APIError as e:
+        client.close()
+        return None, e.message
+    except:
+        client.close()
+        return None, "Unknown Error"
 
 
 def build_timeline(data):

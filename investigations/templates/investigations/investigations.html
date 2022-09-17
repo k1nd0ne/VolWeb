@@ -6,7 +6,6 @@ Display all the investigations and their analysis status.
 The content is refreshed every 60 seconds using the "refresh()" function.
 When an investigation is clicked, the sidebar is showed with the appropriate actions based on the status.
 --->
-
 {% extends "dashboard/base.html" %}
 {% load static %}
 {% block content%}
@@ -76,7 +75,6 @@ When an investigation is clicked, the sidebar is showed with the appropriate act
     {% endif %}
 </div>
 <div class="sidebar2">
-    <span class="spinner-invest spinner-border spinner-border-sm spinner" role="status"></span>
     <div class="dismiss" style="background: var(--bs-blue);"><i class="fa fa-caret-right"></i></div>
     <div class="brand" style="padding-bottom: 14px;padding-top: 17px;"><i class="fa fa-windows" style="font-size: 43px;padding-right: 16px;"></i><a class="sidebar-invest-name navbar-brand" href="index.html" style="color: var(--bs-pink);">Investigation Name</a></div>
     <div class="col-md-10 mb-4" style="margin-left: 25px;margin-top: 20px;"><span style="color: var(--bs-cyan);">Description</span>
