@@ -1,6 +1,11 @@
 from django.db import models
 from investigations.models import *
 
+TAGS = (
+        ('Evidence', 'Evidence'),
+        ('Suspicious', 'Suspicious'),
+    )
+
 class PsTree(models.Model):
     investigation = models.ForeignKey(
             UploadInvestigation,
@@ -29,6 +34,8 @@ class Bash(models.Model):
     Process = models.CharField(max_length = 255,null = True)
     CommandTime = models.CharField(max_length = 255,null = True)
     Command = models.CharField(max_length = 500,null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
+
 
 class ProcMaps(models.Model):
     investigation = models.ForeignKey(
@@ -47,6 +54,8 @@ class ProcMaps(models.Model):
     PgOff = models.BigIntegerField(null = True)
     Process = models.CharField(max_length = 255,null = True)
     Start = models.BigIntegerField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
+
 
 class Lsof(models.Model):
     investigation = models.ForeignKey(
@@ -58,6 +67,8 @@ class Lsof(models.Model):
     PID = models.BigIntegerField(null = True)
     Path = models.CharField(max_length = 255,null = True)
     Process = models.CharField(max_length = 500,null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
+
 
 class TtyCheck(models.Model):
     investigation = models.ForeignKey(
@@ -69,6 +80,8 @@ class TtyCheck(models.Model):
     Module = models.CharField(max_length = 255,null = True)
     Name = models.CharField(max_length = 255,null = True)
     Symbol = models.CharField(max_length = 255,null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)
+
 
 class Elfs(models.Model):
     investigation = models.ForeignKey(
@@ -81,3 +94,4 @@ class Elfs(models.Model):
     PID = models.BigIntegerField(null = True)
     Process = models.CharField(max_length = 255,null = True)
     Start = models.BigIntegerField(null = True)
+    Tag = models.CharField(null = True, max_length = 11, choices = TAGS)

@@ -1,4 +1,4 @@
-import markdown
+import markdown, datetime
 from windows_engine.models import *
 from investigations.models import ImageSignature
 
@@ -54,8 +54,8 @@ def report(case):
     html += markdown.markdown("## 🧬 Case metadata ")
     text += "## 🧬 Case metadata \n"
 
-    html += markdown.markdown("**Report date** : DATE")
-    text += "**Report date** : DATE \n"
+    html += markdown.markdown("**Report date** : " + str(datetime.datetime.now()))
+    text += "**Report date** : " + str(datetime.datetime.now()) + " \n"
 
     html += markdown.markdown("**Memory image signatures :**")
     text += "**Memory image signatures :** \n"

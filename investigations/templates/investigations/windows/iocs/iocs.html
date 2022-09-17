@@ -28,29 +28,29 @@ Included in the "reviewinvest.html", this file represent the "String based IOCs"
               <td class="w-15">
                 <div class="dropdown no-arrow">
                   {% if match.Tag == "Evidence"%}
-                  <strong class="badge bg-danger text-wrap tag_evidence_{{match.id}}">Evidence</strong>
-                  <strong class="badge bg-warning text-wrap d-none tag_suspicious_{{match.id}}">Suspicious</strong>
+                  <strong class="badge bg-danger text-wrap tag_evidence_{{match.id}}_Strings">Evidence</strong>
+                  <strong class="badge bg-warning text-wrap d-none tag_suspicious_{{match.id}}_Strings">Suspicious</strong>
                   {% elif match.Tag == "Suspicious" %}
-                  <strong class="badge bg-warning text-wrap tag_suspicious_{{match.id}}">Suspicious</strong>
-                  <strong class="badge bg-danger text-wrap d-none tag_evidence_{{match.id}}">Evidence</strong>
+                  <strong class="badge bg-warning text-wrap tag_suspicious_{{match.id}}_Strings">Suspicious</strong>
+                  <strong class="badge bg-danger text-wrap d-none tag_evidence_{{match.id}}_Strings">Evidence</strong>
                   {% else %}
-                  <strong class="badge bg-danger text-wrap d-none tag_evidence_{{match.id}}">Evidence</strong>
-                  <strong class="badge bg-warning text-wrap d-none tag_suspicious_{{match.id}}">Suspicious</strong>
+                  <strong class="badge bg-danger text-wrap d-none tag_evidence_{{match.id}}_Strings">Evidence</strong>
+                  <strong class="badge bg-warning text-wrap d-none tag_suspicious_{{match.id}}_Strings">Suspicious</strong>
                   {% endif %}
                   <button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
                     <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
                         <p class="text-center dropdown-header">Tag as</p>
-                        <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'tag'%}&quot;, 'Strings', {{match.id}}, 'Suspicious')">
+                        <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'win_tag'%}&quot;, 'Strings', {{match.id}}, 'Suspicious')">
                             <strong class="badge bg-warning text-wrap text-warning">&nbsp;</strong>
                           &nbsp;Suspicious
                         </a>
-                        <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'tag'%}&quot;, 'Strings', {{match.id}}, 'Evidence')">
+                        <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'win_tag'%}&quot;, 'Strings', {{match.id}}, 'Evidence')">
                           <strong class="badge bg-danger text-wrap text-danger">&nbsp;</strong>
                           &nbsp;Evidence
                         </a>
                         <div class="dropdown-divider">
                         </div>
-                        <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'tag'%}&quot;, 'Strings', {{match.id}}, 'Clear')">&nbsp;Clear tag</a>
+                        <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'win_tag'%}&quot;, 'Strings', {{match.id}}, 'Clear')">&nbsp;Clear tag</a>
                     </div>
                 </div>
               </td>

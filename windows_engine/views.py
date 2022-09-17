@@ -24,7 +24,7 @@ def win_report(request):
         return JsonResponse({'message': "error"})
 
 @login_required
-def tag(request):
+def win_tag(request):
     """
     Tag a Windows artifact
     """

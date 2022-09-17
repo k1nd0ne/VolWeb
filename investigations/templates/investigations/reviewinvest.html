@@ -79,6 +79,7 @@ Alway use the #action-form to perform any post request
           <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#tab-1">Processes</a></li>
           <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2" style="color: var(--bs-indigo);">Tree</a></li>
           <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-7" style="color: var(--bs-purple);">TtyCheck</a></li>
+          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-8" style="color: var(--bs-info);"> Reporting</a></li>
         </ul>
         <div class="tab-content">
           <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
@@ -142,6 +143,8 @@ Alway use the #action-form to perform any post request
           </div>
           {% include "investigations/linux/processes/tree.html" %}
           {% include "investigations/linux/others/tty_check.html" %}
+          {% include "investigations/linux/report.html" %}
+
 
 
         </div>
@@ -392,5 +395,10 @@ crossorigin="anonymous"></script>
 </script>
 {% else %}
 <script src="{% static 'js/linux.js'%}"></script>
+<script>
+  $(document).ready(function(){
+    GetReport("{% url 'lin_report'%}", {{case.id}})
+  });
+</script>
 {% endif %}
 {% endblock content %}

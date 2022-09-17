@@ -15,16 +15,16 @@ function Tag(url, plugin_name, artifact_id, status){
     },
     success: function(data){
       if(status == "Evidence"){
-          $('.tag_evidence_'+artifact_id).removeClass("d-none");
-          $('.tag_suspicious_'+artifact_id).addClass("d-none");
+          $('.tag_evidence_'+artifact_id+"_"+plugin_name).removeClass("d-none");
+          $('.tag_suspicious_'+artifact_id+"_"+plugin_name).addClass("d-none");
       }
       if(status == "Suspicious"){
-          $('.tag_suspicious_'+artifact_id).removeClass("d-none");
-          $('.tag_evidence_'+artifact_id).addClass("d-none");
+          $('.tag_suspicious_'+artifact_id+"_"+plugin_name).removeClass("d-none");
+          $('.tag_evidence_'+artifact_id+"_"+plugin_name).addClass("d-none");
       }
       if(status == "Clear"){
-        $('.tag_suspicious_'+artifact_id).addClass("d-none");
-        $('.tag_evidence_'+artifact_id).addClass("d-none");
+        $('.tag_suspicious_'+artifact_id+"_"+plugin_name).addClass("d-none");
+        $('.tag_evidence_'+artifact_id+"_"+plugin_name).addClass("d-none");
       }
     },
     error: function(error){
