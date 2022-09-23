@@ -127,6 +127,13 @@ def report(case):
             table += f" {process.FD} | {process.PID} | {process.Path} | {process.Process} | \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
+
+    if procmaps_suspicious:
+        table = "Start  | End | FilePath | Flags |  Inode |  Major |  Minor |  PID |  PgOff |  Process | \n ------------- | ------------- | ------------- | ------------- | -------------| -------------| -------------| -------------| ------------- | -------------\n"
+        for process in procmaps_suspicious :
+            table += f" {process.Start} | {process.End} | {process.FilePath} | {process.Flags} | {process.Inode} | {process.Major} | {process.PID} | {process.Minor} | {process.PgOff} | {process.Process} | \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
     # END SUSPICIOUS ITEMS #
 
 

@@ -155,7 +155,7 @@ class FileUpload {
                     existingPath = res.existingPath
                     self.upload_file(nextChunk, existingPath);
                 } else {
-                    alertBox.innerHTML = "<p class='text-success'>Upload completed you can now start the analysis from <a href=\"../\">here</a></p>";
+                    alertBox.innerHTML = "<p class='text-white'>Upload completed you can now start the analysis from <a href=\"../\">here</a></p>";
                 }
             }
         });
