@@ -107,6 +107,8 @@
   opacity: 1;
 }
 
+
+
 .dismiss {
   font-size: 26px;
   width: 35px;
@@ -197,8 +199,8 @@ thead, tbody {
 .spinner-review {
   z-index: 2;
   position: absolute;
-  top: 30%;
-  left: 60%;
+  top: 10%;
+  left: 55%;
   margin: -25px 0 0 -25px;
 }
 

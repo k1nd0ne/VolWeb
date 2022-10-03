@@ -4,7 +4,7 @@
 <div class="container">
   <div class="row" style="margin-bottom: 20px;">
     <div class="col align-items-center no-gutters d-flex justify-content-between" style="margin-top: 10px;">
-      <h4 style="color: var(--bs-white);"><i class="fas fa-fingerprint"></i>&nbsp;String based IOCs</h4><a href="{% url 'newioc' %}" class="btn btn-primary btn-sm" type="button">+ Add new IOC</a>
+      <h4 style="color: var(--bs-white);"><i class="fas fa-fingerprint"></i>&nbsp;String based IOCs</h4><a href="{% url 'new_ioc' %}" class="btn btn-primary btn-sm" type="button">+ Add new IOC</a>
     </div>
   </div>
   <div class="row mb-3">
@@ -28,7 +28,7 @@
       <div class="col-4 align-items-center d-flex" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header">{{ioc.value}}</span></div>
       <div class="col-2" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);"><span class="invest-header" style="color: var(--bs-gray-500);">{{ioc.linkedInvestigation.title}}</span></div>
       <div class="col-2 align-items-center d-flex" style="color: var(--bs-body-bg);background: rgba(58,59,69,0);">
-        <form style="all: unset;" id="reviewform" action="{% url 'customioc' ioc.id %}" method="GET">
+        <form style="all: unset;" id="reviewform" action="{% url 'custom_ioc' ioc.id %}" method="GET">
           <input class="btn border border-light btn-dark btn-sm" type="submit" style="margin-right: 10px;" value="Edit">
         </form>
         <button class="btn border border-light btn-danger btn-sm" role="button" onclick="DeleteIOC({{ioc.id}})">Delete</button>
@@ -60,7 +60,7 @@
       fd.append('ioc_id', id);
       $.ajax({
         type:'POST',
-        url: "{% url 'deleteioc' %}",
+        url: "{% url 'delete_ioc' %}",
         enctype: 'multipart/form-data',
         data: fd,
         beforeSend: function(){

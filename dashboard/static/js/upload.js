@@ -93,7 +93,7 @@ class FileUpload {
         investDesc.innerHTML += "</br> Investigators : " + investigators.value;
         var end;
         var self = this;
-        var existingPath = model_id;
+        var existing_path = model_id;
         var formData = new FormData();
         var nextChunk = start + this.max_length + 1;
         var currentChunk = this.file.slice(start, nextChunk);
@@ -108,7 +108,7 @@ class FileUpload {
         $('.filename').text(this.file.name)
         $('.textbox').text("Uploading file")
         formData.append('eof', end)
-        formData.append('existingPath', existingPath);
+        formData.append('existing_path', existing_path);
         formData.append('nextSlice', nextChunk);
         formData.append('title', title.value);
         formData.append('description', description.value);
@@ -152,8 +152,8 @@ class FileUpload {
                 if (nextChunk < self.file.size) {
                     console.log(res)
                     // upload file in chunks
-                    existingPath = res.existingPath
-                    self.upload_file(nextChunk, existingPath);
+                    existing_path = res.existing_path
+                    self.upload_file(nextChunk, existing_path);
                 } else {
                     alertBox.innerHTML = "<p class='text-white'>Upload completed you can now start the analysis from <a href=\"../\">here</a></p>";
                 }

@@ -7,19 +7,22 @@ from django.http import JsonResponse
 
 customize_context = {}
 
+
 @login_required
 def iocs(request):
-    """The iocs dashboard
+    """The string based iocs dashboard
 
         Arguments:
         request : http request object
 
-        Comment: Display all of the iocs
+        Comment: Display all the string based iocs
         """
-    return render(request,'iocs/iocs.html',{'iocs':IOC.objects.all(), 'investigations':UploadInvestigation.objects.all()})
+    return render(request, 'iocs/iocs.html',
+                  {'iocs': IOC.objects.all(), 'investigations': UploadInvestigation.objects.all()})
+
 
 @login_required
-def newioc(request):
+def new_ioc(request):
     """Create a new string base IOC
 
         Arguments:
@@ -33,33 +36,34 @@ def newioc(request):
             form.save()
             return redirect('/iocs/')
     form = IOCForm()
-    return render(request,'iocs/newioc.html',{'form': form, 'investigations':UploadInvestigation.objects.all()})
+    return render(request, 'iocs/new_ioc.html', {'form': form, 'investigations': UploadInvestigation.objects.all()})
+
 
 @login_required
-def customioc(request, pk):
+def custom_ioc(request, pk):
     """Modify an ioc
 
         Arguments:
         request : http request object
 
         Comments:
-        GET : Load the form page with intanced fields.
+        GET : Load the form page with instanced fields.
         POST : Apply the modifications
         """
     ioc_record = IOC.objects.get(pk=pk)
     if request.method == 'GET':
-            custom_form = IOCForm(instance=ioc_record)
+        custom_form = IOCForm(instance=ioc_record)
     if request.method == 'POST':
         form = IOCForm(request.POST, instance=ioc_record)
         if form.is_valid():
             ioc_record.save()
             return redirect('/iocs/')
-    return render(request,'iocs/customioc.html',{'form': custom_form, 'investigations':UploadInvestigation.objects.all()})
-
+    return render(request, 'iocs/custom_ioc.html',
+                  {'form': custom_form, 'investigations': UploadInvestigation.objects.all()})
 
 
 @login_required
-def deleteioc(request):
+def delete_ioc(request):
     """Delete an ioc
 
         Arguments:
@@ -73,10 +77,11 @@ def deleteioc(request):
         if form.is_valid():
             id = form.cleaned_data['ioc_id']
             # Delete the ioc
-            ioc  = IOC.objects.get(pk=id)
+            ioc = IOC.objects.get(pk=id)
             ioc.delete()
             return redirect('/iocs/')
         else:
-            #Return a error django message (need to setup toast)
+            # Return a django error message (need to set up toast)
             form = NewIOCForm()
-            return render(request,'iocs/newioc.html',{'form': form, 'investigations':UploadInvestigation.objects.all()})
+            return render(request, 'iocs/new_ioc.html',
+                          {'form': form, 'investigations': UploadInvestigation.objects.all()})

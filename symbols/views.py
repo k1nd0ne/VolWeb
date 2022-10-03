@@ -3,6 +3,8 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .forms import *
 from .models import Symbols
+
+
 @login_required
 def symbols(request):
     """Symbols main page
@@ -12,7 +14,9 @@ def symbols(request):
 
         Comment: Display all of the ISF file imported;
         """
-    return render(request,'symbols/symbols.html',{'symbols':Symbols.objects.all(),'bind_form': BindSymbol(),'unbind_form':UnbindSymbol()})
+    return render(request, 'symbols/symbols.html',
+                  {'symbols': Symbols.objects.all(), 'bind_form': BindSymbol(), 'unbind_form': UnbindSymbol()})
+
 
 @login_required
 def add_symbols(request):
@@ -29,7 +33,8 @@ def add_symbols(request):
             form.save()
             return redirect('/symbols/')
     form = SymbolsForm()
-    return render(request,'symbols/add_symbols.html',{'form':form})
+    return render(request, 'symbols/add_symbols.html', {'form': form})
+
 
 @login_required
 def custom_symbols(request, pk):
@@ -49,15 +54,17 @@ def custom_symbols(request, pk):
         form = SymbolsForm(request.POST, request.FILES, instance=symbols_record)
         if form.is_valid():
             form.save()
-            #Unbind from all investigation
-            cases = UploadInvestigation.objects.filter(linked_isf = symbols_record)
+            # Unbind from all investigation
+            cases = UploadInvestigation.objects.filter(linked_isf=symbols_record)
             for case in cases:
                 case.linked_isf = None
                 case.save()
             return redirect('/symbols/')
         else:
             print(form.errors)
-    return render(request,'symbols/custom_symbols.html',{'form': custom_form, 'symbols_id':id,'file':symbols_record.symbols_file})
+    return render(request, 'symbols/custom_symbols.html',
+                  {'form': custom_form, 'symbols_id': id, 'file': symbols_record.symbols_file})
+
 
 @login_required
 def delete_symbols(request):
@@ -76,8 +83,9 @@ def delete_symbols(request):
             isf.delete()
             return redirect('/symbols/')
         else:
-            #Return a error django message (need to setup toast)
+            # Return a error django message (need to setup toast)
             return redirect('/symbols/')
+
 
 @login_required
 def bind_symbols(request):
@@ -92,13 +100,14 @@ def bind_symbols(request):
     if request.method == "POST":
         form = BindSymbol(request.POST)
         if form.is_valid():
-            isf  = form.cleaned_data['bind_symbols']
+            isf = form.cleaned_data['bind_symbols']
             case = form.cleaned_data['bind_investigation']
             case.linked_isf = isf
             case.save()
             return JsonResponse({'message': "success"})
         else:
             return JsonResponse({'message': "error"})
+
 
 @login_required
 def unbind_symbols(request):
@@ -113,7 +122,7 @@ def unbind_symbols(request):
     if request.method == "POST":
         form = UnbindSymbol(request.POST)
         if form.is_valid():
-            isf  = form.cleaned_data['unbind_symbols']
+            isf = form.cleaned_data['unbind_symbols']
             case = form.cleaned_data['unbind_investigation']
             case.linked_isf = None
             case.save()

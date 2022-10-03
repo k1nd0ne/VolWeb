@@ -12,7 +12,7 @@ When an investigation is clicked, the sidebar is showed with the appropriate act
 <div class="container">
     <div class="row" style="margin-bottom: 20px;">
         <div class="col align-items-center no-gutters d-flex justify-content-between" style="margin-top: 10px;">
-            <h4 style="color: var(--bs-white);"><i class="fas fa-briefcase"></i>&nbsp;Investigations</h4><a href="{% url 'newinvest'%}" class="btn btn-primary btn-sm" type="button">Create a new investigation</a>
+            <h4 style="color: var(--bs-white);"><i class="fas fa-briefcase"></i>&nbsp;Investigations</h4><a href="{% url 'new_invest'%}" class="btn btn-primary btn-sm" type="button"><i class="fa-thin fa-plus"></i>&nbsp;Create a new investigation</a>
         </div>
     </div>
     <div class="row mb-3">
@@ -45,10 +45,10 @@ When an investigation is clicked, the sidebar is showed with the appropriate act
                 {% endif %}
 
                 {% if i.os_version == "Windows" %}
-                <div class="invest-cell col-1"><span class="invest-header" style="color: var(--bs-cyan);">&nbsp;<i class="fab fa-windows"></i>&nbsp;Windows</span></div>
+                <div class="invest-cell col-1"><span class="invest-header" style="color: var(--bs-cyan);">&nbsp;<i class="fa-brands fa-windows"></i>&nbsp;Windows</span></div>
                 {% endif %}
                 {% if i.os_version == "Linux" %}
-                <div class="invest-cell col-1"><span class="invest-header" style="color: #ff0f00;">&nbsp;<i class="fab fa-linux"></i>&nbsp;Linux</span></div>
+                <div class="invest-cell col-1"><span class="invest-header" style="color: #ff0f00;">&nbsp;<i class="fa-brands fa-linux"></i>&nbsp;Linux</span></div>
                 {% endif %}
                 {% if i.os_version == "MacOs" %}
                 <!--- Nothing yet -->
@@ -76,7 +76,14 @@ When an investigation is clicked, the sidebar is showed with the appropriate act
 </div>
 <div class="sidebar2">
     <div class="dismiss" style="background: var(--bs-blue);"><i class="fa fa-caret-right"></i></div>
-    <div class="brand" style="padding-bottom: 14px;padding-top: 17px;"><i class="fa fa-windows" style="font-size: 43px;padding-right: 16px;"></i><a class="sidebar-invest-name navbar-brand" href="index.html" style="color: var(--bs-pink);">Investigation Name</a></div>
+    <div class="brand row align-items-center no-gutters">
+      <div class="col-auto sidebar-invest-logo"></div>
+      <div class="col me-2">
+        <a class="sidebar-invest-name navbar-brand" href="index.html" style="color: var(--bs-pink);">Investigation Name</a>
+      </div>
+
+
+    </div>
     <div class="col-md-10 mb-4" style="margin-left: 25px;margin-top: 20px;"><span style="color: var(--bs-cyan);">Description</span>
         <p class="sidebar-text sidebar-invest-desc">Description here</p>
         <hr>
@@ -141,7 +148,7 @@ When an investigation is clicked, the sidebar is showed with the appropriate act
     </div>
 </div>
 
-<form style="all: unset;" id='reviewform' action="{% url 'reviewinvest' %}" method="GET">
+<form style="all: unset;" id='reviewform' action="{% url 'review_invest' %}" method="GET">
 </form>
 
 <form method="POST">
@@ -310,6 +317,20 @@ When an investigation is clicked, the sidebar is showed with the appropriate act
   		    function (response, textStatus, jqXHR) {  // success callback
   		        if(textStatus == "success"){
   		          if (response['message'] == "success") {
+                  if (response['result'][0].fields.os_version == "Linux")
+                  {
+                    $(".sidebar-invest-logo").html("<i class='fa-brands fa-linux fa-3x' ></i>");
+                  }
+                  if (response['result'][0].fields.os_version == "Windows")
+                  {
+                    $(".sidebar-invest-logo").html("<i class='fa-brands fa-windows fa-3x' ></i>");
+                  }
+                  
+                  if (response['result'][0].fields.os_version == "MacOs")
+                  {
+                    $(".sidebar-invest-logo").html("<i class='fa-brands fa-apple fa-3x' ></i>");
+                  }
+
   								$(".sidebar-invest-name").html(response['result'][0].fields.title);
                   $(".sidebar-invest-desc").html(response['result'][0].fields.description);
                   $(".sidebar-invest-team").html(response['result'][0].fields.investigators);

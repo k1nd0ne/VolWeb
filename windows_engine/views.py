@@ -17,11 +17,12 @@ def win_report(request):
     """
     form = ReportForm(request.POST)
     if form.is_valid():
-            case = form.cleaned_data['case_id']
-            html, text = report(case)
-            return JsonResponse({'message': "success",'html':html, 'text':text})
+        case = form.cleaned_data['case_id']
+        html, text = report(case)
+        return JsonResponse({'message': "success", 'html': html, 'text': text})
     else:
         return JsonResponse({'message': "error"})
+
 
 @login_required
 def win_tag(request):
@@ -31,7 +32,8 @@ def win_tag(request):
     if request.method == 'POST':
         form = Tag(request.POST)
         if form.is_valid():
-            item = apps.get_model("windows_engine", form.cleaned_data['plugin_name']).objects.get(id=form.cleaned_data['artifact_id'])
+            item = apps.get_model("windows_engine", form.cleaned_data['plugin_name']).objects.get(
+                id=form.cleaned_data['artifact_id'])
 
             if form.cleaned_data['status'] == "Evidence":
                 item.Tag = "Evidence"
@@ -62,18 +64,18 @@ def dump_process(request):
         if form.is_valid():
             case_id = form.cleaned_data['case_id']
             pid = form.cleaned_data['pid']
-            if len(ProcessDump.objects.filter(pid = pid, case_id = case_id)) > 0:
+            if len(ProcessDump.objects.filter(pid=pid, case_id=case_id)) > 0:
                 file_path = ProcessDump.objects.get(case_id=case_id, pid=pid)
                 return JsonResponse({'message': "exist", 'id': file_path.process_dump_id})
-            task_res = dump_memory_pid.delay(str(case_id.id),str(pid))
+            task_res = dump_memory_pid.delay(str(case_id.id), str(pid))
             file_path = task_res.get()
             if file_path != "ERROR":
-                #create ProcessDump model :
+                # create ProcessDump model :
                 Dump = form.save()
                 Dump.filename = file_path
                 Dump.save()
                 dump_id = Dump.process_dump_id
-                return JsonResponse({'message': "success",'id': dump_id })
+                return JsonResponse({'message': "success", 'id': dump_id})
             else:
                 return JsonResponse({'message': "failed"})
         else:
@@ -97,10 +99,10 @@ def dump_file(request):
         if form.is_valid():
             case_id = form.cleaned_data['case_id']
             offset = form.cleaned_data['offset']
-            if len(FileDump.objects.filter(offset = offset, case_id = case_id)) > 0:
+            if len(FileDump.objects.filter(offset=offset, case_id=case_id)) > 0:
                 file = FileDump.objects.get(case_id=case_id, offset=offset)
                 return JsonResponse({'message': "exist", 'id': file.file_dump_id})
-            task_res = dump_memory_file.delay(str(case_id.id),offset)
+            task_res = dump_memory_file.delay(str(case_id.id), offset)
             files = task_res.get()
             if files == "ERROR":
                 return JsonResponse({'message': "failed"})
@@ -110,18 +112,18 @@ def dump_file(request):
                 if file['Result'] != "Error dumping file":
                     to_zip.append(file['Result'])
             if to_zip:
-                #Creating our zip file
-                zip_file_name = str(uuid.uuid4())+".zip"
-                path = 'Cases/Results/file_dump_'+str(case_id.id)+"/"
-                with ZipFile(path+zip_file_name,'w') as zip:
+                # Creating our zip file
+                zip_file_name = str(uuid.uuid4()) + ".zip"
+                path = 'Cases/Results/file_dump_' + str(case_id.id) + "/"
+                with ZipFile(path + zip_file_name, 'w') as zip:
                     for file in to_zip:
-                        zip.write(path+file)
-                #create ProcessDump model :
+                        zip.write(path + file)
+                # create ProcessDump model :
                 Dump = form.save()
                 Dump.filename = zip_file_name
                 Dump.save()
                 file_id = Dump.file_dump_id
-                return JsonResponse({'message': "success",'id': file_id})
+                return JsonResponse({'message': "success", 'id': file_id})
             else:
                 return JsonResponse({'message': "failed"})
         else:
@@ -139,14 +141,14 @@ def vt_hash_check(request):
         if form.is_valid():
             case_id = form.cleaned_data['case_id']
             offset = form.cleaned_data['offset']
-            task_res = dump_memory_file.delay(str(case_id.id),offset)
+            task_res = dump_memory_file.delay(str(case_id.id), offset)
             files = task_res.get()
             if files == "ERROR":
                 return JsonResponse({'message': "failed_2"})
-            path = 'Cases/Results/file_dump_'+str(case_id.id)+"/"
+            path = 'Cases/Results/file_dump_' + str(case_id.id) + "/"
             for file in files:
                 if file['Result'] != "Error dumping file":
-                    sha256 = file_sha256(path+file['Result'])
+                    sha256 = file_sha256(path + file['Result'])
                     result, message = vt_check_file_hash(sha256)
                     if not result:
                         continue
@@ -155,13 +157,10 @@ def vt_hash_check(request):
                         return JsonResponse(result)
                 else:
                     return JsonResponse({'message': "failed_2"})
-            return JsonResponse({'message': "failed_1", 'error':message})
+            return JsonResponse({'message': "failed_1", 'error': message})
 
         else:
             return JsonResponse({'message': "error"})
-
-
-
 
 
 @login_required
@@ -182,12 +181,13 @@ def download_hive(request):
             ext = os.path.basename(file_path).split('.')[-1].lower()
             if ext in ['hive']:
                 filename = file_path
-                file_path = "Cases/files/"+file_path
+                file_path = "Cases/files/" + file_path
                 path = open(file_path, 'rb')
                 mime_type, _ = mimetypes.guess_type(file_path)
                 response = HttpResponse(path, content_type=mime_type)
                 response['Content-Disposition'] = "attachment; filename=%s" % filename
                 return response
+
 
 @login_required
 def download_dump(request):
@@ -204,13 +204,13 @@ def download_dump(request):
         form = DownloadDump(request.POST)
         if form.is_valid():
             dump_id = form.cleaned_data['id']
-            Dump = ProcessDump.objects.get(process_dump_id = dump_id)
+            Dump = ProcessDump.objects.get(process_dump_id=dump_id)
             file_path = Dump.filename
-            case_path = 'Cases/Results/process_dump_'+str(Dump.case_id.id)
+            case_path = 'Cases/Results/process_dump_' + str(Dump.case_id.id)
             ext = os.path.basename(file_path).split('.')[-1].lower()
             if ext in ['dmp']:
                 filename = file_path
-                file_path = case_path+"/"+file_path
+                file_path = case_path + "/" + file_path
                 path = open(file_path, 'rb')
                 mime_type, _ = mimetypes.guess_type(file_path)
                 response = HttpResponse(path, content_type=mime_type)
@@ -233,13 +233,13 @@ def download_file(request):
         form = DownloadFile(request.POST)
         if form.is_valid():
             file_id = form.cleaned_data['id']
-            Dump = FileDump.objects.get(file_dump_id = file_id)
+            Dump = FileDump.objects.get(file_dump_id=file_id)
             file_path = Dump.filename
-            case_path = 'Cases/Results/file_dump_'+str(Dump.case_id.id)
+            case_path = 'Cases/Results/file_dump_' + str(Dump.case_id.id)
             ext = os.path.basename(file_path).split('.')[-1].lower()
             if ext in ['zip']:
                 filename = file_path
-                file_path = case_path+"/"+file_path
+                file_path = case_path + "/" + file_path
                 path = open(file_path, 'rb')
                 mime_type, _ = mimetypes.guess_type(file_path)
                 response = HttpResponse(path, content_type=mime_type)

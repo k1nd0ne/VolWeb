@@ -6,7 +6,8 @@ from symbols.models import Symbols
 from django.contrib.auth import get_user_model
 from django.core import serializers
 
-#Dashboard view : Return the dashboard with the latest IOCs and Investigations
+
+# Dashboard view : Return the dashboard with the latest IOCs and Investigations
 @login_required
 def dashboard(request):
     """Load the dashboard
@@ -18,12 +19,12 @@ def dashboard(request):
         Display the dashboard and pass the users/activities/analysis/iocs
         """
     User = get_user_model()
-    activity = serializers.serialize("json", Activity.objects.all(), fields = ("date", "count"))
-    return render(request,'dashboard/dashboard.html',
-    {
-    'Activity': activity, 'Users':User.objects.filter(is_superuser = False),
-    'investigations':UploadInvestigation.objects.all().count(),
-    'iocs':IOC.objects.all().count(),
-    'symbols':Symbols.objects.all().count(),
-    'team':User.objects.all().count()
-    })
+    activity = serializers.serialize("json", Activity.objects.all(), fields=("date", "count"))
+    return render(request, 'dashboard/dashboard.html',
+                  {
+                      'Activity': activity, 'Users': User.objects.filter(is_superuser=False),
+                      'investigations': UploadInvestigation.objects.all().count(),
+                      'iocs': IOC.objects.all().count(),
+                      'symbols': Symbols.objects.all().count(),
+                      'team': User.objects.all().count()
+                  })

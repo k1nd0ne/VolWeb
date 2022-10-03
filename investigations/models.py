@@ -1,12 +1,14 @@
 from django.db import models
 from symbols.models import Symbols
 import datetime, base64
-#OS CHOICE
+
+# OS CHOICE
 CHOICES = (
-        ('Windows', 'Windows'),
-        ('Linux', 'Linux'),
-#        ('MacOs', 'MacOs'), <- not implemented yet
-    )
+    ('Windows', 'Windows'),
+    ('Linux', 'Linux'),
+    #        ('MacOs', 'MacOs'), <- not implemented yet
+)
+
 
 class UploadInvestigation(models.Model):
     id = models.AutoField(primary_key=True)
@@ -16,7 +18,7 @@ class UploadInvestigation(models.Model):
         null=True
     )
     title = models.CharField(max_length=500)
-    os_version = models.CharField(max_length=50, choices = CHOICES)
+    os_version = models.CharField(max_length=50, choices=CHOICES)
     investigators = models.CharField(max_length=500)
     description = models.TextField(max_length=500)
     status = models.CharField(max_length=20)
@@ -26,8 +28,10 @@ class UploadInvestigation(models.Model):
     name = models.CharField(max_length=500)
     eof = models.BooleanField()
     uid = models.CharField(max_length=500)
+
     def __str__(self):
         return str(self.title)
+
     def update_activity(self, *args, **kwargs):
         try:
             activity = Activity.objects.get(date=datetime.datetime.now().date())
@@ -38,6 +42,7 @@ class UploadInvestigation(models.Model):
             activity.count = 1
         activity.save()
 
+
 class Activity(models.Model):
     date = models.DateField(primary_key=True)
     count = models.BigIntegerField()
@@ -45,9 +50,9 @@ class Activity(models.Model):
 
 class ImageSignature(models.Model):
     investigation = models.ForeignKey(
-            UploadInvestigation,
-            on_delete=models.CASCADE,
-        )
-    md5 = models.CharField(max_length = 32,null = True)
-    sha1 = models.CharField(max_length = 40,null = True)
-    sha256 = models.CharField(max_length = 64,null = True)
+        UploadInvestigation,
+        on_delete=models.CASCADE,
+    )
+    md5 = models.CharField(max_length=32, null=True)
+    sha1 = models.CharField(max_length=40, null=True)
+    sha256 = models.CharField(max_length=64, null=True)

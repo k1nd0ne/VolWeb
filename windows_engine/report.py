@@ -2,8 +2,9 @@ import markdown, datetime
 from windows_engine.models import *
 from investigations.models import ImageSignature
 
+
 def report(case):
-    #FILTERING STEP#
+    # FILTERING STEP#
     signatures = ImageSignature.objects.get(investigation=case)
 
     cmdline_suspicious = CmdLine.objects.filter(investigation=case, Tag="Suspicious")
@@ -18,10 +19,8 @@ def report(case):
     dlllist_suspicious = DllList.objects.filter(investigation=case, Tag="Suspicious")
     dlllist_evidence = DllList.objects.filter(investigation=case, Tag="Evidence")
 
-
     handles_suspicious = Handles.objects.filter(investigation=case, Tag="Suspicious")
     handles_evidence = Handles.objects.filter(investigation=case, Tag="Evidence")
-
 
     netscan_suspicious = NetScan.objects.filter(investigation=case, Tag="Suspicious")
     netscan_evidence = NetScan.objects.filter(investigation=case, Tag="Evidence")
@@ -32,7 +31,6 @@ def report(case):
     timeline_suspicious = Timeliner.objects.filter(investigation=case, Tag="Suspicious")
     timeline_evidence = Timeliner.objects.filter(investigation=case, Tag="Evidence")
 
-
     userassist_suspicious = UserAssist.objects.filter(investigation=case, Tag="Suspicious")
     userassist_evidence = UserAssist.objects.filter(investigation=case, Tag="Evidence")
 
@@ -42,11 +40,9 @@ def report(case):
     strings_suspicious = Strings.objects.filter(investigation=case, Tag="Suspicious")
     strings_evidence = Strings.objects.filter(investigation=case, Tag="Evidence")
 
-
-
-    #BEGIN HEADER#
-    html = markdown.markdown("# 📄 Investigation report : "+case.title)
-    text = "# 📄 Investigation report : "+case.title + "\n"
+    # BEGIN HEADER#
+    html = markdown.markdown("# 📄 Investigation report : " + case.title)
+    text = "# 📄 Investigation report : " + case.title + "\n"
 
     html += markdown.markdown(case.description)
     text += case.description
@@ -60,10 +56,12 @@ def report(case):
     html += markdown.markdown("**Memory image signatures :**")
     text += "**Memory image signatures :** \n"
 
-    html += markdown.markdown("* MD5 : " + signatures.md5 + "\n * SHA1 : " + signatures.sha1 + "\n * SHA256 : " + signatures.sha256, extensions=['sane_lists'])
+    html += markdown.markdown(
+        "* MD5 : " + signatures.md5 + "\n * SHA1 : " + signatures.sha1 + "\n * SHA256 : " + signatures.sha256,
+        extensions=['sane_lists'])
     text += "* MD5 : " + signatures.md5 + "\n * SHA1 : " + signatures.sha1 + "\n * SHA256 : ""* MD5 : " + signatures.md5 + "\n * SHA1 : " + signatures.sha1 + "\n * SHA256 : "
 
-    html += markdown.markdown("**Investigator(s) on the case :** " + case.investigators )
+    html += markdown.markdown("**Investigator(s) on the case :** " + case.investigators)
     text += "**Investigator(s) on the case :** " + case.investigators + " \n"
 
     html += markdown.markdown("***This report was automatically generated with VolWeb.***")
@@ -75,7 +73,8 @@ def report(case):
     html += markdown.markdown("## 🟥 Evidence")
     text += "## 🟥 Evidence"
 
-    html += markdown.markdown("The following artifacts were marked as **evidence** and should be considered as proof that is relevant to the investigation.")
+    html += markdown.markdown(
+        "The following artifacts were marked as **evidence** and should be considered as proof that is relevant to the investigation.")
     text += "The following artifacts were marked as **evidence** and should be considered as proof that is relevant to the investigation. \n"
 
     if strings_evidence:
@@ -137,8 +136,6 @@ def report(case):
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
-
-
     if files_evidence:
         table = "Offset  | File | Size | Source  \n ------------- | ------------- | ------------- | -------------\n"
         for process in files_evidence:
@@ -153,15 +150,14 @@ def report(case):
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
-
     # END EVIDENCE ITEMS #
-
 
     # BEGIN SUSPICIOUS ITEMS #
     html += markdown.markdown("## 🟨 Suspicious items")
     text += "## 🟨 Suspicious items"
 
-    html += markdown.markdown("The following artifacts were marked as **suspicious** and should be considered by the reader for further investigation.")
+    html += markdown.markdown(
+        "The following artifacts were marked as **suspicious** and should be considered by the reader for further investigation.")
     text += "The following artifacts were marked as **suspicious** and should be considered by the reader for further investigation. \n"
 
     if strings_suspicious:
@@ -237,9 +233,5 @@ def report(case):
         text += table
 
     # END SUSPICIOUS ITEMS #
-
-
-
-
 
     return html, text

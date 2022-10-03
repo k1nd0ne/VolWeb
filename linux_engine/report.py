@@ -2,8 +2,9 @@ import markdown, datetime
 from linux_engine.models import *
 from investigations.models import ImageSignature
 
+
 def report(case):
-    #FILTERING STEP#
+    # FILTERING STEP#
     signatures = ImageSignature.objects.get(investigation=case)
 
     ttycheck_suspicious = TtyCheck.objects.filter(investigation=case, Tag="Suspicious")
@@ -21,9 +22,9 @@ def report(case):
     procmaps_suspicious = ProcMaps.objects.filter(investigation=case, Tag="Suspicious")
     procmaps_evidence = ProcMaps.objects.filter(investigation=case, Tag="Evidence")
 
-    #BEGIN HEADER#
-    html = markdown.markdown("# 📄 Investigation report : "+case.title)
-    text = "# 📄 Investigation report : "+case.title + "\n"
+    # BEGIN HEADER#
+    html = markdown.markdown("# 📄 Investigation report : " + case.title)
+    text = "# 📄 Investigation report : " + case.title + "\n"
 
     html += markdown.markdown(case.description)
     text += case.description
@@ -37,10 +38,12 @@ def report(case):
     html += markdown.markdown("**Memory image signatures :**")
     text += "**Memory image signatures :** \n"
 
-    html += markdown.markdown("* MD5 : " + signatures.md5 + "\n * SHA1 : " + signatures.sha1 + "\n * SHA256 : " + signatures.sha256, extensions=['sane_lists'])
+    html += markdown.markdown(
+        "* MD5 : " + signatures.md5 + "\n * SHA1 : " + signatures.sha1 + "\n * SHA256 : " + signatures.sha256,
+        extensions=['sane_lists'])
     text += "* MD5 : " + signatures.md5 + "\n * SHA1 : " + signatures.sha1 + "\n * SHA256 : ""* MD5 : " + signatures.md5 + "\n * SHA1 : " + signatures.sha1 + "\n * SHA256 : "
 
-    html += markdown.markdown("**Investigator(s) on the case :** " + case.investigators )
+    html += markdown.markdown("**Investigator(s) on the case :** " + case.investigators)
     text += "**Investigator(s) on the case :** " + case.investigators + " \n"
 
     html += markdown.markdown("***This report was automatically generated with VolWeb.***")
@@ -52,7 +55,8 @@ def report(case):
     html += markdown.markdown("## 🟥 Evidence")
     text += "## 🟥 Evidence"
 
-    html += markdown.markdown("The following artifacts were marked as **evidence** and should be considered as proof that is relevant to the investigation.")
+    html += markdown.markdown(
+        "The following artifacts were marked as **evidence** and should be considered as proof that is relevant to the investigation.")
     text += "The following artifacts were marked as **evidence** and should be considered as proof that is relevant to the investigation. \n"
 
     if ttycheck_evidence:
@@ -68,7 +72,6 @@ def report(case):
             table += f" {process.PID} | {process.Process} | {process.CommandTime} | {process.Command} | \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
-
 
     if elfs_evidence:
         table = "Start  | End | FilePath | Process | PID | \n ------------- | ------------- | ------------- | ------------- | -------------\n"
@@ -92,12 +95,12 @@ def report(case):
         text += table
     # END EVIDENCE ITEMS #
 
-
     # BEGIN SUSPICIOUS ITEMS #
     html += markdown.markdown("## 🟨 Suspicious items")
     text += "## 🟨 Suspicious items"
 
-    html += markdown.markdown("The following artifacts were marked as **suspicious** and should be considered by the reader for further investigation.")
+    html += markdown.markdown(
+        "The following artifacts were marked as **suspicious** and should be considered by the reader for further investigation.")
     text += "The following artifacts were marked as **suspicious** and should be considered by the reader for further investigation. \n"
 
     if ttycheck_suspicious:
@@ -130,14 +133,10 @@ def report(case):
 
     if procmaps_suspicious:
         table = "Start  | End | FilePath | Flags |  Inode |  Major |  Minor |  PID |  PgOff |  Process | \n ------------- | ------------- | ------------- | ------------- | -------------| -------------| -------------| -------------| ------------- | -------------\n"
-        for process in procmaps_suspicious :
+        for process in procmaps_suspicious:
             table += f" {process.Start} | {process.End} | {process.FilePath} | {process.Flags} | {process.Inode} | {process.Major} | {process.PID} | {process.Minor} | {process.PgOff} | {process.Process} | \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
     # END SUSPICIOUS ITEMS #
-
-
-
-
 
     return html, text
