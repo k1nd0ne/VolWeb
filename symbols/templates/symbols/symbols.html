@@ -163,7 +163,7 @@
             }
           },
           error: function(error){
-            $('#proc-failed-message').html("Something went wrong ! ");
+            $('#proc-failed-message').html("Something went wrong ! (500) ");
             $('.toast-proc-failed').toast('show');
           },
           cache: false,
@@ -193,7 +193,8 @@
           location.reload();
         },
         error: function(error){
-
+          $('#proc-failed-message').html("Something went wrong ! (500) ");
+          $('.toast-proc-failed').toast('show');
         },
         cache: false,
         contentType : false,

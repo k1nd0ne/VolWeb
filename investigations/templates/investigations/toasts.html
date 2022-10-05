@@ -11,7 +11,9 @@ $('.toast-proc-success').toast('show');
 
   <div class="toast toast-proc-info align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
-      <div id="proc-message-info" class="toast-body">
+      <div class="toast-body">
+        <i class="fa-solid fa-spinner"></i>
+        <span id="proc-message-info"></span>
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
@@ -19,7 +21,9 @@ $('.toast-proc-success').toast('show');
 
   <div class="toast toast-proc-success toast-proc align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
-      <div id="proc-success-message" class="toast-body">
+      <div class="toast-body">
+        <i class="fa-regular fa-thumbs-up"></i>
+        <span id="proc-success-message"></span>
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
@@ -27,7 +31,9 @@ $('.toast-proc-success').toast('show');
 
   <div class="toast toast-proc-failed toast-proc align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
-      <div id="proc-failed-message" class="toast-body">
+      <div class="toast-body">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="proc-failed-message"></span>
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
