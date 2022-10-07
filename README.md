@@ -2,6 +2,9 @@
 <img src="https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/volweblogo.png"  width="200" height="280" alt="VolWeb Title"/>
 </p>
 
+
+# About 
+
 VolWeb is a digital forensic memory analysis platform.  
 The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responders and digital forensics investigators.  
 
@@ -16,12 +19,12 @@ Update communications will be via twitter or by following this repository.
 
 Installation guide : https://github.com/k1nd0ne/VolWeb/wiki/Tutorials#tutorial---installing-and-deploying-volweb
 
-## Issues ⚠️
+# Issues ⚠️
 
 If you have found an issue, please raise it by opening an issue on Github.
 
 
-## Contact 📬
+# Contact 📬
 
 Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
