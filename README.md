@@ -3,7 +3,7 @@
 </p>
 
 
-# About 
+# About
 
 VolWeb is a digital forensic memory analysis platform.  
 The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responders and digital forensics investigators.  

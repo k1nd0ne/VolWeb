@@ -199,7 +199,7 @@ thead, tbody {
 .spinner-review {
   z-index: 2;
   position: absolute;
-  top: 10%;
+  top: 15%;
   left: 55%;
   margin: -25px 0 0 -25px;
 }
