@@ -10,7 +10,7 @@ class Database:
 class Secrets:
     SECRET_KEY = os.getenv('DJANGO_SECRET','DevSecretKey')
     BROKER_URL = os.getenv('BROKER_URL','amqp://admin:mypass@localhost:5672')
-    VT_API_KEY = os.getenv('VT_API_KEY',"YOUR_VT_API_KEY_HERE")
+    VT_API_KEY = os.getenv('VT_API_KEY',"DEV_API_KEY")
 
 
 class Debug:

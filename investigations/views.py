@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.serializers import serialize
 from celery.result import AsyncResult
 from iocs.models import IOC
@@ -24,9 +24,33 @@ def investigations(request):
     request : http request object
 
     Comment:
-    First entry point to visualise all of the investigations
+    First entry point to visualize all of the investigations
     """
     return render(request, 'investigations/investigations.html', {'investigations': UploadInvestigation.objects.all()})
+
+
+@login_required
+def custom_invest(request, pk):    
+    """Custom an investigation
+
+        Arguments:
+        request : http request object
+
+        Comment:
+        Get the investigation and fill the different field.
+        """
+    investigation = UploadInvestigation.objects.get(pk=pk)
+    if request.method == 'GET':
+        custom_form = CustomInvestigation(instance=investigation)
+    if request.method == 'POST':
+        form = CustomInvestigation(request.POST, instance=investigation)
+        if form.is_valid():
+            investigation.save()
+            return redirect('/investigations/')
+        else:
+            print(form.errors)
+    User = get_user_model()
+    return render(request, 'investigations/custom_invest.html',{'form':custom_form})
 
 
 @login_required
@@ -68,7 +92,7 @@ def new_invest(request):
                 file_folder.os_version = os_version
                 file_folder.investigators = investigators
                 file_folder.description = description
-                file_folder.status = "0"
+                file_folder.status = "-1"
                 file_folder.percentage = "0"
                 file_folder.existingPath = file_name
                 file_folder.eof = end
@@ -77,6 +101,7 @@ def new_invest(request):
                 file_folder.save()
                 if int(end):
                     res = JsonResponse({'data': 'Uploaded Successfully', 'existing_path': file_name})
+                    file_folder.status = "0"
                 else:
                     res = JsonResponse({'existing_path': file_name})
                 return res
@@ -89,6 +114,7 @@ def new_invest(request):
                             destination.write(file)
                             if int(end):
                                 model_id.eof = int(end)
+                                model_id.status = "0"
                                 model_id.save()
                                 model_id.update_activity()
                                 res = JsonResponse(

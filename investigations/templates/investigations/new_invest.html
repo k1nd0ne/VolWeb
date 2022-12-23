@@ -26,12 +26,12 @@
       <div class="card-body">
         <div class="row">
           <div class="col-sm-12 col-md-8 col-lg-8">
-            <div class="mb-3"><label class="form-label"><strong>HostName *</strong></label>
+            <div class="mb-3"><label class="form-label"><strong>Hostname *</strong></label>
               {{form.title}}
             </div>
           </div>
           <div class="col-sm-12 col-md-4 col-lg-4">
-            <div class="mb-3"><label class="form-label" for="service_price"><strong>OS *</strong><br></label>
+            <div class="mb-3"><label class="form-label" for="service_price"><strong>Operating System *</strong><br></label>
               {{form.os_version}}
             </div>
           </div>
@@ -41,7 +41,7 @@
           <div class="mb-3"><label class="form-label" for="service_client_payment_validated"><strong>Forensics Analyst&nbsp; *</strong></label>
             <div class="form-group mb-3">
               {% for u in Users %}
-              <a onclick="ToggleInvestigator('{{u.username}}');" href="#">
+              <a onclick="ToggleInvestigator('{{u.username}}');" href="#" style="text-decoration: none;" >
                 <span id="badge_{{u.username}}" class="badge text-muted" style="margin-right: 10px;background-color: rgb(255,255,255);border: 1px solid rgb(0,0,0) ;">{{u.username}}</span>
               </a>
             {% endfor %}
@@ -62,30 +62,12 @@
     <div id="uploaded_files"></div>
     <!-- The alert box displaying the error messages if the form is not valid -->
     <div id="alert-box" class="text-dark not-visible"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="{% static 'js/upload.js' %}"></script>
     <script>
-      function ToggleInvestigator(u){
-        var badge = document.getElementById('badge_'+u);
-        var investigators = document.getElementById('id_investigators');
-
-        if(badge.classList.contains("text-muted")){
-          if(investigators.value.includes(u) == false){
-            investigators.value += u + ' ';
-          }
-          badge.classList.remove("text-muted");
-          badge.classList.add("text-success");
-        }
-        else{
-          investigators.value = investigators.value.replace(u,"").replace(' ','');
-          badge.classList.remove("text-success");
-          badge.classList.add("text-muted");
-        }
-      }
       $(document).ready(function(){
         $('.spinner-main').hide();
         $('.container').show();
         $('.container-fluid').show();
       });
     </script>
-    <script src="{% static 'js/upload.js' %}"></script>
     {% endblock content %}

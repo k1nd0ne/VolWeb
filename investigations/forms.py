@@ -19,6 +19,21 @@ class UploadFileForm(forms.ModelForm):
         }
 
 
+
+class CustomInvestigation(forms.ModelForm):
+    class Meta:
+        model = UploadInvestigation
+        fields = ('title', 'description', 'os_version')
+        widgets = {
+            'title': TextInput(
+                attrs={'class': 'form-control', 'type': 'text', 'placeholder': 'Hostname', 'required': ''}),
+            'description': Textarea(attrs={"class": "form-control", "rows": "4", "required": "",
+                                           'placeholder': 'Example : Client, machine usage,...'}),
+            'os_version': Select(attrs={'value': 'Windows', 'class': 'form-select'}),
+        }
+
+
+
 class ManageInvestigation(forms.Form):
     sa_case_id = forms.ModelChoiceField(queryset=UploadInvestigation.objects.all())
 
