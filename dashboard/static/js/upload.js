@@ -5,6 +5,24 @@ The FileUpload Javascript function:
 /!\ This function needs a rework along with the linked investigations views /!\
 */
 
+function ToggleInvestigator(u) {
+    var badge = document.getElementById('badge_' + u);
+    var investigators = document.getElementById('id_investigators');
+
+    if (badge.classList.contains("text-muted")) {
+        if (investigators.value.includes(u) == false) {
+            investigators.value += u + ' ';
+        }
+        badge.classList.remove("text-muted");
+        badge.classList.add("text-success");
+    }
+    else {
+        investigators.value = investigators.value.replace(u, "").replace(' ', '');
+        badge.classList.remove("text-success");
+        badge.classList.add("text-muted");
+    }
+}
+
 class FileUpload {
 
     constructor(input) {
@@ -43,29 +61,29 @@ class FileUpload {
         const investDesc = document.getElementById('id_description');
         const filefield = document.getElementById('fileupload');
         alertBox.innerHTML = "";
-        if(title.value == ""){
-                    alertBox.innerHTML = "<p class='text-danger'>Please fill out the hostname field.</p>";
-                    return;
+        if (title.value == "") {
+            alertBox.innerHTML = "<p class='text-danger'>Please fill out the hostname field.</p>";
+            return;
 
         }
-        if(filefield.value == ""){
-                    alertBox.innerHTML = "<p class='text-danger'>Please choose a file.</p>";
-                    return;
+        if (filefield.value == "") {
+            alertBox.innerHTML = "<p class='text-danger'>Please choose a file.</p>";
+            return;
 
         }
-        if(description.value == ""){
-                    alertBox.innerHTML = "<p class='text-danger'>Please fill out the description field.</p>";
-                    return;
+        if (description.value == "") {
+            alertBox.innerHTML = "<p class='text-danger'>Please fill out the description field.</p>";
+            return;
 
         }
-        if(investigators.value == ''){
-                    alertBox.innerHTML = "<p class='text-danger'>Please select at least one Forensics analyst on the investigation.</p>";
-                    return;
+        if (investigators.value == '') {
+            alertBox.innerHTML = "<p class='text-danger'>Please select at least one Forensics analyst on the investigation.</p>";
+            return;
 
         }
-        if(os_version.value == ''){
-                    alertBox.innerHTML = "<p class='text-danger'>Please fill the os version field.</p>";
-                    return;
+        if (os_version.value == '') {
+            alertBox.innerHTML = "<p class='text-danger'>Please fill the os version field.</p>";
+            return;
 
         }
         this.create_progress_bar();
@@ -112,7 +130,7 @@ class FileUpload {
         formData.append('nextSlice', nextChunk);
         formData.append('title', title.value);
         formData.append('description', description.value);
-        formData.append('status', '0');
+        formData.append('status', '-1');
         formData.append('os_version', os_version.value);
         formData.append('investigators', investigators.value);
         formData.append('uid', 'null');
@@ -145,7 +163,7 @@ class FileUpload {
             contentType: false,
             data: formData,
             error: function (xhr) {
-                alertBox.innerHTML = "<p class='text-danger'>Something went wrong : "+ xhr +"</p>";
+                alertBox.innerHTML = "<p class='text-danger'>Something went wrong : " + xhr + "</p>";
                 console.log(xhr);
             },
             success: function (res) {

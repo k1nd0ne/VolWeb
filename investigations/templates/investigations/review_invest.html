@@ -12,27 +12,30 @@ Alway use the #action-form to perform any post request
 {% load static %}
 {% block content%}
 <style>
-  .main{
+  .main {
     background: #081327;
   }
 
 
-.far {
-  transition: .3s transform ease-in-out;
-}
- .collapsed .far {
-  transform: rotate(-90deg);
-}
+  .far {
+    transition: .3s transform ease-in-out;
+  }
+
+  .collapsed .far {
+    transform: rotate(-90deg);
+  }
 </style>
 <!--- ANYCHART CDN JS + CSS INCLUSION --->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js" type="text/javascript"></script>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-core.min.js"></script>
-<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-exports.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
+<script
+  src="https://cdn.anychart.com/releases/8.11.0/js/anychart-exports.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-graph.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-sunburst.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/css/anychart-ui.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/fonts/css/anychart-font.min.css"/>
+<link rel="stylesheet" type="text/css"
+  href="https://cdn.anychart.com/releases/8.11.0/fonts/css/anychart-font.min.css" />
 
 
 
@@ -43,364 +46,442 @@ Alway use the #action-form to perform any post request
     </div>
     <div class="col-auto align-items-center d-flex" style="border-right-width: 1px;border-right-style: solid;">
       <i>
-        <svg height=80 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)"sodipodi:docname=side.svg version=1.1 viewBox="0 0 1.0868235 23.893361"width=30 xml:space=preserve xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd xmlns:svg=http://www.w3.org/2000/svg><sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7 inkscape:current-layer=layer1 inkscape:cx=-21.388553 inkscape:cy=42.987313 inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0 inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302 inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728 inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false /><defs id=defs2 /><g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"transform=translate(-106.95068,-6.8098632)><path class=svg-header-1 d="m 105.49577,7.1074427 c 4.79931,7.2235033 5.68153,14.8989793 0.24635,23.3033863"id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:0.5px;stroke-opacity:1 /><path class=svg-header-2 d="m 105.19511,7.1113105 c 5.45682,7.2211055 6.4599,14.8940335 0.28009,23.2956505"id=path297 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:0.5px;stroke-opacity:1 /><path class=svg-header-3 d="m 105.19088,7.1077022 c 4.86467,7.2233428 5.7589,14.8986478 0.2497,23.3028678"id=path3032 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:0.5px;stroke-opacity:1 /></g></svg>
+        <svg height=80 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+          inkscape:version="1.2 (dc2aeda, 2022-05-15)" sodipodi:docname=side.svg version=1.1
+          viewBox="0 0 1.0868235 23.893361" width=30 xml:space=preserve xmlns=http://www.w3.org/2000/svg
+          xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape
+          xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd xmlns:svg=http://www.w3.org/2000/svg>
+          <sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7 inkscape:current-layer=layer1
+            inkscape:cx=-21.388553 inkscape:cy=42.987313 inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm
+            inkscape:pagecheckerboard=0 inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302
+            inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728 inkscape:window-y=25
+            inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false />
+          <defs id=defs2 />
+          <g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1" transform=translate(-106.95068,-6.8098632)>
+            <path class=svg-header-1 d="m 105.49577,7.1074427 c 4.79931,7.2235033 5.68153,14.8989793 0.24635,23.3033863"
+              id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+              sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:0.5px;stroke-opacity:1 />
+            <path class=svg-header-2 d="m 105.19511,7.1113105 c 5.45682,7.2211055 6.4599,14.8940335 0.28009,23.2956505"
+              id=path297 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+              sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:0.5px;stroke-opacity:1 />
+            <path class=svg-header-3 d="m 105.19088,7.1077022 c 4.86467,7.2233428 5.7589,14.8986478 0.2497,23.3028678"
+              id=path3032 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+              sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:0.5px;stroke-opacity:1 />
+          </g>
+        </svg>
 
       </i>
       <span class="text-truncate hash" style="margin-left: 12px;">
         <span>&nbsp;</span>
         <a href="#" style="text-decoration:none;" onclick="copy('{{ImageSignature.sha256}}','#tooltip-1')">
-          <i id="tooltip-1" class="fas fa-copy text-white" data-bs-toggle="tooltip" data-bss-tooltip="" data-bs-placement="left" title="Copy">
+          <i id="tooltip-1" class="fas fa-copy text-white" data-bs-toggle="tooltip" data-bss-tooltip=""
+            data-bs-placement="left" title="Copy">
           </i>
         </a>
         <span style="color: var(--bs-body-color);">sha256 : {{ImageSignature.sha256}}&nbsp;</span>
         <br><span style="color: var(--bs-body-color);">&nbsp;</span>
-      <a href="#" style="text-decoration:none;" onclick="copy('{{ImageSignature.sha1}}','#tooltip-2')">
-        <i id="tooltip-2" class="fas fa-copy text-white" data-bs-toggle="tooltip" data-bss-tooltip="" data-bs-placement="left" title="Copy">
-        </i>
-      </a>
-      <span style="color: var(--bs-body-color);">sha1 : {{ImageSignature.sha1}}&nbsp;</span><br><span style="color: var(--bs-body-color);">&nbsp;
-      </span>
-      <a href="#" style="text-decoration:none;" onclick="copy('{{ImageSignature.md5}}','#tooltip-3')">
-        <i id="tooltip-3" class="fas fa-copy text-white" data-bs-toggle="tooltip" data-bss-tooltip="" data-bs-placement="left" title="Copy">
-        </i>
-      </a>
-      <span style="color: var(--bs-body-color);">&nbsp;md5 : {{ImageSignature.md5}}</span>&nbsp; </span></div>
+        <a href="#" style="text-decoration:none;" onclick="copy('{{ImageSignature.sha1}}','#tooltip-2')">
+          <i id="tooltip-2" class="fas fa-copy text-white" data-bs-toggle="tooltip" data-bss-tooltip=""
+            data-bs-placement="left" title="Copy">
+          </i>
+        </a>
+        <span style="color: var(--bs-body-color);">sha1 : {{ImageSignature.sha1}}&nbsp;</span><br><span
+          style="color: var(--bs-body-color);">&nbsp;
+        </span>
+        <a href="#" style="text-decoration:none;" onclick="copy('{{ImageSignature.md5}}','#tooltip-3')">
+          <i id="tooltip-3" class="fas fa-copy text-white" data-bs-toggle="tooltip" data-bss-tooltip=""
+            data-bs-placement="left" title="Copy">
+          </i>
+        </a>
+        <span style="color: var(--bs-body-color);">&nbsp;md5 : {{ImageSignature.md5}}</span>&nbsp; </span>
+    </div>
     <div class="col-auto align-items-center d-flex">
       <span>Investigator(s) :&nbsp;</span>
       <span class="badge bg-info" style="margin-right: 10px;">{{case.investigators}}</span>
     </div>
 
-  <div class="row" style="margin-top: 19px;">
-    {% if case.os_version == "Linux" %}
-    <!---- Linux INVESTIGATION REVIEW  --->
-    <div class="col-12 mt-sm-auto" style="">
-      <div>
-        <ul class="nav nav-tabs" role="tablist">
-          <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#tab-1"><i class="fas fa-microchip"></i>&nbsp;Processes</a></li>
-          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2" style="color: var(--bs-indigo);"><i class="fa-solid fa-chart-gantt"></i>&nbsp;Tree</a></li>
-          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-7" style="color: var(--bs-purple);"><i class="fas fa-file"></i>&nbsp;TtyCheck</a></li>
-          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-8" style="color: var(--bs-info);"><i class="fas fa-file-contract"></i>&nbsp;Reporting</a></li>
-        </ul>
-        <div class="tab-content">
-          <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
-            <div class="row">
-              <div class="col-2" style="margin-top: 10px;">
+    <div class="row" style="margin-top: 19px;">
+      {% if case.os_version == "Linux" %}
+      <!---- Linux INVESTIGATION REVIEW  --->
+      <div class="col-12 mt-sm-auto" style="">
+        <div>
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab"
+                href="#tab-1"><i class="fas fa-microchip"></i>&nbsp;Processes</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2"
+                style="color: var(--bs-indigo);"><i class="fa-solid fa-chart-gantt"></i>&nbsp;Tree</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-7"
+                style="color: var(--bs-purple);"><i class="fas fa-file"></i>&nbsp;TtyCheck</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-8"
+                style="color: var(--bs-info);"><i class="fas fa-file-contract"></i>&nbsp;Reporting</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
+              <div class="row">
+                <div class="col-2" style="margin-top: 10px;">
 
-                <div class="accordion" id="accordionExample">
-                  <div class="process-item">
-                      <a href="#" id="collapse_default" onclick="DisplayAll();" class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapse_default" aria-expanded="false" aria-controls="collapseOne" style="text-decoration: none;background: var(--bs-primary-rgb);">
-                          Display All
+                  <div class="accordion" id="accordionExample">
+                    <div class="process-item">
+                      <a href="#" id="collapse_default" onclick="DisplayAll();"
+                        class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
+                        data-bs-target="#collapse_default" aria-expanded="false" aria-controls="collapseOne"
+                        style="text-decoration: none;background: var(--bs-primary-rgb);">
+                        Display All
                       </a>
-                    <div id="collapse_default" class="d-none accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                      <div class="accordion-body process_pid_info">
+                      <div id="collapse_default" class="d-none accordion-collapse collapse" aria-labelledby="headingOne"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body process_pid_info">
+                        </div>
                       </div>
                     </div>
-                  </div>
 
 
-                  {% for process in PsList %}
-                  <div class="process-item">
-                      <a href="#" id="collapse_{{process.PID}}" onclick="DisplayArtifacts('collapse_{{process.PID}}','pid_{{process.PID}}');" class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none;background: var(--bs-primary-rgb);">
+                    {% for process in PsList %}
+                    <div class="process-item">
+                      <a href="#" id="collapse_{{process.PID}}"
+                        onclick="DisplayArtifacts('collapse_{{process.PID}}','pid_{{process.PID}}');"
+                        class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
+                        data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne"
+                        style="text-decoration: none;background: var(--bs-primary-rgb);">
                         <i class="far fa-arrow-alt-circle-down"></i>
                         <span class="text-truncate text-white" style="margin-left: 10px;">{{process.COMM}} </span>
-                        <span  style="margin-left: 10px;"> - </span>
-                        <span class="text-truncate" style="margin-left: 10px; color: var(--bs-success)">{{process.PID}}</span>
+                        <span style="margin-left: 10px;"> - </span>
+                        <span class="text-truncate"
+                          style="margin-left: 10px; color: var(--bs-success)">{{process.PID}}</span>
                       </a>
-                    <div id="collapse_{{process.id}}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                      <div class="accordion-body process_pid_info">
-                        <p class="card-text p_info">PPID :&nbsp;{{process.PPID}}</p>
+                      <div id="collapse_{{process.id}}" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body process_pid_info">
+                          <p class="card-text p_info">PPID :&nbsp;{{process.PPID}}</p>
+                        </div>
                       </div>
                     </div>
+                    {% endfor %}
+
                   </div>
-                  {% endfor %}
 
                 </div>
+                <div class="col-10" style="margin-top: 10px;">
 
-              </div>
-              <div class="col-10" style="margin-top: 10px;">
+                  <div class="spinner-review align-items-center justify-content-center no-gutters d-flex d-none">
+                    <svg height=50 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96
+                      inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)" sodipodi:docname=side.svg
+                      version=1.1 viewBox="0 0 1.0868235 23.893361" width=10 xml:space=preserve
+                      xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape
+                      xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd
+                      xmlns:svg=http://www.w3.org/2000/svg>
+                      <sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7
+                        inkscape:current-layer=layer1 inkscape:cx=-19.812001 inkscape:cy=42.777106
+                        inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0
+                        inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302
+                        inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728
+                        inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false />
+                      <defs id=defs2 />
+                      <g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"
+                        transform=translate(-106.95068,-6.8098632)>
+                        <path class=svg-header-1
+                          d="m 109.49242,7.1074427 c -4.79931,7.2235033 -5.68153,14.8989793 -0.24635,23.3033863"
+                          id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+                          sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:1px;stroke-opacity:1 />
+                        <path class=svg-header-2
+                          d="m 109.79308,7.1113105 c -5.45682,7.2211055 -6.4599,14.8940335 -0.28009,23.2956505"
+                          id=path297 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+                          sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:1px;stroke-opacity:1 />
+                        <path class=svg-header-3
+                          d="m 109.79731,7.1077022 c -4.86467,7.2233428 -5.7589,14.8986478 -0.2497,23.3028678"
+                          id=path3032 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+                          sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:1px;stroke-opacity:1 />
+                      </g>
+                    </svg>
+                    <strong>Filtering artifacts</strong>
+                    <svg height=50 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96
+                      inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)" sodipodi:docname=side.svg
+                      version=1.1 viewBox="0 0 1.0868235 23.893361" width=10 xml:space=preserve
+                      xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape
+                      xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd
+                      xmlns:svg=http://www.w3.org/2000/svg>
+                      <sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7
+                        inkscape:current-layer=layer1 inkscape:cx=-21.388553 inkscape:cy=42.987313
+                        inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0
+                        inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302
+                        inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728
+                        inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false />
+                      <defs id=defs2 />
+                      <g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"
+                        transform=translate(-106.95068,-6.8098632)>
+                        <path class=svg-header-1
+                          d="m 105.49577,7.1074427 c 4.79931,7.2235033 5.68153,14.8989793 0.24635,23.3033863"
+                          id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+                          sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:1px;stroke-opacity:1 />
+                        <path class=svg-header-2
+                          d="m 105.19511,7.1113105 c 5.45682,7.2211055 6.4599,14.8940335 0.28009,23.2956505" id=path297
+                          inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+                          sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:1px;stroke-opacity:1 />
+                        <path class=svg-header-3
+                          d="m 105.19088,7.1077022 c 4.86467,7.2233428 5.7589,14.8986478 0.2497,23.3028678" id=path3032
+                          inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+                          sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:1px;stroke-opacity:1 />
+                      </g>
+                    </svg>
+                  </div>
 
-                <div class="spinner-review align-items-center justify-content-center no-gutters d-flex d-none">
-                      <svg height=50 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)"sodipodi:docname=side.svg version=1.1 viewBox="0 0 1.0868235 23.893361"width=10 xml:space=preserve xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd xmlns:svg=http://www.w3.org/2000/svg><sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7 inkscape:current-layer=layer1 inkscape:cx=-19.812001 inkscape:cy=42.777106 inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0 inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302 inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728 inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false /><defs id=defs2 /><g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"transform=translate(-106.95068,-6.8098632)><path class=svg-header-1 d="m 109.49242,7.1074427 c -4.79931,7.2235033 -5.68153,14.8989793 -0.24635,23.3033863"id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-2 d="m 109.79308,7.1113105 c -5.45682,7.2211055 -6.4599,14.8940335 -0.28009,23.2956505"id=path297 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-3 d="m 109.79731,7.1077022 c -4.86467,7.2233428 -5.7589,14.8986478 -0.2497,23.3028678"id=path3032 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:1px;stroke-opacity:1 /></g></svg>
-                      <strong>Filtering artifacts</strong>
-                        <svg height=50 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)"sodipodi:docname=side.svg version=1.1 viewBox="0 0 1.0868235 23.893361"width=10 xml:space=preserve xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd xmlns:svg=http://www.w3.org/2000/svg><sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7 inkscape:current-layer=layer1 inkscape:cx=-21.388553 inkscape:cy=42.987313 inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0 inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302 inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728 inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false /><defs id=defs2 /><g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"transform=translate(-106.95068,-6.8098632)><path class=svg-header-1 d="m 105.49577,7.1074427 c 4.79931,7.2235033 5.68153,14.8989793 0.24635,23.3033863"id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-2 d="m 105.19511,7.1113105 c 5.45682,7.2211055 6.4599,14.8940335 0.28009,23.2956505"id=path297 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-3 d="m 105.19088,7.1077022 c 4.86467,7.2233428 5.7589,14.8986478 0.2497,23.3028678"id=path3032 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:1px;stroke-opacity:1 /></g></svg>
-                </div>
+                  <div class="d-none processes_tab">
 
-                <div class="d-none processes_tab">
-
-                  <ul class="nav nav-tabs" role="tablist">
-                    <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#tab-3">ELFs</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-4">Maps</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-5">Lsof</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-6">Bash</a></li>
-                  </ul>
-                  <div class="tab-content ">
-                    {% include "investigations/linux/processes/elfs.html" %}
-                    {% include "investigations/linux/processes/maps.html" %}
-                    {% include "investigations/linux/processes/lsof.html" %}
-                    {% include "investigations/linux/processes/bash.html" %}
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item" role="presentation"><a class="nav-link active" role="tab"
+                          data-bs-toggle="tab" href="#tab-3">ELFs</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                          href="#tab-4">Maps</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                          href="#tab-5">Lsof</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                          href="#tab-6">Bash</a></li>
+                    </ul>
+                    <div class="tab-content ">
+                      {% include "investigations/linux/processes/elfs.html" %}
+                      {% include "investigations/linux/processes/maps.html" %}
+                      {% include "investigations/linux/processes/lsof.html" %}
+                      {% include "investigations/linux/processes/bash.html" %}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            {% include "investigations/linux/processes/tree.html" %}
+            {% include "investigations/linux/others/tty_check.html" %}
+            {% include "investigations/linux/report.html" %}
+
+
+
           </div>
-          {% include "investigations/linux/processes/tree.html" %}
-          {% include "investigations/linux/others/tty_check.html" %}
-          {% include "investigations/linux/report.html" %}
-
-
-
         </div>
       </div>
-    </div>
-    {% endif %}
+      {% endif %}
 
 
 
 
 
-    <!---- WINDOWS INVESTIGATION REVIEW  --->
-    {% if case.os_version == "Windows" %}
+      <!---- WINDOWS INVESTIGATION REVIEW  --->
+      {% if case.os_version == "Windows" %}
 
-    <div class="col-12 mt-sm-auto" style="">
-      <div>
-        <ul class="nav nav-tabs" role="tablist">
-          <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#tab-1"><i class="fas fa-microchip"></i>&nbsp;Processes</a></li>
-          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-19"><i class="fa-solid fa-chart-gantt"></i>&nbsp;Tree</a></li>
-          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-20"><i class="fa-solid fa-diagram-project"></i>&nbsp;NetGraph</a></li>
-          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2" style="color: var(--bs-indigo);"><i class="fa-solid fa-folder-tree"></i>&nbsp;Registry</a></li>
-          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-3" style="color: var(--bs-purple);"><i class="fas fa-puzzle-piece"></i>&nbsp;Cryptography</a></li>
-          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-15" style="color: var(--bs-pink);"><i class="fa-solid fa-timeline"></i>&nbsp;Timeline</a></li>
-          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-16" style="color: var(--bs-warning);"><i class="fas fa-file"></i>&nbsp;Files</a></li>
-          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-18" style="color: var(--bs-danger);"><i class="fas fa-fingerprint"></i>&nbsp;String based IOCs</a></li>
-          <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-22" style="color: var(--bs-info);"><i class="fas fa-file-contract"></i>&nbsp;Reporting</a></li>
+      <div class="col-12 mt-sm-auto" id="process" data-url="{% url 'download_dump' %}">
+        <div>
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab"
+                href="#tab-1"><i class="fas fa-microchip"></i>&nbsp;Processes</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                href="#tab-19"><i class="fa-solid fa-chart-gantt"></i>&nbsp;Tree</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                href="#tab-20"><i class="fa-solid fa-diagram-project"></i>&nbsp;NetGraph</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2"
+                style="color: var(--bs-indigo);"><i class="fa-solid fa-folder-tree"></i>&nbsp;Registry</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-3"
+                style="color: var(--bs-purple);"><i class="fas fa-puzzle-piece"></i>&nbsp;Cryptography</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-15"
+                style="color: var(--bs-pink);"><i class="fa-solid fa-timeline"></i>&nbsp;Timeline</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-16"
+                style="color: var(--bs-warning);"><i class="fas fa-file"></i>&nbsp;Files</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-18"
+                style="color: var(--bs-danger);"><i class="fas fa-fingerprint"></i>&nbsp;String based IOCs</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-22"
+                style="color: var(--bs-info);"><i class="fas fa-file-contract"></i>&nbsp;Reporting</a></li>
 
-        </ul>
-        <div class="tab-content">
-          <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
-            <div class="row">
-              <div class="col-2" style="margin-top: 10px;">
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
+              <div class="row">
+                <div class="col-2" style="margin-top: 10px;">
 
-                <div class="accordion" id="accordionExample">
-                  <div class="process-item">
-                      <a href="#" id="collapse_default" onclick="DisplayAll();" class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapse_default" aria-expanded="false" aria-controls="collapseOne" style="text-decoration: none;background: var(--bs-primary-rgb);">
-                          Display All
+                  <div class="accordion" id="accordionExample">
+                    <div class="process-item">
+                      <a href="#" id="collapse_default" onclick="DisplayAll();"
+                        class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
+                        data-bs-target="#collapse_default" aria-expanded="false" aria-controls="collapseOne"
+                        style="text-decoration: none;background: var(--bs-primary-rgb);">
+                        Display All
                       </a>
-                    <div id="collapse_default" class="d-none accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                      <div class="accordion-body process_pid_info">
+                      <div id="collapse_default" class="d-none accordion-collapse collapse" aria-labelledby="headingOne"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body process_pid_info">
+                        </div>
                       </div>
                     </div>
-                  </div>
 
 
-                  {% for process in PsScan %}
-                  <div class="process-item">
-                      <a href="#" id="collapse_{{process.PID}}" onclick="DisplayArtifacts('collapse_{{process.PID}}','pid_{{process.PID}}');" class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none;background: var(--bs-primary-rgb);">
+                    {% for process in PsScan %}
+                    <div class="process-item">
+                      <a href="#" id="collapse_{{process.PID}}"
+                        onclick="DisplayArtifacts('collapse_{{process.PID}}','pid_{{process.PID}}');"
+                        class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
+                        data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne"
+                        style="text-decoration: none;background: var(--bs-primary-rgb);">
                         <i class="far fa-arrow-alt-circle-down"></i>
-                        <span class="text-truncate text-white" style="margin-left: 10px;">{{process.ImageFileName}} </span>
-                        <span  style="margin-left: 10px;"> - </span>
-                        <span class="text-truncate" style="margin-left: 10px; color: var(--bs-success)">{{process.PID}}</span>
+                        <span class="text-truncate text-white" style="margin-left: 10px;">{{process.ImageFileName}}
+                        </span>
+                        <span style="margin-left: 10px;"> - </span>
+                        <span class="text-truncate"
+                          style="margin-left: 10px; color: var(--bs-success)">{{process.PID}}</span>
                       </a>
-                    <div id="collapse_{{process.id}}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                      <div class="accordion-body process_pid_info">
-                        <p class="card-text p_info">Offset :&nbsp;{{process.Offset}}
-                          <br>Threads :&nbsp;{{process.Threads}}
-                          <br>Handles :&nbsp;{{process.Handles}}
-                          <br>Session Id :&nbsp;{{process.SessionId}}
-                          <br>Wow64 : {{process.Wow64}}
-                          <br>Created time :&nbsp;{{process.CreateTime}}
-                          <br>Exit time : {{process.ExitTime}}</p>
+                      <div id="collapse_{{process.id}}" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body process_pid_info">
+                          <p class="card-text p_info">Offset :&nbsp;{{process.Offset}}
+                            <br>Threads :&nbsp;{{process.Threads}}
+                            <br>Handles :&nbsp;{{process.Handles}}
+                            <br>Session Id :&nbsp;{{process.SessionId}}
+                            <br>Wow64 : {{process.Wow64}}
+                            <br>Created time :&nbsp;{{process.CreateTime}}
+                            <br>Exit time : {{process.ExitTime}}
+                          </p>
                           <p class="card-text p_info">
-                            <button onclick="DemandProcDump('{{process.PID}}','{{case.id}}')" class="btn btn-primary procdump-try-{{process.PID}} btn-sm" type="button">Dump</button>
-                            <button class="btn btn-primary d-none procdump-load-{{process.PID}} btn-sm" type="button"><span class="spinner-border spinner-border-sm" role="status"></span></button>
-                            <button class="btn btn-success d-none btn-sm procdump-ok-{{process.PID}}" type="button">Download</button></p>
-                            <button class="btn-danger d-none btn-sm procdump-ko-{{process.PID}}" type="button" disabled="disabled">X</button>
+                            <button onclick="DemandProcDump('{{process.PID}}','{{case.id}}')"
+                              data-url="{% url 'dump_process' %}"
+                              class="btn btn-primary procdump-try-{{process.PID}} btn-sm" type="button">Dump</button>
+                            <button class="btn btn-primary d-none procdump-load-{{process.PID}} btn-sm"
+                              type="button"><span class="spinner-border spinner-border-sm"
+                                role="status"></span></button>
+                            <button class="btn btn-success d-none btn-sm procdump-ok-{{process.PID}}"
+                              type="button">Download</button>
+                          </p>
+                          <button class="btn-danger d-none btn-sm procdump-ko-{{process.PID}}" type="button"
+                            disabled="disabled">X</button>
+                        </div>
                       </div>
                     </div>
+                    {% endfor %}
+
                   </div>
-                  {% endfor %}
 
                 </div>
+                <div class="col-10" style="margin-top: 10px;">
+                  <div class="spinner-review align-items-center justify-content-center no-gutters d-flex d-none">
+                    <svg height=50 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96
+                      inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)" sodipodi:docname=side.svg
+                      version=1.1 viewBox="0 0 1.0868235 23.893361" width=10 xml:space=preserve
+                      xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape
+                      xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd
+                      xmlns:svg=http://www.w3.org/2000/svg>
+                      <sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7
+                        inkscape:current-layer=layer1 inkscape:cx=-19.812001 inkscape:cy=42.777106
+                        inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0
+                        inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302
+                        inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728
+                        inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false />
+                      <defs id=defs2 />
+                      <g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"
+                        transform=translate(-106.95068,-6.8098632)>
+                        <path class=svg-header-1
+                          d="m 109.49242,7.1074427 c -4.79931,7.2235033 -5.68153,14.8989793 -0.24635,23.3033863"
+                          id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+                          sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:1px;stroke-opacity:1 />
+                        <path class=svg-header-2
+                          d="m 109.79308,7.1113105 c -5.45682,7.2211055 -6.4599,14.8940335 -0.28009,23.2956505"
+                          id=path297 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+                          sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:1px;stroke-opacity:1 />
+                        <path class=svg-header-3
+                          d="m 109.79731,7.1077022 c -4.86467,7.2233428 -5.7589,14.8986478 -0.2497,23.3028678"
+                          id=path3032 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+                          sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:1px;stroke-opacity:1 />
+                      </g>
+                    </svg>
+                    <strong>Filtering artifacts</strong>
+                    <svg height=50 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96
+                      inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)" sodipodi:docname=side.svg
+                      version=1.1 viewBox="0 0 1.0868235 23.893361" width=10 xml:space=preserve
+                      xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape
+                      xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd
+                      xmlns:svg=http://www.w3.org/2000/svg>
+                      <sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7
+                        inkscape:current-layer=layer1 inkscape:cx=-21.388553 inkscape:cy=42.987313
+                        inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0
+                        inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302
+                        inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728
+                        inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false />
+                      <defs id=defs2 />
+                      <g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"
+                        transform=translate(-106.95068,-6.8098632)>
+                        <path class=svg-header-1
+                          d="m 105.49577,7.1074427 c 4.79931,7.2235033 5.68153,14.8989793 0.24635,23.3033863"
+                          id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+                          sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:1px;stroke-opacity:1 />
+                        <path class=svg-header-2
+                          d="m 105.19511,7.1113105 c 5.45682,7.2211055 6.4599,14.8940335 0.28009,23.2956505" id=path297
+                          inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+                          sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:1px;stroke-opacity:1 />
+                        <path class=svg-header-3
+                          d="m 105.19088,7.1077022 c 4.86467,7.2233428 5.7589,14.8986478 0.2497,23.3028678" id=path3032
+                          inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96
+                          sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:1px;stroke-opacity:1 />
+                      </g>
+                    </svg>
+                  </div>
+                  <div class="d-none processes_tab">
 
-              </div>
-              <div class="col-10" style="margin-top: 10px;">
-                <div class="spinner-review align-items-center justify-content-center no-gutters d-flex d-none">
-                      <svg height=50 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)"sodipodi:docname=side.svg version=1.1 viewBox="0 0 1.0868235 23.893361"width=10 xml:space=preserve xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd xmlns:svg=http://www.w3.org/2000/svg><sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7 inkscape:current-layer=layer1 inkscape:cx=-19.812001 inkscape:cy=42.777106 inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0 inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302 inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728 inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false /><defs id=defs2 /><g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"transform=translate(-106.95068,-6.8098632)><path class=svg-header-1 d="m 109.49242,7.1074427 c -4.79931,7.2235033 -5.68153,14.8989793 -0.24635,23.3033863"id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-2 d="m 109.79308,7.1113105 c -5.45682,7.2211055 -6.4599,14.8940335 -0.28009,23.2956505"id=path297 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-3 d="m 109.79731,7.1077022 c -4.86467,7.2233428 -5.7589,14.8986478 -0.2497,23.3028678"id=path3032 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:1px;stroke-opacity:1 /></g></svg>
-                      <strong>Filtering artifacts</strong>
-                        <svg height=50 id=svg5 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 inkscape:version="1.2 (dc2aeda, 2022-05-15)"sodipodi:docname=side.svg version=1.1 viewBox="0 0 1.0868235 23.893361"width=10 xml:space=preserve xmlns=http://www.w3.org/2000/svg xmlns:inkscape=http://www.inkscape.org/namespaces/inkscape xmlns:sodipodi=http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd xmlns:svg=http://www.w3.org/2000/svg><sodipodi:namedview bordercolor=#000000 borderopacity=0.25 id=namedview7 inkscape:current-layer=layer1 inkscape:cx=-21.388553 inkscape:cy=42.987313 inkscape:deskcolor=#d1d1d1 inkscape:document-units=mm inkscape:pagecheckerboard=0 inkscape:pageopacity=0.0 inkscape:showpageshadow=2 inkscape:window-height=1302 inkscape:window-maximized=1 inkscape:window-width=3440 inkscape:window-x=1728 inkscape:window-y=25 inkscape:zoom=9.5144351 pagecolor=#ffffff showgrid=false /><defs id=defs2 /><g id=layer1 inkscape:groupmode=layer inkscape:label="Calque 1"transform=translate(-106.95068,-6.8098632)><path class=svg-header-1 d="m 105.49577,7.1074427 c 4.79931,7.2235033 5.68153,14.8989793 0.24635,23.3033863"id=path2363 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#4e73df;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-2 d="m 105.19511,7.1113105 c 5.45682,7.2211055 6.4599,14.8940335 0.28009,23.2956505"id=path297 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#54c4d4;stroke-width:1px;stroke-opacity:1 /><path class=svg-header-3 d="m 105.19088,7.1077022 c 4.86467,7.2233428 5.7589,14.8986478 0.2497,23.3028678"id=path3032 inkscape:export-filename=side.png inkscape:export-xdpi=96 inkscape:export-ydpi=96 sodipodi:nodetypes=cc style=fill:none;stroke:#e83e8c;stroke-width:1px;stroke-opacity:1 /></g></svg>
-                </div>
-                <div class="d-none processes_tab">
-
-                  <ul class="nav nav-tabs" role="tablist">
-                    <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#tab-4">Privileges</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-21">Command line</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-5">Environment variables</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-6">DLL List</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-7">Handles</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-8">Network</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link " role="tab" data-bs-toggle="tab" href="#tab-17">MalFind</a></li>
-                  </ul>
-                  <div class="tab-content ">
-                    {% include "investigations/windows/processes/privileges.html" %}
-                    {% include "investigations/windows/processes/cmdline.html" %}
-                    {% include "investigations/windows/processes/envars.html" %}
-                    {% include "investigations/windows/processes/dlllist.html" %}
-                    {% include "investigations/windows/processes/handles.html" %}
-                    {% include "investigations/windows/processes/network.html" %}
-                    {% include "investigations/windows/processes/malfind.html" %}
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item" role="presentation"><a class="nav-link active" role="tab"
+                          data-bs-toggle="tab" href="#tab-4">Privileges</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                          href="#tab-21">Command line</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                          href="#tab-5">Environment variables</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                          href="#tab-6">DLL List</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                          href="#tab-7">Handles</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                          href="#tab-8">Network</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link " role="tab" data-bs-toggle="tab"
+                          href="#tab-17">MalFind</a></li>
+                    </ul>
+                    <div class="tab-content ">
+                      {% include "investigations/windows/processes/privileges.html" %}
+                      {% include "investigations/windows/processes/cmdline.html" %}
+                      {% include "investigations/windows/processes/envars.html" %}
+                      {% include "investigations/windows/processes/dlllist.html" %}
+                      {% include "investigations/windows/processes/handles.html" %}
+                      {% include "investigations/windows/processes/network.html" %}
+                      {% include "investigations/windows/processes/malfind.html" %}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          {% include "investigations/windows/processes/tree.html" %}
-          {% include "investigations/windows/processes/netgraph.html" %}
-          {% include "investigations/windows/registry/registry.html" %}
-          {% include "investigations/windows/cryptography/cryptography.html" %}
-          {% include "investigations/windows/timeline/timeline.html" %}
-          {% include "investigations/windows/iocs/iocs.html" %}
-          {% include "investigations/windows/files/files.html" %}
-          {% include "investigations/windows/report.html" %}
+            {% include "investigations/windows/processes/tree.html" %}
+            {% include "investigations/windows/processes/netgraph.html" %}
+            {% include "investigations/windows/registry/registry.html" %}
+            {% include "investigations/windows/cryptography/cryptography.html" %}
+            {% include "investigations/windows/timeline/timeline.html" %}
+            {% include "investigations/windows/iocs/iocs.html" %}
+            {% include "investigations/windows/files/files.html" %}
+            {% include "investigations/windows/report.html" %}
 
+          </div>
         </div>
       </div>
+      {% endif %}
     </div>
-    {% endif %}
   </div>
-</div>
-<form id="action-form" method="POST">
-  {% csrf_token %}
-</form>
-<script
-src="https://code.jquery.com/jquery-3.6.0.min.js"
-integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-crossorigin="anonymous"></script>
-<script>
+
+  <script src="{% static 'js/review.js'%}"></script>
+  {% if case.os_version == "Windows" %}
+  <form id="action-form" method="POST" action="{% url 'download_dump' %}">
+    {% csrf_token %}
+  </form>
 
 
-  function DownloadDump(dump_id){
-    $('#action-form').attr('action', '{% url 'download_dump' %}');
-    $("#action-form").append("<input class='d-none' name='id' value="+dump_id+">");
-    $("#action-form").submit();
-  }
-
-  function DemandProcDump(pid, case_id){
-    const csrf = document.getElementsByName('csrfmiddlewaretoken');
-    const fd = new FormData();
-    fd.append('csrfmiddlewaretoken', csrf[0].value);
-    fd.append('case_id', case_id);
-    fd.append('pid', pid);
-    $.ajax({
-      type:'POST',
-      url: "{% url 'dump_process' %}",
-      enctype: 'multipart/form-data',
-      data: fd,
-      beforeSend: function(){
-        $('.procdump-try-'+pid).addClass("d-none");
-        $('.procdump-load-'+pid).removeClass("d-none");
-        $('#proc-message-info').html("Trying to dump the process...");
-        $('.toast-proc-info').toast('show');
-      },
-      success: function(response){
-        if (response['message'] == "success") {
-          $('#proc-success-message').html("Your file was successfully dumped.");
-          $('.toast-proc-success').toast('show');
-          $('.procdump-load-'+pid).addClass("d-none");
-          dump_id = response['id']
-          DownloadDump(dump_id)
-
-        }
-        if (response['message'] == "error")
-        {
-          $('#proc-failed-message').html("The PID provided is not valid");
-          $('.toast-proc-failed').toast('show');
-          $('.procdump-load-'+pid).addClass("d-none");
-          $('.procdump-try-'+pid).removeClass("d-none");
-        }
-
-        if (response['message'] == "failed"){
-          $('.procdump-load-'+pid).addClass("d-none");
-          $('.procdump-ko-'+pid).removeClass("d-none");
-          $('#proc-failed-message').html("The requested file could not be dumped");
-          $('.toast-proc-failed').toast('show');
-        }
-
-        if (response['message'] == "exist"){
-          $('#proc-success-message').html("Your file was successfully dumped");
-          $('.toast-proc-success').toast('show');
-          $('.procdump-load-'+pid).addClass("d-none");
-          dump_id = response['id']
-          DownloadDump(dump_id)
-        }
-
-      },
-      error: function(error){
-        $('#proc-failed-message').html("Could not dump the file requested.");
-        $('.toast-proc-failed').toast('show');
-      },
-      cache: false,
-      contentType : false,
-      processData: false
-    });
-  }
-
-  function DisplayArtifacts(collapse,process){
-
-      if($('#'+collapse).attr("aria-expanded") == "true"){
-        $('.pid').addClass('d-none');
-        $('.default-td').addClass('d-none');
-        $('.spinner-review').removeClass("d-none");
-        setTimeout(function(){
-            $('.processes_tab').removeClass('d-none');
-            $('.'+process).removeClass('d-none');
-            $('.default-td').removeClass('d-none');
-            $('.spinner-review').addClass("d-none");
-          }, 2000);
-      }
-    }
-
-    function DisplayAll(){
-
-        if($('#collapse_default').attr("aria-expanded") == "true"){
-          $('.pid').addClass('d-none');
-          $('.spinner-review').removeClass("d-none");
-          setTimeout(function(){
-            $('.processes_tab').removeClass('d-none');
-            $('.pid').removeClass('d-none');
-            $('.spinner-review').addClass("d-none");
-
-
-            }, 2000);
-        }
-      }
-
-      function copy(text, target) {
-        $(target).attr("title","Copied!");
-        $(target).tooltip('dispose')
-        $(target).tooltip('enable')
-        $(target).tooltip('show')
-        var input = document.createElement('input');
-        input.setAttribute('value', text);
-        document.body.appendChild(input);
-        input.select();
-        var result = document.execCommand('copy');
-        document.body.removeChild(input)
-        return result;
-      }
-</script>
-
-{% if case.os_version == "Windows" %}
-<script src="{% static 'js/windows.js'%}"></script>
-<script>
-  $(document).ready(function(){
-    GetReport("{% url 'win_report'%}", {{case.id}})
+  <script src="{% static 'js/windows.js'%}"></script>
+  <script>
+    $(document).ready(function () {
+      GetReport("{% url 'win_report'%}", {{ case.id }})
   });
-</script>
-{% else %}
-<script src="{% static 'js/linux.js'%}"></script>
-<script>
-  $(document).ready(function(){
-    GetReport("{% url 'lin_report'%}", {{case.id}})
+  </script>
+  {% else %}
+  <script src="{% static 'js/linux.js'%}"></script>
+  <script>
+    $(document).ready(function () {
+      GetReport("{% url 'lin_report'%}", {{ case.id }})
   });
-</script>
-{% endif %}
-{% endblock content %}
+  </script>
+  {% endif %}
+  {% endblock content %}

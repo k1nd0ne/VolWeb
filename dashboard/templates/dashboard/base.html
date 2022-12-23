@@ -4,90 +4,99 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>VolWeb</title>
-    <link rel="icon" type="image/x-icon" href="{% static '/img/favico.ico' %}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <link rel="stylesheet" href="{% static '/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-    <link rel="stylesheet" href="{% static '/css/styles.css' %}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>VolWeb</title>
+  <link rel="icon" type="image/x-icon" href="{% static '/img/favico.ico' %}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="{% static '/css/bootstrap.min.css' %}">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+  <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+  <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+  <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+  <link rel="stylesheet" href="{% static '/css/styles.css' %}">
 
 </head>
 {% cookiebanner_modal 'cookiebanner' %}
 
 
 <!-- <span class="spinner-main spinner-border spinner-border-sm spinner" role="status"></span> -->
-<body id="page-top" >
-    <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 toggled" style="background: var(--bs-primary-rgb);">
-            <div class="container-fluid d-flex flex-column p-0">
-                <hr class="sidebar-divider my-0">
-                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon">
-                      <img width="53" height="67" src="{% static '/img/volweb.svg' %}">
-                    </div>
-                </a>
-                <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link
+
+<body id="page-top">
+  <div id="wrapper">
+    <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 toggled"
+      style="background: var(--bs-primary-rgb);">
+      <div class="container-fluid d-flex flex-column p-0">
+        <hr class="sidebar-divider my-0">
+        <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+          <div class="sidebar-brand-icon">
+            <img width="53" height="67" src="{% static '/img/volweb.svg' %}">
+          </div>
+        </a>
+        <ul class="navbar-nav text-light" id="accordionSidebar">
+          <li class="nav-item"><a class="nav-link
                       {% if request.get_full_path == '/'%}
                       active
                       {% endif %}
-                      " href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                      " href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+          </li>
 
-                    <li class="nav-item"><a class="nav-link
+          <li class="nav-item"><a class="nav-link
                       {% if request.get_full_path == '/investigations/'%}
                       active
                       {% endif %}
-                      " href="{% url 'investigations' %}"><i class="fas fa-suitcase"></i><span>Investigations</span></a></li>
+                      " href="{% url 'investigations' %}"><i
+                class="fas fa-suitcase"></i><span>Investigations</span></a></li>
 
-                    <li class="nav-item"><a class="nav-link
+          <li class="nav-item"><a class="nav-link
                       {% if request.get_full_path == '/symbols/'%}
                       active
                       {% endif %}
                       " href="{% url 'symbols' %}"><i class="fas fa-table"></i><span>Symbols</span></a></li>
 
-                    <li class="nav-item"><a class="nav-link
+          <li class="nav-item"><a class="nav-link
                       {% if request.get_full_path == '/iocs/'%}
                       active
                       {% endif %}
                       " href="{% url 'iocs' %}"><i class="fas fa-fingerprint"></i><span>IOCs</span></a>
-                        <div class="nav-item dropdown no-arrow" style="width: 10px;"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">&nbsp;<i class="fas fa-user"></i><span>{{ user.get_username }}</span></a>
-                            <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end animated--fade-in"><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></div>
-                        </div>
-                    </li>
-                </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
+            <div class="nav-item dropdown no-arrow" style="width: 10px;"><a class="dropdown-toggle nav-link"
+                aria-expanded="false" data-bs-toggle="dropdown" href="#">&nbsp;<i class="fas fa-user"></i><span>{{user.get_username }}</span></a>
+              <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end animated--fade-in"><a class="dropdown-item"
+                  href="{% url 'logout' %}">Logout</a></div>
             </div>
-        </nav>
-        <div class="d-flex flex-column" id="content-wrapper">
-            <div id="content" style="background: url(&quot;{% static '/images/bg.svg' %}&quot;), #081327;">
-              <div class="spinner-main d-flex flex-column align-items-center justify-content-center">
-                 <div class="row">
-                   {% include "dashboard/spinner.html" %}
-                  </div>
-                  <div class="row">
-                    <strong>Loading...</strong>
-                  </div>
-              </div>
+          </li>
+        </ul>
+        <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle"
+            type="button"></button></div>
+      </div>
+    </nav>
+    <div class="d-flex flex-column" id="content-wrapper">
+      <div id="content" style="background: url(&quot;{% static '/images/bg.svg' %}&quot;), #081327;">
+        <div class="spinner-main d-flex flex-column align-items-center justify-content-center">
+          <div class="row">
+            {% include "dashboard/spinner.html" %}
+          </div>
+          <div class="row">
+            <strong>Loading...</strong>
+          </div>
+        </div>
 
-              {% block content %}
+        {% block content %}
 
-              {% endblock %}
-            </div>
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
-    <script src="{% static '/js/bs-init.js' %}"></script>
-    <script src="{% static '/js/theme.js' %}"></script>
-    {% include "investigations/toasts.html" %}
+        {% endblock %}
+      </div>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+  <script src="{% static '/js/bs-init.js' %}"></script>
+  <script src="{% static '/js/theme.js' %}"></script>
+  {% include "investigations/toasts.html" %}
 
 </body>
 
