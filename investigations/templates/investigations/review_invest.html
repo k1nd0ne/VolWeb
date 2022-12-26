@@ -103,7 +103,7 @@ Alway use the #action-form to perform any post request
     <div class="row" style="margin-top: 19px;">
       {% if case.os_version == "Linux" %}
       <!---- Linux INVESTIGATION REVIEW  --->
-      <div class="col-12 mt-sm-auto" style="">
+      <div class="col-12 mt-sm-auto">
         <div>
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab"
@@ -119,22 +119,7 @@ Alway use the #action-form to perform any post request
             <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
               <div class="row">
                 <div class="col-2" style="margin-top: 10px;">
-
                   <div class="accordion" id="accordionExample">
-                    <div class="process-item">
-                      <a href="#" id="collapse_default" onclick="DisplayAll();"
-                        class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
-                        data-bs-target="#collapse_default" aria-expanded="false" aria-controls="collapseOne"
-                        style="text-decoration: none;background: var(--bs-primary-rgb);">
-                        Display All
-                      </a>
-                      <div id="collapse_default" class="d-none accordion-collapse collapse" aria-labelledby="headingOne"
-                        data-bs-parent="#accordionExample">
-                        <div class="accordion-body process_pid_info">
-                        </div>
-                      </div>
-                    </div>
-
 
                     {% for process in PsList %}
                     <div class="process-item">
@@ -288,31 +273,16 @@ Alway use the #action-form to perform any post request
                 style="color: var(--bs-info);"><i class="fas fa-file-contract"></i>&nbsp;Reporting</a></li>
 
           </ul>
-          <div class="tab-content">
+          <div class="tab-content" data-url="{% url 'win_tag' %}" id="tabs">
             <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
               <div class="row">
                 <div class="col-2" style="margin-top: 10px;">
 
                   <div class="accordion" id="accordionExample">
-                    <div class="process-item">
-                      <a href="#" id="collapse_default" onclick="DisplayAll();"
-                        class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
-                        data-bs-target="#collapse_default" aria-expanded="false" aria-controls="collapseOne"
-                        style="text-decoration: none;background: var(--bs-primary-rgb);">
-                        Display All
-                      </a>
-                      <div id="collapse_default" class="d-none accordion-collapse collapse" aria-labelledby="headingOne"
-                        data-bs-parent="#accordionExample">
-                        <div class="accordion-body process_pid_info">
-                        </div>
-                      </div>
-                    </div>
-
-
                     {% for process in PsScan %}
                     <div class="process-item">
-                      <a href="#" id="collapse_{{process.PID}}"
-                        onclick="DisplayArtifacts('collapse_{{process.PID}}','pid_{{process.PID}}');"
+                      <a href="#" id="collapse_{{process.PID}}" data-url="{% url 'get_artifacts' %}"
+                        onclick="DisplayArtifacts('collapse_{{process.PID}}','{{process.PID}}', '{{case.id}}');"
                         class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
                         data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne"
                         style="text-decoration: none;background: var(--bs-primary-rgb);">
@@ -434,7 +404,7 @@ Alway use the #action-form to perform any post request
                       <li class="nav-item" role="presentation"><a class="nav-link " role="tab" data-bs-toggle="tab"
                           href="#tab-17">MalFind</a></li>
                     </ul>
-                    <div class="tab-content ">
+                    <div class="tab-content">
                       {% include "investigations/windows/processes/privileges.html" %}
                       {% include "investigations/windows/processes/cmdline.html" %}
                       {% include "investigations/windows/processes/envars.html" %}
@@ -473,15 +443,15 @@ Alway use the #action-form to perform any post request
   <script src="{% static 'js/windows.js'%}"></script>
   <script>
     $(document).ready(function () {
-      GetReport("{% url 'win_report'%}", {{ case.id }})
-  });
+      GetReport("{% url 'win_report'%}", "{{ case.id }}");
+    });
   </script>
   {% else %}
   <script src="{% static 'js/linux.js'%}"></script>
   <script>
     $(document).ready(function () {
-      GetReport("{% url 'lin_report'%}", {{ case.id }})
-  });
+      GetReport("{% url 'lin_report'%}", "{{ case.id }}")
+    });
   </script>
   {% endif %}
   {% endblock content %}

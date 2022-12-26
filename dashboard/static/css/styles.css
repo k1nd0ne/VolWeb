@@ -92,6 +92,10 @@
   text-align: left;
 }
 
+.table-responsive {
+  overflow: inherit;
+}
+
 .overlay {
   display: none;
   position: fixed;
@@ -203,6 +207,16 @@ thead, tbody {
   left: 55%;
   margin: -25px 0 0 -25px;
 }
+
+.spinner-timeline {
+  z-index: 2;
+  position: absolute;
+  top: 15%;
+  left: 55%;
+  margin: -25px 0 0 -25px;
+}
+
+
 
 
 .open-menu {

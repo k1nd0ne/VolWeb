@@ -5,7 +5,7 @@ bcrypt==3.2.0
 cryptography==3.4.7
 Django==3.2.15
 django-crispy-forms==1.12.0
-volatility3==2.0.1
+volatility3==2.4.0
 yara-python==4.1.3
 pycryptodome
 pefile==2021.9.3
@@ -14,3 +14,4 @@ django-cookiebanner==0.2.5
 markdown==3.4.1
 vt-py==0.17.1
 fontawesomefree==6.2.0
+jsonschema==4.17.3

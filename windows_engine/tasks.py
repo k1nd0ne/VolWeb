@@ -1,7 +1,7 @@
 from investigations.celery import app
 from investigations.models import UploadInvestigation
 import subprocess
-from .vol_windows import dump_process, dump_file
+from .vol_windows import dump_process, dump_file, get_handles
 
 
 @app.task(name="dump_memory_pid")
@@ -37,3 +37,12 @@ def dump_memory_file(case_id, offset):
         return result
     else:
         return "ERROR"
+
+
+@app.task(name="compute_handles")
+def compute_handles(case_id, pid):
+    """Compute Handles for a specific PID"""
+    case = UploadInvestigation.objects.get(pk=case_id)
+    dump_path = "Cases/" + case.name
+    result = get_handles(dump_path, pid, case_id)
+    return result

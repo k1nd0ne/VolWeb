@@ -1,4 +1,4 @@
-import logging
+import logging, jsonschema
 from investigations.models import *
 from windows_engine.models import *
 from iocs.models import *
@@ -103,6 +103,33 @@ def dump_process(dump_path, pid, output_path):
     return artifact['Fileoutput']
 
 
+
+def get_handles(dump_path, pid, case_id):
+    """Dump the process requested by the user"""
+    volatility3.framework.require_interface_version(2, 0, 0)
+    failures = volatility3.framework.import_files(plugins, True)
+    if failures:
+        logger.info(f"Some volatility3 plugin couldn't be loaded : {failures}")
+    else:
+        logger.info(f"Plugins are loaded without failure")
+    plugin_list = volatility3.framework.list_plugins()
+    base_config_path = "plugins"
+    context = contexts.Context()
+    context.config['plugins.Handles.pid'] = [int(pid)]
+    constructed = build_context(dump_path, context, base_config_path, plugin_list['windows.handles.Handles'], output_path=None)
+    if constructed:
+        result = DictRenderer().render(constructed.run())
+    else:
+        logger.info("Error the handles could not be computed")
+        return "KO"
+    for artifact in result:
+        artifact = {x.translate({32: None}): y
+                    for x, y in artifact.items()}
+        del (artifact['__children'])
+        Handles(investigation_id=case_id, **artifact).save()
+    return "OK"
+
+
 def dump_file(dump_path, offset, output_path):
     """Dump the file requested by the user"""
     volatility3.framework.require_interface_version(2, 0, 0)
@@ -159,7 +186,6 @@ def run_volweb_routine_windows(dump_path, case_id, case):
         'Privs': {'plugin': plugin_list['windows.privileges.Privs']},
         'Envars': {'plugin': plugin_list['windows.envars.Envars']},
         'DllList': {'plugin': plugin_list['windows.dlllist.DllList']},
-        'Handles': {'plugin': plugin_list['windows.handles.Handles']},
         # Network
         'NetScan': {'plugin': plugin_list['windows.netstat.NetStat']},
         'NetStat': {'plugin': plugin_list['windows.netscan.NetScan']},
