@@ -107,6 +107,8 @@ def get_artifacts(request):
                 'Envars':  json_serializer.serialize(Envars.objects.filter(investigation_id=id, PID=pid)),
                 'NetScan': json_serializer.serialize(NetScan.objects.filter(investigation_id=id, PID=pid)),
                 'NetStat': json_serializer.serialize(NetStat.objects.filter(investigation_id=id, PID=pid)),
+                'Sessions': json_serializer.serialize(Sessions.objects.filter(investigation_id=id, ProcessID=pid)),
+                'LdrModules': json_serializer.serialize(LdrModules.objects.filter(investigation_id=id, Pid=pid)),
             }
             return JsonResponse({'message': "success", 'artifacts': artifacts})
     return JsonResponse({'message': "error"})
@@ -181,6 +183,7 @@ def dump_process(request):
                 return JsonResponse({'message': "failed"})
         else:
             return JsonResponse({'message': "error"})
+    return JsonResponse({'message': "error"})
 
 
 @login_required

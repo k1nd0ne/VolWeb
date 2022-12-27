@@ -258,6 +258,8 @@ Alway use the #action-form to perform any post request
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                 href="#tab-19"><i class="fa-solid fa-chart-gantt"></i>&nbsp;Tree</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                href="#tab-25"><i class="fa-solid fa-chart-gantt"></i>&nbsp;DeviceTree</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                 href="#tab-20"><i class="fa-solid fa-diagram-project"></i>&nbsp;NetGraph</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2"
                 style="color: var(--bs-indigo);"><i class="fa-solid fa-folder-tree"></i>&nbsp;Registry</a></li>
@@ -394,9 +396,13 @@ Alway use the #action-form to perform any post request
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                           href="#tab-21">Command line</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                        href="#tab-23">Sessions</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                           href="#tab-5">Environment variables</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-6">DLL List</a></li>
+                          href="#tab-6">DllList</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                          href="#tab-24">LdrModules</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                           href="#tab-7">Handles</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
@@ -406,9 +412,11 @@ Alway use the #action-form to perform any post request
                     </ul>
                     <div class="tab-content">
                       {% include "investigations/windows/processes/privileges.html" %}
+                      {% include "investigations/windows/processes/sessions.html" %}
                       {% include "investigations/windows/processes/cmdline.html" %}
                       {% include "investigations/windows/processes/envars.html" %}
                       {% include "investigations/windows/processes/dlllist.html" %}
+                      {% include "investigations/windows/processes/ldrmodules.html" %}
                       {% include "investigations/windows/processes/handles.html" %}
                       {% include "investigations/windows/processes/network.html" %}
                       {% include "investigations/windows/processes/malfind.html" %}
@@ -418,6 +426,7 @@ Alway use the #action-form to perform any post request
               </div>
             </div>
             {% include "investigations/windows/processes/tree.html" %}
+            {% include "investigations/windows/processes/devicetree.html" %}
             {% include "investigations/windows/processes/netgraph.html" %}
             {% include "investigations/windows/registry/registry.html" %}
             {% include "investigations/windows/cryptography/cryptography.html" %}

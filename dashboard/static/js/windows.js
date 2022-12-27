@@ -68,102 +68,6 @@ function GetReport(url, case_id) {
 }
 
 
-$(document).ready(function () {
-  $('.plugin').hide();
-  $('.toast-other').toast('show');
-
-  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl)
-  })
-
-  /* ################################ REGISTRY SCRIPTS ################################ */
-
-  $("#search_registry").on("keyup", function () {
-    var value = $(this).val().toLowerCase();
-    $("#UserAssist tr").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-  //TimeLine SearchBar
-  $("#searchTimeline").on("keyup", function () {
-    var value = $(this).val().toLowerCase();
-    $("#TimelineTab tr").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) !== -1)
-    })
-  });
-
-  //FileScan SearchBar
-  $("#search_files").on("keyup", function () {
-    var value = $(this).val().toLowerCase();
-    $("#FileScanTab tr").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-
-  //CmdLine SearchBar
-  $("#searchCmdLine").on("keyup", function () {
-    var value = $(this).val().toLowerCase();
-    $("#cmdline tr").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-  //CmdLine SearchBar
-  $("#searchDllList").on("keyup", function () {
-    var value = $(this).val().toLowerCase();
-    $("#dlllist tr").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-  //Privileges SearchBar
-  $("#searchPriv").on("keyup", function () {
-    var value = $(this).val().toLowerCase();
-    $("#processPriv tr").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-  //Process Env SearchBar
-
-  $("#searchEnv").on("keyup", function () {
-    var value = $(this).val().toLowerCase();
-    $("#processEnv tr").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-
-  //Process Handles SearchBar
-
-  $("#searchHandles").on("keyup", function () {
-    var value = $(this).val().toLowerCase();
-    $("#processHandles tr").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-
-  //NetStat Search funtion
-  $("#searchNetworkStat").on("keyup", function () {
-    var value = $(this).val().toLowerCase();
-    $("#netstat tr").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-  //NetStat Search funtion
-  $("#searchNetworkScan").on("keyup", function () {
-    var value = $(this).val().toLowerCase();
-    $("#netscan tr").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
-
-});
 
 function DisplayArtifacts(collapse, process, case_id) {
   if ($('#' + collapse).attr("aria-expanded") == "true") {
@@ -171,8 +75,11 @@ function DisplayArtifacts(collapse, process, case_id) {
     $('#processPriv').addClass('d-none');
     $('#processEnv').addClass('d-none');
     $('#dlllist').addClass('d-none');
+    $('#ldrmodules').addClass('d-none');
+
     $('#netstat').addClass('d-none');
     $('#netscan').addClass('d-none');
+    $('#sessions').addClass('d-none');
     $('#processHandles').addClass('d-none');
     $('.spinner-review').removeClass("d-none");
     var url = $("#" + collapse).attr('data-url');
@@ -184,15 +91,19 @@ function DisplayArtifacts(collapse, process, case_id) {
             FillPrivileges(JSON.parse(response['artifacts']['Privs']));
             FillEnvars(JSON.parse(response['artifacts']['Envars']));
             FillDlls(JSON.parse(response['artifacts']['DllList']));
+            FillLdr(JSON.parse(response['artifacts']['LdrModules']));
             FillNetStat(JSON.parse(response['artifacts']['NetStat']));
             FillNetScan(JSON.parse(response['artifacts']['NetScan']));
+            FillSessions(JSON.parse(response['artifacts']['Sessions']));
 
             $('#cmdline').removeClass('d-none');
             $('#processPriv').removeClass('d-none');
             $('#processEnv').removeClass('d-none');
             $('#dlllist').removeClass('d-none');
+            $('#ldrmodules').removeClass('d-none');
             $('#netstat').removeClass('d-none');
             $('#netscan').removeClass('d-none');
+            $('#sessions').removeClass('d-none');
             $('.processes_tab').removeClass('d-none');
             $('.default-td').removeClass('d-none');
             $('.spinner-review').addClass("d-none");
@@ -256,7 +167,6 @@ function ComputeHandles(process, case_id){
   });
 
 }
-
 
 function FillCmdLine(artifacts) {
   // Create the html elements for each line
@@ -667,10 +577,12 @@ function FillDlls(artifacts) {
     const td_3 = document.createElement('td');
     const td_4 = document.createElement('td');
     const td_5 = document.createElement('td');
+    td_5.setAttribute('class', 'w-25 text-break');
     const td_6 = document.createElement('td');
     const td_7 = document.createElement('td');
     const td_8 = document.createElement('td');
     const td_9 = document.createElement('td');
+    td_9.setAttribute('class', 'w-10');
 
     td_1.textContent = item.fields.Process;
     td_2.textContent = item.fields.PID;
@@ -794,6 +706,282 @@ function FillDlls(artifacts) {
     tr.appendChild(td_7);
     tr.appendChild(td_8);
     tr.appendChild(td_9);
+    tbody.appendChild(tr);
+  });
+}
+
+function FillLdr(artifacts) {
+  // Create the html elements for each line
+  $('#ldrmodules').empty();
+  $.each(artifacts, function (i, item) {
+    var tbody = document.getElementById('ldrmodules');
+    const tr = document.createElement('tr');
+    const td_1 = document.createElement('td');
+    const td_2 = document.createElement('td');
+    const td_3 = document.createElement('td');
+    const td_4 = document.createElement('td');
+    const td_5 = document.createElement('td');
+    const td_6 = document.createElement('td');
+    const td_7 = document.createElement('td');
+    td_7.setAttribute('class', 'w-25 text-break');
+
+    const td_8 = document.createElement('td');
+
+    td_1.textContent = item.fields.Pid;
+    td_2.textContent = item.fields.Process;
+    td_3.textContent = item.fields.Base;
+    td_4.textContent = item.fields.InInit;
+    td_5.textContent = item.fields.InLoad;
+    td_6.textContent = item.fields.InMem;
+    td_7.textContent = item.fields.MappedPath;
+
+    // Tag conditions and system
+    const dropdown = document.createElement('div');
+    dropdown.setAttribute('class', 'dropdown no-arrow');
+
+    const button = document.createElement('button');
+    button.setAttribute('class', 'btn btn-link btn-sm dropdown-toggle');
+
+    button.setAttribute('aria-expanded', 'true');
+    button.setAttribute('data-bs-toggle', 'dropdown');
+    button.setAttribute('type', 'button');
+
+    const dots = document.createElement('i');
+    dots.setAttribute('class', 'fas fa-ellipsis-v text-gray-400');
+    button.appendChild(dots);
+
+    const dropdown_menu = document.createElement('div');
+    dropdown_menu.setAttribute('class', 'dropdown-menu shadow dropdown-menu-end animated--fade-in');
+    const tagm = document.createElement('p');
+    tagm.setAttribute('class', 'text-center dropdown-header');
+    tagm.textContent = "Tag as";
+
+
+    const span_suspicious = document.createElement('span');
+    span_suspicious.textContent = " Suspicious";
+
+    const span_evidence = document.createElement('span');
+    span_evidence.textContent = " Evidence";
+
+    const badge_suspicious = document.createElement('a');
+    badge_suspicious.setAttribute('class', 'dropdown-item');
+    badge_suspicious.setAttribute('href', '#');
+    badge_suspicious.addEventListener('click', function (e) {
+      Tag('Ldrmodules', item.pk, "Suspicious");
+    });
+
+    const pill_orange = document.createElement('strong');
+    pill_orange.setAttribute('class', 'badge bg-warning text-wrap text-warning');
+    pill_orange.textContent = ' ';
+    badge_suspicious.appendChild(pill_orange);
+    badge_suspicious.appendChild(span_suspicious);
+
+
+    const badge_evidence = document.createElement('a');
+    badge_evidence.setAttribute('class', 'dropdown-item');
+    badge_evidence.setAttribute('href', '#');
+    badge_evidence.addEventListener('click', function (e) {
+      Tag('Ldrmodules', item.pk, "Evidence");
+    });
+
+
+    const pill_red = document.createElement('strong');
+    pill_red.setAttribute('class', 'badge bg-danger text-wrap text-danger');
+    pill_red.textContent = ' ';
+
+    badge_evidence.appendChild(pill_red);
+    badge_evidence.appendChild(span_evidence);
+
+
+    const divider = document.createElement('div');
+    divider.setAttribute('class', 'dropdown-divider');
+
+    const badge_clear = document.createElement('a');
+    badge_clear.setAttribute('class', 'dropdown-item');
+    badge_clear.setAttribute('href', '#');
+    badge_clear.addEventListener('click', function (e) {
+      Tag('Ldrmodules', item.pk, "Clear");
+    });
+    badge_clear.textContent = " Clear tag";
+
+
+    const tag_evidence = document.createElement('strong');
+    const tag_suspicious = document.createElement('strong');
+
+    if (item.fields.Tag == "Evidence") {
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap tag_evidence_' + item.pk + '_Ldrmodules');
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_Ldrmodules');
+    }
+
+    else if (item.fields.Tag == "Suspicious") {
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_Ldrmodules');
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap tag_suspicious_' + item.pk + '_Ldrmodules');
+    }
+
+    else {
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_Ldrmodules');
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_Ldrmodules');
+    }
+
+    tag_evidence.textContent = "Evidence";
+    tag_suspicious.textContent = "Suspicious";
+
+    dropdown_menu.appendChild(tagm);
+    dropdown_menu.appendChild(badge_suspicious);
+    dropdown_menu.appendChild(badge_evidence);
+    dropdown_menu.appendChild(divider);
+    dropdown_menu.appendChild(badge_clear);
+
+    button.appendChild(dots);
+    dropdown.appendChild(button);
+    dropdown.appendChild(tag_evidence);
+    dropdown.appendChild(tag_suspicious);
+    dropdown.appendChild(dropdown_menu);
+    td_8.appendChild(dropdown);
+
+    tr.appendChild(td_1);
+    tr.appendChild(td_2);
+    tr.appendChild(td_3);
+    tr.appendChild(td_4);
+    tr.appendChild(td_5);
+    tr.appendChild(td_6);
+    tr.appendChild(td_7);
+    tr.appendChild(td_8);
+    tbody.appendChild(tr);
+  });
+}
+
+function FillSessions(artifacts) {
+  // Create the html elements for each line
+  $('#sessions').empty();
+  $.each(artifacts, function (i, item) {
+    var tbody = document.getElementById('sessions');
+    const tr = document.createElement('tr');
+    const td_1 = document.createElement('td');
+    const td_2 = document.createElement('td');
+    const td_3 = document.createElement('td');
+    const td_4 = document.createElement('td');
+    const td_5 = document.createElement('td');
+    const td_6 = document.createElement('td');
+    const td_7 = document.createElement('td');
+
+    td_1.textContent = item.fields.ProcessID;
+    td_2.textContent = item.fields.Process;
+    td_3.textContent = item.fields.SessionID;
+    td_4.textContent = item.fields.SessionType;
+    td_5.textContent = item.fields.UserName;
+    td_6.textContent = item.fields.CreateTime;
+    // Tag conditions and system
+    const dropdown = document.createElement('div');
+    dropdown.setAttribute('class', 'dropdown no-arrow');
+
+    const button = document.createElement('button');
+    button.setAttribute('class', 'btn btn-link btn-sm dropdown-toggle');
+
+    button.setAttribute('aria-expanded', 'true');
+    button.setAttribute('data-bs-toggle', 'dropdown');
+    button.setAttribute('type', 'button');
+
+    const dots = document.createElement('i');
+    dots.setAttribute('class', 'fas fa-ellipsis-v text-gray-400');
+    button.appendChild(dots);
+
+    const dropdown_menu = document.createElement('div');
+    dropdown_menu.setAttribute('class', 'dropdown-menu shadow dropdown-menu-end animated--fade-in');
+    const tagm = document.createElement('p');
+    tagm.setAttribute('class', 'text-center dropdown-header');
+    tagm.textContent = "Tag as";
+
+
+    const span_suspicious = document.createElement('span');
+    span_suspicious.textContent = " Suspicious";
+
+    const span_evidence = document.createElement('span');
+    span_evidence.textContent = " Evidence";
+
+    const badge_suspicious = document.createElement('a');
+    badge_suspicious.setAttribute('class', 'dropdown-item');
+    badge_suspicious.setAttribute('href', '#');
+    badge_suspicious.addEventListener('click', function (e) {
+      Tag('Sessions', item.pk, "Suspicious");
+    });
+
+    const pill_orange = document.createElement('strong');
+    pill_orange.setAttribute('class', 'badge bg-warning text-wrap text-warning');
+    pill_orange.textContent = ' ';
+    badge_suspicious.appendChild(pill_orange);
+    badge_suspicious.appendChild(span_suspicious);
+
+
+    const badge_evidence = document.createElement('a');
+    badge_evidence.setAttribute('class', 'dropdown-item');
+    badge_evidence.setAttribute('href', '#');
+    badge_evidence.addEventListener('click', function (e) {
+      Tag('Sessions', item.pk, "Evidence");
+    });
+
+
+    const pill_red = document.createElement('strong');
+    pill_red.setAttribute('class', 'badge bg-danger text-wrap text-danger');
+    pill_red.textContent = ' ';
+
+    badge_evidence.appendChild(pill_red);
+    badge_evidence.appendChild(span_evidence);
+
+
+    const divider = document.createElement('div');
+    divider.setAttribute('class', 'dropdown-divider');
+
+    const badge_clear = document.createElement('a');
+    badge_clear.setAttribute('class', 'dropdown-item');
+    badge_clear.setAttribute('href', '#');
+    badge_clear.addEventListener('click', function (e) {
+      Tag('Sessions', item.pk, "Clear");
+    });
+    badge_clear.textContent = " Clear tag";
+
+
+    const tag_evidence = document.createElement('strong');
+    const tag_suspicious = document.createElement('strong');
+
+    if (item.fields.Tag == "Evidence") {
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap tag_evidence_' + item.pk + '_Sessions');
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_Sessions');
+    }
+
+    else if (item.fields.Tag == "Suspicious") {
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_Sessions');
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap tag_suspicious_' + item.pk + '_Sessions');
+    }
+
+    else {
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_Sessions');
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_Sessions');
+    }
+
+    tag_evidence.textContent = "Evidence";
+    tag_suspicious.textContent = "Suspicious";
+
+    dropdown_menu.appendChild(tagm);
+    dropdown_menu.appendChild(badge_suspicious);
+    dropdown_menu.appendChild(badge_evidence);
+    dropdown_menu.appendChild(divider);
+    dropdown_menu.appendChild(badge_clear);
+
+    button.appendChild(dots);
+    dropdown.appendChild(button);
+    dropdown.appendChild(tag_evidence);
+    dropdown.appendChild(tag_suspicious);
+    dropdown.appendChild(dropdown_menu);
+    td_7.appendChild(dropdown);
+
+    tr.appendChild(td_1);
+    tr.appendChild(td_2);
+    tr.appendChild(td_3);
+    tr.appendChild(td_4);
+    tr.appendChild(td_5);
+    tr.appendChild(td_6);
+    tr.appendChild(td_7);
     tbody.appendChild(tr);
   });
 }
@@ -1248,6 +1436,7 @@ function FillHandles(artifacts) {
     const td_2 = document.createElement('td');
     const td_3 = document.createElement('td');
     const td_4 = document.createElement('td');
+    td_4.setAttribute('class', 'w-25 text-break');
     const td_5 = document.createElement('td');
     const td_6 = document.createElement('td');
     const td_7 = document.createElement('td');
@@ -1379,4 +1568,99 @@ function FillHandles(artifacts) {
   });
 }
 
+$(document).ready(function () {
+  $('.plugin').hide();
+  $('.toast-other').toast('show');
 
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
+
+  /* ################################ REGISTRY SCRIPTS ################################ */
+
+  $("#search_registry").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#UserAssist tr").filter(function () {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  //TimeLine SearchBar
+  $("#searchTimeline").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#TimelineTab tr").filter(function () {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) !== -1)
+    })
+  });
+
+  //FileScan SearchBar
+  $("#search_files").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#FileScanTab tr").filter(function () {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+
+  //CmdLine SearchBar
+  $("#searchCmdLine").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#cmdline tr").filter(function () {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  //CmdLine SearchBar
+  $("#searchDllList").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#dlllist tr").filter(function () {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  //Privileges SearchBar
+  $("#searchPriv").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#processPriv tr").filter(function () {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  //Process Env SearchBar
+
+  $("#searchEnv").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#processEnv tr").filter(function () {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+
+  //Process Handles SearchBar
+
+  $("#searchHandles").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#processHandles tr").filter(function () {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+
+  //NetStat Search funtion
+  $("#searchNetworkStat").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#netstat tr").filter(function () {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  //NetStat Search funtion
+  $("#searchNetworkScan").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#netscan tr").filter(function () {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+});

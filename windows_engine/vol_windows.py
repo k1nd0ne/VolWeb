@@ -90,16 +90,16 @@ def dump_process(dump_path, pid, output_path):
     plugin_list = volatility3.framework.list_plugins()
     base_config_path = "plugins"
     context = contexts.Context()
-    context.config['plugins.PsList.pid'] = [int(pid)]
-    context.config['plugins.PsList.dump'] = True
-    constructed = build_context(dump_path, context, base_config_path, plugin_list['windows.pslist.PsList'], output_path)
+    context.config['plugins.Memmap.pid'] = int(pid)
+    context.config['plugins.Memmap.dump'] = True
+
+    constructed = build_context(dump_path, context, base_config_path, plugin_list['windows.memmap.Memmap'], output_path)
     if constructed:
         result = DictRenderer().render(constructed.run())
     else:
         logger.info("Error")
-    for artifact in result:
-        artifact = {x.translate({32: None}): y
-                    for x, y in artifact.items()}
+    artifact = {x.translate({32: None}): y
+                for x, y in result[0].items()}
     return artifact['Fileoutput']
 
 
@@ -182,10 +182,13 @@ def run_volweb_routine_windows(dump_path, case_id, case):
         # Process
         'PsScan': {'plugin': plugin_list['windows.psscan.PsScan']},
         'PsTree': {'plugin': plugin_list['windows.pstree.PsTree']},
+        'DeviceTree': {'plugin': plugin_list['windows.devicetree.DeviceTree']},
         'CmdLine': {'plugin': plugin_list['windows.cmdline.CmdLine']},
+        'Sessions': {'plugin': plugin_list['windows.sessions.Sessions']},
         'Privs': {'plugin': plugin_list['windows.privileges.Privs']},
         'Envars': {'plugin': plugin_list['windows.envars.Envars']},
         'DllList': {'plugin': plugin_list['windows.dlllist.DllList']},
+        'LdrModules': {'plugin': plugin_list['windows.ldrmodules.LdrModules']},
         # Network
         'NetScan': {'plugin': plugin_list['windows.netstat.NetStat']},
         'NetStat': {'plugin': plugin_list['windows.netscan.NetScan']},
@@ -205,10 +208,10 @@ def run_volweb_routine_windows(dump_path, case_id, case):
         'SkeletonKeyCheck': {'plugin': plugin_list['windows.skeleton_key_check.Skeleton_Key_Check']},
         'FileScan': {'plugin': plugin_list['windows.filescan.FileScan']},
     }
+   
     """Progress Function"""
-
     def update_progress(case):
-        MODULES_TO_RUN = len(volweb_knowledge_base) + 2
+        MODULES_TO_RUN = len(volweb_knowledge_base) + 3
         percentage = str(format(float(case.percentage) + float(100 / MODULES_TO_RUN), '.0f'))
         logger.info(f"Status : {percentage} %")
         case.percentage = percentage
@@ -261,7 +264,7 @@ def run_volweb_routine_windows(dump_path, case_id, case):
 
     """STEP 3.1 : We can now inject the results inside the django database"""
     for runable in volweb_knowledge_base:
-        if runable != 'PsTree' and runable != 'UserAssist':
+        if runable != 'PsTree' and runable != 'UserAssist' and runable != 'DeviceTree':
             for artifact in volweb_knowledge_base[runable]['result']:
                 artifact = {x.translate({32: None}): y
                             for x, y in artifact.items()}
@@ -275,7 +278,7 @@ def run_volweb_routine_windows(dump_path, case_id, case):
 
     """STEP 3.2 : Construct and inject the graphs"""
 
-    def rename(node):
+    def rename_pstree(node):
         if len(node['__children']) == 0:
             node['children'] = node['__children']
             node['name'] = node['ImageFileName']
@@ -287,16 +290,52 @@ def run_volweb_routine_windows(dump_path, case_id, case):
             del (node['__children'])
             del (node['ImageFileName'])
             for children in node['children']:
-                rename(children)
+                rename_pstree(children)
+
+    def rename_devicetree(node):
+        if len(node['__children']) == 0:
+            node['children'] = node['__children']
+            
+            node['name'] = ""
+            
+            if node['DeviceName']:
+                node['name'] += node['DeviceName']
+            if node['DeviceType']:
+                node['name'] += "/" + node['DeviceType'] 
+            if node['DriverName']:
+                node['name'] += "/" + node['DriverName']
+            del (node['__children'])
+        else:
+            node['children'] = node['__children']
+            
+            node['name'] = ""
+            
+            if node['DeviceName']:
+                node['name'] += node['DeviceName']
+            if node['DeviceType']:
+                node['name'] += "/" + node['DeviceType'] 
+            if node['DriverName']:
+                node['name'] += "/" + node['DriverName']
+        
+            del (node['__children'])
+            for children in node['children']:
+                rename_devicetree(children)
 
     json_pstree_artifact = []
+    json_devicetree_artifact = []
     json_netgraph_artifact = []
     json_timeline_graph_artifact = []
     if volweb_knowledge_base['PsTree']['result']:
         pstree_artifact = volweb_knowledge_base['PsTree']['result']
         for tree in pstree_artifact:
-            rename(tree)
+            rename_pstree(tree)
         json_pstree_artifact = json.dumps(pstree_artifact)
+
+    if volweb_knowledge_base['DeviceTree']['result']:
+        devicetree_artifact = volweb_knowledge_base['DeviceTree']['result']
+        for tree in devicetree_artifact:
+            rename_devicetree(tree)
+        json_devicetree_artifact = json.dumps(devicetree_artifact)
 
     if volweb_knowledge_base['NetScan']['result'] or volweb_knowledge_base['NetStat']['result']:
         json_netgraph_artifact = json.dumps(generate_network_graph(
@@ -306,6 +345,7 @@ def run_volweb_routine_windows(dump_path, case_id, case):
         json_timeline_graph_artifact = json.dumps(build_timeline(volweb_knowledge_base['Timeliner']['result']))
 
     PsTree(investigation_id=case_id, graph=json_pstree_artifact).save()
+    DeviceTree(investigation_id=case_id, graph=json_devicetree_artifact).save()
     NetGraph(investigation_id=case_id, graph=json_netgraph_artifact).save()
     TimeLineChart(investigation_id=case_id, graph=json_timeline_graph_artifact).save()
 
@@ -331,5 +371,5 @@ def run_volweb_routine_windows(dump_path, case_id, case):
 
     if volweb_knowledge_base['UserAssist']['result']:
         fill_userassist(volweb_knowledge_base['UserAssist']['result'], case_id)
-
+    update_progress(case)
     return partial_results

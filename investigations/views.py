@@ -277,6 +277,7 @@ def review_invest(request):
                     'ImageSignature': ImageSignature.objects.get(investigation_id=id),
                     'PsScan': windows_engine.PsScan.objects.filter(investigation_id=id),
                     'PsTree': windows_engine.PsTree.objects.get(investigation_id=id),
+                    'DeviceTree': windows_engine.DeviceTree.objects.get(investigation_id=id),
                     'NetGraph': windows_engine.NetGraph.objects.get(investigation_id=id),
                     'Hashdump': windows_engine.Hashdump.objects.filter(investigation_id=id),
                     'Lsadump': windows_engine.Lsadump.objects.filter(investigation_id=id),
