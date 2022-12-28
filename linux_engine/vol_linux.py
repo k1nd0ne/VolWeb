@@ -1,8 +1,9 @@
-import logging
+import logging, jsonschema
 from investigations.models import *
 from iocs.models import *
 from django.apps import apps
 from VolWeb.voltools import *
+from volatility3.cli import MuteProgress
 from volatility3.framework.exceptions import *
 
 logging.basicConfig(level=logging.INFO)
@@ -18,7 +19,7 @@ def build_context(dump_path, context, base_config_path, plugin, output_path):
     automagics = automagic.choose_automagic(available_automagics, plugin)
     context.config['automagic.LayerStacker.stackers'] = automagic.stacker.choose_os_stackers(plugin)
     context.config['automagic.LayerStacker.single_location'] = "file://" + os.getcwd() + "/" + dump_path
-    constructed = construct_plugin(context, automagics, plugin, base_config_path, None, file_handler(output_path))
+    constructed = construct_plugin(context, automagics, plugin, base_config_path, MuteProgress(), file_handler(output_path))
     return constructed
 
 
@@ -26,6 +27,7 @@ def run_volweb_routine_linux(dump_path, case_id, case):
     partial_results = False
     logger.info('Starting VolWeb Engine')
     volatility3.framework.require_interface_version(2, 0, 0)
+    """ISF Binding"""
     if case.linked_isf:
         path = os.sep.join(case.linked_isf.symbols_file.name.split(os.sep)[:-2])
         volatility3.symbols.__path__.append(os.path.abspath(path))
@@ -43,21 +45,23 @@ def run_volweb_routine_linux(dump_path, case_id, case):
     volweb_knowledge_base = {
         # Process
         'PsList': {'plugin': plugin_list['linux.pslist.PsList']},
+        'PsAux': {'plugin': plugin_list['linux.psaux.PsAux']},
         'PsTree': {'plugin': plugin_list['linux.pstree.PsTree']},
         'ProcMaps': {'plugin': plugin_list['linux.proc.Maps']},
-
-        # Malware analysis
         'Bash': {'plugin': plugin_list['linux.bash.Bash']},
         'Lsof': {'plugin': plugin_list['linux.lsof.Lsof']},
-        'TtyCheck': {'plugin': plugin_list['linux.tty_check.tty_check']},
         'Elfs': {'plugin': plugin_list['linux.elfs.Elfs']},
+
+        # Malware analysis
+        'TtyCheck': {'plugin': plugin_list['linux.tty_check.tty_check']},
+        'MountInfo': {'plugin': plugin_list['linux.mountinfo.MountInfo']},
     }
 
     """Progress Function"""
 
     def update_progress(case):
         MODULES_TO_RUN = len(volweb_knowledge_base) + 2
-        percentage = str(format(float(case.percentage) + float(100 / MODULES_TO_RUN), '.2f'))
+        percentage = str(format(float(case.percentage) + float(100 / MODULES_TO_RUN), '.0f'))
         logger.info(f"Status : {percentage} %")
         case.percentage = percentage
         case.save()
@@ -74,23 +78,29 @@ def run_volweb_routine_linux(dump_path, case_id, case):
         apps.get_model("linux_engine", runable).objects.filter(investigation_id=case_id).delete()
         context = contexts.Context()
         logger.info(f"Constructing context for {runable} ")
-        """Add pluging argument for hivelist"""
         try:
             volweb_knowledge_base[runable]['constructed'] = build_context(dump_path, context, base_config_path,
-                                                                          volweb_knowledge_base[runable]['plugin'],
-                                                                          "Cases/files")
+                                                                          volweb_knowledge_base[runable]['plugin'],output_path=None)
         except VolatilityException:
             partial_results = True
             volweb_knowledge_base[runable]['constructed'] = []
+        except:
+            logger.info(f"Could not build context for {runable}" )
+            partial_results = True
+            volweb_knowledge_base[runable]['constructed'] = []
+        
 
     """STEP 2.1 : For each constructed plugin's context, we render the result and save it."""
     for runable in volweb_knowledge_base:
         if volweb_knowledge_base[runable]['constructed']:
             logger.info(f"Running plugin : {runable}")
             try:
-                volweb_knowledge_base[runable]['result'] = DictRenderer().render(
-                    volweb_knowledge_base[runable]['constructed'].run())
+                volweb_knowledge_base[runable]['result'] = DictRenderer().render(volweb_knowledge_base[runable]['constructed'].run())
             except VolatilityException:
+                partial_results = True
+                volweb_knowledge_base[runable]['result'] = []
+            except:
+                logger.info(f"Could not run {runable}" )
                 partial_results = True
                 volweb_knowledge_base[runable]['result'] = []
             update_progress(case)
@@ -98,7 +108,7 @@ def run_volweb_routine_linux(dump_path, case_id, case):
             volweb_knowledge_base[runable]['result'] = []
             update_progress(case)
 
-    """STEP 3.1 : We can now inject the results inside the django database"""
+    """STEP 3.1 : We can now inject the results inside the database"""
     for runable in volweb_knowledge_base:
         if runable != 'PsTree':
             for artifact in volweb_knowledge_base[runable]['result']:
@@ -106,9 +116,13 @@ def run_volweb_routine_linux(dump_path, case_id, case):
                             for x, y in artifact.items()}
                 if '__children' in artifact:
                     del (artifact['__children'])
-                if 'Offset(V)' in artifact:
-                    artifact['Offset'] = artifact['Offset(V)']
-                    del (artifact['Offset(V)'])
+                if 'OFFSET(V)' in artifact:
+                    artifact['Offset'] = artifact['OFFSET(V)']
+                    del (artifact['OFFSET(V)'])
+                if "MAJOR:MINOR" in artifact:
+                    artifact['MAJOR_MINOR'] = artifact['MAJOR:MINOR']
+                    del (artifact['MAJOR:MINOR'])
+
                 apps.get_model("linux_engine", runable)(investigation_id=case_id, **artifact).save()
 
     """STEP 3.2 : Contruct and inject the graphs"""

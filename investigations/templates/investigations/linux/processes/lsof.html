@@ -20,43 +20,6 @@ Included in the "review_invest.html", this file represent the "Lsof" tab.
         </tr>
       </thead>
       <tbody id="Lsof">
-        {% for entry in Lsof %}
-        <tr class="pid pid_{{entry.PID}} d-none">
-          <td>{{entry.FD}}</td>
-          <td>{{entry.PID}}</td>
-          <td>{{entry.Path}}</td>
-          <td>{{entry.Process}}</td>
-          <td>
-            <div class="dropdown no-arrow">
-              {% if process.Tag == "Evidence"%}
-              <strong class="badge bg-danger text-wrap tag_evidence_{{entry.id}}_Lsof">Evidence</strong>
-              <strong class="badge bg-warning text-wrap d-none tag_suspicious_{{entry.id}}_Lsof">Suspicious</strong>
-              {% elif process.Tag == "Suspicious" %}
-              <strong class="badge bg-warning text-wrap tag_suspicious_{{entry.id}}_Lsof">Suspicious</strong>
-              <strong class="badge bg-danger text-wrap d-none tag_evidence_{{entry.id}}_Lsof">Evidence</strong>
-              {% else %}
-              <strong class="badge bg-danger text-wrap d-none tag_evidence_{{entry.id}}_Lsof">Evidence</strong>
-              <strong class="badge bg-warning text-wrap d-none tag_suspicious_{{entry.id}}_Lsof">Suspicious</strong>
-              {% endif %}
-              <button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
-                <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
-                    <p class="text-center dropdown-header">Tag as</p>
-                    <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'lin_tag'%}&quot;, 'Lsof', {{entry.id}}, 'Suspicious')">
-                        <strong class="badge bg-warning text-wrap text-warning">&nbsp;</strong>
-                      &nbsp;Suspicious
-                    </a>
-                    <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'lin_tag'%}&quot;, 'Lsof', {{entry.id}}, 'Evidence')">
-                      <strong class="badge bg-danger text-wrap text-danger">&nbsp;</strong>
-                      &nbsp;Evidence
-                    </a>
-                    <div class="dropdown-divider">
-                    </div>
-                    <a class="dropdown-item" href="#" onclick="Tag(&quot;{% url 'lin_tag'%}&quot;, 'Lsof', {{entry.id}}, 'Clear')">&nbsp;Clear tag</a>
-                </div>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
       </tbody>
     </table>
   </div>

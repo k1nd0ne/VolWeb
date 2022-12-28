@@ -10,3 +10,7 @@ class Tag(forms.Form):
 
 class ReportForm(forms.Form):
     case_id = forms.ModelChoiceField(queryset=UploadInvestigation.objects.all())
+
+class GetArtifacts(forms.Form):
+    case = forms.ModelChoiceField(queryset=UploadInvestigation.objects.all())
+    pid = forms.IntegerField()

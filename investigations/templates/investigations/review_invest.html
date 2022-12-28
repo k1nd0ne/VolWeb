@@ -111,11 +111,14 @@ Alway use the #action-form to perform any post request
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2"
                 style="color: var(--bs-indigo);"><i class="fa-solid fa-chart-gantt"></i>&nbsp;Tree</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-7"
-                style="color: var(--bs-purple);"><i class="fas fa-file"></i>&nbsp;TtyCheck</a></li>
+                style="color: var(--bs-purple);"><i class="fas fa-terminal"></i>&nbsp;TtyCheck</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-10"
+              style="color: var(--bs-pink);"><i class="fas fa-hard-drive"></i>&nbsp;MountInfo</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-8"
                 style="color: var(--bs-info);"><i class="fas fa-file-contract"></i>&nbsp;Reporting</a></li>
+
           </ul>
-          <div class="tab-content">
+          <div class="tab-content" data-url="{% url 'lin_tag' %}" id="tabs">
             <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
               <div class="row">
                 <div class="col-2" style="margin-top: 10px;">
@@ -123,8 +126,8 @@ Alway use the #action-form to perform any post request
 
                     {% for process in PsList %}
                     <div class="process-item">
-                      <a href="#" id="collapse_{{process.PID}}"
-                        onclick="DisplayArtifacts('collapse_{{process.PID}}','pid_{{process.PID}}');"
+                      <a href="#" id="collapse_{{process.PID}}" data-url="{% url 'get_l_artifacts' %}"
+                        onclick="DisplayArtifacts('collapse_{{process.PID}}','{{process.PID}}', '{{case.id}}');"
                         class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
                         data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne"
                         style="text-decoration: none;background: var(--bs-primary-rgb);">
@@ -137,7 +140,9 @@ Alway use the #action-form to perform any post request
                       <div id="collapse_{{process.id}}" class="accordion-collapse collapse" aria-labelledby="headingOne"
                         data-bs-parent="#accordionExample">
                         <div class="accordion-body process_pid_info">
-                          <p class="card-text p_info">PPID :&nbsp;{{process.PPID}}</p>
+                          <p class="card-text p_info">Offset :&nbsp;{{process.Offset}}<br>
+                          PPID :&nbsp;{{process.PPID}}<br>
+                          TID :&nbsp;{{process.TID}}</p>
                         </div>
                       </div>
                     </div>
@@ -213,7 +218,9 @@ Alway use the #action-form to perform any post request
                   <div class="d-none processes_tab">
 
                     <ul class="nav nav-tabs" role="tablist">
-                      <li class="nav-item" role="presentation"><a class="nav-link active" role="tab"
+                      <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab"
+                        href="#tab-9">PsAux</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                           data-bs-toggle="tab" href="#tab-3">ELFs</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                           href="#tab-4">Maps</a></li>
@@ -223,6 +230,7 @@ Alway use the #action-form to perform any post request
                           href="#tab-6">Bash</a></li>
                     </ul>
                     <div class="tab-content ">
+                      {% include "investigations/linux/processes/psaux.html" %}
                       {% include "investigations/linux/processes/elfs.html" %}
                       {% include "investigations/linux/processes/maps.html" %}
                       {% include "investigations/linux/processes/lsof.html" %}
@@ -234,6 +242,7 @@ Alway use the #action-form to perform any post request
             </div>
             {% include "investigations/linux/processes/tree.html" %}
             {% include "investigations/linux/others/tty_check.html" %}
+            {% include "investigations/linux/others/mountinfo.html" %}
             {% include "investigations/linux/report.html" %}
 
 
@@ -283,7 +292,7 @@ Alway use the #action-form to perform any post request
                   <div class="accordion" id="accordionExample">
                     {% for process in PsScan %}
                     <div class="process-item">
-                      <a href="#" id="collapse_{{process.PID}}" data-url="{% url 'get_artifacts' %}"
+                      <a href="#" id="collapse_{{process.PID}}" data-url="{% url 'get_w_artifacts' %}"
                         onclick="DisplayArtifacts('collapse_{{process.PID}}','{{process.PID}}', '{{case.id}}');"
                         class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
                         data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne"
@@ -457,6 +466,9 @@ Alway use the #action-form to perform any post request
   </script>
   {% else %}
   <script src="{% static 'js/linux.js'%}"></script>
+  <form id="action-form" method="POST">
+    {% csrf_token %}
+  </form>
   <script>
     $(document).ready(function () {
       GetReport("{% url 'lin_report'%}", "{{ case.id }}")

@@ -188,6 +188,9 @@ def start_analysis(request):
         form = ManageInvestigation(request.POST)
         if form.is_valid():
             case = form.cleaned_data['sa_case_id']
+            if case.status == "1":
+                # Already started !
+                return JsonResponse({'message': "success"})
             case.status = "1"
             case.percentage = "0"
             result = start_memory_analysis.delay('Cases/' + str(case.name), case.id)
@@ -297,11 +300,9 @@ def review_invest(request):
                     'ImageSignature': ImageSignature.objects.get(investigation_id=id),
                     'PsList': linux_engine.PsList.objects.filter(investigation_id=id),
                     'PsTree': linux_engine.PsTree.objects.get(investigation_id=id),
-                    'Bash': linux_engine.Bash.objects.filter(investigation_id=id),
-                    'ProcMaps': linux_engine.ProcMaps.objects.filter(investigation_id=id),
-                    'Lsof': linux_engine.Lsof.objects.filter(investigation_id=id),
                     'TtyCheck': linux_engine.TtyCheck.objects.filter(investigation_id=id),
-                    'Elfs': linux_engine.Elfs.objects.filter(investigation_id=id),
+                    'MountInfo': linux_engine.MountInfo.objects.filter(investigation_id=id),
+                    
                 }
                 context.update(models)
             return render(request, 'investigations/review_invest.html', context)

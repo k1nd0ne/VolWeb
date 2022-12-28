@@ -5,9 +5,10 @@ from iocs.models import *
 from django.apps import apps
 from VolWeb.voltools import *
 from volatility3.framework.exceptions import *
-
+from volatility3.cli import MuteProgress
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 
 def build_context(dump_path, context, base_config_path, plugin, output_path):
@@ -19,7 +20,7 @@ def build_context(dump_path, context, base_config_path, plugin, output_path):
     automagics = automagic.choose_automagic(available_automagics, plugin)
     context.config['automagic.LayerStacker.stackers'] = automagic.stacker.choose_os_stackers(plugin)
     context.config['automagic.LayerStacker.single_location'] = "file://" + os.getcwd() + "/" + dump_path
-    constructed = construct_plugin(context, automagics, plugin, base_config_path, None, file_handler(output_path))
+    constructed = construct_plugin(context, automagics, plugin, base_config_path, MuteProgress(), file_handler(output_path))
     return constructed
 
 
@@ -211,7 +212,7 @@ def run_volweb_routine_windows(dump_path, case_id, case):
    
     """Progress Function"""
     def update_progress(case):
-        MODULES_TO_RUN = len(volweb_knowledge_base) + 3
+        MODULES_TO_RUN = len(volweb_knowledge_base)
         percentage = str(format(float(case.percentage) + float(100 / MODULES_TO_RUN), '.0f'))
         logger.info(f"Status : {percentage} %")
         case.percentage = percentage
@@ -240,8 +241,9 @@ def run_volweb_routine_windows(dump_path, case_id, case):
                                                                           volweb_knowledge_base[runable]['plugin'],
                                                                           "Cases/files")
         except VolatilityException:
-            partial_results = True
             volweb_knowledge_base[runable]['constructed'] = []
+        except: 
+            logger.info(f"Could not build context for {runable}" )
 
     """STEP 2.1 : For each constructed plugin's context, we render the result and save it."""
     for runable in volweb_knowledge_base:
@@ -253,16 +255,19 @@ def run_volweb_routine_windows(dump_path, case_id, case):
             except VolatilityException:
                 partial_results = True
                 volweb_knowledge_base[runable]['result'] = []
+            except:
+                logger.info(f"Could not run {runable}" )
+                partial_results = True
+                volweb_knowledge_base[runable]['result'] = []
             update_progress(case)
         else:
             volweb_knowledge_base[runable]['result'] = []
             update_progress(case)
 
-    """STEP 2.2 : Look for string based iocs"""
-    collect_user_iocs(case, dump_path)
-    update_progress(case)
+    # collect_user_iocs(case, dump_path)
+    # update_progress(case)
 
-    """STEP 3.1 : We can now inject the results inside the django database"""
+    """STEP 3.1 : We can now inject the results inside the database"""
     for runable in volweb_knowledge_base:
         if runable != 'PsTree' and runable != 'UserAssist' and runable != 'DeviceTree':
             for artifact in volweb_knowledge_base[runable]['result']:
@@ -371,5 +376,4 @@ def run_volweb_routine_windows(dump_path, case_id, case):
 
     if volweb_knowledge_base['UserAssist']['result']:
         fill_userassist(volweb_knowledge_base['UserAssist']['result'], case_id)
-    update_progress(case)
     return partial_results

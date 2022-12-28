@@ -67,9 +67,19 @@ function GetReport(url, case_id) {
   });
 }
 
-
-
 function DisplayArtifacts(collapse, process, case_id) {
+  const span_loading = document.createElement("span"); 
+  span_loading.setAttribute('class','spinner-border spinner-border-sm');
+  span_loading.setAttribute('role','status');
+  $("#handles_btn").removeClass("d-none");
+  const handles_btn = document.getElementById("handles_btn"); 
+  handles_btn.textContent = "Click here to compute Handles for PID " + process;
+  handles_btn.addEventListener('click', function (e) {
+    $("#processHandles").textContent = "";
+     handles_btn.textContent = "";
+     handles_btn.appendChild(span_loading);
+     ComputeHandles(process, case_id);
+  });
   if ($('#' + collapse).attr("aria-expanded") == "true") {
     $('#cmdline').addClass('d-none');
     $('#processPriv').addClass('d-none');
@@ -114,18 +124,7 @@ function DisplayArtifacts(collapse, process, case_id) {
           }
         }
       });
-      
-      const span_loading = document.createElement("span"); 
-      span_loading.setAttribute('class','spinner-border spinner-border-sm');
-      span_loading.setAttribute('role','status');
-      const handles_btn = document.getElementById("handles_btn"); 
-      handles_btn.textContent = "Click here to compute Handles for PID " + process;
-      handles_btn.addEventListener('click', function (e) {
-         handles_btn.textContent = "";
-         handles_btn.appendChild(span_loading);
-         ComputeHandles(process, case_id);
-         handles_btn.textContent = "Click here to compute Handles for PID " + process;
-      });
+
   }
 }
 
@@ -151,6 +150,7 @@ function DisplayTimeline(case_id, date) {
 }
 
 function ComputeHandles(process, case_id){
+  
   $('#processHandles').addClass('d-none');
   var url = $("#handles_btn").attr("data-url");
   $.get(url, { 'case': case_id, 'pid': process }, // url
@@ -158,6 +158,7 @@ function ComputeHandles(process, case_id){
     if (textStatus == "success") {
       if (response['message'] == "success") {
         FillHandles(JSON.parse(response['artifacts']['Handles']));
+        $("#handles_btn").addClass("d-none");
       }
       if (response['message'] == "error") {
         $('#proc-error-message').html("Something went wrong.");

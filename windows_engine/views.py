@@ -35,7 +35,7 @@ def get_handles(request):
             json_serializer = json.Serializer()
             # Check if the Handles are not already computed
             handles = Handles.objects.filter(investigation_id=id, PID=pid)
-            if handles: 
+            if len(handles)>0: 
                 #Already computed we display the result
                 artifacts = {
                     'Handles': json_serializer.serialize(handles),
@@ -43,7 +43,7 @@ def get_handles(request):
             else:
                 #start a task with celery to compute the handles and send the result.
                 task_res = compute_handles.delay(str(id), str(pid))
-                res =  task_res.get();
+                res =  task_res.get()
                 if res != "OK":
                     return JsonResponse({'message': "error"})
                 else:
@@ -83,7 +83,7 @@ def get_interval(request):
 
 
 @login_required
-def get_artifacts(request):
+def get_w_artifacts(request):
     """Get artifacts related to all process related volatility3 plugins
 
     Arguments:
