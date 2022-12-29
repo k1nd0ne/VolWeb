@@ -41,7 +41,6 @@ services:
       - ./nginx:/etc/nginx/conf.d
       - ./nginx/ssl/:/etc/nginx/certs/
       - staticfiles:/home/app/web/staticfiles
-      - ./nginx/log/:/var/log/nginx/
     depends_on:
       - web
 

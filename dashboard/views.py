@@ -1,13 +1,12 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from investigations.models import UploadInvestigation, Activity
-from iocs.models import IOC
 from symbols.models import Symbols
 from django.contrib.auth import get_user_model
 from django.core import serializers
 
 
-# Dashboard view : Return the dashboard with the latest IOCs and Investigations
+# Dashboard view : Return the dashboard with the latest Investigations
 @login_required
 def dashboard(request):
     """Load the dashboard
@@ -16,7 +15,7 @@ def dashboard(request):
         request : http request object
 
         Comments:
-        Display the dashboard and pass the users/activities/analysis/iocs
+        Display the dashboard and pass the users/activities/analysis/
         """
     User = get_user_model()
     activity = serializers.serialize("json", Activity.objects.all(), fields=("date", "count"))
@@ -24,7 +23,6 @@ def dashboard(request):
                   {
                       'Activity': activity, 'Users': User.objects.filter(is_superuser=False),
                       'investigations': UploadInvestigation.objects.all().count(),
-                      'iocs': IOC.objects.all().count(),
                       'symbols': Symbols.objects.all().count(),
                       'team': User.objects.all().count()
                   })

@@ -1,14 +1,118 @@
 from django.shortcuts import render
 from VolWeb.voltools import file_sha256, vt_check_file_hash
+from .models import *
+from django.core.serializers import json
 from django.contrib.auth.decorators import login_required
-from windows_engine.tasks import dump_memory_pid, app, dump_memory_file
+from windows_engine.tasks import dump_memory_pid, app, dump_memory_file, compute_handles
 from django.apps import apps
 from django.http import JsonResponse, HttpResponse
 from .forms import *
-import os, uuid, subprocess, mimetypes
+import os, uuid, mimetypes
 from zipfile import ZipFile
 from .report import report
 
+
+
+@login_required
+def get_handles(request):
+    """Get handles from a PID
+
+    Arguments:
+    request : http request object
+
+    Comment:
+    The user requested to watch the handles linked to a process. 
+    If the handles are already calculated, then the result is fetch
+    Else, volatility3 will calculate them using celery.
+    """
+    if request.method == 'GET':
+
+        form = GetArtifacts(request.GET)
+        if form.is_valid():
+            case = form.cleaned_data['case']
+            id = case.id
+            pid = form.cleaned_data['pid']
+            json_serializer = json.Serializer()
+            # Check if the Handles are not already computed
+            handles = Handles.objects.filter(investigation_id=id, PID=pid)
+            if len(handles)>0: 
+                #Already computed we display the result
+                artifacts = {
+                    'Handles': json_serializer.serialize(handles),
+                }
+            else:
+                #start a task with celery to compute the handles and send the result.
+                task_res = compute_handles.delay(str(id), str(pid))
+                res =  task_res.get()
+                if res != "OK":
+                    return JsonResponse({'message': "error"})
+                else:
+                    artifacts = {
+                        'Handles': json_serializer.serialize(Handles.objects.filter(investigation_id=id, PID=pid)),
+                    }
+            return JsonResponse({'message': "success", 'artifacts': artifacts})
+    
+    return JsonResponse({'message': "error"})
+
+
+
+@login_required
+def get_interval(request):
+    """Get artifacts for a specific timestamp
+
+    Arguments:
+    request : http request object
+
+    Comment:
+    The user requested to watch the artifacts linked to a specific timestamp.
+    """
+    if request.method == 'GET':
+        form = GetInverval(request.GET)
+        if form.is_valid():
+            case = form.cleaned_data['case']
+            date = form.cleaned_data['date']
+            id = case.id
+            json_serializer = json.Serializer()
+            # Request the appropriate artifacts
+            artifacts = {
+                'Timeliner': json_serializer.serialize(Timeliner.objects.filter(investigation_id=id,CreatedDate=date)),
+            }
+            return JsonResponse({'message': "success", 'artifacts': artifacts})
+    
+    return JsonResponse({'message': "error"})
+
+
+@login_required
+def get_w_artifacts(request):
+    """Get artifacts related to all process related volatility3 plugins
+
+    Arguments:
+    request : http request object
+
+    Comment:
+    The user requested to watch the artifacts linked the process.
+    """
+    if request.method == 'GET':
+        form = GetArtifacts(request.GET)
+        if form.is_valid():
+            case = form.cleaned_data['case']
+            pid = form.cleaned_data['pid']
+            id = case.id
+            json_serializer = json.Serializer()
+            # Request the appropriate artifacts
+            artifacts = {
+                'CmdLine': json_serializer.serialize(CmdLine.objects.filter(investigation_id=id, PID=pid)),
+                'DllList': json_serializer.serialize(DllList.objects.filter(investigation_id=id, PID=pid)),
+                'Privs':   json_serializer.serialize(Privs.objects.filter(investigation_id=id, PID=pid)),
+                'Handles':   json_serializer.serialize(Handles.objects.filter(investigation_id=id, PID=pid)),
+                'Envars':  json_serializer.serialize(Envars.objects.filter(investigation_id=id, PID=pid)),
+                'NetScan': json_serializer.serialize(NetScan.objects.filter(investigation_id=id, PID=pid)),
+                'NetStat': json_serializer.serialize(NetStat.objects.filter(investigation_id=id, PID=pid)),
+                'Sessions': json_serializer.serialize(Sessions.objects.filter(investigation_id=id, ProcessID=pid)),
+                'LdrModules': json_serializer.serialize(LdrModules.objects.filter(investigation_id=id, Pid=pid)),
+            }
+            return JsonResponse({'message': "success", 'artifacts': artifacts})
+    return JsonResponse({'message': "error"})
 
 @login_required
 def win_report(request):
@@ -80,6 +184,7 @@ def dump_process(request):
                 return JsonResponse({'message': "failed"})
         else:
             return JsonResponse({'message': "error"})
+    return JsonResponse({'message': "error"})
 
 
 @login_required

@@ -4,7 +4,7 @@ from investigations.models import UploadInvestigation
 from django.forms import ModelForm, TextInput, Textarea, Select, FileInput
 
 
-# This ModelForm is made to create a new IOC
+# This ModelForm is made to import a new ISF
 class SymbolsForm(forms.ModelForm):
     class Meta:
         model = Symbols

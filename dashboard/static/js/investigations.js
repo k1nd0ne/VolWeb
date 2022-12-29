@@ -225,7 +225,7 @@ if (sidebar) {
 
                     }
                     if (response['message'] == "error") {
-                        $('#proc-error-message').html("Something went wrong getting the linked iocs.");
+                        $('#proc-error-message').html("Something went wrong getting the case.");
                         $('.toast-proc-error').toast('show');
                     }
                     $('.invest-details').show();

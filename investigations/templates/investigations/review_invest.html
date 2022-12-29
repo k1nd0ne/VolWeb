@@ -103,7 +103,7 @@ Alway use the #action-form to perform any post request
     <div class="row" style="margin-top: 19px;">
       {% if case.os_version == "Linux" %}
       <!---- Linux INVESTIGATION REVIEW  --->
-      <div class="col-12 mt-sm-auto" style="">
+      <div class="col-12 mt-sm-auto">
         <div>
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab"
@@ -111,35 +111,23 @@ Alway use the #action-form to perform any post request
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2"
                 style="color: var(--bs-indigo);"><i class="fa-solid fa-chart-gantt"></i>&nbsp;Tree</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-7"
-                style="color: var(--bs-purple);"><i class="fas fa-file"></i>&nbsp;TtyCheck</a></li>
+                style="color: var(--bs-purple);"><i class="fas fa-terminal"></i>&nbsp;TtyCheck</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-10"
+              style="color: var(--bs-pink);"><i class="fas fa-hard-drive"></i>&nbsp;MountInfo</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-8"
                 style="color: var(--bs-info);"><i class="fas fa-file-contract"></i>&nbsp;Reporting</a></li>
+
           </ul>
-          <div class="tab-content">
+          <div class="tab-content" data-url="{% url 'lin_tag' %}" id="tabs">
             <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
               <div class="row">
                 <div class="col-2" style="margin-top: 10px;">
-
                   <div class="accordion" id="accordionExample">
-                    <div class="process-item">
-                      <a href="#" id="collapse_default" onclick="DisplayAll();"
-                        class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
-                        data-bs-target="#collapse_default" aria-expanded="false" aria-controls="collapseOne"
-                        style="text-decoration: none;background: var(--bs-primary-rgb);">
-                        Display All
-                      </a>
-                      <div id="collapse_default" class="d-none accordion-collapse collapse" aria-labelledby="headingOne"
-                        data-bs-parent="#accordionExample">
-                        <div class="accordion-body process_pid_info">
-                        </div>
-                      </div>
-                    </div>
-
 
                     {% for process in PsList %}
                     <div class="process-item">
-                      <a href="#" id="collapse_{{process.PID}}"
-                        onclick="DisplayArtifacts('collapse_{{process.PID}}','pid_{{process.PID}}');"
+                      <a href="#" id="collapse_{{process.PID}}" data-url="{% url 'get_l_artifacts' %}"
+                        onclick="DisplayArtifacts('collapse_{{process.PID}}','{{process.PID}}', '{{case.id}}');"
                         class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
                         data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne"
                         style="text-decoration: none;background: var(--bs-primary-rgb);">
@@ -152,7 +140,9 @@ Alway use the #action-form to perform any post request
                       <div id="collapse_{{process.id}}" class="accordion-collapse collapse" aria-labelledby="headingOne"
                         data-bs-parent="#accordionExample">
                         <div class="accordion-body process_pid_info">
-                          <p class="card-text p_info">PPID :&nbsp;{{process.PPID}}</p>
+                          <p class="card-text p_info">Offset :&nbsp;{{process.Offset}}<br>
+                          PPID :&nbsp;{{process.PPID}}<br>
+                          TID :&nbsp;{{process.TID}}</p>
                         </div>
                       </div>
                     </div>
@@ -228,7 +218,9 @@ Alway use the #action-form to perform any post request
                   <div class="d-none processes_tab">
 
                     <ul class="nav nav-tabs" role="tablist">
-                      <li class="nav-item" role="presentation"><a class="nav-link active" role="tab"
+                      <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab"
+                        href="#tab-9">PsAux</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                           data-bs-toggle="tab" href="#tab-3">ELFs</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                           href="#tab-4">Maps</a></li>
@@ -238,6 +230,7 @@ Alway use the #action-form to perform any post request
                           href="#tab-6">Bash</a></li>
                     </ul>
                     <div class="tab-content ">
+                      {% include "investigations/linux/processes/psaux.html" %}
                       {% include "investigations/linux/processes/elfs.html" %}
                       {% include "investigations/linux/processes/maps.html" %}
                       {% include "investigations/linux/processes/lsof.html" %}
@@ -249,6 +242,7 @@ Alway use the #action-form to perform any post request
             </div>
             {% include "investigations/linux/processes/tree.html" %}
             {% include "investigations/linux/others/tty_check.html" %}
+            {% include "investigations/linux/others/mountinfo.html" %}
             {% include "investigations/linux/report.html" %}
 
 
@@ -273,6 +267,8 @@ Alway use the #action-form to perform any post request
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                 href="#tab-19"><i class="fa-solid fa-chart-gantt"></i>&nbsp;Tree</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                href="#tab-25"><i class="fa-solid fa-chart-gantt"></i>&nbsp;DeviceTree</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                 href="#tab-20"><i class="fa-solid fa-diagram-project"></i>&nbsp;NetGraph</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2"
                 style="color: var(--bs-indigo);"><i class="fa-solid fa-folder-tree"></i>&nbsp;Registry</a></li>
@@ -282,37 +278,20 @@ Alway use the #action-form to perform any post request
                 style="color: var(--bs-pink);"><i class="fa-solid fa-timeline"></i>&nbsp;Timeline</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-16"
                 style="color: var(--bs-warning);"><i class="fas fa-file"></i>&nbsp;Files</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-18"
-                style="color: var(--bs-danger);"><i class="fas fa-fingerprint"></i>&nbsp;String based IOCs</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-22"
                 style="color: var(--bs-info);"><i class="fas fa-file-contract"></i>&nbsp;Reporting</a></li>
 
           </ul>
-          <div class="tab-content">
+          <div class="tab-content" data-url="{% url 'win_tag' %}" id="tabs">
             <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
               <div class="row">
                 <div class="col-2" style="margin-top: 10px;">
 
                   <div class="accordion" id="accordionExample">
-                    <div class="process-item">
-                      <a href="#" id="collapse_default" onclick="DisplayAll();"
-                        class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
-                        data-bs-target="#collapse_default" aria-expanded="false" aria-controls="collapseOne"
-                        style="text-decoration: none;background: var(--bs-primary-rgb);">
-                        Display All
-                      </a>
-                      <div id="collapse_default" class="d-none accordion-collapse collapse" aria-labelledby="headingOne"
-                        data-bs-parent="#accordionExample">
-                        <div class="accordion-body process_pid_info">
-                        </div>
-                      </div>
-                    </div>
-
-
                     {% for process in PsScan %}
                     <div class="process-item">
-                      <a href="#" id="collapse_{{process.PID}}"
-                        onclick="DisplayArtifacts('collapse_{{process.PID}}','pid_{{process.PID}}');"
+                      <a href="#" id="collapse_{{process.PID}}" data-url="{% url 'get_w_artifacts' %}"
+                        onclick="DisplayArtifacts('collapse_{{process.PID}}','{{process.PID}}', '{{case.id}}');"
                         class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
                         data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne"
                         style="text-decoration: none;background: var(--bs-primary-rgb);">
@@ -424,9 +403,13 @@ Alway use the #action-form to perform any post request
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                           href="#tab-21">Command line</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                        href="#tab-23">Sessions</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                           href="#tab-5">Environment variables</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-6">DLL List</a></li>
+                          href="#tab-6">DllList</a></li>
+                      <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                          href="#tab-24">LdrModules</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
                           href="#tab-7">Handles</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
@@ -434,11 +417,13 @@ Alway use the #action-form to perform any post request
                       <li class="nav-item" role="presentation"><a class="nav-link " role="tab" data-bs-toggle="tab"
                           href="#tab-17">MalFind</a></li>
                     </ul>
-                    <div class="tab-content ">
+                    <div class="tab-content">
                       {% include "investigations/windows/processes/privileges.html" %}
+                      {% include "investigations/windows/processes/sessions.html" %}
                       {% include "investigations/windows/processes/cmdline.html" %}
                       {% include "investigations/windows/processes/envars.html" %}
                       {% include "investigations/windows/processes/dlllist.html" %}
+                      {% include "investigations/windows/processes/ldrmodules.html" %}
                       {% include "investigations/windows/processes/handles.html" %}
                       {% include "investigations/windows/processes/network.html" %}
                       {% include "investigations/windows/processes/malfind.html" %}
@@ -448,11 +433,11 @@ Alway use the #action-form to perform any post request
               </div>
             </div>
             {% include "investigations/windows/processes/tree.html" %}
+            {% include "investigations/windows/processes/devicetree.html" %}
             {% include "investigations/windows/processes/netgraph.html" %}
             {% include "investigations/windows/registry/registry.html" %}
             {% include "investigations/windows/cryptography/cryptography.html" %}
             {% include "investigations/windows/timeline/timeline.html" %}
-            {% include "investigations/windows/iocs/iocs.html" %}
             {% include "investigations/windows/files/files.html" %}
             {% include "investigations/windows/report.html" %}
 
@@ -473,15 +458,18 @@ Alway use the #action-form to perform any post request
   <script src="{% static 'js/windows.js'%}"></script>
   <script>
     $(document).ready(function () {
-      GetReport("{% url 'win_report'%}", {{ case.id }})
-  });
+      GetReport("{% url 'win_report'%}", "{{ case.id }}");
+    });
   </script>
   {% else %}
   <script src="{% static 'js/linux.js'%}"></script>
+  <form id="action-form" method="POST">
+    {% csrf_token %}
+  </form>
   <script>
     $(document).ready(function () {
-      GetReport("{% url 'lin_report'%}", {{ case.id }})
-  });
+      GetReport("{% url 'lin_report'%}", "{{ case.id }}")
+    });
   </script>
   {% endif %}
   {% endblock content %}

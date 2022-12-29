@@ -13,11 +13,20 @@ def report(case):
     privs_suspicious = Privs.objects.filter(investigation=case, Tag="Suspicious")
     privs_evidence = Privs.objects.filter(investigation=case, Tag="Evidence")
 
+    sessions_suspicious = Sessions.objects.filter(investigation=case, Tag="Suspicious")
+    sessions_evidence = Sessions.objects.filter(investigation=case, Tag="Evidence")
+
     envars_suspicious = Envars.objects.filter(investigation=case, Tag="Suspicious")
     envars_evidence = Envars.objects.filter(investigation=case, Tag="Evidence")
 
     dlllist_suspicious = DllList.objects.filter(investigation=case, Tag="Suspicious")
     dlllist_evidence = DllList.objects.filter(investigation=case, Tag="Evidence")
+
+    ldrmodules_suspicious = LdrModules.objects.filter(investigation=case, Tag="Suspicious")
+    ldrmodules_evidence = LdrModules.objects.filter(investigation=case, Tag="Evidence")
+
+    skeleton_suspicious = SkeletonKeyCheck.objects.filter(investigation=case, Tag="Suspicious")
+    skeleton_evidence = SkeletonKeyCheck.objects.filter(investigation=case, Tag="Evidence")
 
     handles_suspicious = Handles.objects.filter(investigation=case, Tag="Suspicious")
     handles_evidence = Handles.objects.filter(investigation=case, Tag="Evidence")
@@ -91,11 +100,26 @@ def report(case):
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
+    if sessions_evidence:
+        table = "Process ID  | Process | Session ID | Session Type | User Name | Create Time | Source \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
+        for process in sessions_evidence:
+            table += f" {process.ProcessID} | {process.Process} | {process.SessionID} | {process.SessionType} | {process.UserName} | {process.CreateTime} | Sessions \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
     if privs_evidence:
         table = "PID  | Process Value | Privilege |  Attributes | Description | Value | Source | \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
 
         for process in privs_evidence:
             table += f"{process.PID} | {process.Process} | {process.Privilege} | {process.Attributes} | {process.Description} | {process.Value} | Privileges \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
+    if skeleton_evidence:
+        table = "PID  | Process | Skeleton Key Found |  rc4HmacInitialize | rc4HmacDecrypt  | Source | \n ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
+
+        for process in skeleton_evidence:
+            table += f"{process.PID} | {process.Process} | {process.SkeletonKeyFound} | {process.rc4HmacInitialize} | {process.rc4HmacDecrypt} | SkeletonKeyCheck \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
@@ -110,6 +134,13 @@ def report(case):
         table = "Process  | PID | Base | Name | Path | Size | Source \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
         for process in dlllist_evidence:
             table += f"{process.Process} | {process.PID} | {process.Base} | {process.Name} | {process.Path} | {process.Size} | {process.LoadTime} | Dynamic link libraries \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
+    if ldrmodules_evidence:
+        table = "Process  | PID | Base | Name | Path | Size | Source \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
+        for process in ldrmodules_evidence:
+            table += f"{process.Process} | {process.Pid} | {process.Base} | {process.InInit} | {process.InLoad} | {process.InLoad} | {process.MappedPath} | LdrModules \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
@@ -174,10 +205,25 @@ def report(case):
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
+    if sessions_suspicious:
+        table = "Process ID  | Process | Session ID | Session Type | User Name | Create Time | Source \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
+        for process in sessions_suspicious:
+            table += f" {process.ProcessID} | {process.Process} | {process.SessionID} | {process.SessionType} | {process.UserName} | {process.CreateTime} | Sessions \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
     if privs_suspicious:
         table = "PID  | Process Value | Privilege |  Attributes | Description | Value | Source | \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
         for process in privs_suspicious:
             table += f"{process.PID} | {process.Process} | {process.Privilege} | {process.Attributes} | {process.Description} | {process.Value} | Privileges \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
+    if skeleton_suspicious:
+        table = "PID  | Process | Skeleton Key Found |  rc4HmacInitialize | rc4HmacDecrypt  | Source | \n ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
+
+        for process in skeleton_suspicious:
+            table += f"{process.PID} | {process.Process} | {process.SkeletonKeyFound} | {process.rc4HmacInitialize} | {process.rc4HmacDecrypt} | SkeletonKeyCheck \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
@@ -192,6 +238,13 @@ def report(case):
         table = "Process  | PID | Base | Name | Path | Size | Source \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
         for process in dlllist_suspicious:
             table += f"{process.Process} | {process.PID} | {process.Base} | {process.Name} | {process.Path} | {process.Size} | {process.LoadTime} | Dynamic link libraries \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
+    if ldrmodules_suspicious:
+        table = "Process  | PID | Base | Name | Path | Size | Source \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
+        for process in ldrmodules_suspicious:
+            table += f"{process.Process} | {process.Pid} | {process.Base} | {process.InInit} | {process.InLoad} | {process.InLoad} | {process.MappedPath} | LdrModules \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 

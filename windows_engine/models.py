@@ -40,6 +40,16 @@ class PsTree(models.Model):
     graph = models.JSONField(null=True)
 
 
+class DeviceTree(models.Model):
+    investigation = models.ForeignKey(
+        UploadInvestigation,
+        on_delete=models.CASCADE,
+        related_name="windows_devicetree_investigation"
+
+    )
+    graph = models.JSONField(null=True)
+
+
 class NetGraph(models.Model):
     investigation = models.ForeignKey(
         UploadInvestigation,
@@ -102,6 +112,35 @@ class Privs(models.Model):
     Privilege = models.TextField(null=True)
     Attributes = models.TextField(null=True)
     Description = models.TextField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+class Sessions(models.Model):
+    investigation = models.ForeignKey(
+        UploadInvestigation,
+        on_delete=models.CASCADE,
+        related_name="windows_sessions_investigation"
+    )
+    CreateTime = models.TextField(null=True)
+    Process = models.TextField(null=True)
+    ProcessID = models.IntegerField(null=True)
+    SessionID = models.IntegerField(null=True)
+    SessionType = models.TextField(null=True)
+    UserName = models.TextField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+class LdrModules(models.Model):
+    investigation = models.ForeignKey(
+        UploadInvestigation,
+        on_delete=models.CASCADE,
+        related_name="windows_ldrmodules_investigation"
+    )
+    Base = models.BigIntegerField(null=True)
+    InInit = models.TextField(null=True)
+    InLoad = models.TextField(null=True)
+    InMem = models.TextField(null=True)
+    MappedPath = models.TextField(null=True)
+    Pid = models.IntegerField(null=True)
+    Process = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
 

@@ -24,7 +24,6 @@ urlpatterns = [
     path('login/', auth_views.LogoutView.as_view(template_name='dashboard/login.html'), name='logout'),
     path('', include('dashboard.urls')),
     path('investigations/', include('investigations.urls')),
-    path('iocs/', include('iocs.urls')),
     path('symbols/', include('symbols.urls')),
     path('win/', include('windows_engine.urls')),
     path('lin/', include('linux_engine.urls')),

@@ -57,11 +57,7 @@
                       {% endif %}
                       " href="{% url 'symbols' %}"><i class="fas fa-table"></i><span>Symbols</span></a></li>
 
-          <li class="nav-item"><a class="nav-link
-                      {% if request.get_full_path == '/iocs/'%}
-                      active
-                      {% endif %}
-                      " href="{% url 'iocs' %}"><i class="fas fa-fingerprint"></i><span>IOCs</span></a>
+          <li class="nav-item">
             <div class="nav-item dropdown no-arrow" style="width: 10px;"><a class="dropdown-toggle nav-link"
                 aria-expanded="false" data-bs-toggle="dropdown" href="#">&nbsp;<i class="fas fa-user"></i><span>{{user.get_username }}</span></a>
               <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end animated--fade-in"><a class="dropdown-item"

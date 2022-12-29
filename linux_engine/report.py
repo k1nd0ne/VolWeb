@@ -22,6 +22,13 @@ def report(case):
     procmaps_suspicious = ProcMaps.objects.filter(investigation=case, Tag="Suspicious")
     procmaps_evidence = ProcMaps.objects.filter(investigation=case, Tag="Evidence")
 
+    psaux_suspicious = PsAux.objects.filter(investigation=case, Tag="Suspicious")
+    psaux_evidence = PsAux.objects.filter(investigation=case, Tag="Evidence")
+
+    mountinfo_suspicious = MountInfo.objects.filter(investigation=case, Tag="Suspicious")
+    mountinfo_evidence = MountInfo.objects.filter(investigation=case, Tag="Evidence")
+
+
     # BEGIN HEADER#
     html = markdown.markdown("# 📄 Investigation report : " + case.title)
     text = "# 📄 Investigation report : " + case.title + "\n"
@@ -80,6 +87,13 @@ def report(case):
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
+    if psaux_evidence:
+        table = "PID  | PPID | COMM | Args | \n ------------- | ------------- | ------------- | -------------\n"
+        for process in psaux_evidence:
+            table += f" {process.PID} | {process.PPID} | {process.COMM} | {process.ARGS} | \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
     if lsof_evidence:
         table = "FD  | PID | Path | Process | \n ------------- | ------------- | ------------- | -------------\n"
         for process in lsof_evidence:
@@ -93,6 +107,14 @@ def report(case):
             table += f" {process.Start} | {process.End} | {process.FilePath} | {process.Flags} | {process.Inode} | {process.Major} | {process.PID} | {process.Minor} | {process.PgOff} | {process.Process} | \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
+
+    if mountinfo_evidence:
+        table = "FIELDS  | FSTYPE | MAJOR_MINOR | MNT_NS_ID |  MOUNTID |  MOUNT_OPTIONS |  MOUNT_POINT |  MOUNT_SRC |  PARENT_ID |  ROOT | SB_OPTIONS | \n ------------- | ------------- | ------------- | ------------- | -------------| -------------| -------------| -------------| ------------- | ------------- | -------------\n"
+        for process in mountinfo_evidence:
+            table += f" {process.FIELDS} | {process.FSTYPE} | {process.MAJOR_MINOR} | {process.MNT_NS_ID} | {process.MOUNTID} | {process.MOUNT_OPTIONS} | {process.MOUNT_POINT} | {process.MOUNT_SRC} | {process.PARENT_ID} | {process.ROOT} | SB_OPTIONS | \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
     # END EVIDENCE ITEMS #
 
     # BEGIN SUSPICIOUS ITEMS #
@@ -124,6 +146,13 @@ def report(case):
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
+    if psaux_suspicious:
+        table = "PID  | PPID | COMM | Args | \n ------------- | ------------- | ------------- | -------------\n"
+        for process in psaux_suspicious:
+            table += f" {process.PID} | {process.PPID} | {process.COMM} | {process.ARGS} | \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
     if lsof_suspicious:
         table = "FD  | PID | Path | Process | \n ------------- | ------------- | ------------- | -------------\n"
         for process in lsof_suspicious:
@@ -135,6 +164,13 @@ def report(case):
         table = "Start  | End | FilePath | Flags |  Inode |  Major |  Minor |  PID |  PgOff |  Process | \n ------------- | ------------- | ------------- | ------------- | -------------| -------------| -------------| -------------| ------------- | -------------\n"
         for process in procmaps_suspicious:
             table += f" {process.Start} | {process.End} | {process.FilePath} | {process.Flags} | {process.Inode} | {process.Major} | {process.PID} | {process.Minor} | {process.PgOff} | {process.Process} | \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
+    if mountinfo_suspicious:
+        table = "FIELDS  | FSTYPE | MAJOR_MINOR | MNT_NS_ID |  MOUNTID |  MOUNT_OPTIONS |  MOUNT_POINT |  MOUNT_SRC |  PARENT_ID |  ROOT | SB_OPTIONS | \n ------------- | ------------- | ------------- | ------------- | -------------| -------------| -------------| -------------| ------------- | ------------- | -------------\n"
+        for process in mountinfo_suspicious:
+            table += f" {process.FIELDS} | {process.FSTYPE} | {process.MAJOR_MINOR} | {process.MNT_NS_ID} | {process.MOUNTID} | {process.MOUNT_OPTIONS} | {process.MOUNT_POINT} | {process.MOUNT_SRC} | {process.PARENT_ID} | {process.ROOT} | SB_OPTIONS | \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
     # END SUSPICIOUS ITEMS #

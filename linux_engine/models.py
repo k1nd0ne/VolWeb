@@ -22,9 +22,23 @@ class PsList(models.Model):
         on_delete=models.CASCADE,
         related_name="linux_pslist_investigation"
     )
-    COMM = models.CharField(max_length=255, null=True)
+    COMM = models.TextField(null=True)
+    Offset = models.BigIntegerField(null=True)
     PID = models.BigIntegerField(null=True)
     PPID = models.BigIntegerField(null=True)
+    TID = models.BigIntegerField(null=True)
+
+class PsAux(models.Model):
+    investigation = models.ForeignKey(
+        UploadInvestigation,
+        on_delete=models.CASCADE,
+        related_name="linux_psaux_investigation"
+    )
+    ARGS = models.TextField(null=True)
+    COMM = models.TextField(null=True)
+    PID = models.BigIntegerField(null=True)
+    PPID = models.BigIntegerField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
 
 class Bash(models.Model):
@@ -34,8 +48,8 @@ class Bash(models.Model):
         related_name="linux_bash_investigation"
     )
     PID = models.BigIntegerField(null=True)
-    Process = models.CharField(max_length=255, null=True)
-    CommandTime = models.CharField(max_length=255, null=True)
+    Process = models.TextField(null=True)
+    CommandTime = models.TextField(null=True)
     Command = models.CharField(max_length=500, null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
@@ -47,7 +61,7 @@ class ProcMaps(models.Model):
         related_name="linux_procmaps_investigation"
     )
     End = models.BigIntegerField(null=True)
-    FilePath = models.CharField(max_length=255, null=True)
+    FilePath = models.TextField(null=True)
     Flags = models.CharField(max_length=20, null=True)
     Command = models.CharField(max_length=500, null=True)
     Inode = models.BigIntegerField(null=True)
@@ -55,7 +69,7 @@ class ProcMaps(models.Model):
     Minor = models.BigIntegerField(null=True)
     PID = models.BigIntegerField(null=True)
     PgOff = models.BigIntegerField(null=True)
-    Process = models.CharField(max_length=255, null=True)
+    Process = models.TextField(null=True)
     Start = models.BigIntegerField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
@@ -68,7 +82,7 @@ class Lsof(models.Model):
     )
     FD = models.BigIntegerField(null=True)
     PID = models.BigIntegerField(null=True)
-    Path = models.CharField(max_length=255, null=True)
+    Path = models.TextField(null=True)
     Process = models.CharField(max_length=500, null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
@@ -80,9 +94,9 @@ class TtyCheck(models.Model):
         related_name="linux_ttycheck_investigation"
     )
     Address = models.BigIntegerField(null=True)
-    Module = models.CharField(max_length=255, null=True)
-    Name = models.CharField(max_length=255, null=True)
-    Symbol = models.CharField(max_length=255, null=True)
+    Module = models.TextField(null=True)
+    Name = models.TextField(null=True)
+    Symbol = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
 
@@ -93,8 +107,28 @@ class Elfs(models.Model):
         related_name="linux_elfs_investigation"
     )
     End = models.BigIntegerField(null=True)
-    FilePath = models.CharField(max_length=255, null=True)
+    FilePath = models.TextField(null=True)
     PID = models.BigIntegerField(null=True)
-    Process = models.CharField(max_length=255, null=True)
+    Process = models.TextField(null=True)
     Start = models.BigIntegerField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+
+class MountInfo(models.Model):
+    investigation = models.ForeignKey(
+        UploadInvestigation,
+        on_delete=models.CASCADE,
+        related_name="linux_mountinfo_investigation"
+    )
+    FIELDS = models.TextField(null=True)
+    FSTYPE = models.TextField(null=True)
+    MAJOR_MINOR = models.TextField(max_length=20, null=True)
+    MNT_NS_ID = models.TextField(max_length=500, null=True)
+    MOUNTID = models.BigIntegerField(null=True)
+    MOUNT_OPTIONS = models.TextField(null=True)
+    MOUNT_POINT = models.TextField(null=True)
+    MOUNT_SRC = models.TextField(null=True)
+    PARENT_ID = models.BigIntegerField(null=True)
+    ROOT = models.TextField(null=True)
+    SB_OPTIONS = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)

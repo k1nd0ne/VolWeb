@@ -63,36 +63,6 @@ function DemandProcDump(pid, case_id) {
     });
 }
 
-function DisplayArtifacts(collapse, process) {
-
-    if ($('#' + collapse).attr("aria-expanded") == "true") {
-        $('.pid').addClass('d-none');
-        $('.default-td').addClass('d-none');
-        $('.spinner-review').removeClass("d-none");
-        setTimeout(function () {
-            $('.processes_tab').removeClass('d-none');
-            $('.' + process).removeClass('d-none');
-            $('.default-td').removeClass('d-none');
-            $('.spinner-review').addClass("d-none");
-        }, 2000);
-    }
-}
-
-function DisplayAll() {
-
-    if ($('#collapse_default').attr("aria-expanded") == "true") {
-        $('.pid').addClass('d-none');
-        $('.spinner-review').removeClass("d-none");
-        setTimeout(function () {
-            $('.processes_tab').removeClass('d-none');
-            $('.pid').removeClass('d-none');
-            $('.spinner-review').addClass("d-none");
-
-
-        }, 2000);
-    }
-}
-
 function copy(text, target) {
     $(target).attr("title", "Copied!");
     $(target).tooltip('dispose')

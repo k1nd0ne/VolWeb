@@ -9,7 +9,6 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect
 from django.core.serializers import serialize
 from celery.result import AsyncResult
-from iocs.models import IOC
 from os.path import exists
 from investigations.models import *
 from symbols.models import Symbols
@@ -155,11 +154,6 @@ def get_invest(request):
             except ObjectDoesNotExist:
                 response = {'message': 'N/A'}
             try:
-                i = IOC.objects.filter(linkedInvestigation=id)
-                iocs = serialize('python', list(i), ensure_ascii=False, fields=('value', 'context'))
-            except ObjectDoesNotExist:
-                iocs = {'message': 'N/A'}
-            try:
                 u = UploadInvestigation.objects.get(pk=id)
                 s = u.linked_isf
                 if s:
@@ -169,7 +163,7 @@ def get_invest(request):
 
             except ObjectDoesNotExist:
                 isf = {'message': 'N/A'}
-            return JsonResponse({'message': "success", 'result': response, 'iocs': iocs, 'isf': isf})
+            return JsonResponse({'message': "success", 'result': response, 'isf': isf})
         else:
             return JsonResponse({'message': "error"})
 
@@ -188,6 +182,9 @@ def start_analysis(request):
         form = ManageInvestigation(request.POST)
         if form.is_valid():
             case = form.cleaned_data['sa_case_id']
+            if case.status == "1":
+                # Already started !
+                return JsonResponse({'message': "success"})
             case.status = "1"
             case.percentage = "0"
             result = start_memory_analysis.delay('Cases/' + str(case.name), case.id)
@@ -277,25 +274,17 @@ def review_invest(request):
                     'ImageSignature': ImageSignature.objects.get(investigation_id=id),
                     'PsScan': windows_engine.PsScan.objects.filter(investigation_id=id),
                     'PsTree': windows_engine.PsTree.objects.get(investigation_id=id),
-                    'CmdLine': windows_engine.CmdLine.objects.filter(investigation_id=id),
-                    'Handles': windows_engine.Handles.objects.filter(investigation_id=id),
-                    'DllList': windows_engine.DllList.objects.filter(investigation_id=id),
-                    'Privs': windows_engine.Privs.objects.filter(investigation_id=id),
-                    'Envars': windows_engine.Envars.objects.filter(investigation_id=id),
-                    'NetScan': windows_engine.NetScan.objects.filter(investigation_id=id),
-                    'NetStat': windows_engine.NetStat.objects.filter(investigation_id=id),
+                    'DeviceTree': windows_engine.DeviceTree.objects.get(investigation_id=id),
                     'NetGraph': windows_engine.NetGraph.objects.get(investigation_id=id),
                     'Hashdump': windows_engine.Hashdump.objects.filter(investigation_id=id),
                     'Lsadump': windows_engine.Lsadump.objects.filter(investigation_id=id),
                     'Cachedump': windows_engine.Cachedump.objects.filter(investigation_id=id),
                     'HiveList': windows_engine.HiveList.objects.filter(investigation_id=id),
                     'UserAssist': windows_engine.UserAssist.objects.filter(investigation_id=id),
-                    'Timeliner': windows_engine.Timeliner.objects.filter(investigation_id=id),
                     'TimeLineChart': windows_engine.TimeLineChart.objects.get(investigation_id=id),
                     'SkeletonKeyCheck': windows_engine.SkeletonKeyCheck.objects.filter(investigation_id=id),
                     'Malfind': windows_engine.Malfind.objects.filter(investigation_id=id),
                     'FileScan': windows_engine.FileScan.objects.filter(investigation_id=id),
-                    'Strings': windows_engine.Strings.objects.filter(investigation_id=id),
                 }
                 context.update(forms)
                 context.update(models)
@@ -304,11 +293,9 @@ def review_invest(request):
                     'ImageSignature': ImageSignature.objects.get(investigation_id=id),
                     'PsList': linux_engine.PsList.objects.filter(investigation_id=id),
                     'PsTree': linux_engine.PsTree.objects.get(investigation_id=id),
-                    'Bash': linux_engine.Bash.objects.filter(investigation_id=id),
-                    'ProcMaps': linux_engine.ProcMaps.objects.filter(investigation_id=id),
-                    'Lsof': linux_engine.Lsof.objects.filter(investigation_id=id),
                     'TtyCheck': linux_engine.TtyCheck.objects.filter(investigation_id=id),
-                    'Elfs': linux_engine.Elfs.objects.filter(investigation_id=id),
+                    'MountInfo': linux_engine.MountInfo.objects.filter(investigation_id=id),
+                    
                 }
                 context.update(models)
             return render(request, 'investigations/review_invest.html', context)
