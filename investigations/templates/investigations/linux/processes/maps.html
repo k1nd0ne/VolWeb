@@ -5,6 +5,10 @@ Description :
 Included in the "review_invest.html", this file represent the "Maps" tab.
 --->
 <div class="tab-pane fade" role="tabpanel" id="tab-4">
+  <div class="d-grid gap-2">
+    <button id="procmaps_btn" data-url="{% url 'get_procmaps' %}" type="button" class="mt-3 btn btn-info"></button>
+  </div>
+
   <div class="col mt-2 align-items-center no-gutters d-flex justify-content-between">
     <input type="search" id="searchProcessMaps" class="search-bar form-control" placeholder="Look for something" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
   </div>

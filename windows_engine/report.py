@@ -25,6 +25,8 @@ def report(case):
     ldrmodules_suspicious = LdrModules.objects.filter(investigation=case, Tag="Suspicious")
     ldrmodules_evidence = LdrModules.objects.filter(investigation=case, Tag="Evidence")
 
+    skeleton_suspicious = SkeletonKeyCheck.objects.filter(investigation=case, Tag="Suspicious")
+    skeleton_evidence = SkeletonKeyCheck.objects.filter(investigation=case, Tag="Evidence")
 
     handles_suspicious = Handles.objects.filter(investigation=case, Tag="Suspicious")
     handles_evidence = Handles.objects.filter(investigation=case, Tag="Evidence")
@@ -110,6 +112,14 @@ def report(case):
 
         for process in privs_evidence:
             table += f"{process.PID} | {process.Process} | {process.Privilege} | {process.Attributes} | {process.Description} | {process.Value} | Privileges \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
+    if skeleton_evidence:
+        table = "PID  | Process | Skeleton Key Found |  rc4HmacInitialize | rc4HmacDecrypt  | Source | \n ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
+
+        for process in skeleton_evidence:
+            table += f"{process.PID} | {process.Process} | {process.SkeletonKeyFound} | {process.rc4HmacInitialize} | {process.rc4HmacDecrypt} | SkeletonKeyCheck \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
@@ -206,6 +216,14 @@ def report(case):
         table = "PID  | Process Value | Privilege |  Attributes | Description | Value | Source | \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
         for process in privs_suspicious:
             table += f"{process.PID} | {process.Process} | {process.Privilege} | {process.Attributes} | {process.Description} | {process.Value} | Privileges \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
+    if skeleton_suspicious:
+        table = "PID  | Process | Skeleton Key Found |  rc4HmacInitialize | rc4HmacDecrypt  | Source | \n ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
+
+        for process in skeleton_suspicious:
+            table += f"{process.PID} | {process.Process} | {process.SkeletonKeyFound} | {process.rc4HmacInitialize} | {process.rc4HmacDecrypt} | SkeletonKeyCheck \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 

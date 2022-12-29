@@ -50,14 +50,6 @@ if (document.getElementById('memcount')) {
             console.error(countUp.error);
         }
   }
-if (document.getElementById('indcount')) {
-        const countUp = new CountUp('indcount', document.getElementById("indcount").getAttribute("countToind"));
-        if (!countUp.error) {
-            countUp.start();
-        } else {
-            console.error(countUp.error);
-        }
-  }
 
 	if (document.getElementById('symcount')) {
 	        const countUp = new CountUp('symcount', document.getElementById("symcount").getAttribute("countTosym"));

@@ -1,5 +1,4 @@
 from investigations.models import *
-from iocs.models import IOC
 from investigations.celery import app
 from windows_engine.vol_windows import *
 from linux_engine.vol_linux import *

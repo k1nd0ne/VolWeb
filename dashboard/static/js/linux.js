@@ -108,12 +108,27 @@ $("#searchTtyCheck").on("keyup", function() {
 
 
 function DisplayArtifacts(collapse, process, case_id) {
+  const span_loading = document.createElement("span"); 
+  span_loading.setAttribute('class','spinner-border spinner-border-sm');
+  span_loading.setAttribute('role','status');
+  $("#procmaps_btn").removeClass("d-none");
+  const procmaps_btn = document.getElementById("procmaps_btn"); 
+  procmaps_btn.textContent = "Click here to compute ProcMaps for PID " + process;
+  procmaps_btn.addEventListener('click', function (e) {
+    $("#processHandles").textContent = "";
+     procmaps_btn.textContent = "";
+     procmaps_btn.appendChild(span_loading);
+     ComputeProcMaps(process, case_id);
+  });
+
+
+
   if ($('#' + collapse).attr("aria-expanded") == "true") {
-    $('#Bash').addClass('d-none');
-    $('#Elfs').addClass('d-none');
-    $('#Lsof').addClass('d-none');
-    $('#PsAux').addClass('d-none');
-    $('#processMaps').addClass('d-none');
+    $('#Bash').empty();
+    $('#Elfs').empty();
+    $('#Lsof').empty();
+    $('#PsAux').empty();
+    $('#processMaps').empty();
 
     $('.spinner-review').removeClass("d-none");
     var url = $("#" + collapse).attr('data-url');
@@ -126,7 +141,6 @@ function DisplayArtifacts(collapse, process, case_id) {
             FillElfs(JSON.parse(response['artifacts']['Elfs']));
             FillLsof(JSON.parse(response['artifacts']['Lsof']));
             FillProcMaps(JSON.parse(response['artifacts']['ProcMaps']));
-
             $('#Bash').removeClass('d-none');
             $('#Elfs').removeClass('d-none');
             $('#Lsof').removeClass('d-none');
@@ -145,6 +159,25 @@ function DisplayArtifacts(collapse, process, case_id) {
       });
   }
 }
+
+function ComputeProcMaps(process, case_id){
+   var url = $("#procmaps_btn").attr("data-url");
+  $.get(url, { 'case': case_id, 'pid': process }, // url
+  function (response, textStatus, jqXHR) {  // success callback
+    if (textStatus == "success") {
+      if (response['message'] == "success") {
+        FillProcMaps(JSON.parse(response['artifacts']['ProcMaps']));
+        $("#procmaps_btn").addClass("d-none");
+      }
+      if (response['message'] == "error") {
+        $('#proc-error-message').html("Something went wrong.");
+        $('.toast-proc-error').toast('show');
+      }
+    }
+  });
+
+}
+
 
 
 function FillPsAux(artifacts) {

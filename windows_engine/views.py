@@ -104,6 +104,7 @@ def get_w_artifacts(request):
                 'CmdLine': json_serializer.serialize(CmdLine.objects.filter(investigation_id=id, PID=pid)),
                 'DllList': json_serializer.serialize(DllList.objects.filter(investigation_id=id, PID=pid)),
                 'Privs':   json_serializer.serialize(Privs.objects.filter(investigation_id=id, PID=pid)),
+                'Handles':   json_serializer.serialize(Handles.objects.filter(investigation_id=id, PID=pid)),
                 'Envars':  json_serializer.serialize(Envars.objects.filter(investigation_id=id, PID=pid)),
                 'NetScan': json_serializer.serialize(NetScan.objects.filter(investigation_id=id, PID=pid)),
                 'NetStat': json_serializer.serialize(NetStat.objects.filter(investigation_id=id, PID=pid)),

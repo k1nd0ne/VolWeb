@@ -1,7 +1,6 @@
 import logging, jsonschema
 from investigations.models import *
 from windows_engine.models import *
-from iocs.models import *
 from django.apps import apps
 from VolWeb.voltools import *
 from volatility3.framework.exceptions import *
@@ -22,63 +21,6 @@ def build_context(dump_path, context, base_config_path, plugin, output_path):
     context.config['automagic.LayerStacker.single_location'] = "file://" + os.getcwd() + "/" + dump_path
     constructed = construct_plugin(context, automagics, plugin, base_config_path, MuteProgress(), file_handler(output_path))
     return constructed
-
-
-def collect_user_iocs(case, dump_path):
-    """This function is used to look for string based iocs using the volatility3 strings module.
-    """
-    logger.info("Collecting IOCs from user's string based IOCs")
-    iocs = IOC.objects.all()
-
-    terms = ""
-    ioc_result_name = "Cases/IOCs/iocs_invest_" + str(case.id)
-    strings_output_file = "Cases/IOCs/output_" + str(case.id)
-    with open(ioc_result_name, 'w') as fout:
-        fout.write('')
-        fout.close()
-
-    for ioc in iocs:
-        if case.id == ioc.linkedInvestigation.id:
-            terms = terms + ioc.value + "|"
-    if terms != "":
-        with open(strings_output_file, 'w') as fout:
-            try:
-                fout.write(subprocess.check_output(['strings', '-t', 'd', dump_path]).decode())
-            except subprocess.CalledProcessError as e:
-                logger.info("Could not execute the strings command : ", e.output)
-            fout.close()
-        with open(ioc_result_name, 'w') as fout:
-            try:
-                fout.write(
-                    subprocess.check_output(['grep', '-E', terms[:len(terms) - 1], strings_output_file]).decode())
-            except subprocess.CalledProcessError as e:
-                logger.info("No IOCs found : ", e.output)
-            fout.close()
-    f_len = os.path.getsize(ioc_result_name)
-    if f_len <= 1:
-        result = {}
-        Strings(investigation_id=case.id, **result).save()
-        return
-    volatility3.framework.require_interface_version(2, 0, 0)
-    failures = volatility3.framework.import_files(plugins, True)
-    if failures:
-        logger.info(f"Some volatility3 plugin couldn't be loaded : {failures}")
-    else:
-        logger.info(f"Plugins are loaded without failure")
-    plugin_list = volatility3.framework.list_plugins()
-    base_config_path = "plugins"
-    context = contexts.Context()
-    context.config['plugins.Strings.strings_file'] = "file://" + os.getcwd() + "/" + ioc_result_name
-    constructed = build_context(dump_path, context, base_config_path, plugin_list['windows.strings.Strings'],
-                                output_path=None)
-    if constructed:
-        result = DictRenderer().render(constructed.run())
-        for artifact in result:
-            artifact = {x.translate({32: None}): y
-                        for x, y in artifact.items()}
-            del (artifact['__children'])
-            Strings(investigation_id=case.id, **artifact).save()
-
 
 def dump_process(dump_path, pid, output_path):
     """Dump the process requested by the user"""
@@ -106,7 +48,7 @@ def dump_process(dump_path, pid, output_path):
 
 
 def get_handles(dump_path, pid, case_id):
-    """Dump the process requested by the user"""
+    """Compute Handles for a specific PID"""
     volatility3.framework.require_interface_version(2, 0, 0)
     failures = volatility3.framework.import_files(plugins, True)
     if failures:
@@ -212,9 +154,8 @@ def run_volweb_routine_windows(dump_path, case_id, case):
    
     """Progress Function"""
     def update_progress(case):
-        MODULES_TO_RUN = len(volweb_knowledge_base)
-        percentage = str(format(float(case.percentage) + float(100 / MODULES_TO_RUN), '.0f'))
-        logger.info(f"Status : {percentage} %")
+        MODULES_TO_RUN = len(volweb_knowledge_base) * 2
+        percentage = str(format(float(case.percentage) + float(100 / MODULES_TO_RUN), '.0f')) 
         case.percentage = percentage
         case.save()
 
@@ -223,12 +164,10 @@ def run_volweb_routine_windows(dump_path, case_id, case):
     ImageSignature.objects.filter(investigation_id=case_id).delete()
     signatures = memory_image_hash(dump_path)
     ImageSignature(investigation_id=case_id, **signatures).save()
-    update_progress(case)
 
     """STEP 1 : Clean database and build the basic context for each plugin"""
     NetGraph.objects.filter(investigation_id=case_id).delete()
     TimeLineChart.objects.filter(investigation_id=case_id).delete()
-    Strings.objects.filter(investigation_id=case_id).delete()
     for runable in volweb_knowledge_base:
         apps.get_model("windows_engine", runable).objects.filter(investigation_id=case_id).delete()
         context = contexts.Context()
@@ -244,6 +183,7 @@ def run_volweb_routine_windows(dump_path, case_id, case):
             volweb_knowledge_base[runable]['constructed'] = []
         except: 
             logger.info(f"Could not build context for {runable}" )
+        update_progress(case)
 
     """STEP 2.1 : For each constructed plugin's context, we render the result and save it."""
     for runable in volweb_knowledge_base:
@@ -259,13 +199,9 @@ def run_volweb_routine_windows(dump_path, case_id, case):
                 logger.info(f"Could not run {runable}" )
                 partial_results = True
                 volweb_knowledge_base[runable]['result'] = []
-            update_progress(case)
         else:
             volweb_knowledge_base[runable]['result'] = []
-            update_progress(case)
-
-    # collect_user_iocs(case, dump_path)
-    # update_progress(case)
+        update_progress(case)
 
     """STEP 3.1 : We can now inject the results inside the database"""
     for runable in volweb_knowledge_base:

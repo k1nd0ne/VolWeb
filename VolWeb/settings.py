@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'windows_engine.apps.WindowsEngineConfig',
     'dashboard.apps.DashboardConfig',
     'investigations.apps.InvestigationsConfig',
-    'iocs.apps.IocsConfig',
     'symbols.apps.SymbolsConfig',
     'django.contrib.admin',
     'django.contrib.auth',

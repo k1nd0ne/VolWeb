@@ -9,7 +9,6 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect
 from django.core.serializers import serialize
 from celery.result import AsyncResult
-from iocs.models import IOC
 from os.path import exists
 from investigations.models import *
 from symbols.models import Symbols
@@ -155,11 +154,6 @@ def get_invest(request):
             except ObjectDoesNotExist:
                 response = {'message': 'N/A'}
             try:
-                i = IOC.objects.filter(linkedInvestigation=id)
-                iocs = serialize('python', list(i), ensure_ascii=False, fields=('value', 'context'))
-            except ObjectDoesNotExist:
-                iocs = {'message': 'N/A'}
-            try:
                 u = UploadInvestigation.objects.get(pk=id)
                 s = u.linked_isf
                 if s:
@@ -169,7 +163,7 @@ def get_invest(request):
 
             except ObjectDoesNotExist:
                 isf = {'message': 'N/A'}
-            return JsonResponse({'message': "success", 'result': response, 'iocs': iocs, 'isf': isf})
+            return JsonResponse({'message': "success", 'result': response, 'isf': isf})
         else:
             return JsonResponse({'message': "error"})
 
@@ -291,7 +285,6 @@ def review_invest(request):
                     'SkeletonKeyCheck': windows_engine.SkeletonKeyCheck.objects.filter(investigation_id=id),
                     'Malfind': windows_engine.Malfind.objects.filter(investigation_id=id),
                     'FileScan': windows_engine.FileScan.objects.filter(investigation_id=id),
-                    'Strings': windows_engine.Strings.objects.filter(investigation_id=id),
                 }
                 context.update(forms)
                 context.update(models)

@@ -105,7 +105,7 @@ function DisplayArtifacts(collapse, process, case_id) {
             FillNetStat(JSON.parse(response['artifacts']['NetStat']));
             FillNetScan(JSON.parse(response['artifacts']['NetScan']));
             FillSessions(JSON.parse(response['artifacts']['Sessions']));
-
+            FillHandles(JSON.parse(response['artifacts']['Handles']));
             $('#cmdline').removeClass('d-none');
             $('#processPriv').removeClass('d-none');
             $('#processEnv').removeClass('d-none');

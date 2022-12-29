@@ -4,9 +4,52 @@ from django.http import JsonResponse, HttpResponse
 from django.core.serializers import json
 from django.apps import apps
 from .models import *
+from .tasks import compute_procmaps
 from .forms import *
 from .report import report
 
+
+
+@login_required
+def get_procmaps(request):
+    """Get ProcMaps from a PID
+
+    Arguments:
+    request : http request object
+
+    Comment:
+    The user requested to watch the ProcMaps linked to a process. 
+    If the ProcMaps are already calculated, then the result is fetch
+    Else, volatility3 will calculate them using celery.
+    """
+    if request.method == 'GET':
+
+        form = GetArtifacts(request.GET)
+        if form.is_valid():
+            case = form.cleaned_data['case']
+            id = case.id
+            pid = form.cleaned_data['pid']
+            json_serializer = json.Serializer()
+            # Check if the ProcMaps are not already computed
+            procmaps = ProcMaps.objects.filter(investigation_id=id, PID=pid)
+            if len(procmaps)>0: 
+                #Already computed we display the result
+                artifacts = {
+                    'ProcMaps': json_serializer.serialize(procmaps),
+                }
+            else:
+                #start a task with celery to compute the procmaps and send the result.
+                task_res = compute_procmaps.delay(str(id), str(pid))
+                res =  task_res.get()
+                if res != "OK":
+                    return JsonResponse({'message': "error"})
+                else:
+                    artifacts = {
+                        'ProcMaps': json_serializer.serialize(ProcMaps.objects.filter(investigation_id=id, PID=pid)),
+                    }
+            return JsonResponse({'message': "success", 'artifacts': artifacts})
+    
+    return JsonResponse({'message': "error"})
 
 @login_required
 def lin_report(request):
@@ -71,3 +114,5 @@ def get_l_artifacts(request):
             }
             return JsonResponse({'message': "success", 'artifacts': artifacts})
     return JsonResponse({'message': "error"})
+
+
