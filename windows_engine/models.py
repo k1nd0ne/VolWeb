@@ -284,7 +284,7 @@ class Malfind(models.Model):
     Process = models.TextField(null=True)
     StartVPN = models.TextField(null=True)
     EndVPN = models.TextField(null=True)
-    Tag = models.TextField(null=True)
+    VTag = models.TextField(null=True)
     Protection = models.TextField(null=True)
     CommitCharge = models.TextField(null=True)
     PrivateMemory = models.TextField(null=True)
@@ -363,9 +363,40 @@ class Handles(models.Model):
     )
     Process = models.TextField(null=True)
     PID = models.BigIntegerField()
-    Offset = models.TextField()
+    Offset = models.TextField(null=True)
     Name = models.TextField(null=True)
-    HandleValue = models.IntegerField()
-    GrantedAccess = models.TextField()
+    HandleValue = models.IntegerField(null=True)
+    GrantedAccess = models.TextField(null=True)
     Type = models.TextField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+
+class DriverModule(models.Model):
+    investigation = models.ForeignKey(
+        UploadInvestigation,
+        on_delete=models.CASCADE,
+        related_name="windows_drivermodule_investigation"
+    )
+    AlternativeName = models.TextField(null=True)
+    DriverName = models.TextField(null=True)
+    KnownException = models.TextField(null=True)
+    Offset = models.TextField(null=True)
+    ServiceKey = models.TextField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+class VadWalk(models.Model):
+    investigation = models.ForeignKey(
+        UploadInvestigation,
+        on_delete=models.CASCADE,
+        related_name="windows_vadwalk_investigation"
+    )
+    End = models.TextField(null=True)
+    Left = models.TextField(null=True)
+    Offset = models.TextField(null=True)
+    PID = models.BigIntegerField()
+    Parent = models.TextField(null=True)
+    Process = models.TextField(null=True)
+    Right = models.TextField(null=True)
+    Start = models.TextField(null=True)
+    VTag = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)

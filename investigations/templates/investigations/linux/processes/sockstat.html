@@ -1,0 +1,35 @@
+<!---
+Filename : sockstat.html
+Analysis type : Linux
+Description :
+Included in the "review_invest.html", this file represent the "Sockstat" tab.
+--->
+<div class="tab-pane fade" role="tabpanel" id="tab-11">
+    <div class="col mt-2 align-items-center no-gutters d-flex justify-content-between">
+      <input type="search" id="searchSockstat" class="search-bar form-control" placeholder="Look for something" style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
+    </div>
+    <div class="table-responsive text-break fw-lighter">
+      <table class="table table-sm sockstat">
+        <thead>
+          <tr>
+            <th scope="col">DestAddr</th>
+            <th scope="col">DestPort</th>
+            <th scope="col">FD</th>
+            <th scope="col">Family</th>
+            <th scope="col">Filter</th>
+            <th scope="col">NetNS</th>
+            <th scope="col">Proto</th>
+            <th scope="col">SockOffset</th>
+            <th scope="col">SrcAddr</th>
+            <th scope="col">SrcPort</th>
+            <th scope="col">State</th>
+            <th scope="col">Type</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="Sockstat">
+        </tbody>
+      </table>
+    </div>
+  </div>
+  

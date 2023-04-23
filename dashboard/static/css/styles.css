@@ -176,7 +176,7 @@
   font-size: 12px;
 }
 
-.p_info {
+.p_info, td, tr {
   font-size: 13px;
 }
 

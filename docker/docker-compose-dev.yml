@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    container_name: postgresdb
+    container_name: volweb_postgresdb_dev
     image: postgres:14.1
     restart: always
     env_file:
@@ -13,7 +13,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   rabbitmq3:
-    container_name: "rabbitmq3"
+    container_name: volweb_rabbitmq3_dev
     image: rabbitmq:3.9.13
     ports:
       - "5672:5672"

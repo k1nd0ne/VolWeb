@@ -308,14 +308,15 @@ def build_timeline(data):
     except:
         raise GraphException('Could not generate timeline graph')
     for i in data:
-        try:
-            actual_date = str(i["Created Date"])
-            if actual_date != saved_date:
-                timeline.append([saved_date, nb_event])
-                saved_date = actual_date
-                nb_event = 1
-            else:
-                nb_event += 1
-        except:
-            raise GraphException('Could not generate timeline graph')
+        if i["Plugin"] != "MFTScan":
+            try:
+                actual_date = str(i["Created Date"])
+                if actual_date != saved_date:
+                    timeline.append([saved_date, nb_event])
+                    saved_date = actual_date
+                    nb_event = 1
+                else:
+                    nb_event += 1
+            except:
+                raise GraphException('Could not generate timeline graph')
     return timeline
