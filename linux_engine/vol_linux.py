@@ -81,6 +81,8 @@ def run_volweb_routine_linux(dump_path, case_id, case):
         'Bash': {'plugin': plugin_list['linux.bash.Bash']},
         'Lsof': {'plugin': plugin_list['linux.lsof.Lsof']},
         'Elfs': {'plugin': plugin_list['linux.elfs.Elfs']},
+        'Sockstat': {'plugin': plugin_list['linux.sockstat.Sockstat']},
+        'Envars': {'plugin': plugin_list['linux.envars.Envars']},
 
         # Malware analysis
         'TtyCheck': {'plugin': plugin_list['linux.tty_check.tty_check']},
@@ -91,7 +93,7 @@ def run_volweb_routine_linux(dump_path, case_id, case):
 
     def update_progress(case):
         MODULES_TO_RUN = len(volweb_knowledge_base) * 2
-        percentage = str(format(float(case.percentage) + float(100 / MODULES_TO_RUN), '.0f'))
+        percentage = str( int(case.percentage) + 100 // MODULES_TO_RUN)
         logger.info(f"Status : {percentage} %")
         case.percentage = percentage
         case.save()

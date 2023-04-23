@@ -110,6 +110,7 @@ def get_w_artifacts(request):
                 'NetStat': json_serializer.serialize(NetStat.objects.filter(investigation_id=id, PID=pid)),
                 'Sessions': json_serializer.serialize(Sessions.objects.filter(investigation_id=id, ProcessID=pid)),
                 'LdrModules': json_serializer.serialize(LdrModules.objects.filter(investigation_id=id, Pid=pid)),
+                'VadWalk': json_serializer.serialize(VadWalk.objects.filter(investigation_id=id, PID=pid)),
             }
             return JsonResponse({'message': "success", 'artifacts': artifacts})
     return JsonResponse({'message': "error"})

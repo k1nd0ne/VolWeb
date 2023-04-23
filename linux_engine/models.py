@@ -132,3 +132,38 @@ class MountInfo(models.Model):
     ROOT = models.TextField(null=True)
     SB_OPTIONS = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+class Sockstat(models.Model):
+    investigation = models.ForeignKey(
+        UploadInvestigation,
+        on_delete=models.CASCADE,
+        related_name="linux_sockstat_investigation"
+    )
+    DestinationAddr = models.TextField(null=True)
+    DestinationPort = models.TextField(null=True)
+    FD = models.BigIntegerField(null=True)
+    Family = models.TextField(null=True)
+    Filter = models.TextField(null=True)
+    NetNS = models.TextField(null=True)
+    Pid = models.BigIntegerField(null=True)
+    Proto = models.TextField(null=True)
+    SockOffset = models.TextField(null=True)
+    SourceAddr = models.TextField(null=True)
+    SourcePort = models.TextField(null=True)
+    State = models.TextField(null=True)
+    Type = models.TextField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+
+class Envars(models.Model):
+    investigation = models.ForeignKey(
+        UploadInvestigation,
+        on_delete=models.CASCADE,
+        related_name="linux_envars_investigation"
+    )
+    COMM = models.TextField(null=True)
+    KEY = models.TextField(null=True)
+    PID = models.BigIntegerField(null=True)
+    PPID = models.BigIntegerField(null=True)
+    VALUE = models.TextField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)

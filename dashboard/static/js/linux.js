@@ -106,6 +106,19 @@ $("#searchTtyCheck").on("keyup", function() {
   });
 });
 
+$("#searchSockstat").on("keyup", function() {
+  var value = $(this).val().toLowerCase();
+  $("#Sockstat tr").filter(function() {
+    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+  });
+});
+
+$("#searchEnvars").on("keyup", function() {
+  var value = $(this).val().toLowerCase();
+  $("#envars tr").filter(function() {
+    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+  });
+});
 
 function DisplayArtifacts(collapse, process, case_id) {
   const span_loading = document.createElement("span"); 
@@ -124,29 +137,20 @@ function DisplayArtifacts(collapse, process, case_id) {
 
 
   if ($('#' + collapse).attr("aria-expanded") == "true") {
-    $('#Bash').empty();
-    $('#Elfs').empty();
-    $('#Lsof').empty();
-    $('#PsAux').empty();
-    $('#processMaps').empty();
-
     $('.spinner-review').removeClass("d-none");
     var url = $("#" + collapse).attr('data-url');
     $.get(url, { 'case': case_id, 'pid': process }, // url
       function (response, textStatus, jqXHR) {  // success callback
         if (textStatus == "success") {
           if (response['message'] == "success") {
-            FillPsAux(JSON.parse(response['artifacts']['PsAux']));
-            FillBash(JSON.parse(response['artifacts']['Bash']));
-            FillElfs(JSON.parse(response['artifacts']['Elfs']));
-            FillLsof(JSON.parse(response['artifacts']['Lsof']));
-            FillProcMaps(JSON.parse(response['artifacts']['ProcMaps']));
-            $('#Bash').removeClass('d-none');
-            $('#Elfs').removeClass('d-none');
-            $('#Lsof').removeClass('d-none');
-            $('#PsAux').removeClass('d-none');
-            $('#processMaps').removeClass('d-none');
-            
+            //FillPsAux(JSON.parse(response['artifacts']['PsAux']));
+            FillArtifiacts(JSON.parse(response['artifacts']['PsAux']), 'PsAux');
+            FillArtifiacts(JSON.parse(response['artifacts']['Bash']), 'Bash');
+            FillArtifiacts(JSON.parse(response['artifacts']['Elfs']), 'Elfs');
+            FillArtifiacts(JSON.parse(response['artifacts']['Lsof']), 'Lsof');
+            FillArtifiacts(JSON.parse(response['artifacts']['ProcMaps']),'ProcMaps');
+            FillArtifiacts(JSON.parse(response['artifacts']['Sockstat']),'Sockstat');
+            FillArtifiacts(JSON.parse(response['artifacts']['Envars']),'Envars');
             $('.processes_tab').removeClass('d-none');
             $('.default-td').removeClass('d-none');
             $('.spinner-review').addClass("d-none");
@@ -178,24 +182,20 @@ function ComputeProcMaps(process, case_id){
 
 }
 
-
-
-function FillPsAux(artifacts) {
-  // Create the html elements for each line
-  $('#PsAux').empty();
+function FillArtifiacts(artifacts, plugin_name){
+  $('#'+plugin_name).empty();
   $.each(artifacts, function (i, item) {
-    var tbody = document.getElementById('PsAux');
+    var tbody = document.getElementById(plugin_name);
     const tr = document.createElement('tr');
-    const td_1 = document.createElement('td');
-    const td_2 = document.createElement('td');
-    const td_3 = document.createElement('td');
-    const td_4 = document.createElement('td');
-    const td_5 = document.createElement('td');
-
-    td_1.textContent = item.fields.PID;
-    td_2.textContent = item.fields.PPID;
-    td_3.textContent = item.fields.COMM;
-    td_4.textContent = item.fields.ARGS;
+    const td_to_create = Object.keys(item.fields).length;
+    const td_tag = document.createElement('td');
+    for (var key in item.fields) {
+      if (key != "investigation" && key !="PID" && key !="Pid" && key != "Tag"){
+        const td = document.createElement('td');
+        td.textContent = item.fields[key];
+        tr.appendChild(td);
+      }
+     }
 
     // Tag conditions and system
     const dropdown = document.createElement('div');
@@ -229,7 +229,7 @@ function FillPsAux(artifacts) {
     badge_suspicious.setAttribute('class', 'dropdown-item');
     badge_suspicious.setAttribute('href', '#');
     badge_suspicious.addEventListener('click', function (e) {
-      Tag('PsAux', item.pk, "Suspicious");
+      Tag(plugin_name, item.pk, "Suspicious");
     });
 
     const pill_orange = document.createElement('strong');
@@ -243,7 +243,7 @@ function FillPsAux(artifacts) {
     badge_evidence.setAttribute('class', 'dropdown-item');
     badge_evidence.setAttribute('href', '#');
     badge_evidence.addEventListener('click', function (e) {
-      Tag('PsAux', item.pk, "Evidence");
+      Tag(plugin_name, item.pk, "Evidence");
     });
 
     const pill_red = document.createElement('strong');
@@ -261,7 +261,7 @@ function FillPsAux(artifacts) {
     badge_clear.setAttribute('class', 'dropdown-item');
     badge_clear.setAttribute('href', '#');
     badge_clear.addEventListener('click', function (e) {
-      Tag('PsAux', item.pk, "Clear");
+      Tag(plugin_name, item.pk, "Clear");
     });
     badge_clear.textContent = " Clear tag";
 
@@ -270,18 +270,18 @@ function FillPsAux(artifacts) {
     const tag_suspicious = document.createElement('strong');
 
     if (item.fields.Tag == "Evidence") {
-      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap tag_evidence_' + item.pk + '_PsAux');
-      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_PsAux');
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap tag_evidence_' + item.pk + '_' + plugin_name);
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_' + plugin_name);
     }
 
     else if (item.fields.Tag == "Suspicious") {
-      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_PsAux');
-      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap tag_suspicious_' + item.pk + '_PsAux');
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_' + plugin_name);
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap tag_suspicious_' + item.pk + '_' + plugin_name);
     }
 
     else {
-      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_PsAux');
-      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_PsAux');
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_' + plugin_name);
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_' + plugin_name);
     }
 
     tag_evidence.textContent = "Evidence";
@@ -298,16 +298,11 @@ function FillPsAux(artifacts) {
     dropdown.appendChild(tag_evidence);
     dropdown.appendChild(tag_suspicious);
     dropdown.appendChild(dropdown_menu);
-    td_5.appendChild(dropdown);
-
-    tr.appendChild(td_1);
-    tr.appendChild(td_2);
-    tr.appendChild(td_3);
-    tr.appendChild(td_4);
-    tr.appendChild(td_5);
-
+    td_tag.appendChild(dropdown);
+    tr.appendChild(td_tag);
     tbody.appendChild(tr);
   });
+  $('#'+plugin_name).removeClass('d-none'); 
 }
 
 function FillBash(artifacts) {
@@ -441,140 +436,6 @@ function FillBash(artifacts) {
   });
 }
 
-function FillElfs(artifacts) {
-  // Create the html elements for each line
-  $('#Elfs').empty();
-  $.each(artifacts, function (i, item) {
-    var tbody = document.getElementById('Elfs');
-    const tr = document.createElement('tr');
-    const td_1 = document.createElement('td');
-    const td_2 = document.createElement('td');
-    const td_3 = document.createElement('td');
-    const td_4 = document.createElement('td');
-    const td_5 = document.createElement('td');
-    const td_6 = document.createElement('td');
-
-    td_1.textContent = item.fields.Start;
-    td_2.textContent = item.fields.End;
-    td_3.textContent = item.fields.FilePath;
-    td_4.textContent = item.fields.Process;
-    td_5.textContent = item.fields.PID;
-    
-
-    // Tag conditions and system
-    const dropdown = document.createElement('div');
-    dropdown.setAttribute('class', 'dropdown no-arrow');
-
-    const button = document.createElement('button');
-    button.setAttribute('class', 'btn btn-link btn-sm dropdown-toggle');
-
-    button.setAttribute('aria-expanded', 'true');
-    button.setAttribute('data-bs-toggle', 'dropdown');
-    button.setAttribute('type', 'button');
-
-    const dots = document.createElement('i');
-    dots.setAttribute('class', 'fas fa-ellipsis-v text-gray-400');
-    button.appendChild(dots);
-
-    const dropdown_menu = document.createElement('div');
-    dropdown_menu.setAttribute('class', 'dropdown-menu shadow dropdown-menu-end animated--fade-in');
-    const tagm = document.createElement('p');
-    tagm.setAttribute('class', 'text-center dropdown-header');
-    tagm.textContent = "Tag as";
-
-
-    const span_suspicious = document.createElement('span');
-    span_suspicious.textContent = " Suspicious";
-
-    const span_evidence = document.createElement('span');
-    span_evidence.textContent = " Evidence";
-
-    const badge_suspicious = document.createElement('a');
-    badge_suspicious.setAttribute('class', 'dropdown-item');
-    badge_suspicious.setAttribute('href', '#');
-    badge_suspicious.addEventListener('click', function (e) {
-      Tag('Elfs', item.pk, "Suspicious");
-    });
-
-    const pill_orange = document.createElement('strong');
-    pill_orange.setAttribute('class', 'badge bg-warning text-wrap text-warning');
-    pill_orange.textContent = ' ';
-    badge_suspicious.appendChild(pill_orange);
-    badge_suspicious.appendChild(span_suspicious);
-
-
-    const badge_evidence = document.createElement('a');
-    badge_evidence.setAttribute('class', 'dropdown-item');
-    badge_evidence.setAttribute('href', '#');
-    badge_evidence.addEventListener('click', function (e) {
-      Tag('Elfs', item.pk, "Evidence");
-    });
-
-
-    const pill_red = document.createElement('strong');
-    pill_red.setAttribute('class', 'badge bg-danger text-wrap text-danger');
-    pill_red.textContent = ' '
-
-    badge_evidence.appendChild(pill_red);
-    badge_evidence.appendChild(span_evidence);
-
-
-    const divider = document.createElement('div');
-    divider.setAttribute('class', 'dropdown-divider');
-
-    const badge_clear = document.createElement('a');
-    badge_clear.setAttribute('class', 'dropdown-item');
-    badge_clear.setAttribute('href', '#');
-    badge_clear.addEventListener('click', function (e) {
-      Tag('Elfs', item.pk, "Clear");
-    });
-    badge_clear.textContent = " Clear tag";
-
-
-    const tag_evidence = document.createElement('strong');
-    const tag_suspicious = document.createElement('strong');
-
-    if (item.fields.Tag == "Evidence") {
-      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap tag_evidence_' + item.pk + '_Elfs');
-      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_Elfs');
-    }
-
-    else if (item.fields.Tag == "Suspicious") {
-      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_Elfs');
-      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap tag_suspicious_' + item.pk + '_Elfs');
-    }
-
-    else {
-      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_Elfs');
-      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_Elfs');
-    }
-
-    tag_evidence.textContent = "Evidence";
-    tag_suspicious.textContent = "Suspicious";
-
-    dropdown_menu.appendChild(tagm);
-    dropdown_menu.appendChild(badge_suspicious);
-    dropdown_menu.appendChild(badge_evidence);
-    dropdown_menu.appendChild(divider);
-    dropdown_menu.appendChild(badge_clear);
-
-    button.appendChild(dots);
-    dropdown.appendChild(button);
-    dropdown.appendChild(tag_evidence);
-    dropdown.appendChild(tag_suspicious);
-    dropdown.appendChild(dropdown_menu);
-    td_6.appendChild(dropdown);
-
-    tr.appendChild(td_1);
-    tr.appendChild(td_2);
-    tr.appendChild(td_3);
-    tr.appendChild(td_4);
-    tr.appendChild(td_5);
-    tr.appendChild(td_6);
-
-    tbody.appendChild(tr);
-  });
-}
 
 function FillLsof(artifacts) {
   // Create the html elements for each line
@@ -854,6 +715,163 @@ function FillProcMaps(artifacts) {
     tr.appendChild(td_9);
     tr.appendChild(td_10);
     tr.appendChild(td_11);
+
+    tbody.appendChild(tr);
+  });
+}
+
+function FillSockstat(artifacts) {
+  // Create the html elements for each line
+  $('#Sockstat').empty();
+  $.each(artifacts, function (i, item) {
+    var tbody = document.getElementById('Sockstat');
+    const tr = document.createElement('tr');
+    const td_1 = document.createElement('td');
+    const td_2 = document.createElement('td');
+    const td_3 = document.createElement('td');
+    const td_4 = document.createElement('td');
+    const td_5 = document.createElement('td');
+    const td_6 = document.createElement('td');
+    const td_7 = document.createElement('td');
+    const td_8 = document.createElement('td');
+    const td_9 = document.createElement('td');
+    const td_10 = document.createElement('td');
+    const td_11 = document.createElement('td');
+    const td_12 = document.createElement('td');
+    const td_13 = document.createElement('td');
+    const td_14 = document.createElement('td');
+
+
+
+    td_1.textContent = item.fields.DestinationAddr;
+    td_2.textContent = item.fields.DestinationPort;
+    td_3.textContent = item.fields.FD;
+    td_4.textContent = item.fields.Family;
+    td_5.textContent = item.fields.Filter;
+    td_6.textContent = item.fields.NetNS;
+    td_8.textContent = item.fields.Proto;
+    td_9.textContent = item.fields.SockOffset;
+    td_10.textContent = item.fields.SourceAddr;
+    td_11.textContent = item.fields.SourcePort;
+    td_12.textContent = item.fields.State;
+    td_13.textContent = item.fields.Type;
+
+    // Tag conditions and system
+    const dropdown = document.createElement('div');
+    dropdown.setAttribute('class', 'dropdown no-arrow');
+
+    const button = document.createElement('button');
+    button.setAttribute('class', 'btn btn-link btn-sm dropdown-toggle');
+
+    button.setAttribute('aria-expanded', 'true');
+    button.setAttribute('data-bs-toggle', 'dropdown');
+    button.setAttribute('type', 'button');
+
+    const dots = document.createElement('i');
+    dots.setAttribute('class', 'fas fa-ellipsis-v text-gray-400');
+    button.appendChild(dots);
+
+    const dropdown_menu = document.createElement('div');
+    dropdown_menu.setAttribute('class', 'dropdown-menu shadow dropdown-menu-end animated--fade-in');
+    const tagm = document.createElement('p');
+    tagm.setAttribute('class', 'text-center dropdown-header');
+    tagm.textContent = "Tag as";
+
+
+    const span_suspicious = document.createElement('span');
+    span_suspicious.textContent = " Suspicious";
+
+    const span_evidence = document.createElement('span');
+    span_evidence.textContent = " Evidence";
+
+    const badge_suspicious = document.createElement('a');
+    badge_suspicious.setAttribute('class', 'dropdown-item');
+    badge_suspicious.setAttribute('href', '#');
+    badge_suspicious.addEventListener('click', function (e) {
+      Tag('Sockstat', item.pk, "Suspicious");
+    });
+
+    const pill_orange = document.createElement('strong');
+    pill_orange.setAttribute('class', 'badge bg-warning text-wrap text-warning');
+    pill_orange.textContent = ' ';
+    badge_suspicious.appendChild(pill_orange);
+    badge_suspicious.appendChild(span_suspicious);
+
+
+    const badge_evidence = document.createElement('a');
+    badge_evidence.setAttribute('class', 'dropdown-item');
+    badge_evidence.setAttribute('href', '#');
+    badge_evidence.addEventListener('click', function (e) {
+      Tag('Sockstat', item.pk, "Evidence");
+    });
+
+    const pill_red = document.createElement('strong');
+    pill_red.setAttribute('class', 'badge bg-danger text-wrap text-danger');
+    pill_red.textContent = ' '
+
+    badge_evidence.appendChild(pill_red);
+    badge_evidence.appendChild(span_evidence);
+
+
+    const divider = document.createElement('div');
+    divider.setAttribute('class', 'dropdown-divider');
+
+    const badge_clear = document.createElement('a');
+    badge_clear.setAttribute('class', 'dropdown-item');
+    badge_clear.setAttribute('href', '#');
+    badge_clear.addEventListener('click', function (e) {
+      Tag('Sockstat', item.pk, "Clear");
+    });
+    badge_clear.textContent = " Clear tag";
+
+
+    const tag_evidence = document.createElement('strong');
+    const tag_suspicious = document.createElement('strong');
+
+    if (item.fields.Tag == "Evidence") {
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap tag_evidence_' + item.pk + '_Sockstat');
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_Sockstat');
+    }
+
+    else if (item.fields.Tag == "Suspicious") {
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_Sockstat');
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap tag_suspicious_' + item.pk + '_Sockstat');
+    }
+
+    else {
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_Sockstat');
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_Sockstat');
+    }
+
+    tag_evidence.textContent = "Evidence";
+    tag_suspicious.textContent = "Suspicious";
+
+    dropdown_menu.appendChild(tagm);
+    dropdown_menu.appendChild(badge_suspicious);
+    dropdown_menu.appendChild(badge_evidence);
+    dropdown_menu.appendChild(divider);
+    dropdown_menu.appendChild(badge_clear);
+
+    button.appendChild(dots);
+    dropdown.appendChild(button);
+    dropdown.appendChild(tag_evidence);
+    dropdown.appendChild(tag_suspicious);
+    dropdown.appendChild(dropdown_menu);
+    td_14.appendChild(dropdown);
+
+    tr.appendChild(td_1);
+    tr.appendChild(td_2);
+    tr.appendChild(td_3);
+    tr.appendChild(td_4);
+    tr.appendChild(td_5);
+    tr.appendChild(td_6);
+    tr.appendChild(td_8);
+    tr.appendChild(td_9);
+    tr.appendChild(td_10);
+    tr.appendChild(td_11);
+    tr.appendChild(td_12);
+    tr.appendChild(td_13);
+    tr.appendChild(td_14);
 
     tbody.appendChild(tr);
   });

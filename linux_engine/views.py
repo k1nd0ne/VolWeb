@@ -111,6 +111,8 @@ def get_l_artifacts(request):
                 'Lsof': json_serializer.serialize(Lsof.objects.filter(investigation_id=id, PID=pid)),
                 'ProcMaps': json_serializer.serialize(ProcMaps.objects.filter(investigation_id=id, PID=pid)),
                 'PsAux': json_serializer.serialize(PsAux.objects.filter(investigation_id=id, PID=pid)),
+                'Sockstat': json_serializer.serialize(Sockstat.objects.filter(investigation_id=id, Pid=pid)),
+                'Envars': json_serializer.serialize(Envars.objects.filter(investigation_id=id, PID=pid)),
             }
             return JsonResponse({'message': "success", 'artifacts': artifacts})
     return JsonResponse({'message': "error"})

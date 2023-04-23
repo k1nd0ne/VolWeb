@@ -132,9 +132,14 @@ def run_volweb_routine_windows(dump_path, case_id, case):
         'Envars': {'plugin': plugin_list['windows.envars.Envars']},
         'DllList': {'plugin': plugin_list['windows.dlllist.DllList']},
         'LdrModules': {'plugin': plugin_list['windows.ldrmodules.LdrModules']},
+        'VadWalk': {'plugin': plugin_list['windows.vadwalk.VadWalk']},
+        
         # Network
         'NetScan': {'plugin': plugin_list['windows.netstat.NetStat']},
         'NetStat': {'plugin': plugin_list['windows.netscan.NetScan']},
+
+        # Others
+        'DriverModule': {'plugin': plugin_list['windows.drivermodule.DriverModule']},
 
         # Cryptography
         'Hashdump': {'plugin': plugin_list['windows.hashdump.Hashdump']},
@@ -155,7 +160,7 @@ def run_volweb_routine_windows(dump_path, case_id, case):
     """Progress Function"""
     def update_progress(case):
         MODULES_TO_RUN = len(volweb_knowledge_base) * 2
-        percentage = str(format(float(case.percentage) + float(100 / MODULES_TO_RUN), '.0f')) 
+        percentage = str( int(case.percentage) + 100 // MODULES_TO_RUN) 
         case.percentage = percentage
         case.save()
 
@@ -214,6 +219,9 @@ def run_volweb_routine_windows(dump_path, case_id, case):
                 if 'Offset(V)' in artifact:
                     artifact['Offset'] = artifact['Offset(V)']
                     del (artifact['Offset(V)'])
+                if 'Tag' in artifact:
+                    artifact['VTag'] = artifact['Tag']
+                    del (artifact['Tag'])
 
                 apps.get_model("windows_engine", runable)(investigation_id=case_id, **artifact).save()
 
