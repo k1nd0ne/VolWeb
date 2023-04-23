@@ -25,6 +25,12 @@ def report(case):
     psaux_suspicious = PsAux.objects.filter(investigation=case, Tag="Suspicious")
     psaux_evidence = PsAux.objects.filter(investigation=case, Tag="Evidence")
 
+    sockstat_suspicious = Sockstat.objects.filter(investigation=case, Tag="Suspicious")
+    sockstat_evidence = Sockstat.objects.filter(investigation=case, Tag="Evidence")
+
+    envars_suspicious = Envars.objects.filter(investigation=case, Tag="Suspicious")
+    envars_evidence = Envars.objects.filter(investigation=case, Tag="Evidence")
+
     mountinfo_suspicious = MountInfo.objects.filter(investigation=case, Tag="Suspicious")
     mountinfo_evidence = MountInfo.objects.filter(investigation=case, Tag="Evidence")
 
@@ -94,6 +100,13 @@ def report(case):
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
+    if envars_evidence:
+        table = "COMM  | KEY | PPID | VALUE | \n ------------- | ------------- | ------------- | -------------\n"
+        for process in envars_evidence:
+            table += f" {process.COMM} | {process.KEY} | {process.PPID} | {process.VALUE} | \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
     if lsof_evidence:
         table = "FD  | PID | Path | Process | \n ------------- | ------------- | ------------- | -------------\n"
         for process in lsof_evidence:
@@ -112,6 +125,13 @@ def report(case):
         table = "FIELDS  | FSTYPE | MAJOR_MINOR | MNT_NS_ID |  MOUNTID |  MOUNT_OPTIONS |  MOUNT_POINT |  MOUNT_SRC |  PARENT_ID |  ROOT | SB_OPTIONS | \n ------------- | ------------- | ------------- | ------------- | -------------| -------------| -------------| -------------| ------------- | ------------- | -------------\n"
         for process in mountinfo_evidence:
             table += f" {process.FIELDS} | {process.FSTYPE} | {process.MAJOR_MINOR} | {process.MNT_NS_ID} | {process.MOUNTID} | {process.MOUNT_OPTIONS} | {process.MOUNT_POINT} | {process.MOUNT_SRC} | {process.PARENT_ID} | {process.ROOT} | SB_OPTIONS | \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
+    if sockstat_evidence:
+        table = "DestAddr  | DestPort | FD | Family |  Filter |  NetNs |  Proto |  SockOffset |  SrcAddr |  SrcPort | State | Type | \n ------------- | ------------- | ------------- | ------------- | -------------| -------------| -------------| -------------| ------------- | ------------- | ------------- | -------------\n"
+        for process in sockstat_evidence:
+            table += f" {process.DestinationAddr} | {process.DestinationPort} | {process.FD} | {process.Family} | {process.Filter} | {process.NetNS} | {process.Proto} | {process.SockOffset} | {process.SourceAddr} | {process.SourcePort} | {process.State} |  {process.Type} | \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
@@ -153,6 +173,14 @@ def report(case):
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
+    if envars_suspicious:
+        table = "COMM  | KEY | PPID | VALUE | \n ------------- | ------------- | ------------- | -------------\n"
+        for process in envars_suspicious:
+            table += f" {process.COMM} | {process.KEY} | {process.PPID} | {process.VALUE} | \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
+
     if lsof_suspicious:
         table = "FD  | PID | Path | Process | \n ------------- | ------------- | ------------- | -------------\n"
         for process in lsof_suspicious:
@@ -171,6 +199,13 @@ def report(case):
         table = "FIELDS  | FSTYPE | MAJOR_MINOR | MNT_NS_ID |  MOUNTID |  MOUNT_OPTIONS |  MOUNT_POINT |  MOUNT_SRC |  PARENT_ID |  ROOT | SB_OPTIONS | \n ------------- | ------------- | ------------- | ------------- | -------------| -------------| -------------| -------------| ------------- | ------------- | -------------\n"
         for process in mountinfo_suspicious:
             table += f" {process.FIELDS} | {process.FSTYPE} | {process.MAJOR_MINOR} | {process.MNT_NS_ID} | {process.MOUNTID} | {process.MOUNT_OPTIONS} | {process.MOUNT_POINT} | {process.MOUNT_SRC} | {process.PARENT_ID} | {process.ROOT} | SB_OPTIONS | \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
+    if sockstat_suspicious:
+        table = "DestAddr  | DestPort | FD | Family |  Filter |  NetNs |  Proto |  SockOffset |  SrcAddr |  SrcPort | State | Type | \n ------------- | ------------- | ------------- | ------------- | -------------| -------------| -------------| -------------| ------------- | ------------- | ------------- | -------------\n"
+        for process in sockstat_suspicious:
+            table += f" {process.DestinationAddr} | {process.DestinationPort} | {process.FD} | {process.Family} | {process.Filter} | {process.NetNS} | {process.Proto} | {process.SockOffset} | {process.SourceAddr} | {process.SourcePort} | {process.State} |  {process.Type} | \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
     # END SUSPICIOUS ITEMS #

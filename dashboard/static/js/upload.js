@@ -164,11 +164,9 @@ class FileUpload {
             data: formData,
             error: function (xhr) {
                 alertBox.innerHTML = "<p class='text-danger'>Something went wrong : " + xhr + "</p>";
-                console.log(xhr);
             },
             success: function (res) {
                 if (nextChunk < self.file.size) {
-                    console.log(res)
                     // upload file in chunks
                     existing_path = res.existing_path
                     self.upload_file(nextChunk, existing_path);

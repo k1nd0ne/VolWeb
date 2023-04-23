@@ -22,7 +22,7 @@ RUN mkdir -p $APP_HOME/staticfiles
 WORKDIR $APP_HOME
 
 USER app
-RUN pip install 'volatility3==2.4.0' 
+RUN pip install 'volatility3==2.4.1' 
 USER root
 COPY requirements.txt $APP_HOME
 RUN pip install --upgrade pip

@@ -141,7 +141,7 @@ function ComputeHandles(process, case_id){
   function (response, textStatus, jqXHR) {  // success callback
     if (textStatus == "success") {
       if (response['message'] == "success") {
-        FillHandles(JSON.parse(response['artifacts']['Handles']));
+        FillArtifiacts(JSON.parse(response['artifacts']['Handles']));
         $("#handles_btn").addClass("d-none");
       }
       if (response['message'] == "error") {

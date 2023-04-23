@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    container_name: postgresdb
+    container_name: volweb_postgresdb
     image: postgres:14.1
     restart: always
     env_file:
@@ -13,7 +13,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   web:
-    container_name: django
+    container_name: volweb_django
     build:
       context: ../
       dockerfile: docker/Dockerfile
@@ -31,7 +31,7 @@ services:
       - symbols:/home/app/web/symbols/uploads
 
   nginx:
-    container_name: nginx
+    container_name: volweb_nginx
     image: nginx:mainline-alpine
     restart: always
     ports:
@@ -45,13 +45,14 @@ services:
       - web
 
   rabbitmq3:
-    container_name: "rabbitmq3"
+    container_name: volweb_rabbitmq
     image: rabbitmq:3.9.13
     ports:
       - "5672:5672"
     env_file:
       - ./secret/volweb.env
   worker:
+    container_name: volweb_worker
     build:
       context: ../
       dockerfile: docker/Dockerfile

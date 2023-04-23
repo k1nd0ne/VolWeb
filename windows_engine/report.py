@@ -37,6 +37,12 @@ def report(case):
     netstat_suspicious = NetStat.objects.filter(investigation=case, Tag="Suspicious")
     netstat_evidence = NetStat.objects.filter(investigation=case, Tag="Evidence")
 
+    vadwalk_suspicious = VadWalk.objects.filter(investigation=case, Tag="Suspicious")
+    vadwalk_evidence = VadWalk.objects.filter(investigation=case, Tag="Evidence")
+
+    drivermodule_suspicious = DriverModule.objects.filter(investigation=case, Tag="Suspicious")
+    drivermodule_evidence = DriverModule.objects.filter(investigation=case, Tag="Evidence")
+
     timeline_suspicious = Timeliner.objects.filter(investigation=case, Tag="Suspicious")
     timeline_evidence = Timeliner.objects.filter(investigation=case, Tag="Evidence")
 
@@ -104,6 +110,13 @@ def report(case):
         table = "Process ID  | Process | Session ID | Session Type | User Name | Create Time | Source \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
         for process in sessions_evidence:
             table += f" {process.ProcessID} | {process.Process} | {process.SessionID} | {process.SessionType} | {process.UserName} | {process.CreateTime} | Sessions \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
+    if vadwalk_evidence:
+        table = "Process | Start | End | Left | Right | Parent | Tag \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
+        for process in vadwalk_evidence:
+            table += f" {process.Process} | {process.Start} | {process.End} | {process.Left} | {process.Right} | {process.Parent} | {process.VTag} \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
@@ -181,6 +194,13 @@ def report(case):
         html += markdown.markdown(table, extensions=['tables'])
         text += table
 
+    if drivermodule_evidence:
+        table = "Alternative Name  | Driver Name | Known Exception | Offset | Service Key  \n ------------- | ------------- | ------------- | ------------- | -------------\n"
+        for process in drivermodule_evidence:
+            table += f"{process.AlternativeName} | {process.DriverName} | {process.KnownException} | {process.Offset} |  {process.ServiceKey} \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
     # END EVIDENCE ITEMS #
 
     # BEGIN SUSPICIOUS ITEMS #
@@ -226,6 +246,14 @@ def report(case):
             table += f"{process.PID} | {process.Process} | {process.SkeletonKeyFound} | {process.rc4HmacInitialize} | {process.rc4HmacDecrypt} | SkeletonKeyCheck \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
+
+    if vadwalk_suspicious:
+        table = "Process | Start | End | Left | Right | Parent | Tag \n ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
+        for process in vadwalk_suspicious:
+            table += f" {process.Process} | {process.Start} | {process.End} | {process.Left} | {process.Right} | {process.Parent} | {process.VTag} \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
 
     if envars_suspicious:
         table = "Block  | PID | Process |  Variable | Value | Source |\n ------------- | ------------- | ------------- | ------------- | ------------- | -------------\n"
@@ -284,6 +312,14 @@ def report(case):
             table += f"{process.AccessedDate} | {process.ChangedDate} | {process.CreatedDate} | {process.Description} | {process.ModifiedDate} | {process.Plugin} |  \n"
         html += markdown.markdown(table, extensions=['tables'])
         text += table
+
+    if drivermodule_suspicious:
+        table = "Alternative Name  | Driver Name | Known Exception | Offset | Service Key  \n ------------- | ------------- | ------------- | ------------- | -------------\n"
+        for process in drivermodule_suspicious:
+            table += f"{process.AlternativeName} | {process.DriverName} | {process.KnownException} | {process.Offset} |  {process.ServiceKey} \n"
+        html += markdown.markdown(table, extensions=['tables'])
+        text += table
+
 
     # END SUSPICIOUS ITEMS #
 
