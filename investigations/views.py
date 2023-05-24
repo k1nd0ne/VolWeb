@@ -1,6 +1,7 @@
 import os, subprocess, uuid
 import windows_engine.models as windows_engine
 import linux_engine.models as linux_engine
+import macos_engine.models as macos_engine
 from .tasks import start_memory_analysis, app
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -289,7 +290,7 @@ def review_invest(request):
                 }
                 context.update(forms)
                 context.update(models)
-            else:
+            elif case.os_version == "Linux":
                 models = {
                     'ImageSignature': ImageSignature.objects.get(investigation_id=id),
                     'PsList': linux_engine.PsList.objects.filter(investigation_id=id),
@@ -298,6 +299,15 @@ def review_invest(request):
                     'MountInfo': linux_engine.MountInfo.objects.filter(investigation_id=id),
                 }
                 context.update(models)
+            elif case.os_version == "MacOs":
+                models = {
+                    'ImageSignature': ImageSignature.objects.get(investigation_id=id),
+                    'PsList': macos_engine.PsList.objects.filter(investigation_id=id),
+                    'PsTree': macos_engine.PsTree.objects.get(investigation_id=id),
+                }
+                context.update(models)
+            else:
+                raise ValueError(f'{case.os_version} not implemented')
             return render(request, 'investigations/review_invest.html', context)
         else:
             return render(request, 'investigations/investigations.html',

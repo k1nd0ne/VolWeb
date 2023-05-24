@@ -5,3 +5,8 @@ investigations/.DS_Store
 .DS_Store
 
 *.json
+
+.venv/
+__pycache__/
+staticfiles/
+..gitignore.swp

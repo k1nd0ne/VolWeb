@@ -27,4 +27,6 @@ urlpatterns = [
     path('symbols/', include('symbols.urls')),
     path('win/', include('windows_engine.urls')),
     path('lin/', include('linux_engine.urls')),
+    path('mac/', include('linux_engine.urls')),
+
 ]
