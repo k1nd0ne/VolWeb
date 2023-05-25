@@ -1,6 +1,7 @@
 import os, subprocess, uuid
 import windows_engine.models as windows_engine
 import linux_engine.models as linux_engine
+import macos_engine.models as macos_engine
 from .tasks import start_memory_analysis, app
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -289,7 +290,7 @@ def review_invest(request):
                 }
                 context.update(forms)
                 context.update(models)
-            else:
+            elif case.os_version == "Linux":
                 models = {
                     'ImageSignature': ImageSignature.objects.get(investigation_id=id),
                     'PsList': linux_engine.PsList.objects.filter(investigation_id=id),
@@ -298,6 +299,42 @@ def review_invest(request):
                     'MountInfo': linux_engine.MountInfo.objects.filter(investigation_id=id),
                 }
                 context.update(models)
+            elif case.os_version == "MacOs":
+                models = {
+                    'ImageSignature': ImageSignature.objects.get(investigation_id=id),
+                    'Bash': macos_engine.Bash.objects.filter(investigation_id=id),
+                    'PsList': macos_engine.PsList.objects.filter(investigation_id=id),
+                    'PsTree': macos_engine.PsTree.objects.get(investigation_id=id),
+                    'Check_syscall': macos_engine.Check_syscall.objects.filter(investigation_id=id),
+                    'Check_sysctl': macos_engine.Check_sysctl.objects.filter(investigation_id=id),
+                    'Check_trap_table': macos_engine.Check_trap_table.objects.filter(investigation_id=id),
+                    'Ifconfig': macos_engine.Ifconfig.objects.filter(investigation_id=id),
+                    #'Kauth_listeners': macos_engine.Kauth_listeners.objects.filter(investigation_id=id),
+                    #'Kauth_scopes': macos_engine.Kauth_scopes.objects.filter(investigation_id=id),
+                    #'Kevents': macos_engine.Kevents.objects.filter(investigation_id=id),
+                    'List_Files': macos_engine.List_Files.objects.filter(investigation_id=id),
+                    'Lsmod': macos_engine.Lsmod.objects.filter(investigation_id=id),
+                    'Lsof': macos_engine.Lsof.objects.filter(investigation_id=id),
+                    'Malfind': macos_engine.Malfind.objects.filter(investigation_id=id),
+                    'Mount': macos_engine.Mount.objects.filter(investigation_id=id),
+                    'Netstat': macos_engine.Netstat.objects.filter(investigation_id=id),
+                    'Maps': macos_engine.Maps.objects.filter(investigation_id=id),
+                    'Psaux': macos_engine.Psaux.objects.filter(investigation_id=id),
+                    'Socket_filters': macos_engine.Socket_filters.objects.filter(investigation_id=id),
+                    #'Timers': macos_engine.Timers.objects.filter(investigation_id=id),
+                    #'Trustedbsd': macos_engine.Trustedbsd.objects.filter(investigation_id=id),
+                    'VFSevents': macos_engine.VFSevents.objects.filter(investigation_id=id),
+                }
+                ##debug
+                #from django.http import JsonResponse
+                #for key, value in models.items():
+                #    models[key]=str(value)
+                
+                #return JsonResponse(models)
+                ##
+                context.update(models)
+            else:
+                raise ValueError(f'{case.os_version} not implemented')
             return render(request, 'investigations/review_invest.html', context)
         else:
             return render(request, 'investigations/investigations.html',

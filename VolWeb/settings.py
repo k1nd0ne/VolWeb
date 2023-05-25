@@ -24,6 +24,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'linux_engine.apps.LinuxEngineConfig',
     'windows_engine.apps.WindowsEngineConfig',
+    'macos_engine.apps.MacosEngineConfig',
     'dashboard.apps.DashboardConfig',
     'investigations.apps.InvestigationsConfig',
     'symbols.apps.SymbolsConfig',
