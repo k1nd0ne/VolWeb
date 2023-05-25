@@ -22,38 +22,6 @@ def build_context(dump_path, context, base_config_path, plugin, output_path):
     return constructed
 
 
-def get_procmaps(dump_path, pid, case):
-    """Compute ProcMaps for a specific PID"""
-    volatility3.framework.require_interface_version(2, 0, 0)
-    """ISF Binding"""
-    if case.linked_isf:
-        path = os.sep.join(case.linked_isf.symbols_file.name.split(os.sep)[:-2])
-        volatility3.symbols.__path__.append(os.path.abspath(path))
-    failures = volatility3.framework.import_files(plugins, True)
-    if failures:
-        logger.info(f"Some volatility3 plugin couldn't be loaded : {failures}")
-    else:
-        logger.critical(f"Plugins are loaded without failure")
-    plugin_list = volatility3.framework.list_plugins()
-    base_config_path = "plugins"
-    context = contexts.Context()
-    context.config['plugins.Maps.pid'] = [int(pid)]
-    constructed = build_context(dump_path, context, base_config_path, plugin_list['macos.proc.Maps'], output_path=None)
-    if constructed:
-        result = DictRenderer().render(constructed.run())
-    else:
-        logger.info("Error the procMaps could not be computed")
-        return "KO"
-    for artifact in result:
-        artifact = {x.translate({32: None}): y
-                    for x, y in artifact.items()}
-        del (artifact['__children'])
-        ProcMaps(investigation_id=case.id, **artifact).save()
-    return "OK"
-
-
-
-
 def run_volweb_routine_macos(dump_path, case_id, case):
     partial_results = False
     logger.info('Starting VolWeb Engine')
@@ -111,8 +79,8 @@ def run_volweb_routine_macos(dump_path, case_id, case):
     """STEP 0 : Clear the current signatures and compute the memory image signatures"""
     logger.info("Constructing memory image signatures...")
     ImageSignature.objects.filter(investigation_id=case_id).delete()
-    #signatures = memory_image_hash(dump_path)
-    #ImageSignature(investigation_id=case_id, **signatures).save()
+    signatures = memory_image_hash(dump_path)
+    ImageSignature(investigation_id=case_id, **signatures).save()
 
     """STEP 1 : Clean database and build the basic context for each plugin"""
     for runable in volweb_knowledge_base:

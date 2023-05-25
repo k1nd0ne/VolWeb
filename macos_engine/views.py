@@ -1,7 +1,12 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from .report import report
+from .forms import *
+from django.http import JsonResponse, HttpResponse
+
 
 # Create your views here.
+'''
 def get_bash(request):
     return({'message': "error"})
 
@@ -88,7 +93,7 @@ def get_trustedbsd(request):
 
 def get_vfsevents(request):
     return({'message': "error"})
-
+'''
 
 @login_required
 def mac_report(request):

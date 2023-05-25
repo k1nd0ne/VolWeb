@@ -305,8 +305,8 @@ def review_invest(request):
                     'Bash': macos_engine.Bash.objects.filter(investigation_id=id),
                     'PsList': macos_engine.PsList.objects.filter(investigation_id=id),
                     'PsTree': macos_engine.PsTree.objects.get(investigation_id=id),
-                    'Check_syscall': macos_engine.Check_syscal.objects.filter(investigation_id=id),
-                    'Check_sysctl': macos_engine.Check_sysct.objects.filter(investigation_id=id),
+                    'Check_syscall': macos_engine.Check_syscall.objects.filter(investigation_id=id),
+                    'Check_sysctl': macos_engine.Check_sysctl.objects.filter(investigation_id=id),
                     'Check_trap_table': macos_engine.Check_trap_table.objects.filter(investigation_id=id),
                     'Ifconfig': macos_engine.Ifconfig.objects.filter(investigation_id=id),
                     #'Kauth_listeners': macos_engine.Kauth_listeners.objects.filter(investigation_id=id),
@@ -326,11 +326,11 @@ def review_invest(request):
                     'VFSevents': macos_engine.VFSevents.objects.filter(investigation_id=id),
                 }
                 ##debug
-                from django.http import JsonResponse
-                for key, value in models.items():
-                    models[key]=str(value)
+                #from django.http import JsonResponse
+                #for key, value in models.items():
+                #    models[key]=str(value)
                 
-                return JsonResponse(models)
+                #return JsonResponse(models)
                 ##
                 context.update(models)
             else:

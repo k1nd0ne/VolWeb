@@ -23,10 +23,10 @@ class PsList(models.Model):
         related_name="macos_pslist_investigation"
     )
     COMM = models.TextField(null=True)
-    #Offset = models.BigIntegerField(null=True) #EMPTY
+    Offset = models.BigIntegerField(null=True) #EMPTY
     PID = models.BigIntegerField(null=True)
     PPID = models.BigIntegerField(null=True)
-    #TID = models.BigIntegerField(null=True) #EMPTY
+    TID = models.BigIntegerField(null=True) #EMPTY
 
 class Bash(models.Model):
     investigation = models.ForeignKey(
@@ -172,7 +172,7 @@ class Psaux(models.Model):
     PID = models.BigIntegerField(null=True)
     Process = models.TextField(null=True)
     Argc = models.BigIntegerField(null=True)
-    Arguments = models.BigIntegerField(null=True)
+    Arguments = models.TextField(null=True)
     
 class VFSevents(models.Model):
     investigation = models.ForeignKey(
