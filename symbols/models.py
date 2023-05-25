@@ -5,7 +5,7 @@ import shutil
 CHOICES = (
     ('Windows', 'Windows'),
     ('Linux', 'Linux'),
-    #        ('MacOs', 'MacOs'), <- not implemented yet
+    ('MacOs', 'MacOs'),
 )
 
 UPLOAD_PATH = "symbols/uploads"
@@ -27,9 +27,14 @@ class Symbols(models.Model):
         if self.os == "Windows":
             new_path = '/'.join([UPLOAD_PATH, str(self.id), "windows", name])
             vol_path = '/'.join([UPLOAD_PATH, str(self.id)])
-        else:
+        elif self.os == "Linux":
             new_path = '/'.join([UPLOAD_PATH, str(self.id), "linux", name])
             vol_path = '/'.join([UPLOAD_PATH, str(self.id)])
+        elif self.os == "MacOs":
+            new_path = '/'.join([UPLOAD_PATH, str(self.id), "macos", name])
+            vol_path = '/'.join([UPLOAD_PATH, str(self.id)])
+        else:
+            raise ValueError(f'{self.os} not implemented')
         if not os.path.exists(os.path.dirname(new_path)):
             os.makedirs(os.path.dirname(new_path))
         os.rename(self.symbols_file.name, new_path)

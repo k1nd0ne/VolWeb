@@ -67,7 +67,6 @@ def run_volweb_routine_macos(dump_path, case_id, case):
     failures = volatility3.framework.import_files(plugins, True)
     if failures:
         logger.info(f"Some volatility3 plugin couldn't be loaded : {failures}")
-        print('bbbb')
     else:
         logger.info(f"Plugins are loaded without failure")
     plugin_list = volatility3.framework.list_plugins()
@@ -75,29 +74,29 @@ def run_volweb_routine_macos(dump_path, case_id, case):
 
     """Full list of plugins supported by VolWeb"""
     volweb_knowledge_base = {
-        'Bash': {'plugin': plugin_list['mac.bash.Bash']},  #doing
-        'PsList': {'plugin': plugin_list['mac.pslist.PsList']},  #doing
-        'PsTree': {'plugin': plugin_list['mac.pstree.PsTree']},  #doing
+        'Bash': {'plugin': plugin_list['mac.bash.Bash']},
+        'PsList': {'plugin': plugin_list['mac.pslist.PsList']},
+        'PsTree': {'plugin': plugin_list['mac.pstree.PsTree']},
         
-        #'Check_syscall': {'plugin': plugin_list['mac.check_syscall.Check_syscall']},
-        #'Check_sysctl': {'plugin': plugin_list['mac.check_sysctl.Check_sysctl']},
-        #'Check_trap_table': {'plugin': plugin_list['mac.check_trap_table.Check_trap_table']},
-        #'Ifconfig': {'plugin': plugin_list['mac.ifconfig.Ifconfig']},
+        'Check_syscall': {'plugin': plugin_list['mac.check_syscall.Check_syscall']},
+        'Check_sysctl': {'plugin': plugin_list['mac.check_sysctl.Check_sysctl']},
+        'Check_trap_table': {'plugin': plugin_list['mac.check_trap_table.Check_trap_table']},
+        'Ifconfig': {'plugin': plugin_list['mac.ifconfig.Ifconfig']},
         #'Kauth_listeners': {'plugin': plugin_list['mac.kauth_listeners.Kauth_listeners']},
         #'Kauth_scopes': {'plugin': plugin_list['mac.kauth_scopes.Kauth_scopes']},
         #'Kevents': {'plugin': plugin_list['mac.kevents.Kevents']},
-        #'List_Files': {'plugin': plugin_list['mac.list_files.List_Files']},
-        #'Lsmod': {'plugin': plugin_list['mac.lsmod.Lsmod']},
-        #'Lsof': {'plugin': plugin_list['mac.lsof.Lsof']},
-        #'Malfind': {'plugin': plugin_list['mac.malfind.Malfind']},
-        #'Mount': {'plugin': plugin_list['mac.mount.Mount']},
-        #'Netstat': {'plugin': plugin_list['mac.netstat.Netstat']},
-        #'Maps': {'plugin': plugin_list['mac.proc_maps.Maps']},
-        #'Psaux': {'plugin': plugin_list['mac.psaux.Psaux']},
-        #'Socket_filters': {'plugin': plugin_list['mac.socket_filters.Socket_filters']},
+        'List_Files': {'plugin': plugin_list['mac.list_files.List_Files']},
+        'Lsmod': {'plugin': plugin_list['mac.lsmod.Lsmod']},
+        'Lsof': {'plugin': plugin_list['mac.lsof.Lsof']},
+        'Malfind': {'plugin': plugin_list['mac.malfind.Malfind']},
+        'Mount': {'plugin': plugin_list['mac.mount.Mount']},
+        'Netstat': {'plugin': plugin_list['mac.netstat.Netstat']},
+        'Maps': {'plugin': plugin_list['mac.proc_maps.Maps']},
+        'Psaux': {'plugin': plugin_list['mac.psaux.Psaux']},
+        'Socket_filters': {'plugin': plugin_list['mac.socket_filters.Socket_filters']},
         #'Timers': {'plugin': plugin_list['mac.timers.Timers']},
         #'Trustedbsd': {'plugin': plugin_list['mac.trustedbsd.Trustedbsd']},
-        #'VFSevents': {'plugin': plugin_list['mac.vfsevents.VFSevents']},
+        'VFSevents': {'plugin': plugin_list['mac.vfsevents.VFSevents']},
     }
 
     """Progress Function"""
@@ -112,8 +111,8 @@ def run_volweb_routine_macos(dump_path, case_id, case):
     """STEP 0 : Clear the current signatures and compute the memory image signatures"""
     logger.info("Constructing memory image signatures...")
     ImageSignature.objects.filter(investigation_id=case_id).delete()
-    signatures = memory_image_hash(dump_path)
-    ImageSignature(investigation_id=case_id, **signatures).save()
+    #signatures = memory_image_hash(dump_path)
+    #ImageSignature(investigation_id=case_id, **signatures).save()
 
     """STEP 1 : Clean database and build the basic context for each plugin"""
     for runable in volweb_knowledge_base:
@@ -121,8 +120,7 @@ def run_volweb_routine_macos(dump_path, case_id, case):
         context = contexts.Context()
         logger.info(f"Constructing context for {runable} ")
         try:
-            volweb_knowledge_base[runable]['constructed'] = build_context(dump_path, context, base_config_path,
-                                                                          volweb_knowledge_base[runable]['plugin'],output_path=None)
+            volweb_knowledge_base[runable]['constructed'] = build_context(dump_path, context, base_config_path, volweb_knowledge_base[runable]['plugin'],output_path=None)
         except VolatilityException:
             partial_results = True
             volweb_knowledge_base[runable]['constructed'] = []
