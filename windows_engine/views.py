@@ -78,7 +78,6 @@ def get_interval(request):
                 'Timeliner': json_serializer.serialize(Timeliner.objects.filter(investigation_id=id,CreatedDate=date)),
             }
             return JsonResponse({'message': "success", 'artifacts': artifacts})
-    
     return JsonResponse({'message': "error"})
 
 

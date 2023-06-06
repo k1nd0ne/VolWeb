@@ -87,6 +87,7 @@ def run_volweb_routine_linux(dump_path, case_id, case):
         # Malware analysis
         'TtyCheck': {'plugin': plugin_list['linux.tty_check.tty_check']},
         'MountInfo': {'plugin': plugin_list['linux.mountinfo.MountInfo']},
+        'Timeliner': {'plugin': plugin_list['timeliner.Timeliner']},
     }
 
     """Progress Function"""
@@ -104,7 +105,10 @@ def run_volweb_routine_linux(dump_path, case_id, case):
     signatures = memory_image_hash(dump_path)
     ImageSignature(investigation_id=case_id, **signatures).save()
 
+
+
     """STEP 1 : Clean database and build the basic context for each plugin"""
+    TimeLineChart.objects.filter(investigation_id=case_id).delete()
     for runable in volweb_knowledge_base:
         apps.get_model("linux_engine", runable).objects.filter(investigation_id=case_id).delete()
         context = contexts.Context()
@@ -174,11 +178,16 @@ def run_volweb_routine_linux(dump_path, case_id, case):
                 rename(children)
 
     json_pstree_artifact = []
+    json_timeline_graph_artifact = []
     if volweb_knowledge_base['PsTree']['result']:
         pstree_artifact = volweb_knowledge_base['PsTree']['result']
         for tree in pstree_artifact:
             rename(tree)
         json_pstree_artifact = json.dumps(pstree_artifact)
+
+    if volweb_knowledge_base['Timeliner']['result']:
+        json_timeline_graph_artifact = json.dumps(build_timeline(volweb_knowledge_base['Timeliner']['result']))
+    TimeLineChart(investigation_id=case_id, graph=json_timeline_graph_artifact).save()
 
     apps.get_model("linux_engine", "PsTree")(investigation_id=case_id, graph=json_pstree_artifact).save()
     return partial_results

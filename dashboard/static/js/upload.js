@@ -14,11 +14,14 @@ function ToggleInvestigator(u) {
             investigators.value += u + ' ';
         }
         badge.classList.remove("text-muted");
-        badge.classList.add("text-success");
+        badge.classList.remove("badge-a");
+        badge.classList.add("badge-primary");
+
     }
     else {
         investigators.value = investigators.value.replace(u, "").replace(' ', '');
-        badge.classList.remove("text-success");
+        badge.classList.remove("badge-primary");
+        badge.classList.add("badge-a");
         badge.classList.add("text-muted");
     }
 }

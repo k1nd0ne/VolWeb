@@ -51,6 +51,33 @@ def get_procmaps(request):
     
     return JsonResponse({'message': "error"})
 
+
+@login_required
+def get_interval(request):
+    """Get artifacts for a specific timestamp
+
+    Arguments:
+    request : http request object
+
+    Comment:
+    The user requested to watch the artifacts linked to a specific timestamp.
+    """
+    if request.method == 'GET':
+        form = GetInverval(request.GET)
+        if form.is_valid():
+            case = form.cleaned_data['case']
+            date = form.cleaned_data['date']
+            id = case.id
+            json_serializer = json.Serializer()
+            # Request the appropriate artifacts
+            artifacts = {
+                'Timeliner': json_serializer.serialize(Timeliner.objects.filter(investigation_id=id,CreatedDate=date)),
+            }
+            return JsonResponse({'message': "success", 'artifacts': artifacts})
+    return JsonResponse({'message': "error"})
+
+
+
 @login_required
 def lin_report(request):
     """

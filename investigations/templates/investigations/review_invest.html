@@ -34,10 +34,7 @@ Alway use the #action-form to perform any post request
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-graph.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-sunburst.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/css/anychart-ui.min.css">
-<link rel="stylesheet" type="text/css"
-  href="https://cdn.anychart.com/releases/8.11.0/fonts/css/anychart-font.min.css" />
-
-
+<link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/fonts/css/anychart-font.min.css" />
 
 <div class="container-fluid main" style="margin-top: 7px;">
   <div class="row d-flex align-items-center">
@@ -99,7 +96,6 @@ Alway use the #action-form to perform any post request
       <span>Examiner(s) :&nbsp;</span>
       <span class="badge bg-info" style="margin-right: 10px;">{{case.investigators}}</span>
     </div>
-
     <div class="row" style="margin-top: 19px;">
       {% if case.os_version == "Linux" %}
       <!---- Linux INVESTIGATION REVIEW  --->
@@ -107,23 +103,24 @@ Alway use the #action-form to perform any post request
         <div>
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab"
-                href="#tab-1"><i class="fas fa-microchip"></i>&nbsp;Processes</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2"
+                href="#tab-processes"><i class="fas fa-microchip"></i>&nbsp;Processes</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-tree"
                 style="color: var(--bs-indigo);"><i class="fa-solid fa-chart-gantt"></i>&nbsp;Tree</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-7"
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-ttycheck"
                 style="color: var(--bs-purple);"><i class="fas fa-terminal"></i>&nbsp;TtyCheck</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-10"
-              style="color: var(--bs-pink);"><i class="fas fa-hard-drive"></i>&nbsp;MountInfo</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-8"
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-mountinfo"
+              style="color: var(--bs-warning);"><i class="fas fa-hard-drive"></i>&nbsp;MountInfo</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-timeline"
+                style="color: var(--bs-pink);"><i class="fa-solid fa-timeline"></i>&nbsp;Timeline</a></li>              
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-reporting"
                 style="color: var(--bs-info);"><i class="fas fa-file-contract"></i>&nbsp;Reporting</a></li>
-
           </ul>
           <div class="tab-content" data-url="{% url 'lin_tag' %}" id="tabs">
-            <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
+            <div class="tab-pane fade show active" role="tabpanel" id="tab-processes">
               <div class="row">
                 <div class="col-2" style="margin-top: 10px;">
-                  <div class="accordion" id="accordionExample">
-
+                  <input type="search" id="search_proc" class="search-bar mb-1 form-control" placeholder="Search for a process"  style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
+                  <div class="accordion" id="process-ac">
                     {% for process in PsList %}
                     <div class="process-item">
                       <a href="#" id="collapse_{{process.PID}}" data-url="{% url 'get_l_artifacts' %}"
@@ -131,14 +128,15 @@ Alway use the #action-form to perform any post request
                         class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
                         data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne"
                         style="text-decoration: none;background: var(--bs-primary-rgb);">
-                        <i class="far fa-arrow-alt-circle-down"></i>
-                        <span class="text-truncate text-white" style="margin-left: 10px;">{{process.COMM}} </span>
-                        <span style="margin-left: 10px;"> - </span>
-                        <span class="text-truncate"
-                          style="margin-left: 10px; color: var(--bs-success)">{{process.PID}}</span>
+                        <div id="process_info">
+                          <i class="far fa-arrow-alt-circle-down"></i>
+                          <span class="text-truncate text-white" style="margin-left: 10px;">{{process.COMM}} </span>
+                          <span> - </span>
+                          <span class="text-truncate text-white">{{process.PID}}</span>
+                        </div>
                       </a>
                       <div id="collapse_{{process.id}}" class="accordion-collapse collapse" aria-labelledby="headingOne"
-                        data-bs-parent="#accordionExample">
+                        data-bs-parent="#process-ac">
                         <div class="accordion-body process_pid_info">
                           <p class="card-text p_info">Offset :&nbsp;{{process.Offset}}<br>
                           PPID :&nbsp;{{process.PPID}}<br>
@@ -157,19 +155,19 @@ Alway use the #action-form to perform any post request
                   <div class="d-none processes_tab">
                     <ul class="nav nav-tabs" role="tablist">
                       <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab"
-                        href="#tab-9" style="color: var(--bs-success);">PsAux</a></li>
+                        href="#tab-psaux" style="color: var(--bs-success);">PsAux</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          data-bs-toggle="tab" href="#tab-3" style="color: var(--bs-success);">ELFs</a></li>
+                          data-bs-toggle="tab" href="#tab-elfs" style="color: var(--bs-success);">ELFs</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-4" style="color: var(--bs-success);">Maps</a></li>
+                          href="#tab-maps" style="color: var(--bs-success);">Maps</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-5" style="color: var(--bs-success);">Lsof</a></li>
+                          href="#tab-lsof" style="color: var(--bs-success);">Lsof</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-6" style="color: var(--bs-success);">Bash</a></li>
+                          href="#tab-bash" style="color: var(--bs-success);">Bash</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-11" style="color: var(--bs-success);">Sockstat</a></li>
+                          href="#tab-sockstat" style="color: var(--bs-success);">Sockstat</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-12" style="color: var(--bs-success);">Envars</a></li>
+                          href="#tab-envars" style="color: var(--bs-success);">Envars</a></li>
                     </ul>
                     <div class="tab-content ">
                       {% include "investigations/linux/processes/psaux.html" %}
@@ -188,6 +186,7 @@ Alway use the #action-form to perform any post request
             {% include "investigations/linux/processes/tree.html" %}
             {% include "investigations/linux/others/tty_check.html" %}
             {% include "investigations/linux/others/mountinfo.html" %}
+            {% include "investigations/linux/others/timeline.html" %}
             {% include "investigations/linux/report.html" %}
 
 
@@ -197,10 +196,6 @@ Alway use the #action-form to perform any post request
       </div>
       {% endif %}
 
-
-
-
-
       <!---- WINDOWS INVESTIGATION REVIEW  --->
       {% if case.os_version == "Windows" %}
 
@@ -208,33 +203,33 @@ Alway use the #action-form to perform any post request
         <div>
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab"
-                href="#tab-1"><i class="fas fa-microchip"></i>&nbsp;Processes</a></li>
+                href="#tab-processes"><i class="fas fa-microchip"></i>&nbsp;Processes</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                href="#tab-19"><i class="fa-solid fa-chart-gantt"></i>&nbsp;Tree</a></li>
+                href="#tab-tree"><i class="fa-solid fa-chart-gantt"></i>&nbsp;Tree</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                href="#tab-25"><i class="fa-solid fa-chart-gantt"></i>&nbsp;DeviceTree</a></li>
+                href="#tab-dtree"><i class="fa-solid fa-chart-gantt"></i>&nbsp;DeviceTree</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                href="#tab-20"><i class="fa-solid fa-diagram-project"></i>&nbsp;NetGraph</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2"
+                href="#tab-netgraph"><i class="fa-solid fa-diagram-project"></i>&nbsp;NetGraph</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-registry"
                 style="color: var(--bs-indigo);"><i class="fa-solid fa-folder-tree"></i>&nbsp;Registry</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-3"
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-crypto"
                 style="color: var(--bs-purple);"><i class="fas fa-puzzle-piece"></i>&nbsp;Cryptography</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-15"
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-timeline"
                 style="color: var(--bs-pink);"><i class="fa-solid fa-timeline"></i>&nbsp;Timeline</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-16"
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-files"
                 style="color: var(--bs-warning);"><i class="fas fa-file"></i>&nbsp;Files</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-26"
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-drivermod"
                   style="color: var(--bs-success);"><i class="fas fa-hard-drive"></i>&nbsp;DriverModule</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-22"
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-report"
                 style="color: var(--bs-info);"><i class="fas fa-file-contract"></i>&nbsp;Reporting</a></li>
 
           </ul>
           <div class="tab-content" data-url="{% url 'win_tag' %}" id="tabs">
-            <div class="tab-pane fade show active" role="tabpanel" id="tab-1">
-              <div class="row">
+            <div class="tab-pane fade show active" role="tabpanel" id="tab-processes">
+              <div class="row ">
                 <div class="col-2" style="margin-top: 10px;">
-
-                  <div class="accordion" id="accordionExample">
+                  <input type="search" id="search_proc" class="search-bar mb-1 form-control" placeholder="Search for a process"  style="color: var(--bs-gray-100);background: var(--bs-primary-rgb);">
+                  <div class="accordion" id="process-ac">
                     {% for process in PsScan %}
                     <div class="process-item">
                       <a href="#" id="collapse_{{process.PID}}" data-url="{% url 'get_w_artifacts' %}"
@@ -242,15 +237,19 @@ Alway use the #action-form to perform any post request
                         class="list-inline-item d-flex align-items-center collapsed" data-bs-toggle="collapse"
                         data-bs-target="#collapse_{{process.id}}" aria-expanded="true" aria-controls="collapseOne"
                         style="text-decoration: none;background: var(--bs-primary-rgb);">
-                        <i class="far fa-arrow-alt-circle-down"></i>
-                        <span class="text-truncate text-white" style="margin-left: 10px;">{{process.ImageFileName}}
-                        </span>
-                        <span style="margin-left: 10px;"> - </span>
-                        <span class="text-truncate"
-                          style="margin-left: 10px; color: var(--bs-success)">{{process.PID}}</span>
+                        <div id="process_info">
+                          <i class="far fa-arrow-alt-circle-down"></i>
+                          <span class="text-truncate text-white" style="margin-left: 10px;">
+                            {{process.ImageFileName}}
+                          </span>
+                          <span> - </span>
+                          <span class="text-truncate text-white">
+                            {{process.PID}}
+                          </span>
+                        </div>
                       </a>
                       <div id="collapse_{{process.id}}" class="accordion-collapse collapse" aria-labelledby="headingOne"
-                        data-bs-parent="#accordionExample">
+                        data-bs-parent="#process-ac">
                         <div class="accordion-body process_pid_info">
                           <p class="card-text p_info">Offset :&nbsp;{{process.Offset}}
                             <br>Threads :&nbsp;{{process.Threads}}
@@ -285,25 +284,25 @@ Alway use the #action-form to perform any post request
                   <div class="d-none processes_tab">
                     <ul class="nav nav-tabs" role="tablist">
                       <li class="nav-item" role="presentation"><a class="nav-link active" role="tab"
-                          data-bs-toggle="tab" href="#tab-4" style="color: var(--bs-success);">Privileges</a></li>
+                          data-bs-toggle="tab" href="#tab-privs" style="color: var(--bs-success);">Privileges</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-21" style="color: var(--bs-success);">Command line</a></li>
+                          href="#tab-cmdline" style="color: var(--bs-success);">Command line</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                        href="#tab-23" style="color: var(--bs-success);">Sessions</a></li>
+                        href="#tab-sessions" style="color: var(--bs-success);">Sessions</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-5" style="color: var(--bs-success);">Environment variables</a></li>
+                          href="#tab-envars" style="color: var(--bs-success);">Environment variables</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-6" style="color: var(--bs-success);">DllList</a></li>
+                          href="#tab-dlllist" style="color: var(--bs-success);">DllList</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-24" style="color: var(--bs-success);">LdrModules</a></li>
+                          href="#tab-ldrmod" style="color: var(--bs-success);">LdrModules</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-7" style="color: var(--bs-success);">Handles</a></li>
+                          href="#tab-handles" style="color: var(--bs-success);">Handles</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                          href="#tab-8" style="color: var(--bs-success);">Network</a></li>
+                          href="#tab-network" style="color: var(--bs-success);">Network</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link " role="tab" data-bs-toggle="tab"
-                          href="#tab-27" style="color: var(--bs-success);">VadWalk</a></li>
+                          href="#tab-vadwalk" style="color: var(--bs-success);">VadWalk</a></li>
                       <li class="nav-item" role="presentation"><a class="nav-link " role="tab" data-bs-toggle="tab"
-                          href="#tab-17" style="color: var(--bs-success);">MalFind</a></li>
+                          href="#tab-malfind" style="color: var(--bs-success);">MalFind</a></li>
                     </ul>
                     <div class="tab-content">
                       {% include "investigations/windows/processes/privileges.html" %}

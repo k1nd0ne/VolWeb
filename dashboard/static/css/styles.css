@@ -55,6 +55,7 @@
   display: none;
 }
 
+
 .text-primary {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-primary-rgb), var(--bs-text-opacity)) !important;
@@ -183,6 +184,18 @@
 tbody tr:hover {
   background-color: var(--bs-dark);
   color: var(--bs-pink);
+}
+
+
+.badge-a:hover{
+  color: #000000 !important;
+  background-color: #93dfeb !important;
+}
+
+
+.badge-primary{
+  color: #fff !important;
+  background-color: RGBA(13,110,253,var(--bs-bg-opacity,1)) !important;
 }
 
 thead, tbody {
