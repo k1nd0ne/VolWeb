@@ -1,7 +1,6 @@
 <p align="center">
-<img src="https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/volweblogo.png"  width="200" height="280" alt="VolWeb Title"/>
+<img src="https://github.com/k1nd0ne/VolWeb/blob/main/.images_readme/volweb.png"  width="200" height="280" alt="VolWeb Title"/>
 </p>
-
 
 # 🧬 About
 
