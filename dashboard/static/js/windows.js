@@ -76,6 +76,8 @@ function DisplayArtifacts(collapse, process, case_id) {
   handles_btn.textContent = "Click here to compute Handles for PID " + process;
   handles_btn.addEventListener('click', function (e) {
     $("#processHandles").textContent = "";
+    $('#Handles tr').remove();
+    $('#Handles').addClass('d-none');
      handles_btn.textContent = "";
      handles_btn.appendChild(span_loading);
      ComputeHandles(process, case_id);
@@ -134,15 +136,14 @@ function DisplayTimeline(case_id, date) {
 }
 
 function ComputeHandles(process, case_id){
-  
-  $('#processHandles').addClass('d-none');
   var url = $("#handles_btn").attr("data-url");
   $.get(url, { 'case': case_id, 'pid': process }, // url
   function (response, textStatus, jqXHR) {  // success callback
     if (textStatus == "success") {
       if (response['message'] == "success") {
-        FillArtifiacts(JSON.parse(response['artifacts']['Handles']));
+        FillArtifiacts(JSON.parse(response['artifacts']['Handles']),'Handles');
         $("#handles_btn").addClass("d-none");
+        $('#Handles').removeClass('d-none');
       }
       if (response['message'] == "error") {
         $('#proc-error-message').html("Something went wrong.");
@@ -150,7 +151,6 @@ function ComputeHandles(process, case_id){
       }
     }
   });
-
 }
 
 function FillTimeline(artifacts) {
@@ -427,6 +427,14 @@ $(document).ready(function () {
 
   /* ################################ REGISTRY SCRIPTS ################################ */
 
+  $("#search_proc").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#process-ac #process_info").filter(function () {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+
   $("#search_registry").on("keyup", function () {
     var value = $(this).val().toLowerCase();
     $("#UserAssist tr").filter(function () {
@@ -454,15 +462,15 @@ $(document).ready(function () {
   //CmdLine SearchBar
   $("#searchCmdLine").on("keyup", function () {
     var value = $(this).val().toLowerCase();
-    $("#cmdline tr").filter(function () {
+    $("#CmdLine tr").filter(function () {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
 
-  //CmdLine SearchBar
+  //Dlllist SearchBar
   $("#searchDllList").on("keyup", function () {
     var value = $(this).val().toLowerCase();
-    $("#dlllist tr").filter(function () {
+    $("#DllList tr").filter(function () {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
@@ -470,7 +478,7 @@ $(document).ready(function () {
   //Privileges SearchBar
   $("#searchPriv").on("keyup", function () {
     var value = $(this).val().toLowerCase();
-    $("#processPriv tr").filter(function () {
+    $("#Privs tr").filter(function () {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
@@ -479,7 +487,7 @@ $(document).ready(function () {
 
   $("#searchEnv").on("keyup", function () {
     var value = $(this).val().toLowerCase();
-    $("#processEnv tr").filter(function () {
+    $("#Envars tr").filter(function () {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
@@ -498,7 +506,7 @@ $(document).ready(function () {
   //NetStat Search funtion
   $("#searchNetworkStat").on("keyup", function () {
     var value = $(this).val().toLowerCase();
-    $("#netstat tr").filter(function () {
+    $("#NetStat tr").filter(function () {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
@@ -506,7 +514,7 @@ $(document).ready(function () {
   //NetStat Search funtion
   $("#searchNetworkScan").on("keyup", function () {
     var value = $(this).val().toLowerCase();
-    $("#netscan tr").filter(function () {
+    $("#NetScan tr").filter(function () {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });

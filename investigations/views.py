@@ -296,6 +296,7 @@ def review_invest(request):
                     'PsTree': linux_engine.PsTree.objects.get(investigation_id=id),
                     'TtyCheck': linux_engine.TtyCheck.objects.filter(investigation_id=id),
                     'MountInfo': linux_engine.MountInfo.objects.filter(investigation_id=id),
+                    'TimeLineChart': linux_engine.TimeLineChart.objects.get(investigation_id=id),
                 }
                 context.update(models)
             return render(request, 'investigations/review_invest.html', context)

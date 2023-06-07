@@ -2,8 +2,8 @@ celery==5.2.3
 gunicorn==20.1.0
 psycopg2==2.9.3
 bcrypt==3.2.0
-cryptography==39.0.1
-Django==3.2.18
+cryptography==41.0.0
+Django==3.2.19
 django-crispy-forms==1.12.0
 volatility3==2.4.1
 yara-python==4.1.3

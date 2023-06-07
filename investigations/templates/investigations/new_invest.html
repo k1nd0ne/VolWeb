@@ -42,7 +42,7 @@
             <div class="form-group mb-3">
               {% for u in Users %}
               <a onclick="ToggleInvestigator('{{u.username}}');" href="#" style="text-decoration: none;" >
-                <span id="badge_{{u.username}}" class="badge text-muted" style="margin-right: 10px;background-color: rgb(255,255,255);border: 1px solid rgb(0,0,0) ;">{{u.username}}</span>
+                <span id="badge_{{u.username}}" class="badge badge-a text-muted" style="margin-right: 10px;background-color: rgb(255,255,255);border: 1px solid rgb(0,0,0) ;">{{u.username}}</span>
               </a>
             {% endfor %}
             </div>

@@ -162,14 +162,14 @@ $(document).ready(function () {
     $('.container-fluid').show();
 });
 
-const dismiss = document.querySelector(".dismiss");
 const sidebar = document.querySelector(".sidebar2");
 const overlay = document.querySelector(".overlay");
 
 if (sidebar) {
-    dismiss.addEventListener('click', () => { sidebar.classList.remove('active'), overlay.classList.remove('active') });
     overlay.addEventListener('click', () => { sidebar.classList.remove('active'), overlay.classList.remove('active') });
     function GetInvest(case_id) {
+        $(".spinnerside").removeClass("d-none");
+        $(".sidecontent").addClass("d-none");
         var url = $("#all-investigations").attr("data-url");
         $.get(url, { sa_case_id: case_id }, // url
             function (response, textStatus, jqXHR) {  // success callback
@@ -222,7 +222,8 @@ if (sidebar) {
                         $(".card-custom").removeClass("d-none");
                         $(".a-delete").attr("onclick", "DeleteAnalysis(" + case_id + ");")
                         $(".a-custom").attr("onclick", "EditInvest(" + case_id + ");")
-
+                        $(".spinnerside").addClass("d-none");
+                        $(".sidecontent").removeClass("d-none");
                     }
                     if (response['message'] == "error") {
                         $('#proc-error-message').html("Something went wrong getting the case.");

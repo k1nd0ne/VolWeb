@@ -14,3 +14,7 @@ class ReportForm(forms.Form):
 class GetArtifacts(forms.Form):
     case = forms.ModelChoiceField(queryset=UploadInvestigation.objects.all())
     pid = forms.IntegerField()
+
+class GetInverval(forms.Form):
+    case = forms.ModelChoiceField(queryset=UploadInvestigation.objects.all())
+    date = forms.CharField()

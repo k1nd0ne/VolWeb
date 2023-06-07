@@ -70,6 +70,12 @@ function GetReport(url, case_id){
   });
 }
 
+$("#search_proc").on("keyup", function () {
+  var value = $(this).val().toLowerCase();
+  $("#process-ac #process_info").filter(function () {
+    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+  });
+});
 
 $("#searchElfs").on("keyup", function() {
   var value = $(this).val().toLowerCase();
@@ -87,7 +93,7 @@ $("#searchBash").on("keyup", function() {
 
 $("#searchProcessMaps").on("keyup", function() {
   var value = $(this).val().toLowerCase();
-  $("#processMaps tr").filter(function() {
+  $("#ProcMaps tr").filter(function() {
     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
   });
 });
@@ -118,6 +124,14 @@ $("#searchEnvars").on("keyup", function() {
   $("#envars tr").filter(function() {
     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
   });
+});
+
+//TimeLine SearchBar
+$("#searchTimeline").on("keyup", function () {
+  var value = $(this).val().toLowerCase();
+  $("#TimelineTab tr").filter(function () {
+    $(this).toggle($(this).text().toLowerCase().indexOf(value) !== -1)
+  })
 });
 
 function DisplayArtifacts(collapse, process, case_id) {
@@ -306,3 +320,162 @@ function FillArtifiacts(artifacts, plugin_name){
 }
 
 
+function FillTimeline(artifacts) {
+  // Create the html elements for each line
+  $('#TimelineTab').empty();
+  $.each(artifacts, function (i, item) {
+    
+    var tbody = document.getElementById('TimelineTab');
+    const tr = document.createElement('tr');
+    const td_1 = document.createElement('td');
+    const td_2 = document.createElement('td');
+    const td_3 = document.createElement('td');
+    const td_4 = document.createElement('td');
+    const td_5 = document.createElement('td');
+    const td_6 = document.createElement('td');
+    const td_7 = document.createElement('td');
+    td_7.setAttribute('class', 'w-10');
+
+    td_1.textContent = item.fields.CreatedDate;
+    td_2.textContent = item.fields.ChangedDate;
+    td_3.textContent = item.fields.AccessedDate;
+    td_4.textContent = item.fields.Description;
+    td_5.textContent = item.fields.ModifiedDate;
+    td_6.textContent = item.fields.Plugin;
+
+
+    // Tag conditions and system
+    const dropdown = document.createElement('div');
+    dropdown.setAttribute('class', 'dropdown no-arrow');
+
+    const button = document.createElement('button');
+    button.setAttribute('class', 'btn btn-link btn-sm dropdown-toggle');
+
+    button.setAttribute('aria-expanded', 'true');
+    button.setAttribute('data-bs-toggle', 'dropdown');
+    button.setAttribute('type', 'button');
+
+    const dots = document.createElement('i');
+    dots.setAttribute('class', 'fas fa-ellipsis-v text-gray-400');
+    button.appendChild(dots);
+
+    const dropdown_menu = document.createElement('div');
+    dropdown_menu.setAttribute('class', 'dropdown-menu shadow dropdown-menu-end animated--fade-in');
+    const tagm = document.createElement('p');
+    tagm.setAttribute('class', 'text-center dropdown-header');
+    tagm.textContent = "Tag as";
+
+
+    const span_suspicious = document.createElement('span');
+    span_suspicious.textContent = " Suspicious";
+
+    const span_evidence = document.createElement('span');
+    span_evidence.textContent = " Evidence";
+
+    const badge_suspicious = document.createElement('a');
+    badge_suspicious.setAttribute('class', 'dropdown-item');
+    badge_suspicious.setAttribute('href', '#');
+    badge_suspicious.addEventListener('click', function (e) {
+      Tag('Timeliner', item.pk, "Suspicious");
+    });
+
+    const pill_orange = document.createElement('strong');
+    pill_orange.setAttribute('class', 'badge bg-warning text-wrap text-warning');
+    pill_orange.textContent = ' ';
+    badge_suspicious.appendChild(pill_orange);
+    badge_suspicious.appendChild(span_suspicious);
+
+
+    const badge_evidence = document.createElement('a');
+    badge_evidence.setAttribute('class', 'dropdown-item');
+    badge_evidence.setAttribute('href', '#');
+    badge_evidence.addEventListener('click', function (e) {
+      Tag('Timeliner', item.pk, "Evidence");
+    });
+
+
+    const pill_red = document.createElement('strong');
+    pill_red.setAttribute('class', 'badge bg-danger text-wrap text-danger');
+    pill_red.textContent = ' ';
+
+    badge_evidence.appendChild(pill_red);
+    badge_evidence.appendChild(span_evidence);
+
+
+    const divider = document.createElement('div');
+    divider.setAttribute('class', 'dropdown-divider');
+
+    const badge_clear = document.createElement('a');
+    badge_clear.setAttribute('class', 'dropdown-item');
+    badge_clear.setAttribute('href', '#');
+    badge_clear.addEventListener('click', function (e) {
+      Tag('Timeliner', item.pk, "Clear");
+    });
+    badge_clear.textContent = " Clear tag";
+
+
+    const tag_evidence = document.createElement('strong');
+    const tag_suspicious = document.createElement('strong');
+
+    if (item.fields.Tag == "Evidence") {
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap tag_evidence_' + item.pk + '_Timeliner');
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_Timeliner');
+    }
+
+    else if (item.fields.Tag == "Suspicious") {
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_Timeliner');
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap tag_suspicious_' + item.pk + '_Timeliner');
+    }
+
+    else {
+      tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.pk + '_Timeliner');
+      tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.pk + '_Timeliner');
+    }
+
+    tag_evidence.textContent = "Evidence";
+    tag_suspicious.textContent = "Suspicious";
+
+    dropdown_menu.appendChild(tagm);
+    dropdown_menu.appendChild(badge_suspicious);
+    dropdown_menu.appendChild(badge_evidence);
+    dropdown_menu.appendChild(divider);
+    dropdown_menu.appendChild(badge_clear);
+
+    button.appendChild(dots);
+    dropdown.appendChild(button);
+    dropdown.appendChild(tag_evidence);
+    dropdown.appendChild(tag_suspicious);
+    dropdown.appendChild(dropdown_menu);
+    td_7.appendChild(dropdown);
+
+    tr.appendChild(td_1);
+    tr.appendChild(td_2);
+    tr.appendChild(td_3);
+    tr.appendChild(td_4);
+    tr.appendChild(td_5);
+    tr.appendChild(td_6);
+    tr.appendChild(td_7);
+    tbody.appendChild(tr);
+  });
+}
+
+function DisplayTimeline(case_id, date) {
+  $('.spinner-review').removeClass("d-none");
+  $('#TimelineTab').addClass('d-none');
+  var url = $("#TimelineTab").attr('data-url');
+  var date = date.toString();
+  $.get(url, { 'case': case_id, 'date': date }, // url
+  function (response, textStatus, jqXHR) {  // success callback
+    if (textStatus == "success") {
+      if (response['message'] == "success") {
+        FillTimeline(JSON.parse(response['artifacts']['Timeliner']));
+        $('#TimelineTab').removeClass('d-none');
+        $('.spinner-review').addClass("d-none");
+      }
+      if (response['message'] == "error") {
+        $('#proc-error-message').html("Something went wrong.");
+        $('.toast-proc-error').toast('show');
+      }
+    }
+  });
+}

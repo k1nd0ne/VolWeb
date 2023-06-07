@@ -167,3 +167,25 @@ class Envars(models.Model):
     PPID = models.BigIntegerField(null=True)
     VALUE = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+class TimeLineChart(models.Model):
+    investigation = models.ForeignKey(
+        UploadInvestigation,
+        on_delete=models.CASCADE,
+        related_name="linux_timeline_investigation"
+    )
+    graph = models.JSONField(null=True)
+
+class Timeliner(models.Model):
+    investigation = models.ForeignKey(
+        UploadInvestigation,
+        on_delete=models.CASCADE,
+        related_name="linux_timeliner_investigation"
+    )
+    Plugin = models.TextField(null=True)
+    Description = models.TextField(null=True)
+    AccessedDate = models.TextField(null=True)
+    ChangedDate = models.TextField(null=True)
+    CreatedDate = models.TextField(null=True)
+    ModifiedDate = models.TextField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)

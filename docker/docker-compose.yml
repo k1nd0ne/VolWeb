@@ -10,7 +10,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - ./data:/var/lib/postgresql/data
 
   web:
     container_name: volweb_django
@@ -18,15 +18,17 @@ services:
       context: ../
       dockerfile: docker/Dockerfile
     command: >
-      gunicorn VolWeb.wsgi:application --bind 0.0.0.0:8000 --workers=4
+      gunicorn VolWeb.wsgi:application --bind 0.0.0.0:8000 --workers=4  --timeout 120
     env_file:
-      - secret/volweb.env
+      - ./secret/volweb.env
     expose:
       - 8000
     depends_on:
       - db
     volumes:
-      - cases:/home/app/web/Cases/
+      - ./cases:/home/app/web/Cases/
+      - ./cases/Results/:/home/app/web/Cases/Results
+      - ./cases/files/:/home/app/web/Cases/files
       - staticfiles:/home/app/web/staticfiles
       - symbols:/home/app/web/symbols/uploads
 
@@ -63,11 +65,11 @@ services:
       - rabbitmq3
       - db
     volumes:
-      - cases:/home/app/web/Cases/
+      - ./cases:/home/app/web/Cases/
+      - ./cases/Results/:/home/app/web/Cases/Results
+      - ./cases/files/:/home/app/web/Cases/files
       - staticfiles:/home/app/web/staticfiles
       - symbols:/home/app/web/symbols/uploads
 volumes:
-  postgres-data:
   staticfiles:
-  cases:
   symbols:
