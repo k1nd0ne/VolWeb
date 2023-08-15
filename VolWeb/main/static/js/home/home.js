@@ -4,7 +4,7 @@ $(document).ready(function() {
 
 function get_recent_cases(){
   $.ajax({
-    url: '/get_cases/',
+    url: '/api/cases/',
     dataType: 'JSON',
     success: function(data){
       $("#cases_placeholder").hide();
