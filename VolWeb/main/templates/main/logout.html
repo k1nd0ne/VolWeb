@@ -1,0 +1,38 @@
+{% load static %}
+{% load crispy_forms_tags %}
+{% load bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <title>VolWeb</title>
+</head>
+
+<body>
+    <div class="container" style="position: absolute;left: 0;right: 0;top: 50%;transform: translateY(-50%);-ms-transform: translateY(-50%);-moz-transform: translateY(-50%);-o-transform: translateY(-50%);">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-9 col-xl-9 col-xxl-7">
+                <div class="card shadow-lg o-hidden border-0 my-5">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h4 class="text-dark mb-4">You have been disconnected</h4>
+                                    </div>
+                                    <a class="btn btn-dark d-block btn-user w-100" href="{% url 'login' %}">Login</a>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+
+</html>

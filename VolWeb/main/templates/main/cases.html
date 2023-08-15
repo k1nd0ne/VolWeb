@@ -1,0 +1,33 @@
+{% extends "main/master.html" %}
+{% load static %}
+
+{% block content%}
+<link rel="stylesheet" href="{% static '/css/cases.css'%}">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+<script src="{% static '/js/cases/cases.js'%}"></script>
+
+
+
+<table id="cases" class="compact stripe hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Investigators</th>
+            <th>Last Modified</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Test</td>
+            <td>Description</td>
+            <td>User1, User2</td>
+            <td>Date</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+{% endblock content%}
