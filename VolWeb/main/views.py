@@ -112,10 +112,12 @@ class CaseDetailApiView(APIView):
                 {"res": "Object with todo id does not exists"}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
+        linked_users = request.data.getlist('linked_users[]')  # Get the raw list of linked_users
+        linked_users_data = [{'username': user} for user in linked_users]
         data = {
             'case_name': request.data.get('case_name'), 
             'case_description': request.data.get('case_description'), 
-            'linked_users': request.data.get('linked_users'), 
+            'linked_users': linked_users_data,
         }
         serializer = CaseSerializer(instance = case_instance, data=data, partial = True)
         if serializer.is_valid():

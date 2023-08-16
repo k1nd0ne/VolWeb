@@ -7,6 +7,7 @@ OS = (
 #   ('MacOs', 'MacOs'), <- not implemented yet
 )
 
+
 class Case(models.Model):
     case_id = models.AutoField(primary_key=True)
     case_name = models.CharField(max_length=500)

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username']
+        fields = ['username','id']
 
 class CaseSerializer(serializers.ModelSerializer):
     linked_users = UserSerializer(many=True)
@@ -25,3 +25,22 @@ class CaseSerializer(serializers.ModelSerializer):
             case.linked_users.add(user)
         
         return case
+
+    def update(self, instance, validated_data):
+        linked_users_data = validated_data.pop('linked_users', None)  # Extract linked_users data
+        
+        # Update the instance fields with the validated data
+        instance.case_name = validated_data.get('case_name', instance.case_name)
+        instance.case_description = validated_data.get('case_description', instance.case_description)
+
+        if linked_users_data:
+            instance.linked_users.clear()  # Remove existing linked_users
+
+            for user_data in linked_users_data:
+                username = user_data['username']
+                user = User.objects.get(pk=username)
+                instance.linked_users.add(user)  # Assuming linked_users is a ManyToManyField in Case model
+
+        instance.save()  # Save the updated instance
+        
+        return instance
