@@ -1,0 +1,134 @@
+{% extends "main/master.html" %}
+{% load static %}
+
+{% block content%}
+<link rel="stylesheet" href="{% static 'cases/css/cases.css'%}">
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/r-2.5.0/sc-2.2.0/sp-2.2.0/sl-1.7.0/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/r-2.5.0/sc-2.2.0/sp-2.2.0/sl-1.7.0/datatables.min.js"></script>
+<script src="{% static '/js/cases.js'%}"></script>
+
+<div class="container">
+    <div class="row mt-4 justify-content-center">
+        <div class="col-6 d-flex align-items-center highlight-toolbar bg-light ps-3 pe-2 py-1">
+            <small class="font-monospace text-muted text-uppercase">ACTIONS</small>
+            <div class="d-flex ms-auto">
+                <a class="nav-link case_create" href="#">
+                    <div class="align-items-center d-flex">
+                        <i class="fas fa-plus icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
+                        <span class="ms-1 text-dark" >Create a case</span>
+                    </div>
+                </a>
+
+                <a class="nav-link" id="evidence_upload" href="#">
+                    <div class="align-items-center d-flex">
+                        <i class="fas fa-upload icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
+                        <span class="ms-1 text-dark" >Upload a new evidence</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <table id="cases" class="table table-sm table-responsive table-hover">
+      <thead>
+          <tr>
+              <th>Case No</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Investigators</th>
+              <th>Last Modified</th>
+          </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+</div>
+
+
+
+
+  <!-- Case creation Modal -->
+  <div class="modal  fade" id="modal_case_create" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <div class="align-items-center d-flex">
+                <i class="fas fa-suitcase icon icon-shape icon-sm text-center me-2 d-flex align-items-center justify-content-center"></i>
+                <h1 class="modal-title fs-5 " id="modal_case_number">Create a case</h1>
+
+            </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form id="case_form">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Name*</label>
+                    {{case_form.case_name}}
+                </div>
+                <hr class="horizontal dark mt-0">
+
+                <div class="mb-3">
+                    <label class="form-label">Description*</label>
+                    {{case_form.case_description}}
+                </div>
+                <hr class="horizontal dark mt-0">
+
+                <div class="mb-3">
+                    <label class="form-label">Analysts on the case</label>
+                    {{case_form.linked_users}}
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-sm btn-dark" id="new_case">Create</button>
+          <button type="button" class="btn btn-sm btn-dark save_case">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Case Metadata review Modal -->
+  <div class="modal placeholder-glow fade modal_case_review" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title case_info fs-5 placeholder case_number">Case #X</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title case_info placeholder"><span>Case name : </span><span class="case_name">Name</span></h5>
+                    <h6 class="card-subtitle case_info mb-2 text-muted placeholder"><span>Investigators : </span><span class="case_users">names</span></h6>
+                    <p class="card-text placeholder case_info"><span>Description : </span><span class="case_description">description</span></p>
+                    <hr class="horizontal dark mt-0">
+                    <h6 class="card-title case_info placeholder">Evidence collection</h6>
+                    <ul id="isf_placeholder" class="list-group list-group-flush">
+                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
+                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
+                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
+                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
+                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
+                    </ul>
+                    <hr class="horizontal dark mt-0">
+                    <a href="#" id="new_case_evidence" class="case_info card-link text-dark placeholder">Add evidence to this case</a>
+                    <a href="#" id="edit_case" class="case_info card-link text-dark placeholder">Edit</a>
+                    <a href="#" id="delete_case" class="case_info card-link text-danger placeholder">Delete</a>
+                </div>
+              </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+          <!-- <button type="button" class="btn btn-dark">Pour plus tard</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+
+
+{% endblock content%}
