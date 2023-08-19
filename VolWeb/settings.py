@@ -145,9 +145,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = str(os.path.join(BASE_DIR, 'data/evidences/'))
 MEDIA_URL = '/data/evidences/'
-
-# CHUNKED UPLOAD
-DRF_CHUNKED_UPLOAD_EXPIRATION_DELTA = timedelta(days=1)
-DRF_CHUNKED_UPLOAD_PATH = os.path.join('uploads', '%Y', '%m', '%d')
-DRF_CHUNKED_UPLOAD_MIN_BYTES = 0
-DRF_CHUNKED_UPLOAD_MAX_BYTES = 50 * 1024 * 1024 * 1024 # 128 GB max.

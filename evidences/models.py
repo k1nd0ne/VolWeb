@@ -15,5 +15,6 @@ class Evidence(models.Model):
         on_delete=models.CASCADE,
         null=False
     )
+    dump_status =  models.IntegerField(default=0)
     def __str__(self):
         return str(self.dump_name)

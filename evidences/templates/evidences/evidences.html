@@ -3,16 +3,87 @@
 
 {% block content%}
 
+<link rel="stylesheet" href="{% static 'evidences/css/evidences.css'%}">
 <link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/r-2.5.0/sc-2.2.0/sp-2.2.0/sl-1.7.0/datatables.min.css" rel="stylesheet">
 <script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/r-2.5.0/sc-2.2.0/sp-2.2.0/sl-1.7.0/datatables.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tus-js-client@latest/dist/tus.min.js"></script>
-<script src="{% static 'evidences/js/uploader.js'%}"></script>
+<script src="{% static 'evidences/js/evidences.js'%}"></script>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1439.0.min.js"></script>
 
 <div class="container">
-    <div class="mb-3">
-        <label for="formFileSm" class="form-label">Small file input example</label>
-        <input class="form-control form-control-sm" id="formFileSm" type="file">
+  <div class="row mt-4 justify-content-center">
+    <div class="col-6 d-flex align-items-center highlight-toolbar bg-light ps-3 pe-2 py-1">
+        <small class="font-monospace text-muted text-uppercase">ACTIONS</small>
+        <div class="d-flex ms-auto">
+            <a class="nav-link evidence_create" href="#">
+                <div class="align-items-center d-flex">
+                    <i class="fas fa-upload icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
+                    <span class="ms-1 text-dark" >Upload a new evidence</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<table id="evidences" class="table table-sm table-responsive table-hover">
+  <thead>
+      <tr>
+          <th>Filename</th>
+          <th>OS</th>
+          <th>Linked case number</th>
+          <th>Status</th>
+      </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+  <!-- Case creation Modal -->
+  <div class="modal  fade" id="modal_evidence_create" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <div class="align-items-center d-flex">
+                <i class="fas fa-suitcase icon icon-shape icon-sm text-center me-2 d-flex align-items-center justify-content-center"></i>
+                <h1 class="modal-title fs-5 " id="modal_case_number">Upload a new evidence</h1>
+
+            </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form id="evidence_form">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">OS*</label>
+                    {{evidence_form.dump_os}}
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Linked case*</label>
+                  {{evidence_form.dump_linked_case}}
+                </div>
+                <hr class="horizontal dark mt-0">
+                <div class="input-group mb-3">
+                  <input type="file" class="form-control" id="file-chooser">
+                </div>
+                <div id="form-error" class="text-danger"></div>
+            </form>
+            <div class="d-flex flex-column align-items-center justify-content-center upload-progress d-none">
+              <div class="row">
+                  <div class="spinner-border" role="status">
+                      <span class="sr-only">Loading...</span>
+                  </div>
+               </div>
+               <div class="row">
+                 <strong id="upload-progress"></strong>
+               </div>
+           </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-sm btn-dark" id="upload-button">Upload</button>
+
+        </div>
       </div>
+    </div>
+  </div>
       
 </div>
   

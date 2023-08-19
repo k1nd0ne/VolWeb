@@ -1,13 +1,15 @@
 asgiref==3.7.2
 beautifulsoup4==4.12.2
+certifi==2023.7.22
 crispy-bootstrap5==0.7
 Django==4.2.4
 django-bootstrap-v5==1.0.11
 django-crispy-forms==2.0
 djangorestframework==3.14.0
-drf-chunked-upload==0.6.0
 fontawesomefree==6.4.2
+minio==7.1.15
 pytz==2023.3
 soupsieve==2.4.1
 sqlparse==0.4.4
 typing_extensions==4.7.1
+urllib3==2.0.4

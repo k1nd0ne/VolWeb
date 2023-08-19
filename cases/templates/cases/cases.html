@@ -18,13 +18,6 @@
                         <span class="ms-1 text-dark" >Create a case</span>
                     </div>
                 </a>
-
-                <a class="nav-link" id="evidence_upload" href="#">
-                    <div class="align-items-center d-flex">
-                        <i class="fas fa-upload icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
-                        <span class="ms-1 text-dark" >Upload a new evidence</span>
-                    </div>
-                </a>
             </div>
         </div>
     </div>
@@ -101,22 +94,25 @@
         <div class="modal-body">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title case_info placeholder"><span>Case name : </span><span class="case_name">Name</span></h5>
                     <h6 class="card-subtitle case_info mb-2 text-muted placeholder"><span>Investigators : </span><span class="case_users">names</span></h6>
                     <p class="card-text placeholder case_info"><span>Description : </span><span class="case_description">description</span></p>
                     <hr class="horizontal dark mt-0">
                     <h6 class="card-title case_info placeholder">Evidence collection</h6>
-                    <ul id="isf_placeholder" class="list-group list-group-flush">
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                    </ul>
+
+                    <table class="table table-sm table-responsive table-hover">
+                      <thead>
+                          <tr>
+                              <th>Name</th>
+                              <th>OS</th>
+                              <th>Status</th>
+                          </tr>
+                      </thead>
+                      <tbody id="linked_evidences">
+                      </tbody>
+                    </table>
                     <hr class="horizontal dark mt-0">
-                    <a href="#" id="new_case_evidence" class="case_info card-link text-dark placeholder">Add evidence to this case</a>
-                    <a href="#" id="edit_case" class="case_info card-link text-dark placeholder">Edit</a>
-                    <a href="#" id="delete_case" class="case_info card-link text-danger placeholder">Delete</a>
+                    <button href="#" id="edit_case" class="case_info btn btn-sm btn-dark placeholder">Edit</button>
+                    <button href="#" id="delete_case" class="case_info btn btn-sm btn-danger placeholder">Delete</button>
                 </div>
               </div>
         </div>

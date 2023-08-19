@@ -1,5 +1,4 @@
 var cases;
-
 function refresh_cases(){
     cases.api().destroy();
     get_cases();
@@ -57,18 +56,14 @@ function create_new_case(){
         success: function(response) {
             // Handle successful response
             $('#modal_case_create').modal('toggle');
-            $(':input','#case_form')
-            .not(':button, :submit, :reset, :hidden')
-            .val('')
-            .prop('checked', false)
-            .prop('selected', false);
+            clear_form()
             refresh_cases()
 
         },
         error: function(xhr, status, error) {
             // Handle error response
             console.log(xhr.responseText);
-            alert("An error occurred while submitting the form.");
+            alert("An error occurred while submitting the form : " + xhr.responseText);
         }
     });
 }
@@ -114,28 +109,56 @@ function save_case(case_id){
 // TODO : ERROR HANDLING
 function display_case(case_id){
     $('.modal_case_review').modal('show');
-
     $.ajax({
-        type: "GET",
-        url: "/api/cases/"+case_id+"/",
-        dataType: "json",
-        success: function(data) {
-            var usernames = data.linked_users.map(function(user) {
-                return user.username;
-            }).join(", ");
-            data.linked_users = usernames;
-            $('.modal_case_review').attr("id",data.case_id);
-            $('.case_number').text("Case #"+data.case_id);
-            $('.case_name').text(data.case_name);
-            $('.case_description').text(data.case_description);
-            $('.case_users').text(data.linked_users);
-            $('.case_info').removeClass('placeholder');
-        },
-        error: function(xhr, status, error) {
-            // Handle error response
-            console.log(xhr.responseText);
-            alert("An error occurred while submitting the form.");
-        }
+            type: "GET",
+            url: "/api/cases/"+case_id+"/",
+            dataType: "json",
+            success: function(case_data) {
+                $.ajax({
+                    type: "GET",
+                    url: "/api/evidences/case/"+case_id+"/",
+                    dataType: "json",
+                    success: function(evidence_data) {
+                        var usernames = case_data.linked_users.map(function(user) {
+                            return user.username;
+                        }).join(", ");
+                        case_data.linked_users = usernames;
+                        $('.modal_case_review').attr("id",case_data.case_id);
+                        $('.case_number').text("Case #"+case_data.case_id + " : " + case_data.case_name);
+                        $('.case_description').text(case_data.case_description);
+                        $('.case_users').text(case_data.linked_users);
+                        $('.case_info').removeClass('placeholder');
+                        $("#linked_evidences").empty();
+                        for (var i = 0; i < evidence_data.length; i++)
+                        {
+                          const tr = document.createElement('tr');
+                          const td_name = document.createElement('td');
+                          const td_os = document.createElement('td');
+                          const td_status = document.createElement('td');
+                          td_name.textContent = evidence_data[i].dump_name;
+                          td_os.textContent = evidence_data[i].dump_os;
+                          td_status.textContent = evidence_data[i].dump_status + "%";
+                          tr.appendChild(td_name)
+                          tr.appendChild(td_os)
+                          tr.appendChild(td_status)
+                          $("#linked_evidences").append(tr);
+                        }
+                        $('.case_info').removeClass('placeholder');
+
+
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error response
+                        console.log(xhr.responseText);
+                        alert("An error occurred while submitting the form.");
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                // Handle error response
+                console.log(xhr.responseText);
+                alert("An error occurred while submitting the form.");
+            }
         });
     }
 

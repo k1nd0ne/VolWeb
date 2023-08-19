@@ -7,6 +7,8 @@ from rest_framework import permissions
 from cases.serializers import CaseSerializer
 from cases.forms import CaseForm
 from cases.models import Case
+from minio import Minio
+import uuid
 
 
 class CaseApiView(APIView):
@@ -24,11 +26,20 @@ class CaseApiView(APIView):
     # 2. Create
     def post(self, request, *args, **kwargs):
         '''
-        Create the Case with given case data
+        Create Case with given case data and the associated bucket.
+        If the bucket cannot be created -> no case creation.
         '''
+        bucket_uuid = uuid.uuid4()
+        try: 
+            client = Minio("localhost:9000", "user", "password",secure=False)
+            client.make_bucket(str(bucket_uuid))
+        except:
+            return Response("The bucket could not be created", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         linked_users = request.data.getlist('linked_users[]')  # Get the raw list of linked_users
         linked_users_data = [{'username': user} for user in linked_users]
         data = {
+            'case_bucket_id' : bucket_uuid,
             'case_name': request.data.get('case_name'), 
             'case_description': request.data.get('case_description'), 
             'linked_users': linked_users_data,
