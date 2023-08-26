@@ -105,7 +105,6 @@ function save_case(case_id){
     });
 }
 
-
 // TODO : ERROR HANDLING
 function display_case(case_id){
     $('.modal_case_review').modal('show');
