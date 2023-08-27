@@ -43,7 +43,6 @@ function upload_and_create_evidence(bucket_id){
         }
         if (data) {
             console.log("Upload Success", data.Location);
-            console.log(data)
             create_evidence(file.name);
             $('#modal_evidence_create').modal('toggle');
             $('.upload-progress').addClass("d-none");
@@ -70,7 +69,6 @@ function get_evidences(){
         'method': "GET",
         'contentType': 'application/json'
     }).done(function(data) {
-        console.log(data);
         evidences = $('#evidences').dataTable({      
             rowCallback: function(row, data, index) {
                 $(row).attr('value', data.dump_id); // Add id to the tr element
@@ -85,10 +83,35 @@ function get_evidences(){
             "aLengthMenu": [[25, 50, 75, -1], [25, 50, 75, "All"]],
             "iDisplayLength": 25
         });
+        $('.dataTable').on('click', 'tbody tr', function() {
+            display_evidence($(this).attr('value')); 
+         });
     });
 }
 
+// TODO : ERROR HANDLING
+function display_evidence(evidence_id){
+    $('.modal_evidence_review').modal('show');
+    $.ajax({
+            type: "GET",
+            url: "/api/evidences/"+evidence_id+"/",
+            dataType: "json",
+            success: function(evidence_data){
+                $('.modal_evidence_review').attr("id",evidence_data.dump_id);
+                $('.evidence_name').text(evidence_data.dump_name);
+                $('.evidence_os').text(evidence_data.dump_os);
+                $('.evidence_status').text(evidence_data.dump_status);
+                $('.evidence_info').removeClass('placeholder');
+            },
+            error: function(xhr, status, error) {
+                // Handle error response
+                console.log(xhr.responseText);
+                alert("An error occurred while submitting the form.");
+            }
+        });
+}
 
+//TODO : ERROR HANDLING
 function create_evidence(filename){
     console.log(filename)
     var formData = {
@@ -117,6 +140,30 @@ function create_evidence(filename){
         }
     });
 }
+
+// TODO : ERROR HANDLING
+function delete_evidence(dump_id){
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            xhr.setRequestHeader("X-CSRFToken", document.querySelector('[name=csrfmiddlewaretoken]').value);
+        }
+    });
+    $.ajax({
+        type: "DELETE",
+        url: "/api/evidences/"+dump_id+"/",
+        dataType: "json",
+        success: function(data) {
+            $('.modal_evidence_review').attr("id",NaN);
+            $('.modal_evidence_review').modal('toggle');
+            refresh_evidences();
+        },
+        error: function(xhr, status, error) {
+            // Handle error response
+            console.log(xhr.responseText);
+            alert("An error occurred while submitting the form.");
+        }
+        });
+    }
 
 function clear_form(){
     $(':input','#evidence_form')
@@ -169,6 +216,13 @@ $(document).ready(function() {
                 alert("An error occurred while submitting the form.");
             }
         });
+    });
+
+
+    $('#delete_evidence').on('click', function() {
+        const evidence_id = $('.modal_evidence_review').attr('id');
+        clear_form();
+        delete_evidence(evidence_id);
     });
 
     $('.evidence_create').on('click', function() {

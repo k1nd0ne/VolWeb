@@ -102,7 +102,7 @@ class CaseDetailApiView(APIView):
         case_instance = self.get_object(case_id)
         if not case_instance:
             return Response(
-                {"res": "Object with todo id does not exists"}, 
+                {"res": "Object with case id does not exists"}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         linked_users = request.data.getlist('linked_users[]')  # Get the raw list of linked_users
@@ -126,7 +126,7 @@ class CaseDetailApiView(APIView):
         case_instance = self.get_object(case_id)
         if not case_instance:
             return Response(
-                {"res": "Object with todo id does not exists"}, 
+                {"res": "Object with case id does not exists"}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         case_instance.delete()
