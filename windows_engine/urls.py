@@ -11,7 +11,7 @@ urlpatterns = [
     path('win_tag', views.win_tag, name='win_tag'),
     path('win_report', views.win_report, name='win_report'),
     path('get_w_artifacts', views.get_w_artifacts, name='get_w_artifacts'),
-    path('get_interval', views.get_interval, name='get_interval'),
+    path('get_w_interval', views.get_interval, name='get_w_interval'),
     path('get_handles', views.get_handles, name='get_handles'),
     
 ]

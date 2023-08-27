@@ -132,6 +132,9 @@ function DisplayTimeline(case_id, date) {
         $('.toast-proc-error').toast('show');
       }
     }
+    else{
+      console.log(textStatus)
+    }
   });
 }
 
