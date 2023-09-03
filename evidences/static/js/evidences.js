@@ -42,8 +42,8 @@ function upload_and_create_evidence(bucket_id){
             console.log("Error", err);
         }
         if (data) {
-            console.log("Upload Success", data.Location);
-            create_evidence(file.name);
+            console.log("Upload Success", data);
+            create_evidence(file.name,data.ETag);
             $('#modal_evidence_create').modal('toggle');
             $('.upload-progress').addClass("d-none");
             $('#evidence_form').show();
@@ -78,7 +78,7 @@ function get_evidences(){
                 { "data": "dump_name" },
                 { "data": "dump_os" },
                 { "data": "dump_linked_case" },
-                { "data": "dump_status" },
+                { "data": "dump_etag" },
             ],
             "aLengthMenu": [[25, 50, 75, -1], [25, 50, 75, "All"]],
             "iDisplayLength": 25
@@ -98,6 +98,7 @@ function display_evidence(evidence_id){
             dataType: "json",
             success: function(evidence_data){
                 $('.modal_evidence_review').attr("id",evidence_data.dump_id);
+                $('.evidence_etag').text(evidence_data.dump_etag);
                 $('.evidence_name').text(evidence_data.dump_name);
                 $('.evidence_os').text(evidence_data.dump_os);
                 $('.evidence_status').text(evidence_data.dump_status);
@@ -112,10 +113,11 @@ function display_evidence(evidence_id){
 }
 
 //TODO : ERROR HANDLING
-function create_evidence(filename){
+function create_evidence(filename, etag){
     console.log(filename)
     var formData = {
         dump_name: filename,
+        dump_etag: etag,
         dump_os: $('#id_dump_os').val(),
         dump_linked_case:  $('#id_dump_linked_case').val(),
     };

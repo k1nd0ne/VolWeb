@@ -8,7 +8,6 @@
 <script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/r-2.5.0/sc-2.2.0/sp-2.2.0/sl-1.7.0/datatables.min.js"></script>
 <script src="{% static 'evidences/js/evidences.js'%}"></script>
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1439.0.min.js"></script>
-
 <div class="container">
   <div class="row mt-4 justify-content-center">
     <div class="col-6 d-flex align-items-center highlight-toolbar bg-light ps-3 pe-2 py-1">
@@ -30,7 +29,7 @@
           <th>Filename</th>
           <th>OS</th>
           <th>Linked case number</th>
-          <th>Status</th>
+          <th>etag</th>
       </tr>
   </thead>
   <tbody>
@@ -96,6 +95,7 @@
           <div class="modal-body">
               <div class="card">
                   <div class="card-body">
+                      <p class="card-text placeholder evidence_info"><span>ETag : </span><span class="evidence_etag">ETAG</span></p>
                       <p class="card-text placeholder evidence_info"><span>OS : </span><span class="evidence_os">OS</span></p>
                       <p class="card-text placeholder evidence_info"><span>Analysis status : </span><span class="evidence_status"></span></p>
                   </div>

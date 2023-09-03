@@ -1,0 +1,50 @@
+{% extends "main/master.html" %}
+{% load static %}
+{% block content%}
+<script src="{% static 'windows_engine/js/review_evidence.js'%}"></script>
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/r-2.5.0/sc-2.2.0/sp-2.2.0/sl-1.7.0/datatables.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.7.5/joint.css" />
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/r-2.5.0/sc-2.2.0/sp-2.2.0/sl-1.7.0/datatables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.1/backbone.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.7.5/joint.js"></script>
+<script src="https://dagrejs.github.io/project/dagre/latest/dagre.min.js"></script>
+<script src="https://dagrejs.github.io/project/graphlib/latest/graphlib.min.js"></script>
+<nav class="navbar navbar-expand-lg bg-light">
+    <div class="container-fluid">
+        <div class="navbar-brand">
+            <i class="fas fa-suitcase"></i>
+            Case X
+            <i class="fas fa-chevron-right"></i>
+            Evidence Y
+            </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#"><i class="fa-solid fa-eye"></i>&nbsp;Overview</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fa-solid fa-virus"></i>&nbsp;Malfind</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fa-solid fa-timeline"></i>&nbsp;Timeline</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link disabled">Disabled</a>
+            </li>
+        </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="main" id="{{evidence.dump_id}}"></div>
+<div id="pstree"></div>
+
+<script>
+    var cpu = "{% static 'windows_engine/images/cpu.svg' %}"
+</script>
+{% endblock content%}

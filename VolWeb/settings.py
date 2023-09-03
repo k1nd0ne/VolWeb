@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+from VolWeb.keyconfig import Database, Secrets
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'main',
     'cases',
     'evidences',
+    'windows_engine',
     'rest_framework',
     'bootstrap5',
     'crispy_forms',
@@ -83,9 +85,13 @@ WSGI_APPLICATION = 'VolWeb.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": Database.NAME,
+        "USER": Database.USER,
+        "PASSWORD": Database.PASSWORD,
+        "HOST": Database.HOST,
+        "PORT": Database.PORT,
     }
 }
 
@@ -135,6 +141,7 @@ STATICFILES_DIRS = [
     ('main', 'main/static'),
     ('cases', 'cases/static'),
     ('evidences', 'evidences/static'),
+    ('windows_engine', 'windows_engine/static'),
     # Add more static directories as needed
 ]
 
@@ -145,3 +152,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = str(os.path.join(BASE_DIR, 'data/evidences/'))
 MEDIA_URL = '/data/evidences/'
+
+CELERY_BROKER_URL = Secrets.BROKER_URL  # Replace with your broker URL
+
+# Additional Celery configuration (optional)
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

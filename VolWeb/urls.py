@@ -25,6 +25,7 @@ urlpatterns = [
     path('', include('main.urls')),
     path('', include('cases.urls')),
     path('', include('evidences.urls')),
+    path('', include('windows_engine.urls')),
     path('login/', auth_views.LoginView.as_view(template_name='main/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='main/logout.html'), name='logout'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

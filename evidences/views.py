@@ -7,7 +7,6 @@ from rest_framework import status
 from evidences.models import Evidence
 from rest_framework.response import Response
 from evidences.serializers import EvidenceSerializer
-from cases.models import Case
 from minio import Minio
 
 # Create your views here.
@@ -56,6 +55,7 @@ class EvidenceAPIView(APIView):
         '''
         data = {
             'dump_name' : request.data.get('dump_name'),
+            'dump_etag' : request.data.get('dump_etag'),
             'dump_os': request.data.get('dump_os'), 
             'dump_linked_case': request.data.get('dump_linked_case'), 
         }

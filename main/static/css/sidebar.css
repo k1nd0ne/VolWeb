@@ -152,10 +152,12 @@ a {
 #wrapper{display:flex}
 #wrapper #content-wrapper
 {
-  height: 100vh;
+  height: 95vh;
   width:100%;
-  overflow-x:hidden
 }
 #wrapper #content-wrapper #content{flex:1 0 auto}
 
-#sidebar{background-color:#f8f9fc;}
+#sidebar{
+  height: 100vh;
+  width:100%;
+  background-color:#f8f9fc;}

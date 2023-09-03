@@ -9,6 +9,7 @@ OS = (
 class Evidence(models.Model):
     dump_id = models.AutoField(primary_key=True)
     dump_name = models.CharField(max_length=250)
+    dump_etag = models.CharField(max_length=256)
     dump_os = models.CharField(max_length=10, choices=OS)
     dump_linked_case = models.ForeignKey(
         Case,
