@@ -175,7 +175,7 @@ function clear_form(){
     .prop('selected', false);
 }
 
-$(document).ready(function() {    
+$(document).ready(function() {   
     get_evidences();
     document.getElementById('upload-button').addEventListener('click', () => {
         
@@ -226,6 +226,12 @@ $(document).ready(function() {
         clear_form();
         delete_evidence(evidence_id);
     });
+
+    $('#review_evidence').on("click", function(){
+        const evidence_id = $('.modal_evidence_review').attr('id');
+        var url = "/review/windows/" + evidence_id + '/';
+        window.location.href = url; // This line will redirect the user to the constructed url
+      });
 
     $('.evidence_create').on('click', function() {
         $('#modal_evidence_create').modal('show');

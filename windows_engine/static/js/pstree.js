@@ -1,9 +1,3 @@
-
-$(document).ready(function() {
-    const evidence_id = $('.main').attr('id');    
-    display_pstree(evidence_id);
-});
-
 function display_pstree(evidence_id){  
     //First get the data via the API.
     $.ajax({
@@ -26,7 +20,55 @@ function display_pstree(evidence_id){
         let startPos = { x: 0, y: 0 };
         let startTranslate = { x: 0, y: 0 };
         const SCALE_FACTOR = 0.7; // Change this to adjust sensitivity
+
+
+        function highlight(cell) {
+            // get the cell view and highlight it
+            var cellView = cell.findView(paper);
+            cellView.highlight();
         
+            // get all the inbound links
+            var inboundLinks = graph.getConnectedLinks(cell, { inbound: true });
+        
+            inboundLinks.forEach(function(link) {
+                // get the source element of the link
+                var sourceElement = link.getSourceElement();
+        
+                // highlight the link
+                var linkView = link.findView(paper);
+                linkView.highlight();
+        
+                // use a recursive call to highlight the previous elements of the path
+                if (sourceElement) {
+                    highlight(sourceElement);
+                }
+            });
+        }
+        
+        function stopHighlight(cell) {
+            // get the cell view and unhighlight it
+            var cellView = cell.findView(paper);
+            cellView.unhighlight();
+        
+            // get all the inbound links
+            var inboundLinks = graph.getConnectedLinks(cell, { inbound: true });
+        
+            inboundLinks.forEach(function(link) {
+                // get the source element of the link
+                var sourceElement = link.getSourceElement();
+        
+                // unhighlight the link
+                var linkView = link.findView(paper);
+                linkView.unhighlight();
+        
+                // use a recursive call to unhighlight the previous elements of the path
+                if (sourceElement) {
+                    stopHighlight(sourceElement);
+                }
+            });
+        }
+
+
         paper.on({
             'blank:pointerdown': function(evt, x, y) {
                 startPos = { x: x, y: y };
@@ -41,12 +83,26 @@ function display_pstree(evidence_id){
             }
         });
 
-
         paper.on('blank:mousewheel', (event, x, y, delta) => {
             const scale = paper.scale();
             paper.scale(scale.sx + (delta * 0.02), scale.sy + (delta * 0.02),);
           });
+
+        paper.on('cell:mouseover', function(cellView) {
+            highlight(cellView.model);
+        });
         
+        paper.on('cell:mouseout', function(cellView) {
+            stopHighlight(cellView.model);
+        });
+
+
+        paper.on('cell:pointerclick', function(cellView, evt, x, y) {
+            // smart_proc(cellView.model.id);
+            const process_id = cellView.model.id
+            var url = "/review/windows/" + evidence_id + '/' + process_id + "/";
+            window.open(url, '_blank'); // This line will redirect the user to the constructed url
+        });
         
         try {
             var process_list = JSON.parse(evidence_data[0].graph);
@@ -71,14 +127,7 @@ function display_pstree(evidence_id){
                 }
             });
 
-            // paper.scaleContentToFit({
-            //     padding: 10,
-            //     // preserveAspectRatio defines whether aspect ratio should be preserved
-            //     preserveAspectRatio: true,
-            //    // gridSize allows the function to align the new paper size with the grid
-            //     minScale: 0.1,
-            //     maxScale: 2
-            // });
+        
         } catch (error) {
             console.log(error);
         }
@@ -170,16 +219,19 @@ function makeElement(node) {
                 text: info,
                 fontSize: letterSize,
                 fontFamily: 'monospace',
-                fill: 'black'
+                fill: 'black',
+                cursor: 'pointer',
             },
             body: {
+                cursor: 'pointer',  
                 fill: 'white',
                 width: width,
                 height: height,
-                rx: 5,
-                ry: 5,
+                rx: 2,
+                ry: 2,
             },
             image : {
+                cursor: 'pointer',  
                 xlinkHref: cpu,
                 width: 1, 
                 height: 1
