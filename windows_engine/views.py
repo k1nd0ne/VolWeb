@@ -14,12 +14,9 @@ def review(request, dump_id):
     return render(request, 'windows_engine/review_evidence.html',{'evidence':evidence})
 
 def process(request, dump_id, process_id):
-        print(process_id)
-        return render(request, 'windows_engine/review_process.html')
-
+        return render(request, 'windows_engine/review_process.html', {'evidence':dump_id, 'pid':process_id})
 
 class PsTreeApiView(APIView):
-    # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request, dump_id, *args, **kwargs):
@@ -31,7 +28,6 @@ class PsTreeApiView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class TimelineChartApiView(APIView):
-    # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request, dump_id, *args, **kwargs):
@@ -43,7 +39,6 @@ class TimelineChartApiView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class TimelineDataApiView(APIView):
-    # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request, dump_id, timestamp, *args, **kwargs):
@@ -52,4 +47,14 @@ class TimelineDataApiView(APIView):
         '''
         data = Timeliner.objects.filter(evidence_id=dump_id, CreatedDate=timestamp)
         serializer = TimelineDataSerializer(data,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class CmdLineApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        '''
+        Give the requested cmdline from the pid.
+        '''
+        data = CmdLine.objects.filter(evidence_id=dump_id, PID=pid)
+        serializer = CmdLineSerializer(data,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

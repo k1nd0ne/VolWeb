@@ -5,15 +5,13 @@
 <script src="{% static 'windows_engine/js/pstree.js'%}"></script>
 <script src="{% static 'windows_engine/js/timeline.js'%}"></script>
 <script src="{% static 'windows_engine/js/tag.js'%}"></script>
+<script src="{% static 'windows_engine/js/tree.js'%}"></script>
+<link rel="stylesheet" href="{% static 'windows_engine/css/treejs.min.css'%}" id="treejs_styles">
+<link rel="stylesheet" type="text/css" href="{% static 'windows_engine/css/windows_engine.css'%}" />
+
 <link rel="stylesheet" type="text/css" href="{% static 'windows_engine/css/windows_engine.css'%}" />
 <link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/r-2.5.0/sc-2.2.0/sp-2.2.0/sl-1.7.0/datatables.min.css" rel="stylesheet">
 <script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/r-2.5.0/sc-2.2.0/sp-2.2.0/sl-1.7.0/datatables.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.7.5/joint.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.1/backbone.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.7.5/joint.js"></script>
-<script src="https://dagrejs.github.io/project/dagre/latest/dagre.min.js"></script>
-<script src="https://dagrejs.github.io/project/graphlib/latest/graphlib.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js" type="text/javascript"></script>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-core.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-exports.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
@@ -31,18 +29,19 @@
         </div>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="nav navbar-nav nav-pills" id="pills-tab" role="tablist">
-                <li class="nav-item" role="presentation">
+                <li class="nav-item">
                     <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true"><i class="fas fa-chart-bar"></i>&nbsp;Overview</button>
                 </li>
-                <li class="nav-item" role="presentation">
+                <li class="nav-item">
                     <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false"><i class="fas fa-timeline"></i>&nbsp;Timeline</button>
                 </li>
-                <li class="nav-item" role="presentation">
+                <li class="nav-item">
                     <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false"><i class="fas fa-fingerprint"></i>&nbsp;Credentials</button>
                 </li>
-                <li class="nav-item" role="presentation">
+                <li class="nav-item">
                     <button class="nav-link" id="pills-disabled-tab" data-bs-toggle="pill" data-bs-target="#pills-disabled" type="button" role="tab" aria-controls="pills-disabled" aria-selected="false" disabled>Disabled</button>
                 </li>
+                
             </ul>
         </div>
     </div>
@@ -51,7 +50,43 @@
 <div class="container-fluid">
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" style="height: 93vh;" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
-            <div id="pstree"></div>
+            <div class="row mt-2">
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-header">
+                          Process Tree
+                        </div>
+                        <div class="card-body">
+                            <div id="container"></div>
+                        </div>
+                        
+                      </div>
+                </div>
+                <div class="col-8">
+                    <div class="card process_id">
+                        <div class="card-header process_title">
+                          
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item p_pid"></li>
+                                <li class="list-group-item p_offset"></li>
+                                <li class="list-group-item p_threads"></li>
+                                <li class="list-group-item p_handles"></li>
+                                <li class="list-group-item p_session"></li>
+                                <li class="list-group-item p_wow64"></li>
+                                <li class="list-group-item p_ctime"></li>
+                                <li class="list-group-item p_etime"></li>
+                              </ul>
+                        </div>
+                        <div class="card-body">
+                            <a class="card-link investigate-btn">Investigate</a>
+                        </div>
+                        
+                      </div>
+                </div>
+            </div>
+            
         </div>
         <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
             <div style="height:20rem;" id="timeline"></div>
@@ -76,25 +111,7 @@
       </div>
 </div>
 
-  
-
 <div class="main" id="{{evidence.dump_id}}"></div>
-
-
-<div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
-    <p class="text-center dropdown-header">Tag as</p>
-    <a class="dropdown-item" href="#">
-        <strong class="badge bg-warning text-wrap text-warning">&nbsp;</strong>
-      &nbsp;Suspicious
-    </a>
-    <a class="dropdown-item" href="#">
-      <strong class="badge bg-danger text-wrap text-danger">&nbsp;</strong>
-      &nbsp;Evidence
-    </a>
-    <div class="dropdown-divider">
-    </div>
-    <a class="dropdown-item" href="#">&nbsp;Clear tag</a>
-</div>
 
 <script>
     var cpu = "{% static 'windows_engine/images/cpu.svg' %}"

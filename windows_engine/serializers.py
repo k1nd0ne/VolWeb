@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from windows_engine.models import PsTree, TimeLineChart, Timeliner
+from windows_engine.models import *
 
 class PsTreeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,4 +14,9 @@ class TimelineChartSerializer(serializers.ModelSerializer):
 class TimelineDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = Timeliner
+        fields = '__all__'
+
+class CmdLineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CmdLine
         fields = '__all__'

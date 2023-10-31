@@ -34,6 +34,11 @@
     font-size: 0.875rem;
   }
 
+.list-group-item{
+  font-weight: 400;
+  font-size: 0.875rem;
+}
+
 .table-responsive {
   overflow: inherit;
 }

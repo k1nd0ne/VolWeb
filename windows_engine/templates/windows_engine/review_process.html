@@ -11,6 +11,13 @@
         <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
         <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
         <link href="{% static 'windows_engine/css/review_process.css' %}" rel="stylesheet" type="text/css">
+        <script src="{% static 'windows_engine/js/overview.js'%}"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.7.5/joint.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.1/backbone.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.7.5/joint.js"></script>
+        <script src="https://dagrejs.github.io/project/dagre/latest/dagre.min.js"></script>
+        <script src="https://dagrejs.github.io/project/graphlib/latest/graphlib.min.js"></script>
     </head>
     <body>
 
@@ -23,7 +30,7 @@
                 <hr class="horizontal dark">
 
                 <ul class="navbar-nav">
-                    <li class="nav-item">
+                    <li class="nav-item pid" id="{{pid}}">
                         PID : [PID]
                     </li>
                     <li class="nav-item">
@@ -40,6 +47,16 @@
                     </li>
                     <li class="nav-item">
                         Exit time : [Exit time]
+                    </li>
+                    <hr class="horizontal dark">
+                    <li class="nav-item">
+                        <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Overview</button>
+                            <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Network</button>
+                            <button class="nav-link" id="v-pills-disabled-tab" data-bs-toggle="pill" data-bs-target="#v-pills-disabled" type="button" role="tab" aria-controls="v-pills-disabled" aria-selected="false" disabled>Disabled</button>
+                            <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Handles</button>
+                            <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">DllList</button>
+                        </div>
                     </li>
                     <hr class="horizontal dark">
                     <li class="nav-item">
@@ -64,23 +81,15 @@
                             <button class="btn btn-dark btn-sm" type="button">EchoTrail Intel</button>
                         </p>
                     </li>
-                    <hr class="horizontal dark">
-                    <li class="nav-item">
-                        <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                            <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Overview</button>
-                            <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Network</button>
-                            <button class="nav-link" id="v-pills-disabled-tab" data-bs-toggle="pill" data-bs-target="#v-pills-disabled" type="button" role="tab" aria-controls="v-pills-disabled" aria-selected="false" disabled>Disabled</button>
-                            <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Handles</button>
-                            <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">DllList</button>
-                        </div>
-                    </li>
                 </ul>
               </div>
-            <div class="divider"></div>
+            <div class="divider" id="{{evidence}}"></div>
             <div class="d-flex flex-column" id="content-wrapper">
                 <div id="content">
                     <div class="tab-content" id="v-pills-tabContent">
-                        <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab" tabindex="0">...</div>
+                        <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab" tabindex="0">
+                            {% include "windows_engine/overview.html" %}
+                        </div>
                         <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab" tabindex="0">
                             {% include "windows_engine/network.html" %}
                         </div>
@@ -91,6 +100,8 @@
                 </div>
             </div>
         </div>
-
     </body>
 </html>
+<script>
+    var cpu = "{% static 'windows_engine/images/cpu.svg' %}"
+</script>
