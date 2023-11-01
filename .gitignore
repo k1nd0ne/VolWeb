@@ -6,3 +6,6 @@ investigations/.DS_Store
 docker/cases
 docker/data
 *.json
+venv/*
+minio_storage
+*__pycache__
