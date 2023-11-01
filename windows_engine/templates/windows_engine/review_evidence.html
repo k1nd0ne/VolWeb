@@ -21,6 +21,7 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/fonts/css/anychart-font.min.css" />
 
 <script src="{% static 'windows_engine/js/visualisation.js'%}"></script>
+<script src="{% static 'windows_engine/js/process_api.js'%}"></script>
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.7.5/joint.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.1/backbone.js"></script>
@@ -59,101 +60,7 @@
 <div class="container-fluid">
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" style="height: 93vh;" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
-            <div class="row mt-2">
-                <div class="col-md-6 col-xl-3 col-sm-12">
-                    <div class="card shadow border-start-primary py-2">
-                        <div class="card-body">
-                            <div class="row align-items-center no-gutters">
-                                <div class="col-auto"><i class="fas fa-folder-tree fa-2x text-gray-600"></i></div>
-
-                                <div class="col me-2">
-                                    <div class="text-uppercase fw-bold text-xs mb-1"><span>Process Tree</span></div>
-                                </div>
-                            </div>
-                            <hr class="horizontal dark mt-0">
-                            <div class="card-body">
-                                <div id="container"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-xl-9 col-sm-12">
-                    <div class="row">
-                        <div class="col-md-6 col-xl-4">
-                            <div class="card shadow border-start-primary py-2 process_id">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col-auto"><i class="fas fa-circle-info fa-2x text-gray-600"></i></div>
-                                        <div class="col me-2">
-                                            <div class="text-uppercase fw-bold text-xs mb-1"><span>METADATA : </span><span class="process_title"></span></span></div>
-                                        </div>
-                                    </div>
-                                    <hr class="horizontal dark mt-0">
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item p_pid"></li>
-                                        <li class="list-group-item p_offset"></li>
-                                        <li class="list-group-item p_threads"></li>
-                                        <li class="list-group-item p_handles"></li>
-                                        <li class="list-group-item p_session"></li>
-                                        <li class="list-group-item p_wow64"></li>
-                                        <li class="list-group-item p_ctime"></li>
-                                        <li class="list-group-item p_etime"></li>
-                                      </ul>
-                                      <a class="btn btn-sm btn-dark investigate-btn">Investigate</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xl-8">
-                            <div class="card shadow border-start-primary py-2">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col-auto"><i class="fas fa-toolbox fa-2x text-gray-600"></i></div>
-                                        <div class="col me-2">
-                                            <div class="text-uppercase fw-bold text-xs mb-1"><span>Investigation Tools</span></div>
-                                        </div>
-                                    </div>
-                                    <hr class="horizontal dark mt-0">
-                                    <div class="row">
-                                        <div class="col-md-4 col-xl-3 col-sm-6">
-                                            <div class="card shadow border-start-primary py-2 card_clickable">
-                                                <div class="card-body">
-                                                    <div class="row align-items-center no-gutters">
-                                                        <div class="col-auto"><i class="fas fa-grip-vertical fa-2x text-gray-600"></i></div>
-                                                        <div class="col me-2">
-                                                            <div class="text-uppercase fw-bold text-xs"><span>HANDLES</span></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <div class="card shadow border-start-primary py-2 process_id">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col-auto"><i class="fas fa-circle-info fa-2x text-gray-600"></i></div>
-                                        <div class="col me-2">
-                                            <div class="text-uppercase fw-bold text-xs mb-1"><span>VISUALISATION</span></span></span></div>
-                                        </div>
-                                    </div>
-                                    <hr class="horizontal dark mt-0">
-                                    <div class="col-12" style="height: 300px;">
-                                        <div id="overview_graph" ></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
-            </div>
-            
+            {% include "windows_engine/overview.html" %}
         </div>
         <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
             <div style="height:20rem;" id="timeline"></div>

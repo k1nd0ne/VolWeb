@@ -141,12 +141,9 @@ function TreeView(root, container, options){
 
 	function isWithinTenSeconds(timestamp1, timestamp2) {
 		var date1 = new Date(timestamp1);
-		var date2 = new Date(timestamp2);
-		console.log(date2)
-		
+		var date2 = new Date(timestamp2);		
 		// Calculate the difference in milliseconds
 		var diff = Math.abs(date1 - date2);
-		console.log(diff)
 		
 		// Check if the difference is between 0 and 10 seconds (10,000 milliseconds)
 		return diff >= 0 && diff <= 10000;
@@ -187,14 +184,11 @@ var service_exe_creation_time;
 			// Check if the creation of an svchost is not within seconds after the service.exe creation
 			
 			if (process.name == "services.exe"){
-				console.log(process)
 				service_exe_creation_time = process.CreateTime;
 			}
 		
 			if (process.name == "svchost.exe"){
 			if(process.CreateTime){
-				console.log(process.CreateTime)
-				console.log(service_exe_creation_time)
 				if (!isWithinTenSeconds(process.CreateTime, service_exe_creation_time)){
 				span_desc.className = "tj_description text-warning";
 				}

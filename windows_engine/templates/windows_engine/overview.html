@@ -1,0 +1,128 @@
+<div class="row mt-2">
+    <div class="col-md-6 col-xl-3 col-sm-12">
+        <div class="card shadow border-start-primary py-2">
+            <div class="card-body">
+                <div class="row align-items-center no-gutters">
+                    <div class="col-auto"><i class="fas fa-folder-tree fa-2x text-gray-600"></i></div>
+
+                    <div class="col me-2">
+                        <div class="text-uppercase fw-bold text-xs mb-1"><span>Process Tree</span></div>
+                    </div>
+                </div>
+                <hr class="horizontal dark mt-0">
+                <div class="card-body">
+                    <div id="container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-9 col-sm-12">
+        <div class="row">
+            <div class="col-md-6 col-xl-4">
+                <div class="card shadow border-start-primary py-2 process_id">
+                    <div class="card-body">
+                        <div class="row align-items-center no-gutters">
+                            <div class="col-auto"><i class="fas fa-circle-info fa-2x text-gray-600"></i></div>
+                            <div class="col me-2">
+                                <div class="text-uppercase fw-bold text-xs mb-1"><span>METADATA : </span><span class="process_title"></span></span></div>
+                            </div>
+                        </div>
+                        <hr class="horizontal dark mt-0">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item p_pid"></li>
+                            <li class="list-group-item p_offset"></li>
+                            <li class="list-group-item p_threads"></li>
+                            <li class="list-group-item p_handles"></li>
+                            <li class="list-group-item p_session"></li>
+                            <li class="list-group-item p_wow64"></li>
+                            <li class="list-group-item p_ctime"></li>
+                            <li class="list-group-item p_etime"></li>
+                          </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-8">
+                <div class="card shadow border-start-primary py-2">
+                    <div class="card-body">
+                        <div class="row align-items-center no-gutters">
+                            <div class="col-auto"><i class="fas fa-toolbox fa-2x text-gray-600"></i></div>
+                            <div class="col me-2">
+                                <div class="text-uppercase fw-bold text-xs mb-1"><span>Investigation Tools</span></div>
+                            </div>
+                        </div>
+                        <hr class="horizontal dark mt-0">
+                        <div class="row">
+                            <div class="col-md-4 col-xl-3 col-sm-6">
+                                <div class="card shadow border-start-primary py-2 card_clickable">
+                                    <div class="card-body">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-grip-vertical fa-2x text-gray-600"></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs"><span>HANDLES</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-xl-3 col-sm-6">
+                                <div class="card shadow border-start-primary py-2 card_clickable card_sids">
+                                    <div class="card-body">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-address-card fa-2x text-gray-600"></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs"><span>SIDS</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-xl-3 col-sm-6">
+                                <div class="card shadow border-start-primary py-2 card_clickable">
+                                    <div class="card-body">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-key fa-2x text-gray-600"></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs"><span>Privileges</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-xl-3 col-sm-6">
+                                <div class="card shadow border-start-primary py-2 card_clickable">
+                                    <div class="card-body">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fab fa-envira fa-2x text-gray-600"></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs"><span>Envars</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="card shadow border-start-primary py-2 process_id">
+                    <div class="card-body">
+                        <div class="row align-items-center no-gutters">
+                            <div class="col-auto"><i class="fas fa-eye fa-2x text-gray-600"></i></div>
+                            <div class="col me-2">
+                                <div class="text-uppercase fw-bold text-xs mb-1"><span>VISUALISATION</span></span></span></div>
+                            </div>
+                        </div>
+                        <hr class="horizontal dark mt-0">
+                        <div class="col-12 graph">
+                            <div id="overview_graph" ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include "windows_engine/sids.html" %}
+    </div>
+</div>

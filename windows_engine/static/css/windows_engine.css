@@ -64,5 +64,7 @@
 
 .card_clickable:hover{
   transform: scale(1.02);
+  cursor: pointer;
+  border-color: rgb(0, 0, 0);
 
 }

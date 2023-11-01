@@ -13,7 +13,7 @@ function display_pstree(evidence_id){
         first_process = root.getChildren()[0];
         first_process.toggleSelected();
         display_process_info(first_process.getProcessObject(), evidence_id);
-        generate_visualisation(first_process.getProcessObject().PID, evidence_id);
+        generate_visualisation(first_process.getProcessObject(), process_list);
         var view = new TreeView(root, "#container");
         view.changeOption("leaf_icon", '<i class="fas fa-microchip"></i>');
         view.changeOption("parent_icon", '<i class="fas fa-microchip"></i>');
@@ -21,6 +21,8 @@ function display_pstree(evidence_id){
         TreeConfig.close_icon = '<i class="fas fa-angle-right"></i>';
         root.changeOption("icon", '<i class="fas fa-code-branch"></i>');
         view.reload();
+
+
         function build_tree(node,root){
           // create node and add to elements
           var newNode = new TreeNode(node.PID + " - " + node.name, node);
@@ -32,7 +34,7 @@ function display_pstree(evidence_id){
           }
           newNode.on('click', function(e, node){
             display_process_info(node.getProcessObject(), evidence_id);
-            generate_visualisation(node.getProcessObject().PID, evidence_id);
+            generate_visualisation(node.getProcessObject(), process_list);
           });
           root.addChild(newNode);
         }

@@ -1,8 +1,5 @@
 
-function generate_visualisation(process_id, evidence_id) {
-    console.log(evidence_id)
-    console.log(process_id)
-    // TODO : Fill the Metadata by requesting pslist.
+function generate_visualisation(process, pstree) {
     var elements = [];
     var links = [];
     var graph = new joint.dia.Graph;
@@ -15,45 +12,33 @@ function generate_visualisation(process_id, evidence_id) {
          drawGrid: true,
          interactive: { elementMove: false } 
      });
-     let startPos = { x: 0, y: 0 };
-     let startTranslate = { x: 0, y: 0 };
-     const SCALE_FACTOR = 0.7; // Change this to adjust sensitivity
 
-     $.ajax({
-        type: "GET",
-        url: "/api/windows/"+evidence_id+"/cmdline/"+process_id+"/",
-        async: false,
-        dataType: "json",
-        success: function(data){
-            elements.push(MakeRoot(data[0]));
-            elements.push(MakeCmdLine(data[0]));
-            links.push(makeLink(data[0].PID, data[0].id))
-            // Now we get the joblinks
-        },
-        error: function(xhr, status, error) {
-            // Handle error response
-            console.log(xhr.responseText);
-            alert("An error occurred while submitting the form.");
+    
+
+     $.each(pstree, function(_,node){
+        find_childs(process.PID, node, elements, links)
+     });
+
+     function find_childs(pid, node, elements, links){
+        // Check if there is not too much elements
+        if (node.PID == pid){
+            if (node.children){
+                $.each(node.children, function(_,childNode){
+                    elements.push(MakeNode(childNode));
+                    links.push(makeLink(pid, childNode.PID))
+                    find_childs(childNode.PID, childNode, elements, links);
+                });   
+                elements.push(MakeNode(node));
+            }
         }
-    });
-
-    $.ajax({
-        type: "GET",
-        url: "/api/windows/"+evidence_id+"/sids/"+process_id+"/",
-        async: false,
-        dataType: "json",
-        success: function(data){
-            console.log(data)
-            // elements.push(MakeRoot(data[0]));
-            // links.push(makeLink(data[0].PID, data[0].id))
-        },
-        error: function(xhr, status, error) {
-            // Handle error response
-            console.log(xhr.responseText);
-            alert("An error occurred while submitting the form.");
+        else{
+            if (node.children){
+                $.each(node.children, function(_,childNode){
+                    find_childs(pid, childNode, elements, links);
+                });   
+            }
         }
-    });
-
+      }
 
     var cells = elements.concat(links);
     graph.resetCells(cells);
@@ -62,9 +47,9 @@ function generate_visualisation(process_id, evidence_id) {
         marginX: 5,
         marginY: 5,
         rankDir: 'LR',
-    });
-
-
+    })
+    var bbox = graph.getBBox(graph.getElements());
+    $('.graph').height(bbox.height + 30);
 }
 
 function makeLink(parentElementLabel, childElementLabel) {
@@ -83,10 +68,8 @@ function makeLink(parentElementLabel, childElementLabel) {
     });
 }
 
-
-function MakeRoot(node) {
-    var info = node.Process + "\n\nPID : "+ node.PID + "\n";
-
+function MakeNode(node) {
+    var info = node.name + "\n\nPID : "+ node.PID + "\n";
     var maxLineLength = _.max(info.split('\n'), function(l) {
         return l.length;
     }).length;
@@ -119,28 +102,5 @@ function MakeRoot(node) {
     });
 }
 
-function MakeCmdLine(node) {
-    var info = node.Args;
-    var maxLineLength = _.max(info.split('\n'), function(l) {
-        return l.length;
-    }).length;
-    var letterSize = 10;
-    var width = 1.8 * (letterSize * (0.8 * maxLineLength + 1));
-    var height = 1.2 * ((info.split('\n').length + 1) * letterSize);
-    return new joint.shapes.standard.Rectangle({
-        id: node.id,
-        size: { width: width, height: height },
-        attrs: {
-            label: {
-                text: info,
-                fontSize: letterSize,
-                fontFamily: 'monospace',
-                fill: 'black',
-            },
-            body: {
-                fill: 'white',
-            },
-        }
-    });
-}
+
 
