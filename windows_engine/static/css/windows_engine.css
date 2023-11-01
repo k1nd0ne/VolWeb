@@ -34,7 +34,7 @@
     font-size: 0.875rem;
   }
 
-.list-group-item{
+.list-group-item, #container{
   font-weight: 400;
   font-size: 0.875rem;
 }
@@ -56,4 +56,13 @@
   color: #252f40;
   font-weight: 400;
   font-size: 0.875rem;
+}
+
+.card_clickable{
+  transition: transform .2s;
+}
+
+.card_clickable:hover{
+  transform: scale(1.02);
+
 }

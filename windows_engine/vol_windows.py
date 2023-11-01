@@ -130,6 +130,7 @@ def run_volweb_routine_windows(instance):
         'PsTree': {'plugin': plugin_list['windows.pstree.PsTree']},
         'DeviceTree': {'plugin': plugin_list['windows.devicetree.DeviceTree']},
         'CmdLine': {'plugin': plugin_list['windows.cmdline.CmdLine']},
+        'GetSIDs': {'plugin': plugin_list['windows.getsids.GetSIDs']},
         'Sessions': {'plugin': plugin_list['windows.sessions.Sessions']},
         'Privs': {'plugin': plugin_list['windows.privileges.Privs']},
         'Envars': {'plugin': plugin_list['windows.envars.Envars']},

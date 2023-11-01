@@ -58,3 +58,13 @@ class CmdLineApiView(APIView):
         data = CmdLine.objects.filter(evidence_id=dump_id, PID=pid)
         serializer = CmdLineSerializer(data,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class GetSIDsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        '''
+        Give the requested cmdline from the pid.
+        '''
+        data = GetSIDs.objects.filter(evidence_id=dump_id, PID=pid)
+        serializer = GetSIDsSerializer(data,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

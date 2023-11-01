@@ -1,9 +1,8 @@
 
-$(document).ready(function() {
+function generate_visualisation(process_id, evidence_id) {
+    console.log(evidence_id)
+    console.log(process_id)
     // TODO : Fill the Metadata by requesting pslist.
-
-    const evidence_id = $('.divider').attr('id'); 
-    const process_id = $('.pid').attr('id'); 
     var elements = [];
     var links = [];
     var graph = new joint.dia.Graph;
@@ -30,27 +29,23 @@ $(document).ready(function() {
             elements.push(MakeCmdLine(data[0]));
             links.push(makeLink(data[0].PID, data[0].id))
             // Now we get the joblinks
+        },
+        error: function(xhr, status, error) {
+            // Handle error response
+            console.log(xhr.responseText);
+            alert("An error occurred while submitting the form.");
+        }
+    });
 
-            $.ajax({
-                type: "GET",
-                url: "/api/windows/"+evidence_id+"/sids/"+process_id+"/",
-                async: false,
-                dataType: "json",
-                success: function(data){
-
-                    // elements.push(MakeRoot(data[0]));
-                    // links.push(makeLink(data[0].PID, data[0].id))
-                },
-                error: function(xhr, status, error) {
-                    // Handle error response
-                    console.log(xhr.responseText);
-                    alert("An error occurred while submitting the form.");
-                }
-            });
-
-
-
-
+    $.ajax({
+        type: "GET",
+        url: "/api/windows/"+evidence_id+"/sids/"+process_id+"/",
+        async: false,
+        dataType: "json",
+        success: function(data){
+            console.log(data)
+            // elements.push(MakeRoot(data[0]));
+            // links.push(makeLink(data[0].PID, data[0].id))
         },
         error: function(xhr, status, error) {
             // Handle error response
@@ -70,7 +65,7 @@ $(document).ready(function() {
     });
 
 
-});
+}
 
 function makeLink(parentElementLabel, childElementLabel) {
 

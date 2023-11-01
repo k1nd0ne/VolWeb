@@ -127,6 +127,20 @@ class Sessions(models.Model):
     UserName = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+class GetSIDs(models.Model):
+    evidence = models.ForeignKey(
+        Evidence,
+        on_delete=models.CASCADE,
+        related_name="windows_getsids_evidence"
+    )
+    Name = models.TextField(null=True)
+    PID = models.BigIntegerField(null=True)
+    Process = models.TextField(null=True)
+    SID = models.TextField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+
+
 class LdrModules(models.Model):
     evidence = models.ForeignKey(
         Evidence,

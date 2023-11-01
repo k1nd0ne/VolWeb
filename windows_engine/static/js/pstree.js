@@ -12,7 +12,8 @@ function display_pstree(evidence_id){
       });  
         first_process = root.getChildren()[0];
         first_process.toggleSelected();
-        display_process_info(first_process.getProcessObject(), evidence_id)
+        display_process_info(first_process.getProcessObject(), evidence_id);
+        generate_visualisation(first_process.getProcessObject().PID, evidence_id);
         var view = new TreeView(root, "#container");
         view.changeOption("leaf_icon", '<i class="fas fa-microchip"></i>');
         view.changeOption("parent_icon", '<i class="fas fa-microchip"></i>');
@@ -20,24 +21,26 @@ function display_pstree(evidence_id){
         TreeConfig.close_icon = '<i class="fas fa-angle-right"></i>';
         root.changeOption("icon", '<i class="fas fa-code-branch"></i>');
         view.reload();
+        function build_tree(node,root){
+          // create node and add to elements
+          var newNode = new TreeNode(node.PID + " - " + node.name, node);
+          // now create links
+          if (node.children){
+              $.each(node.children, function(_,childNode){
+                  build_tree(childNode,newNode);
+              });   
+          }
+          newNode.on('click', function(e, node){
+            display_process_info(node.getProcessObject(), evidence_id);
+            generate_visualisation(node.getProcessObject().PID, evidence_id);
+          });
+          root.addChild(newNode);
+        }
       }
     });
 }
 
-function build_tree(node,root){
-  // create node and add to elements
-  var newNode = new TreeNode(node.PID + " - " + node.name, node);
-  // now create links
-  if (node.children){
-      $.each(node.children, function(_,childNode){
-          build_tree(childNode,newNode);
-      });   
-  }
-  newNode.on('click', function(e, node){
-    display_process_info(node.getProcessObject());
-  });
-  root.addChild(newNode);
-}  
+  
 
 function display_process_info(process, evidence_id){
 

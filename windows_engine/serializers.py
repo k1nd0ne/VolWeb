@@ -20,3 +20,8 @@ class CmdLineSerializer(serializers.ModelSerializer):
     class Meta:
         model = CmdLine
         fields = '__all__'
+
+class GetSIDsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GetSIDs
+        fields = '__all__'
