@@ -9,4 +9,8 @@ urlpatterns = [
     path('api/windows/<int:dump_id>/timeline_data/<str:timestamp>/', views.TimelineDataApiView.as_view()),
     path('api/windows/<int:dump_id>/cmdline/<int:pid>/', views.CmdLineApiView.as_view()),
     path('api/windows/<int:dump_id>/sids/<int:pid>/', views.GetSIDsApiView.as_view()),
+    path('api/windows/<int:dump_id>/privileges/<int:pid>/', views.PrivsApiView.as_view()),
+    path('api/windows/<int:dump_id>/envars/<int:pid>/', views.EnvarsApiView.as_view()),
+    path('api/windows/<int:dump_id>/dlllist/<int:pid>/', views.DllListApiView.as_view()),
+    path('api/windows/<int:dump_id>/sessions/<int:pid>/', views.SessionsApiView.as_view()),
 ] 

@@ -68,3 +68,43 @@ class GetSIDsApiView(APIView):
         data = GetSIDs.objects.filter(evidence_id=dump_id, PID=pid)
         serializer = GetSIDsSerializer(data,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class PrivsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        '''
+        Give the requested cmdline from the pid.
+        '''
+        data = Privs.objects.filter(evidence_id=dump_id, PID=pid)
+        serializer = PrivsSerializer(data,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class EnvarsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        '''
+        Give the requested cmdline from the pid.
+        '''
+        data = Envars.objects.filter(evidence_id=dump_id, PID=pid)
+        serializer = EnvarsSerializer(data,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class DllListApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        '''
+        Give the requested cmdline from the pid.
+        '''
+        data = DllList.objects.filter(evidence_id=dump_id, PID=pid)
+        serializer = DllListSerializer(data,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SessionsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        '''
+        Give the requested cmdline from the pid.
+        '''
+        data = Sessions.objects.filter(evidence_id=dump_id, ProcessID=pid)
+        serializer = SessionsSerializer(data,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

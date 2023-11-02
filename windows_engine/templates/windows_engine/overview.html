@@ -37,6 +37,8 @@
                             <li class="list-group-item p_wow64"></li>
                             <li class="list-group-item p_ctime"></li>
                             <li class="list-group-item p_etime"></li>
+                            <li class="list-group-item p_session_username"></li>
+                            <li class="list-group-item p_cmdline"></li>
                           </ul>
                     </div>
                 </div>
@@ -52,7 +54,7 @@
                         </div>
                         <hr class="horizontal dark mt-0">
                         <div class="row">
-                            <div class="col-md-4 col-xl-3 col-sm-6">
+                            <div class="col-md-4 col-xl-3 col-sm-6 p-2">
                                 <div class="card shadow border-start-primary py-2 card_clickable">
                                     <div class="card-body">
                                         <div class="row align-items-center no-gutters">
@@ -64,7 +66,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 col-xl-3 col-sm-6">
+                            <div class="col-md-4 col-xl-3 col-sm-6 p-2">
                                 <div class="card shadow border-start-primary py-2 card_clickable card_sids">
                                     <div class="card-body">
                                         <div class="row align-items-center no-gutters">
@@ -76,8 +78,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 col-xl-3 col-sm-6">
-                                <div class="card shadow border-start-primary py-2 card_clickable">
+                            <div class="col-md-4 col-xl-3 col-sm-6 p-2">
+                                <div class="card shadow border-start-primary py-2 card_clickable card_privs">
                                     <div class="card-body">
                                         <div class="row align-items-center no-gutters">
                                             <div class="col-auto"><i class="fas fa-key fa-2x text-gray-600"></i></div>
@@ -88,13 +90,25 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 col-xl-3 col-sm-6">
-                                <div class="card shadow border-start-primary py-2 card_clickable">
+                            <div class="col-md-4 col-xl-3 col-sm-6 p-2">
+                                <div class="card shadow border-start-primary py-2 card_clickable card_envars">
                                     <div class="card-body">
                                         <div class="row align-items-center no-gutters">
                                             <div class="col-auto"><i class="fab fa-envira fa-2x text-gray-600"></i></div>
                                             <div class="col me-2">
                                                 <div class="text-uppercase fw-bold text-xs"><span>Envars</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-xl-3 col-sm-6 p-2">
+                                <div class="card shadow border-start-primary py-2 card_clickable card_dlllist">
+                                    <div class="card-body">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-list fa-2x text-gray-600"></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs"><span>DllList</span></div>
                                             </div>
                                         </div>
                                     </div>
@@ -123,6 +137,6 @@
                 </div>
             </div>
         </div>
-        {% include "windows_engine/sids.html" %}
+        {% include "windows_engine/modals.html" %}
     </div>
 </div>

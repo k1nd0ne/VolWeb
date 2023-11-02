@@ -13,7 +13,6 @@ function generate_visualisation(process, pstree) {
          interactive: { elementMove: false } 
      });
 
-    
 
      $.each(pstree, function(_,node){
         find_childs(process.PID, node, elements, links)

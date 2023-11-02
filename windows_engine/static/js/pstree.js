@@ -62,6 +62,10 @@ function display_process_info(process, evidence_id){
    $('.p_wow64').text("Wow64 : " + process.Wow64);
    $('.p_ctime').text("Creation Time : " + process.CreateTime);
    $('.p_etime').text("Exit Time : " + process.ExitTime);
+
+   display_sessions(evidence_id, process.PID);
+   display_cmdline(evidence_id, process.PID)
+
    var url = "/review/windows/" + evidence_id + '/' + process.PID + "/";
    $('.investigate-btn').attr('href',url)
 }

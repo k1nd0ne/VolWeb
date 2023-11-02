@@ -53,7 +53,6 @@ function display_data(evidence_id, timestamp){
             catch{
                 //Nothing to do, the datatable will be created.
             }
-            console.log(data)
             timeline_data = $('#timeline_datatable').dataTable({    
                 "aaData" : data,
                 "aoColumns": [
