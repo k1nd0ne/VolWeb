@@ -13,9 +13,6 @@ def review(request, dump_id):
     evidence = Evidence.objects.get(dump_id=dump_id)
     return render(request, 'windows_engine/review_evidence.html',{'evidence':evidence})
 
-def process(request, dump_id, process_id):
-        return render(request, 'windows_engine/review_process.html', {'evidence':dump_id, 'pid':process_id})
-
 class PsTreeApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
@@ -38,6 +35,9 @@ class TimelineChartApiView(APIView):
         serializer = TimelineChartSerializer(timeline,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+
+
+
 class TimelineDataApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
@@ -48,6 +48,20 @@ class TimelineDataApiView(APIView):
         data = Timeliner.objects.filter(evidence_id=dump_id, CreatedDate=timestamp)
         serializer = TimelineDataSerializer(data,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    permission_classes = [permissions.IsAuthenticated]
+    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
+        try:
+            instance = Timeliner.objects.get(evidence_id=dump_id, pk=artifact_id)
+        except Timeliner.DoesNotExist:
+            return Response({"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = TimelineDataSerializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class CmdLineApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -107,4 +121,35 @@ class SessionsApiView(APIView):
         '''
         data = Sessions.objects.filter(evidence_id=dump_id, ProcessID=pid)
         serializer = SessionsSerializer(data,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class NetStatApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, dump_id, *args, **kwargs):
+        '''
+        Give the requested netstat data
+        '''
+        data = NetStat.objects.filter(evidence_id=dump_id)
+        serializer = NetStatSerializer(data,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class NetScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, dump_id, *args, **kwargs):
+        '''
+        Give the requested netscan data
+        '''
+        data = NetScan.objects.filter(evidence_id=dump_id)
+        serializer = NetScanSerializer(data,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class NetGraphApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, dump_id, *args, **kwargs):
+        '''
+        Give the requested netgraph data
+        '''
+        data = NetGraph.objects.filter(evidence_id=dump_id)
+        serializer = NetGraphSerializer(data,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

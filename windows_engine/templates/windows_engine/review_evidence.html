@@ -3,7 +3,7 @@
 {% block content%}
 <script src="{% static 'windows_engine/js/main.js'%}"></script>
 <script src="{% static 'windows_engine/js/pstree.js'%}"></script>
-<script src="{% static 'windows_engine/js/timeline.js'%}"></script>
+
 <script src="{% static 'windows_engine/js/tag.js'%}"></script>
 <script src="{% static 'windows_engine/js/tree.js'%}"></script>
 <link rel="stylesheet" href="{% static 'windows_engine/css/treejs.min.css'%}" id="treejs_styles">
@@ -17,11 +17,13 @@
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-exports.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-graph.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-sunburst.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-ui.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/css/anychart-ui.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.anychart.com/releases/8.11.0/fonts/css/anychart-font.min.css" />
 
+
 <script src="{% static 'windows_engine/js/visualisation.js'%}"></script>
-<script src="{% static 'windows_engine/js/process_api.js'%}"></script>
+<script src="{% static 'windows_engine/js/api.js'%}"></script>
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.7.5/joint.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.1/backbone.js"></script>
@@ -37,19 +39,20 @@
             <i class="fas fa-chevron-right"></i>
             Evidence Y
         </div>
+        {% csrf_token %}
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="nav navbar-nav nav-pills" id="pills-tab" role="tablist">
                 <li class="nav-item">
-                    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true"><i class="fas fa-chart-bar"></i>&nbsp;Overview</button>
+                    <button class="nav-link active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview" type="button" role="tab"  aria-selected="true"><i class="fas fa-chart-bar"></i>&nbsp;Overview</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false"><i class="fas fa-timeline"></i>&nbsp;Timeline</button>
+                    <button class="nav-link" id="timeliner-tab" data-bs-toggle="pill" data-bs-target="#timeliner" type="button" role="tab"  aria-selected="false"><i class="fas fa-timeline"></i>&nbsp;Timeline</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false"><i class="fas fa-fingerprint"></i>&nbsp;Credentials</button>
+                    <button class="nav-link" id="credentials-tab" data-bs-toggle="pill" data-bs-target="#credentials" type="button" role="tab"  aria-selected="false"><i class="fas fa-fingerprint"></i>&nbsp;Credentials</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" id="pills-disabled-tab" data-bs-toggle="pill" data-bs-target="#pills-disabled" type="button" role="tab" aria-controls="pills-disabled" aria-selected="false" disabled>Disabled</button>
+                    <button class="nav-link" id="malware-tab" data-bs-toggle="pill" data-bs-target="#malware" type="button" role="tab" aria-selected="false"><i class="fas fa-microscope"></i>&nbsp;Injections & Rootkits</button>
                 </li>
                 
             </ul>
@@ -59,10 +62,10 @@
 
 <div class="container-fluid">
     <div class="tab-content" id="pills-tabContent">
-        <div class="tab-pane fade show active" style="height: 93vh;" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+        <div class="tab-pane fade show active" style="height: 93vh;" id="overview" role="tabpanel" aria-labelledby="overview-tab" tabindex="0">
             {% include "windows_engine/overview.html" %}
         </div>
-        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+        <div class="tab-pane fade" id="timeliner" role="tabpanel" aria-labelledby="timeliner-tab" tabindex="0">
             <div style="height:20rem;" id="timeline"></div>
             <table id="timeline_datatable" class="table table-sm table-responsive table-hover">
                 <thead>
@@ -80,8 +83,8 @@
                 </tbody>
             </table>
         </div>
-        <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">...</div>
-        <div class="tab-pane fade" id="pills-disabled" role="tabpanel" aria-labelledby="pills-disabled-tab" tabindex="0">...</div>
+        <div class="tab-pane fade" id="credentials" role="tabpanel" aria-labelledby="credentials-tab" tabindex="0">...</div>
+        <div class="tab-pane fade" id="malware" role="tabpanel" aria-labelledby="malware-tab" tabindex="0">...</div>
       </div>
 </div>
 

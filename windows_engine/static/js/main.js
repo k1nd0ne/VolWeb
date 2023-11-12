@@ -29,6 +29,11 @@ $(document).ready(function() {
         display_dlllist(evidence_id,pid);
     });
 
+    $('.card_network').on('click', function(){
+        pid = $('.process_id').attr('id');
+        display_network(evidence_id);
+    });
+
     $('.card_sessions').on('click', function(){
         pid = $('.process_id').attr('id');
         display_sessions(evidence_id,pid);

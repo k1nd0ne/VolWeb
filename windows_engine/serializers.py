@@ -16,6 +16,12 @@ class TimelineDataSerializer(serializers.ModelSerializer):
         model = Timeliner
         fields = '__all__'
 
+
+class TimelineTagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Timeliner
+        fields = ('Tag',)
+
 class CmdLineSerializer(serializers.ModelSerializer):
     class Meta:
         model = CmdLine
@@ -44,4 +50,20 @@ class DllListSerializer(serializers.ModelSerializer):
 class SessionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sessions
+        fields = '__all__'
+
+
+class NetStatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NetStat
+        fields = '__all__'
+
+class NetScanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NetScan
+        fields = '__all__'
+
+class NetGraphSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NetGraph
         fields = '__all__'

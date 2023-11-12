@@ -45,23 +45,22 @@ function display_pstree(evidence_id){
   
 
 function display_process_info(process, evidence_id){
-
    $('.process_id').attr('id',process.PID)
    $('.process_title').text(process.name);
-   $('.p_pid').text("Process ID : " + process.PID);
-   $('.p_offset').text("Offset : " + process['Offset(V)']);
-   $('.p_threads').text("Threads : " + process.Threads);
-   $('.p_handles').text("Handles : " + process.Handles);
-   $('.p_session').text("Session id : " + process.SessionId);
+   $('.p_pid').text(process.PID);
+   $('.p_offset').text(process['Offset(V)']);
+   $('.p_threads').text(process.Threads);
+   $('.p_handles').text(process.Handles);
+   $('.p_session').text(process.SessionId);
    if (process.Wow64 == true){
     $('.p_wow64').addClass("text-danger");
    }
    else{
     $('.p_wow64').removeClass("text-danger");
    }
-   $('.p_wow64').text("Wow64 : " + process.Wow64);
-   $('.p_ctime').text("Creation Time : " + process.CreateTime);
-   $('.p_etime').text("Exit Time : " + process.ExitTime);
+   $('.p_wow64').text(process.Wow64);
+   $('.p_ctime').text(process.CreateTime);
+   $('.p_etime').text(process.ExitTime);
 
    display_sessions(evidence_id, process.PID);
    display_cmdline(evidence_id, process.PID)

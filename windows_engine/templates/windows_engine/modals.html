@@ -106,3 +106,93 @@
     </div>
   </div>
 </div>
+
+
+
+
+
+<div class="modal fade " id="network" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Network</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <div class="row">
+              <div class="col-12">
+                <div id="net_graph" style="height:50rem;"></div>
+              </div>
+          </div>
+          <hr>
+          <div class="accordion" id="netaccordion">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="flush-headingOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" >
+                  <i class="fa fa-circle-nodes text-gray-600"></i>&nbsp;NetScan
+                </button>
+              </h2>
+              <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#netaccordion">
+                <div class="accordion-body">
+                  <table id="netscan_datatable" class="table table-sm table-responsive table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                          <th>Proto</th>
+                          <th>LocalAddr</th>
+                          <th>LocalPort</th>
+                          <th>ForeignAddr</th>
+                          <th>ForeignPort</th>
+                          <th>State</th>
+                          <th>Offset</th>
+                          <th>Created</th>
+                          <th>Owner</th>
+                          <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="flush-headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false">
+                  <i class="fa fa-diagram-project text-gray-600"></i>&nbsp;NetStat
+                </button>
+              </h2>
+              <div id="flush-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="flush-headingTwo" data-bs-parent="#netaccordion">
+                <div class="accordion-body">
+                  <table id="netstat_datatable" class="table table-sm table-responsive table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                          <th>Proto</th>
+                          <th>LocalAddr</th>
+                          <th>LocalPort</th>
+                          <th>ForeignAddr</th>
+                          <th>ForeignPort</th>
+                          <th>State</th>
+                          <th>Offset</th>
+                          <th>Created</th>
+                          <th>Owner</th>
+                          <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+</div>

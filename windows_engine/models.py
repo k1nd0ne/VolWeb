@@ -7,6 +7,7 @@ import base64
 TAGS = (
     ('Evidence', 'Evidence'),
     ('Suspicious', 'Suspicious'),
+    ('Clear', 'Clear'),
 )
 
 

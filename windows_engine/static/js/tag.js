@@ -1,4 +1,7 @@
-function generate_tag(item){
+function generate_tag(plugin_name, item){
+        const menu = document.createElement('div');
+        menu.setAttribute('class', 'd-flex align-items-center');
+
         const dropdown = document.createElement('div');
         dropdown.setAttribute('class', 'dropdown no-arrow');
     
@@ -26,12 +29,9 @@ function generate_tag(item){
         const span_evidence = document.createElement('span');
         span_evidence.textContent = " Evidence";
     
-        const badge_suspicious = document.createElement('a');
+        const badge_suspicious = document.createElement('span');
         badge_suspicious.setAttribute('class', 'dropdown-item');
-        badge_suspicious.setAttribute('href', '#');
-        badge_suspicious.addEventListener('click', function (e) {
-          tag('Timeliner', item.pk, "Suspicious");
-        });
+        badge_suspicious.setAttribute('onclick', "Tag('"+plugin_name+"',"+ item.id+", 'Suspicious');");
     
         const pill_orange = document.createElement('strong');
         pill_orange.setAttribute('class', 'badge bg-warning text-wrap text-warning');
@@ -42,10 +42,7 @@ function generate_tag(item){
     
         const badge_evidence = document.createElement('a');
         badge_evidence.setAttribute('class', 'dropdown-item');
-        badge_evidence.setAttribute('href', '#');
-        badge_evidence.addEventListener('click', function (e) {
-          tag('Timeliner', item.pk, "Evidence");
-        });
+        badge_evidence.setAttribute('onclick', "Tag('"+plugin_name+"',"+ item.id+", 'Evidence');");
     
     
         const pill_red = document.createElement('strong');
@@ -62,9 +59,7 @@ function generate_tag(item){
         const badge_clear = document.createElement('a');
         badge_clear.setAttribute('class', 'dropdown-item');
         badge_clear.setAttribute('href', '#');
-        badge_clear.addEventListener('click', function (e) {
-          tag('Timeliner', item.id, "Clear");
-        });
+        badge_clear.setAttribute('onclick', "Tag('"+plugin_name+"',"+ item.id+", 'Clear');");
         badge_clear.textContent = " Clear tag";
     
     
@@ -72,18 +67,18 @@ function generate_tag(item){
         const tag_suspicious = document.createElement('strong');
     
         if (item.Tag == "Evidence") {
-          tag_evidence.setAttribute('class', 'badge bg-danger text-wrap tag_evidence_' + item.id + '_Timeliner');
-          tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.id + '_Timeliner');
+          tag_evidence.setAttribute('class', 'badge bg-danger text-wrap tag_evidence_' + item.id + '_'+plugin_name);
+          tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.id + '_'+plugin_name);
         }
     
         else if (item.Tag == "Suspicious") {
-          tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.id + '_Timeliner');
-          tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap tag_suspicious_' + item.id + '_Timeliner');
+          tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.id + '_'+plugin_name);
+          tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap tag_suspicious_' + item.id + '_'+plugin_name);
         }
     
         else {
-          tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.id + '_Timeliner');
-          tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.id + '_Timeliner');
+          tag_evidence.setAttribute('class', 'badge bg-danger text-wrap d-none tag_evidence_' + item.id + '_'+plugin_name);
+          tag_suspicious.setAttribute('class', 'badge bg-warning text-wrap d-none tag_suspicious_' + item.id + '_'+plugin_name);
         }
     
         tag_evidence.textContent = "Evidence";
@@ -97,47 +92,48 @@ function generate_tag(item){
     
         button.appendChild(dots);
         dropdown.appendChild(button);
-        dropdown.appendChild(tag_evidence);
-        dropdown.appendChild(tag_suspicious);
+        menu.appendChild(tag_evidence);
+        menu.appendChild(tag_suspicious);
         dropdown.appendChild(dropdown_menu);
-        return dropdown.innerHTML;
+        menu.appendChild(dropdown);
+        return menu.outerHTML;
 }
 
-function Tag(plugin_name, artifact_id, status) {
-    // TODO : Actually TAG
-    // var url = $("#tabs").attr("data-url");
-    // const csrf = document.getElementsByName('csrfmiddlewaretoken');
-    // const fd = new FormData();
-    // fd.append('csrfmiddlewaretoken', csrf[0].value);
-    // fd.append('plugin_name', plugin_name);
-    // fd.append('artifact_id', artifact_id);
-    // fd.append('status', status);
-    // $.ajax({
-    //   type: 'POST',
-    //   url: url,
-    //   enctype: 'multipart/form-data',
-    //   data: fd,
-    //   success: function (data) {
-    //     if (status == "Evidence") {
-    //       $('.tag_evidence_' + artifact_id + "_" + plugin_name).removeClass("d-none");
-    //       $('.tag_suspicious_' + artifact_id + "_" + plugin_name).addClass("d-none");
-    //     }
-    //     if (status == "Suspicious") {
-    //       $('.tag_suspicious_' + artifact_id + "_" + plugin_name).removeClass("d-none");
-    //       $('.tag_evidence_' + artifact_id + "_" + plugin_name).addClass("d-none");
-    //     }
-    //     if (status == "Clear") {
-    //       $('.tag_suspicious_' + artifact_id + "_" + plugin_name).addClass("d-none");
-    //       $('.tag_evidence_' + artifact_id + "_" + plugin_name).addClass("d-none");
-    //     }
-    //   },
-    //   error: function (error) {
-    //     $('#proc-error-message').html("Could not tag the artifact.");
-    //     $('.toast-proc-error').toast('show');
-    //   },
-    //   cache: false,
-    //   contentType: false,
-    //   processData: false
-    // });
-    // event.preventDefault();
+function Tag(plugin_name, artifact_id, tag) {
+  const evidence_id = $('.main').attr('id');
+  const csrf = document.getElementsByName('csrfmiddlewaretoken');
+  var data = {
+    "Tag": tag,
+  };
+  
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      xhr.setRequestHeader("X-CSRFToken", csrf[0].value);  // Fetch CSRF token from cookie
+    }
+  });
+  $.ajax({
+    url: "/api/windows/"+ evidence_id + "/"+plugin_name+"/"+artifact_id+"/"+tag+"/",
+    type: "PATCH",
+    dataType: "json",
+    contentType: "application/json",
+    data: JSON.stringify(data),
+    success: function(response) {
+      if (tag == "Evidence") {
+        $('.tag_evidence_' + artifact_id + "_" + plugin_name).removeClass("d-none");
+        $('.tag_suspicious_' + artifact_id + "_" + plugin_name).addClass("d-none");
+      }
+      if (tag == "Suspicious") {
+        $('.tag_suspicious_' + artifact_id + "_" + plugin_name).removeClass("d-none");
+        $('.tag_evidence_' + artifact_id + "_" + plugin_name).addClass("d-none");
+      }
+      if (tag == "Clear") {
+        $('.tag_suspicious_' + artifact_id + "_" + plugin_name).addClass("d-none");
+        $('.tag_evidence_' + artifact_id + "_" + plugin_name).addClass("d-none");
+      }
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      // handle any errors
+      console.error(errorThrown);
+    }
+  });
   }
