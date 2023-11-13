@@ -9,6 +9,7 @@ from django.apps import apps
 from VolWeb.voltools import *
 from volatility3.framework.exceptions import *
 from volatility3.cli import MuteProgress
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ def build_context(instance, context, base_config_path, plugin, output_path):
     constructed = construct_plugin(context, automagics, plugin, base_config_path, MuteProgress(), file_handler(output_path))
     return constructed
 
-def dump_process(dump_path, pid, output_path):
+def dump_process(instance, pid, output_path):
     """Dump the process requested by the user"""
     volatility3.framework.require_interface_version(2, 0, 0)
     failures = volatility3.framework.import_files(plugins, True)
@@ -38,7 +39,7 @@ def dump_process(dump_path, pid, output_path):
     context.config['plugins.Memmap.pid'] = int(pid)
     context.config['plugins.Memmap.dump'] = True
 
-    constructed = build_context(dump_path, context, base_config_path, plugin_list['windows.memmap.Memmap'], output_path)
+    constructed = build_context(instance, context, base_config_path, plugin_list['windows.memmap.Memmap'], output_path)
     if constructed:
         result = DictRenderer().render(constructed.run())
     else:
@@ -49,7 +50,7 @@ def dump_process(dump_path, pid, output_path):
 
 
 
-def get_handles(dump_path, pid, case_id):
+def get_handles(instance, pid):
     """Compute Handles for a specific PID"""
     volatility3.framework.require_interface_version(2, 0, 0)
     failures = volatility3.framework.import_files(plugins, True)
@@ -61,7 +62,7 @@ def get_handles(dump_path, pid, case_id):
     base_config_path = "plugins"
     context = contexts.Context()
     context.config['plugins.Handles.pid'] = [int(pid)]
-    constructed = build_context(dump_path, context, base_config_path, plugin_list['windows.handles.Handles'], output_path=None)
+    constructed = build_context(instance, context, base_config_path, plugin_list['windows.handles.Handles'], output_path=None)
     if constructed:
         result = DictRenderer().render(constructed.run())
     else:
@@ -75,7 +76,7 @@ def get_handles(dump_path, pid, case_id):
     return "OK"
 
 
-def dump_file(dump_path, offset, output_path):
+def dump_file(instance, offset, output_path):
     """Dump the file requested by the user"""
     volatility3.framework.require_interface_version(2, 0, 0)
     failures = volatility3.framework.import_files(plugins, True)
@@ -88,7 +89,7 @@ def dump_file(dump_path, offset, output_path):
     context = contexts.Context()
     context.config['plugins.DumpFiles.virtaddr'] = int(offset)
     try:
-        constructed = build_context(dump_path, context, base_config_path, plugin_list['windows.dumpfiles.DumpFiles'],
+        constructed = build_context(instance, context, base_config_path, plugin_list['windows.dumpfiles.DumpFiles'],
                                     output_path)
     except:
         logger.info("Cannot build")
@@ -97,7 +98,7 @@ def dump_file(dump_path, offset, output_path):
         if len(result) < 1:
             del (context.config['plugins.DumpFiles.virtaddr'])
             context.config['plugins.DumpFiles.physaddr'] = int(offset)
-            constructed = build_context(dump_path, context, base_config_path,
+            constructed = build_context(instance, context, base_config_path,
                                         plugin_list['windows.dumpfiles.DumpFiles'], output_path)
             result = DictRenderer().render(constructed.run())
     for artifact in result:
@@ -171,7 +172,7 @@ def run_volweb_routine_windows(instance):
     """STEP 1 : Clean database and build the basic context for each plugin"""
     NetGraph.objects.filter(evidence_id=instance.dump_id).delete()
     TimeLineChart.objects.filter(evidence_id=instance.dump_id).delete()
-
+    
     for runable in volweb_knowledge_base:
         apps.get_model("windows_engine", runable).objects.filter(evidence_id=instance.dump_id).delete()
         context = contexts.Context()

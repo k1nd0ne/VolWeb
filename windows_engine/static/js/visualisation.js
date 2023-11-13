@@ -47,6 +47,16 @@ function generate_visualisation(process, pstree) {
         marginY: 5,
         rankDir: 'LR',
     })
+    // Adjust z-indices after layout
+    graph.getCells().forEach(function(cell) {
+        if (cell.isLink()) {
+            // If cell is a link, send it to back
+            cell.toBack();
+        } else {
+            // If cell is an element (node), bring it to front
+            cell.toFront();
+        }
+    });
     var bbox = graph.getBBox(graph.getElements());
     $('.graph').height(bbox.height + 30);
 }

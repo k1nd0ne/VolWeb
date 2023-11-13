@@ -20,6 +20,9 @@
   width: 1em;
 }
 
+.hide-by-default {
+  display: none;
+}
 
 hr {
   margin: 1rem 0;

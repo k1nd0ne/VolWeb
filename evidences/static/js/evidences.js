@@ -39,10 +39,10 @@ function upload_and_create_evidence(bucket_id){
         fileChooser.value = '';
         document.getElementById('upload-progress').innerHTML = '';
         if (err) {
-            console.log("Error", err);
+            toastr.error("Error : " + err);
         }
         if (data) {
-            console.log("Upload Success", data);
+            toastr.success("Upload Success");
             create_evidence(file.name,data.ETag);
             $('#modal_evidence_create').modal('toggle');
             $('.upload-progress').addClass("d-none");
@@ -53,7 +53,7 @@ function upload_and_create_evidence(bucket_id){
         }
         });
     } else {
-        console.log('Nothing to upload.');
+        toastr.warrning("Nothing to upload");
     }
 }
 
@@ -105,9 +105,7 @@ function display_evidence(evidence_id){
                 $('.evidence_info').removeClass('placeholder');
             },
             error: function(xhr, status, error) {
-                // Handle error response
-                console.log(xhr.responseText);
-                alert("An error occurred while submitting the form.");
+                toastr.error("An error occurred : "  + error);
             }
         });
 }
@@ -136,9 +134,7 @@ function create_evidence(filename, etag){
             console.log(response)
         },
         error: function(xhr, status, error) {
-            // Handle error response
-            console.log(xhr.responseText);
-            alert("An error occurred while submitting the form : " + xhr.responseText);
+            toastr.error("An error occurred : "  + error);
         }
     });
 }
@@ -160,9 +156,7 @@ function delete_evidence(dump_id){
             refresh_evidences();
         },
         error: function(xhr, status, error) {
-            // Handle error response
-            console.log(xhr.responseText);
-            alert("An error occurred while submitting the form.");
+            toastr.error("An error occurred : "  + error);
         }
         });
     }
@@ -183,8 +177,6 @@ $(document).ready(function() {
         const evidence_name = $('#id_dump_name').val()
         const evidence_os = $('#id_dump_os').val()
         const linked_case_id = $('#id_dump_linked_case').val()
-        
-
         
         //Check if the user selected a case.
         if (evidence_name === '') {
@@ -213,9 +205,7 @@ $(document).ready(function() {
                 upload_and_create_evidence(bucket_name);
             },
             error: function(xhr, status, error) {
-                // Handle error response
-                console.log(xhr.responseText);
-                alert("An error occurred while submitting the form.");
+                toastr.error("An error occurred : "  + error);
             }
         });
     });

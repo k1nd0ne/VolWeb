@@ -124,7 +124,6 @@ function TreeView(root, container, options){
 		}
 
 		container.classList.add("tj_container");
-
 		var cnt = document.createElement("ul");
 
 		if(TreeUtil.getProperty(options, "show_root", true)){

@@ -38,11 +38,13 @@ function display_pstree(evidence_id){
           });
           root.addChild(newNode);
         }
+      },
+      error: function(xhr, status, error) {
+          toastr.error("An error occurred : "+ xhr.responseText);
       }
     });
 }
 
-  
 
 function display_process_info(process, evidence_id){
    $('.process_id').attr('id',process.PID)

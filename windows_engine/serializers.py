@@ -67,3 +67,23 @@ class NetGraphSerializer(serializers.ModelSerializer):
     class Meta:
         model = NetGraph
         fields = '__all__'
+
+class HashdumpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hashdump
+        fields = '__all__'
+
+class CachedumpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cachedump
+        fields = '__all__'
+
+class LsadumpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lsadump
+        fields = '__all__'
+
+class HandlesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Handles
+        fields = '__all__'

@@ -74,18 +74,6 @@ body {
 }
 
 
-#toast-1 {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
-#toast-2 {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
 .btn-black, .btn-black:active {
   background-color: #232323 !important;
   border-color: #232323 !important;

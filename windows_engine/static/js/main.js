@@ -1,13 +1,13 @@
 $(document).ready(function() {
     const evidence_id = $('.main').attr('id');
-    $('#sids_datatable').hide();
-    $('#privs_datatable').hide();
-    $('#envars_datatable').hide();
-    $('#dlllist_datatable').hide();
-    $('#sessions_datatable').hide();
     var timeline_data;
     display_pstree(evidence_id);
     display_timeline(evidence_id);
+
+    $('.card_handles').on('click', function(){
+        pid = $('.process_id').attr('id');
+        compute_handles(evidence_id,pid);
+    });
 
     $('.card_sids').on('click', function(){
         pid = $('.process_id').attr('id');
@@ -30,7 +30,6 @@ $(document).ready(function() {
     });
 
     $('.card_network').on('click', function(){
-        pid = $('.process_id').attr('id');
         display_network(evidence_id);
     });
 
@@ -39,4 +38,30 @@ $(document).ready(function() {
         display_sessions(evidence_id,pid);
     });
     
+    $('.card_credentials').on('click', function(){
+        display_credentials(evidence_id);
+    });
+
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+
+    // toastr.warning('Your toast message here');
+    // toastr.error('Your toast message here');
+    // toastr.success('Your Toast message here', 'Title');
+
 });
