@@ -1,6 +1,10 @@
 $(document).ready(function() {
     const evidence_id = $('.main').attr('id');
     var timeline_data;
+    let reconnectDelay = 1000; // milliseconds
+
+    connectWebSocket(evidence_id);
+
     display_pstree(evidence_id);
     display_timeline(evidence_id);
 
@@ -65,3 +69,36 @@ $(document).ready(function() {
     // toastr.success('Your Toast message here', 'Title');
 
 });
+
+
+function reconnectWebSocket(evidence_id) {
+    toastr.info('Trying to reconnect in '+reconnectDelay/1000 + 'seconds');
+    setTimeout(function() {
+      connectWebSocket(evidence_id); // Call the function to connect WebSocket again
+      // Increase the reconnect delay exponentially
+      reconnectDelay *= 2;
+    }, reconnectDelay);
+  }
+
+  function connectWebSocket(evidence_id) {
+    const socket_volatility_tasks = new WebSocket('ws://192.168.1.25:8000/ws/volatility_tasks/windows/'+evidence_id+'/');
+    
+    socket_volatility_tasks.onopen = function() {
+        toastr.success('Engine Synchronized.');
+        reconnectDelay = 1000;
+      };
+
+    socket_volatility_tasks.onmessage = function (e) {
+
+    };
+
+    socket_volatility_tasks.onclose = function() {
+        toastr.warning('Engine synchronization lost.');
+        reconnectWebSocket($('.main').attr('id')); // Call the function to reconnect after connection is closed
+      };
+
+    socket_volatility_tasks.onerror = function(error) {
+        toastr.warning('Engine synchronization error', error);
+        socket_alerte_modified.close(); // Close the WebSocket connection if an error occurs
+    };
+  }

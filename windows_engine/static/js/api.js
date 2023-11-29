@@ -280,17 +280,20 @@ function display_network(evidence_id){
                 // create a data tree
                 // create a chart and set the data
                 var netchart = anychart.graph(data);
-                netchart.nodes().normal().fill("#000");
-                netchart.nodes().hovered().fill("#000");
+                netchart.background().fill(
+                    (getPreferredTheme() == 'dark' ? '#212529' : '#FFF')
+                );
+                netchart.nodes().normal().fill((getPreferredTheme() == 'light' ? '#212529' : '#FFF'));
+                netchart.nodes().hovered().fill((getPreferredTheme() == 'light' ? '#212529' : '#FFF'));
                 netchart.nodes().labels().enabled(true);
                 netchart.nodes().labels().format("{%id} ({%Owner(s)})");
                 netchart.nodes().labels().fontSize(12);
                 netchart.nodes().labels().fontWeight(600);
-                netchart.nodes().labels().fontColor("#000");
-                netchart.edges().normal().stroke("#212529", 1);
-                netchart.edges().hovered().stroke("#212529", 2);
+                netchart.nodes().labels().fontColor((getPreferredTheme() == 'light' ? '#212529' : '#FFF'));
+                netchart.edges().normal().stroke((getPreferredTheme() == 'light' ? '#212529' : '#FFF'), 1);
+                netchart.edges().hovered().stroke((getPreferredTheme() == 'light' ? '#212529' : '#FFF'), 2);
                 netchart.edges().selected().stroke("#dc3545", 3);
-    
+                
                 // configure tooltips of nodes
                 netchart.nodes().tooltip().useHtml(true);
                 netchart.nodes().tooltip().format(
@@ -342,8 +345,15 @@ function display_timeline(evidence_id){
                 xAxis.title("Time");
                 var yAxis = chart.yAxis();
                 yAxis.title("Events");
-                chart.background().fill("#FFF");
-                series.stroke({color: "#000", thickness: 2});
+                chart.background().fill(
+                    (getPreferredTheme() == 'dark' ? '#212529' : '#FFF')
+                );
+                series.stroke(
+                    {
+                        color: (getPreferredTheme() == 'light' ? '#212529' : '#FFF'),
+                        thickness: 2
+                    }
+                );
                 var animationSettings = chart.animation();
                 animationSettings.duration(1000);
                 animationSettings.enabled(true);
@@ -437,7 +447,8 @@ function display_credentials(evidence_id){
         url: "/api/windows/"+evidence_id+"/hashdump/",
         dataType: "json",
         success: function(data){
-            $.each(data, function(_, value) {$
+            $.each(data, function(_, value) {
+                
                 build_credential_card('Hashdump',value);
             }); 
         },
@@ -451,7 +462,8 @@ function display_credentials(evidence_id){
             url: "/api/windows/"+evidence_id+"/cachedump/",
             dataType: "json",
             success: function(data){
-                $.each(data, function(_, value) {$
+                
+                $.each(data, function(_, value) {
                     build_credential_card('Cachedump',value);
                 }); 
             },
@@ -465,7 +477,7 @@ function display_credentials(evidence_id){
                 url: "/api/windows/"+evidence_id+"/lsadump/",
                 dataType: "json",
                 success: function(data){
-                    $.each(data, function(_, value) {$
+                    $.each(data, function(_, value) {
                         build_credential_card('Lsadump',value);
                     }); 
                 },
@@ -501,7 +513,7 @@ function build_credential_card(plugin, data){
     const card_title = document.createElement('span');
     card_title.setAttribute('class', 'text-uppercase fw-bold text-xs mb-1');
     const card_elements = document.createElement('div');
-    card_elements.setAttribute('class', 'text-dark list-group-item');
+    card_elements.setAttribute('class', 'list-group-item');
 
     card_row.appendChild(card_col1);
     card_col1.appendChild(card_title);

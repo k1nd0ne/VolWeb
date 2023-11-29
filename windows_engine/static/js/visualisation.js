@@ -70,8 +70,12 @@ function makeLink(parentElementLabel, childElementLabel) {
         attrs: { 
             line: {
                 targetMarker: {
-                    d: 'M 4 -4 0 0 4 4'
-                }
+                    d: 'M 4 -4 0 0 4 4',
+                    
+                },
+                stroke: '#e082b1', 
+                strokeWidth: 1.4,
+
             }
         },
     });
@@ -94,9 +98,11 @@ function MakeNode(node) {
                 fontSize: letterSize,
                 fontFamily: 'monospace',
                 fill: 'black',
+                
             },
             body: {
                 fill: 'white',
+                stroke: '#084298',
                 width: width,
                 height: height,
                 rx: 2,
@@ -106,7 +112,8 @@ function MakeNode(node) {
                 xlinkHref: cpu,
                 width: 1, 
                 height: 1
-            }
+            },
+            
         }
     });
 }

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from windows_engine.tasks import compute_handles
 from windows_engine.models import *
 from evidences.models import Evidence
 from windows_engine.serializers import *
@@ -35,8 +36,6 @@ class TimelineChartApiView(APIView):
         serializer = TimelineChartSerializer(timeline,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-
-
 
 class TimelineDataApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -272,23 +271,14 @@ class LsadumpApiView(APIView):
 
 class GetHandlesApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-    def get(self, request, dump_id, *args, **kwargs):
+    def get(self, request, dump_id, pid, *args, **kwargs):
         '''
         Give the requested handles if existing.
         '''
-        data = Handles.objects.filter(evidence_id=dump_id)
-        serializer = HandlesSerializer(data,many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    # 2. Create
-    def post(self, request, dump_id, pid, *args, **kwargs):
-        '''
-        Create trigger a celery task to compute handles for the given pid and evidence
-        '''
-        from windows_engine.tasks import compute_handles
-        compute_handles.delay(dump_file, pid)
-
-        # TODO : wait for the handles to be computed and send back the result ? OR use websockets if not reliable.
-        #       return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        # return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        data = Handles.objects.filter(evidence_id=dump_id,PID=pid)
+        if len(data) > 0: 
+            serializer = HandlesSerializer(data, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:            
+            compute_handles.delay(dump_id, pid)
+            return Response(status=status.HTTP_201_CREATED)

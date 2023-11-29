@@ -8,10 +8,12 @@ function compute_handles(evidence_id,pid){
             $(".loading_handles").show();
           },
         success: function(data){
+            
         },
         complete:function(data){
-            $(".card_handles").show();
-            $(".loading_handles").hide();
+            // à Déporter dans la websocket ? 
+            // $(".card_handles").show();
+            // $(".loading_handles").hide();
           },
         error: function(xhr, status, error) {
             toastr.error("An error occurred while computing the handles : "  + error);

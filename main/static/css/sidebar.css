@@ -13,6 +13,16 @@
   color: var(--bs-light);
 }
 
+[data-bs-theme=light] .fas.fa-upload.icon.icon-shape.icon-sm.border-radius-md {
+  color: var(--bs-dark);
+}
+
+[data-bs-theme=dark] .fas.fa-upload.icon.icon-shape.icon-sm.border-radius-md {
+  color: var(--bs-light);
+}
+
+
+
 .icon {
   display: inline-block;
   color: #111111;
@@ -41,24 +51,21 @@ hr.horizontal {
   background-color: transparent;
 }
 
-hr.horizontal.dark {
-  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
-}
-
 
 .nav-link {
   color: #252f40;
   padding: 0.5rem 1rem;
   font-weight: 400;
   font-size: 0.875rem;
+  border-radius: .5rem;
 }
-
 
 
 .nav-link {
   display: block;
   padding: .5rem 1rem;
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+  border-radius: .5rem;
 }
 
 @media (prefers-reduced-motion:reduce) {
@@ -68,10 +75,9 @@ hr.horizontal.dark {
 }
 
 .icon-sm {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
 }
-
 
 .border-radius-md {
   border-radius: .5rem;
@@ -81,21 +87,31 @@ hr.horizontal.dark {
   border-radius: 1rem;
 }
 
-@media (max-width:767.98px) {
-  hr.horizontal.dark {
-    background-image: linear-gradient(90deg,transparent,rgba(0,0,0,.4),transparent);
-  }
+
+[data-bs-theme=light]  hr.horizontal.dark {
+  background-image: linear-gradient(90deg,transparent,rgba(0,0,0,.4),transparent);
 }
+
+[data-bs-theme=dark]  hr.horizontal.dark {
+  background-image: linear-gradient(90deg,transparent,rgba(255, 255, 255, 0.4),transparent);
+}
+
 
 html * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
+[data-bs-theme=ligth] a {
   letter-spacing: -.025rem;
   color: #000;
 }
+
+[data-bs-theme=dark] a {
+  letter-spacing: -.025rem;
+  color: #ffffff;
+}
+
 
 .text-xs {
   line-height: 1.25;
@@ -121,26 +137,24 @@ a {
   white-space: nowrap;
 }
 
-
 .nav-link-text {
   transition: .3s ease;
   opacity: 1;
 }
 
 
-.nav-link.active {
-  font-weight: 600;
-  box-shadow: 0 20px 27px 0 rgba(0,0,0,.05);
-  border-radius: .5rem;
-}
-
-.nav-link.active {
+[data-bs-theme=light] .nav-link.active {
   color: #252f40;
   background-color: #fff;
 }
 
+[data-bs-theme=dark] .nav-link.active {
+  color: #fff;
+  background-color: #252f40;
+}
+
 .nav-link.active .icon {
-  background-image: linear-gradient(310deg,#101010,#d2d2d2);
+  background-image: linear-gradient(310deg,#101010,#ffffff);
 }
 
 .nav-link:hover{
@@ -150,6 +164,9 @@ a {
   background-color: rgba(59,113,202,.05);
   border-radius: .5rem;
 }
+
+
+
 
 
 

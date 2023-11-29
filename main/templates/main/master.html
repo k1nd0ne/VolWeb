@@ -1,11 +1,11 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en" data-bs-theme="dark">
     <head>
         <title>VolWeb</title>
-        {% load bootstrap5 %}
-        {% bootstrap_css %}
-        {% bootstrap_javascript %}
+        <script src="{% static 'main/js/core.js' %}"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="{% static 'main/js/toastr.min.js' %}"></script>
         <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
@@ -16,7 +16,7 @@
     </head>
     <body>
 
-        <nav class="navbar navbar-expand-lg bg-light">
+        <nav class="navbar navbar-expand-lg border-bottom">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">
                     <img width="30" height="24" src="{% static 'main/images/volweb-v.svg'%}">
@@ -26,12 +26,12 @@
                     <li class="nav-item">
                         {% if request.get_full_path == '/'%}
                         <a class="nav-link active" href="{% url 'home' %}">
-                            <i class="fas fa-home active icon icon-shape icon-sm shadow border-radius-md text-center me-2 d-flex align-items-center justify-content-center"></i>
+                            <i class="fas fa-home active icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
                             <span class="nav-link-text ms-1">Home</span>
                         </a>
                         {% else %}
-                        <a class="nav-link" href="{% url 'home' %}">
-                            <i class="fas fa-home icon icon-shape icon-sm shadow border-radius-md text-center me-2 d-flex align-items-center justify-content-center"></i>
+                        <a class="nav-link " href="{% url 'home' %}">
+                            <i class="fas fa-home icon icon-shape icon-sm shadow border-radius-md  bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
                             <span class="nav-link-text ms-1">Home</span>
                         </a>
                         {% endif %}

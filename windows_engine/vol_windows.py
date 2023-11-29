@@ -72,7 +72,8 @@ def get_handles(instance, pid):
         artifact = {x.translate({32: None}): y
                     for x, y in artifact.items()}
         del (artifact['__children'])
-        Handles(dump_id=case_id, **artifact).save()
+        Handles(evidence=instance, **artifact).save()
+        
     return "OK"
 
 

@@ -1,5 +1,5 @@
 
-  .nav-pills .nav-link {
+[data-bs-theme=ligth] .nav-pills .nav-link {
     background: none;
     color: #252f40;
     padding: 0.5rem 1rem;
@@ -7,7 +7,16 @@
     font-size: 0.875rem;
   }
 
-  .nav-pills .nav-link.active,
+
+  [data-bs-theme=dark] .nav-pills .nav-link {
+    background: none;
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    font-weight: 400;
+    font-size: 0.875rem;
+  }
+
+  [data-bs-theme=ligth] .nav-pills .nav-link.active,
   .show > .nav-link {
     font-weight: 600;
     box-shadow: 0 20px 27px 0 rgba(0,0,0,.05);
@@ -15,6 +24,17 @@
     color: #252f40;
     background-color: #fff;
   }
+
+  [data-bs-theme=dark] .nav-pills .nav-link.active,
+  .show > .nav-link {
+    font-weight: 600;
+    box-shadow: 0 20px 27px 0 rgba(0,0,0,.05);
+    border-radius: .5rem;
+    color: #252f40;
+    background-color: #fff;
+  }
+
+
 
   .dataTable:hover{
     cursor: pointer;
@@ -26,6 +46,7 @@
     background-color: #fff;
     border-color: #000;
 }
+
 
 .dataTable {
     color: #252f40;
@@ -48,12 +69,15 @@
 }
 
 
-.btn-link{
+[data-bs-theme=dark] .btn-link{
+  color: #ffffff;
+}
+
+[data-bs-theme=light] .btn-link{
   color: #000000;
 }
 
 .dropdown-item{
-  color: #252f40;
   font-weight: 400;
   font-size: 0.875rem;
 }
@@ -67,4 +91,12 @@
   cursor: pointer;
   border-color: rgb(0, 0, 0);
 
+}
+
+[data-bs-theme=dark] #overview_graph{
+  background-color: #212529;
+}
+
+[data-bs-theme=light] #overview_graph{
+  background-color: #ffffff;
 }
