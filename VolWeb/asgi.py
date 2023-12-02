@@ -14,9 +14,8 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from VolWeb.routing import websockets_urlpatterns
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'VolWeb.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "VolWeb.settings")
 
-application = ProtocolTypeRouter({
-    'http': get_asgi_application(),
-    'websocket': URLRouter(websockets_urlpatterns)
-})
+application = ProtocolTypeRouter(
+    {"http": get_asgi_application(), "websocket": URLRouter(websockets_urlpatterns)}
+)

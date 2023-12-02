@@ -4,19 +4,18 @@ from django.db import models
 from django.db import models
 from evidences.models import Evidence
 import base64
+
 TAGS = (
-    ('Evidence', 'Evidence'),
-    ('Suspicious', 'Suspicious'),
-    ('Clear', 'Clear'),
+    ("Evidence", "Evidence"),
+    ("Suspicious", "Suspicious"),
+    ("Clear", "Clear"),
 )
 
 
 class ProcessDump(models.Model):
     process_dump_id = models.AutoField(primary_key=True)
     dump_id = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_processdump_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_processdump_evidence"
     )
     pid = models.BigIntegerField()
     filename = models.TextField(null=True)
@@ -25,9 +24,7 @@ class ProcessDump(models.Model):
 class FileDump(models.Model):
     file_dump_id = models.AutoField(primary_key=True)
     dump_id = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_filedump_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_filedump_evidence"
     )
     offset = models.TextField(null=True)
     filename = models.TextField(null=True)
@@ -35,45 +32,35 @@ class FileDump(models.Model):
 
 class PsTree(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_pstree_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_pstree_evidence"
     )
     graph = models.JSONField(null=True)
 
 
 class DeviceTree(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_devicetree_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_devicetree_evidence"
     )
     graph = models.JSONField(null=True)
 
 
 class NetGraph(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_netgraph_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_netgraph_evidence"
     )
     graph = models.JSONField(null=True)
 
 
 class TimeLineChart(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_timeline_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_timeline_evidence"
     )
     graph = models.JSONField(null=True)
 
 
 class PsScan(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_psscan_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_psscan_evidence"
     )
     PID = models.BigIntegerField(null=True)
     PPID = models.BigIntegerField(null=True)
@@ -90,9 +77,7 @@ class PsScan(models.Model):
 
 class CmdLine(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_cmdline_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_cmdline_evidence"
     )
     PID = models.BigIntegerField(null=True)
     Process = models.TextField(null=True)
@@ -102,9 +87,7 @@ class CmdLine(models.Model):
 
 class Privs(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_privs_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_privs_evidence"
     )
     PID = models.BigIntegerField(null=True)
     Process = models.TextField(null=True)
@@ -114,11 +97,10 @@ class Privs(models.Model):
     Description = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+
 class Sessions(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_sessions_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_sessions_evidence"
     )
     CreateTime = models.TextField(null=True)
     Process = models.TextField(null=True)
@@ -128,11 +110,10 @@ class Sessions(models.Model):
     UserName = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+
 class GetSIDs(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_getsids_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_getsids_evidence"
     )
     Name = models.TextField(null=True)
     PID = models.BigIntegerField(null=True)
@@ -141,12 +122,9 @@ class GetSIDs(models.Model):
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
 
-
 class LdrModules(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_ldrmodules_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_ldrmodules_evidence"
     )
     Base = models.TextField(null=True)
     InInit = models.TextField(null=True)
@@ -160,9 +138,7 @@ class LdrModules(models.Model):
 
 class Envars(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_envars_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_envars_evidence"
     )
     PID = models.BigIntegerField(null=True)
     Process = models.TextField(null=True)
@@ -175,9 +151,7 @@ class Envars(models.Model):
 
 class NetScan(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_netscan_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_netscan_evidence"
     )
     Offset = models.TextField(null=True)
     Proto = models.TextField(null=True)
@@ -194,9 +168,7 @@ class NetScan(models.Model):
 
 class NetStat(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_netstat_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_netstat_evidence"
     )
     Offset = models.TextField(null=True)
     Proto = models.TextField(null=True)
@@ -213,9 +185,7 @@ class NetStat(models.Model):
 
 class Hashdump(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_hashdump_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_hashdump_evidence"
     )
     User = models.TextField(null=True)
     rid = models.TextField(null=True)
@@ -226,24 +196,20 @@ class Hashdump(models.Model):
 
 class Lsadump(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_lsadump_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_lsadump_evidence"
     )
     Key = models.TextField(null=True)
     Secret = models.TextField(null=True)
     Hex = models.TextField(null=True)
 
     def save(self, *args, **kwargs):
-        self.Secret = base64.b64encode(bytes(self.Secret, 'utf-8'))
+        self.Secret = base64.b64encode(bytes(self.Secret, "utf-8"))
         super().save(*args, **kwargs)
 
 
 class Cachedump(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_cachedump_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_cachedump_evidence"
     )
     Domain = models.TextField(null=True)
     Domainname = models.TextField(null=True)
@@ -253,9 +219,7 @@ class Cachedump(models.Model):
 
 class HiveList(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_hivelist_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_hivelist_evidence"
     )
     FileFullPath = models.TextField(null=True)
     Offset = models.TextField(null=True)
@@ -264,9 +228,7 @@ class HiveList(models.Model):
 
 class Timeliner(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_timeliner_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_timeliner_evidence"
     )
     Plugin = models.TextField(null=True)
     Description = models.TextField(null=True)
@@ -279,9 +241,7 @@ class Timeliner(models.Model):
 
 class SkeletonKeyCheck(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_skc_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_skc_evidence"
     )
     PID = models.BigIntegerField(null=True)
     Process = models.TextField(null=True)
@@ -293,9 +253,7 @@ class SkeletonKeyCheck(models.Model):
 
 class Malfind(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_malfind_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_malfind_evidence"
     )
 
     PID = models.BigIntegerField(null=True)
@@ -313,9 +271,7 @@ class Malfind(models.Model):
 
 class UserAssist(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_userassist_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_userassist_evidence"
     )
     HiveOffset = models.TextField(null=True)
     HiveName = models.TextField(null=True)
@@ -334,9 +290,7 @@ class UserAssist(models.Model):
 
 class FileScan(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_filescan_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_filescan_evidence"
     )
     Offset = models.TextField(null=True)
     Name = models.TextField(null=True)
@@ -346,9 +300,7 @@ class FileScan(models.Model):
 
 class Strings(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_strings_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_strings_evidence"
     )
     String = models.TextField(null=True)
     PhysicalAddress = models.TextField(null=True)
@@ -358,9 +310,7 @@ class Strings(models.Model):
 
 class DllList(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_dllist_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_dllist_evidence"
     )
     Process = models.TextField(null=True)
     PID = models.BigIntegerField(null=True)
@@ -375,9 +325,7 @@ class DllList(models.Model):
 
 class Handles(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_handles_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_handles_evidence"
     )
     Process = models.TextField(null=True)
     PID = models.BigIntegerField()
@@ -391,9 +339,7 @@ class Handles(models.Model):
 
 class DriverModule(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_drivermodule_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_drivermodule_evidence"
     )
     AlternativeName = models.TextField(null=True)
     DriverName = models.TextField(null=True)
@@ -402,11 +348,10 @@ class DriverModule(models.Model):
     ServiceKey = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+
 class VadWalk(models.Model):
     evidence = models.ForeignKey(
-        Evidence,
-        on_delete=models.CASCADE,
-        related_name="windows_vadwalk_evidence"
+        Evidence, on_delete=models.CASCADE, related_name="windows_vadwalk_evidence"
     )
     End = models.TextField(null=True)
     Left = models.TextField(null=True)
@@ -418,3 +363,4 @@ class VadWalk(models.Model):
     Start = models.TextField(null=True)
     VTag = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+

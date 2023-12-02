@@ -4,13 +4,12 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('evidences', '0004_evidence_dump_etag'),
+        ("evidences", "0004_evidence_dump_etag"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='ImageSignature',
+            name="ImageSignature",
         ),
     ]

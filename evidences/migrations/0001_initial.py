@@ -5,21 +5,31 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('cases', '0001_initial'),
+        ("cases", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Evidence',
+            name="Evidence",
             fields=[
-                ('dump_id', models.AutoField(primary_key=True, serialize=False)),
-                ('dump_name', models.CharField(max_length=250)),
-                ('dump_os', models.CharField(choices=[('Windows', 'Windows'), ('Linux', 'Linux')], max_length=10)),
-                ('dump_linked_case', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cases.case')),
+                ("dump_id", models.AutoField(primary_key=True, serialize=False)),
+                ("dump_name", models.CharField(max_length=250)),
+                (
+                    "dump_os",
+                    models.CharField(
+                        choices=[("Windows", "Windows"), ("Linux", "Linux")],
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "dump_linked_case",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="cases.case"
+                    ),
+                ),
             ],
         ),
     ]

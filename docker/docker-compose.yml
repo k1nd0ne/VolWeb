@@ -12,13 +12,17 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
-  rabbitmq3:
-    container_name: volweb_rabbitmq3_dev
-    image: rabbitmq:3.9.13
+  redis:
+    container_name: volweb_redis_dev
+    image: 'redis:latest'
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - 'redis-data:/data'
     ports:
-      - "5672:5672"
+      - '6379:6379'
     env_file:
       - ./secrets/volweb.env
+  
   minio:
     image: minio/minio
     ports:
@@ -33,3 +37,4 @@ services:
 volumes:
   minio_storage: {}
   postgres-data:
+  redis-data:

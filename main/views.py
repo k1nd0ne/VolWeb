@@ -7,11 +7,11 @@ from django.contrib.auth import get_user_model
 def home(request):
     """Load home page
 
-        Arguments:
-        request : http request object
+    Arguments:
+    request : http request object
 
-        Comments:
-        Display the home page and pass the users/activities/analysis/
-        """
+    Comments:
+    Display the home page and pass the users/activities/analysis/
+    """
     User = get_user_model()
-    return render(request, 'main/home.html',{'Users': User.objects.all()})
+    return render(request, "main/home.html", {"Users": User.objects.all()})

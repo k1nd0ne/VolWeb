@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('evidences', '0003_imagesignature'),
+        ("evidences", "0003_imagesignature"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='evidence',
-            name='dump_etag',
+            model_name="evidence",
+            name="dump_etag",
             field=models.CharField(default=1, max_length=256),
             preserve_default=False,
         ),

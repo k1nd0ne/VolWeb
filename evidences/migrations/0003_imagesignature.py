@@ -5,20 +5,33 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('evidences', '0002_evidence_dump_status'),
+        ("evidences", "0002_evidence_dump_status"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ImageSignature',
+            name="ImageSignature",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('md5', models.CharField(max_length=32, null=True)),
-                ('sha1', models.CharField(max_length=40, null=True)),
-                ('sha256', models.CharField(max_length=64, null=True)),
-                ('evidence', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='evidences.evidence')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("md5", models.CharField(max_length=32, null=True)),
+                ("sha1", models.CharField(max_length=40, null=True)),
+                ("sha256", models.CharField(max_length=64, null=True)),
+                (
+                    "evidence",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="evidences.evidence",
+                    ),
+                ),
             ],
         ),
     ]

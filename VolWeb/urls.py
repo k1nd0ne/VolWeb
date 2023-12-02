@@ -20,12 +20,20 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
-    path('', include('main.urls')),
-    path('', include('cases.urls')),
-    path('', include('evidences.urls')),
-    path('', include('windows_engine.urls')),
-    path('login/', auth_views.LoginView.as_view(template_name='main/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='main/logout.html'), name='logout'),
+    path("admin/", admin.site.urls),
+    path("api-auth/", include("rest_framework.urls")),
+    path("", include("main.urls")),
+    path("", include("cases.urls")),
+    path("", include("evidences.urls")),
+    path("", include("windows_engine.urls")),
+    path(
+        "login/",
+        auth_views.LoginView.as_view(template_name="main/login.html"),
+        name="login",
+    ),
+    path(
+        "logout/",
+        auth_views.LogoutView.as_view(template_name="main/logout.html"),
+        name="logout",
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('windows_engine', '0004_getsids'),
+        ("windows_engine", "0004_getsids"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='getsids',
-            name='SID',
+            model_name="getsids",
+            name="SID",
             field=models.TextField(null=True),
         ),
     ]

@@ -5,23 +5,47 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('evidences', '0005_delete_imagesignature'),
-        ('windows_engine', '0003_remove_cachedump_investigation_and_more'),
+        ("evidences", "0005_delete_imagesignature"),
+        ("windows_engine", "0003_remove_cachedump_investigation_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='GetSIDs',
+            name="GetSIDs",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('Name', models.TextField(null=True)),
-                ('PID', models.BigIntegerField(null=True)),
-                ('Process', models.TextField(null=True)),
-                ('SID', models.BigIntegerField(null=True)),
-                ('Tag', models.CharField(choices=[('Evidence', 'Evidence'), ('Suspicious', 'Suspicious')], max_length=11, null=True)),
-                ('evidence', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='windows_getsids_evidence', to='evidences.evidence')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("Name", models.TextField(null=True)),
+                ("PID", models.BigIntegerField(null=True)),
+                ("Process", models.TextField(null=True)),
+                ("SID", models.BigIntegerField(null=True)),
+                (
+                    "Tag",
+                    models.CharField(
+                        choices=[
+                            ("Evidence", "Evidence"),
+                            ("Suspicious", "Suspicious"),
+                        ],
+                        max_length=11,
+                        null=True,
+                    ),
+                ),
+                (
+                    "evidence",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="windows_getsids_evidence",
+                        to="evidences.evidence",
+                    ),
+                ),
             ],
         ),
     ]

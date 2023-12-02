@@ -4,20 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('windows_engine', '0001_initial'),
+        ("windows_engine", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='filedump',
-            old_name='case_id',
-            new_name='dump_id',
+            model_name="filedump",
+            old_name="case_id",
+            new_name="dump_id",
         ),
         migrations.RenameField(
-            model_name='processdump',
-            old_name='case_id',
-            new_name='dump_id',
+            model_name="processdump",
+            old_name="case_id",
+            new_name="dump_id",
         ),
     ]
