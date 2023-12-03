@@ -36,4 +36,3 @@ def compute_handles(self, evidence_id, pid):
                 },
             },
         )
-    return {"name":"handles", "PID":pid,"evidence": evidence_id}

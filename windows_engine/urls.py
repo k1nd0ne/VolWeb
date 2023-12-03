@@ -68,4 +68,5 @@ urlpatterns = [
         "tasks/windows/<int:dump_id>/handles/<int:pid>/",
         views.GetHandlesApiView.as_view(),
     ),
+    path("tasks/windows/<int:dump_id>/tasks/", views.TasksApiView.as_view()),
 ]

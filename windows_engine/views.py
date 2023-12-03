@@ -3,13 +3,12 @@ from django.contrib.auth.decorators import login_required
 from windows_engine.tasks import compute_handles
 from windows_engine.models import *
 from evidences.models import Evidence
+from django_celery_results.models import TaskResult 
 from windows_engine.serializers import *
 from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 
 
 @login_required
@@ -324,5 +323,17 @@ class GetHandlesApiView(APIView):
         if len(data) > 0:
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            compute_handles.delay(dump_id, pid)
+            compute_handles.delay(evidence_id=dump_id, pid=pid)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class TasksApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested tasks if existing.
+        """
+        tasks = TaskResult.objects.all()
+        serializer = TasksSerializer(tasks, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+

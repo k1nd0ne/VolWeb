@@ -8,4 +8,5 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.conf.update(
     result_expires=3600,
 )
+app.conf.task_track_started = True
 app.autodiscover_tasks()

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from windows_engine.models import *
-
+from django_celery_results.models import TaskResult 
+import json
 
 class PsTreeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -102,3 +103,16 @@ class HandlesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Handles
         fields = "__all__"
+
+
+class TasksSerializer(serializers.ModelSerializer):
+    task_kwargs = serializers.JSONField
+    class Meta:
+        model = TaskResult
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        # We have to do this because the json is not respecting the rfc.
+        ret['task_kwargs'] = ret['task_kwargs'].replace("'",'"')
+        return ret

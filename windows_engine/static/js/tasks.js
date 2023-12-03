@@ -1,19 +1,16 @@
 function compute_handles(evidence_id, pid) {
-  
   $.ajax({
     type: "GET",
     url: "/tasks/windows/" + evidence_id + "/handles/" + pid + "/",
     dataType: "json",
-    beforeSend: function () {
-
-    },
+    beforeSend: function () {},
     success: function (data, status, xhr) {
-      if (xhr.status == 201){
-        toastr.success("Handles computing task launched.");
+      if (xhr.status == 201) {
+        toastr.info("Computing handles for " + pid);
         $(".card_handles").hide();
         $(".loading_handles").show();
       }
-      if (xhr.status == 200){
+      if (xhr.status == 200) {
         try {
           handles_data.api().destroy();
         } catch {
@@ -50,24 +47,21 @@ function compute_handles(evidence_id, pid) {
         $("#handles").modal("show");
       }
     },
-    complete: function (data) {
-    },
+    complete: function (data) {},
     error: function (xhr, status, error) {
       toastr.error("An error occurred while computing the handles : " + error);
     },
   });
 }
 
-function handles_task_result(result){
-  if (result.status == "success"){
-    toastr.success(result.msg);
-  }
-  else{
+function handles_task_result(result) {
+  if (result.status == "success") {
+    toastr.info(result.msg);
+  } else {
     toastr.warning(result.msg);
   }
-  if (result.pid == $(".process_id").attr("id")){
+  if (result.pid == $(".process_id").attr("id")) {
     $(".card_handles").show();
     $(".loading_handles").hide();
   }
 }
-

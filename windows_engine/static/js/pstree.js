@@ -45,27 +45,55 @@ function display_pstree(evidence_id) {
 }
 
 function display_process_info(process, evidence_id) {
-  $(".card_handles").show();
-  $(".loading_handles").hide();
-  $(".process_id").attr("id", process.PID);
-  $(".process_title").text(process.name);
-  $(".p_pid").text(process.PID);
-  $(".p_offset").text(process["Offset(V)"]);
-  $(".p_threads").text(process.Threads);
-  $(".p_handles").text(process.Handles);
-  $(".p_session").text(process.SessionId);
-  if (process.Wow64 == true) {
-    $(".p_wow64").addClass("text-danger");
-  } else {
-    $(".p_wow64").removeClass("text-danger");
-  }
-  $(".p_wow64").text(process.Wow64);
-  $(".p_ctime").text(process.CreateTime);
-  $(".p_etime").text(process.ExitTime);
+  $.ajax({
+    type: "GET",
+    url: "/tasks/windows/" + evidence_id + "/tasks/",
+    dataType: "json",
+    beforeSend: function () {},
+    success: function (tasks, status, xhr) {
+      $(".card_handles").show();
+      $(".loading_handles").hide();
 
-  display_sessions(evidence_id, process.PID);
-  display_cmdline(evidence_id, process.PID);
+      tasks.forEach(function (task) {
+        switch (task.task_name) {
+          case "windows_engine.tasks.compute_handles":
+            test = task.task_kwargs;
+            const result = JSON.parse(test.substring(1, test.length - 1));
+            if (
+              result.pid == process.PID &&
+              result.evidence_id == evidence_id &&
+              task.status != "SUCCESS"
+            ) {
+              $(".card_handles").hide();
+              $(".loading_handles").show();
+            }
+        }
+      });
+      $(".process_id").attr("id", process.PID);
+      $(".process_title").text(process.name);
+      $(".p_pid").text(process.PID);
+      $(".p_offset").text(process["Offset(V)"]);
+      $(".p_threads").text(process.Threads);
+      $(".p_handles").text(process.Handles);
+      $(".p_session").text(process.SessionId);
+      if (process.Wow64 == true) {
+        $(".p_wow64").addClass("text-danger");
+      } else {
+        $(".p_wow64").removeClass("text-danger");
+      }
+      $(".p_wow64").text(process.Wow64);
+      $(".p_ctime").text(process.CreateTime);
+      $(".p_etime").text(process.ExitTime);
 
-  var url = "/review/windows/" + evidence_id + "/" + process.PID + "/";
-  $(".investigate-btn").attr("href", url);
+      display_sessions(evidence_id, process.PID);
+      display_cmdline(evidence_id, process.PID);
+
+      var url = "/review/windows/" + evidence_id + "/" + process.PID + "/";
+      $(".investigate-btn").attr("href", url);
+    },
+    complete: function (data) {},
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred while getting the tasks : " + error);
+    },
+  });
 }
