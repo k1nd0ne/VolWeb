@@ -311,7 +311,7 @@ class LsadumpApiView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class GetHandlesApiView(APIView):
+class HandlesApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, dump_id, pid, *args, **kwargs):
@@ -326,10 +326,24 @@ class GetHandlesApiView(APIView):
             compute_handles.delay(evidence_id=dump_id, pid=pid)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
+        try:
+            instance = Handles.objects.get(evidence_id=dump_id, pk=artifact_id)
+        except Handles.DoesNotExist:
+            return Response(
+                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = HandlesSerializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class TasksApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, dump_id, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         """
         Give the requested tasks if existing.
         """

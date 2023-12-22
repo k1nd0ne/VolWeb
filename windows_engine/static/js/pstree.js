@@ -47,7 +47,7 @@ function display_pstree(evidence_id) {
 function display_process_info(process, evidence_id) {
   $.ajax({
     type: "GET",
-    url: "/tasks/windows/" + evidence_id + "/tasks/",
+    url: "/tasks/windows/tasks/",
     dataType: "json",
     beforeSend: function () {},
     success: function (tasks, status, xhr) {

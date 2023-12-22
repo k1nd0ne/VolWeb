@@ -63,10 +63,13 @@ urlpatterns = [
     path("api/windows/<int:dump_id>/cachedump/", views.CachedumpApiView.as_view()),
     path("api/windows/<int:dump_id>/hashdump/", views.HashdumpApiView.as_view()),
     path("api/windows/<int:dump_id>/lsadump/", views.LsadumpApiView.as_view()),
-    # Tasks
     path(
         "tasks/windows/<int:dump_id>/handles/<int:pid>/",
-        views.GetHandlesApiView.as_view(),
+        views.HandlesApiView.as_view(),
     ),
-    path("tasks/windows/<int:dump_id>/tasks/", views.TasksApiView.as_view()),
+    path(
+        "api/windows/<int:dump_id>/handles/<int:artifact_id>/<str:tag>/",
+        views.HandlesApiView.as_view(),
+    ),
+    path("tasks/windows/tasks/", views.TasksApiView.as_view()),
 ]

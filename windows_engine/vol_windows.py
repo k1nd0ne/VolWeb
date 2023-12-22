@@ -10,13 +10,8 @@ from VolWeb.voltools import *
 from volatility3.framework.exceptions import *
 from volatility3.cli import MuteProgress
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-class PluginError(Exception):
-    """Raised when a plugin cannot not be run """
-    pass
 
 
 def build_context(instance, context, base_config_path, plugin, output_path):
@@ -46,7 +41,7 @@ def build_context(instance, context, base_config_path, plugin, output_path):
     return constructed
 
 
-def dump_process(instance, pid, output_path):
+def dump_process_memmap(instance, pid, output_path):
     """Dump the process requested by the user"""
     volatility3.framework.require_interface_version(2, 0, 0)
     failures = volatility3.framework.import_files(plugins, True)
@@ -59,20 +54,20 @@ def dump_process(instance, pid, output_path):
     context = contexts.Context()
     context.config["plugins.Memmap.pid"] = int(pid)
     context.config["plugins.Memmap.dump"] = True
-
-    constructed = build_context(
-        instance,
-        context,
-        base_config_path,
-        plugin_list["windows.memmap.Memmap"],
-        output_path,
-    )
-    if constructed:
+    try:
+        constructed = build_context(
+            instance,
+            context,
+            base_config_path,
+            plugin_list["windows.memmap.Memmap"],
+            output_path,
+        )
         result = DictRenderer().render(constructed.run())
-    else:
-        raise PluginError
-    artifact = {x.translate({32: None}): y for x, y in result[0].items()}
-    return artifact["Fileoutput"]
+        artefact = {x.translate({32: None}): y for x, y in result[0].items()}
+        return artefact["Fileoutput"]
+    except:
+        return None
+
 
 
 def get_handles(instance, pid):
@@ -96,10 +91,10 @@ def get_handles(instance, pid):
             output_path=None,
         )
         result = DictRenderer().render(constructed.run())
-        for artifact in result:
-            artifact = {x.translate({32: None}): y for x, y in artifact.items()}
-            del artifact["__children"]
-            Handles(evidence=instance, **artifact).save()
+        for artefact in result:
+            artefact = {x.translate({32: None}): y for x, y in artefact.items()}
+            del artefact["__children"]
+            Handles(evidence=instance, **artefact).save()
         return instance
     except:
         return None
@@ -125,9 +120,6 @@ def dump_file(instance, offset, output_path):
             plugin_list["windows.dumpfiles.DumpFiles"],
             output_path,
         )
-    except:
-        logger.info("Cannot build")
-    if constructed:
         result = DictRenderer().render(constructed.run())
         if len(result) < 1:
             del context.config["plugins.DumpFiles.virtaddr"]
@@ -139,11 +131,78 @@ def dump_file(instance, offset, output_path):
                 plugin_list["windows.dumpfiles.DumpFiles"],
                 output_path,
             )
-            result = DictRenderer().render(constructed.run())
-    for artifact in result:
-        artifact = {x.translate({32: None}): y for x, y in artifact.items()}
-    return result
+        result = DictRenderer().render(constructed.run())
+        for artefact in result:
+            artefact = {x.translate({32: None}): y for x, y in artefact.items()}
+        return result
+    except:
+        return None
 
+    
+def fill_userassist(list, dump_id):
+    for artefact in list:
+        artefact = {x.translate({32: None}): y for x, y in artefact.items()}
+        apps.get_model("windows_engine", "UserAssist")(
+            evidence=dump_id,
+            HiveOffset=artefact["HiveOffset"],
+            HiveName=artefact["HiveName"],
+            Path=artefact["Path"],
+            LastWriteTime=artefact["LastWriteTime"],
+            Type=artefact["Type"],
+            Name=artefact["Name"],
+            ID=artefact["ID"],
+            Count=artefact["Count"],
+            FocusCount=artefact["FocusCount"],
+            TimeFocused=artefact["TimeFocused"],
+            LastUpdated=artefact["LastUpdated"],
+            RawData=artefact["RawData"],
+        ).save()
+        if artefact["__children"]:
+            fill_userassist(artefact["__children"], dump_id)
+
+
+def rename_pstree(node):
+    if len(node["__children"]) == 0:
+        node["children"] = node["__children"]
+        node["name"] = node["ImageFileName"]
+        del node["__children"]
+        del node["ImageFileName"]
+    else:
+        node["children"] = node["__children"]
+        node["name"] = node["ImageFileName"]
+        del node["__children"]
+        del node["ImageFileName"]
+        for children in node["children"]:
+            rename_pstree(children)
+
+def rename_devicetree(node):
+    if len(node["__children"]) == 0:
+        node["children"] = node["__children"]
+
+        node["name"] = ""
+
+        if node["DeviceName"]:
+            node["name"] += node["DeviceName"]
+        if node["DeviceType"]:
+            node["name"] += "/" + node["DeviceType"]
+        if node["DriverName"]:
+            node["name"] += "/" + node["DriverName"]
+        del node["__children"]
+    else:
+        node["children"] = node["__children"]
+
+        node["name"] = ""
+
+        if node["DeviceName"]:
+            node["name"] += node["DeviceName"]
+        if node["DeviceType"]:
+            node["name"] += "/" + node["DeviceType"]
+        if node["DriverName"]:
+            node["name"] += "/" + node["DriverName"]
+
+        del node["__children"]
+        for children in node["children"]:
+            rename_devicetree(children)
 
 def run_volweb_routine_windows(instance):
     partial_results = False
@@ -188,7 +247,7 @@ def run_volweb_routine_windows(instance):
         # Registry
         "HiveList": {"plugin": plugin_list["windows.registry.hivelist.HiveList"]},
         "UserAssist": {"plugin": plugin_list["windows.registry.userassist.UserAssist"]},
-        # Malware analysis
+        # # Malware analysis
         "Timeliner": {"plugin": plugin_list["timeliner.Timeliner"]},
         "Malfind": {"plugin": plugin_list["windows.malfind.Malfind"]},
         "SkeletonKeyCheck": {
@@ -199,180 +258,95 @@ def run_volweb_routine_windows(instance):
 
     """Progress Function"""
 
-    def update_progress(instance):
-        MODULES_TO_RUN = len(volweb_knowledge_base) * 2
-        percentage = str(int(instance.dump_status) + 100 // MODULES_TO_RUN)
-        instance.dump_status = percentage
-        instance.save()
+    # def update_progress(instance):
+    #     MODULES_TO_RUN = len(volweb_knowledge_base) * 2
+    #     percentage = str(int(instance.dump_status) + 100 // MODULES_TO_RUN)
+    #     instance.dump_status = percentage
+    #     instance.save()
 
-    """STEP 1 : Clean database and build the basic context for each plugin"""
-    NetGraph.objects.filter(evidence_id=instance.dump_id).delete()
-    TimeLineChart.objects.filter(evidence_id=instance.dump_id).delete()
-
+    json_pstree_artefact = []
+    json_devicetree_artefact = []
+    json_netgraph_artefact = []
+    json_timeline_graph_artefact = []
+    json_netgraph_artefact = []
+    network_artefact = []
     for runable in volweb_knowledge_base:
+        context = contexts.Context()
         apps.get_model("windows_engine", runable).objects.filter(
             evidence_id=instance.dump_id
         ).delete()
-        context = contexts.Context()
         logger.info(f"Constructing context for {runable} ")
         """Add pluging argument for hivelist"""
         if runable == "HiveList":
             context.config["plugins.HiveList.dump"] = True
         try:
             # TODO NEED TO SAVE THE KEY WITH THE EVIDENCE IN CASE OF NAME DUPLICATION
-            volweb_knowledge_base[runable]["constructed"] = build_context(
+            constructed = build_context(
                 instance,
                 context,
                 base_config_path,
                 volweb_knowledge_base[runable]["plugin"],
                 "Loot/" + str(instance.dump_id) + "/files/",
             )
-        except VolatilityException:
-            volweb_knowledge_base[runable]["constructed"] = []
         except Exception as e:
             logger.info(f"Could not build context for {runable} : {e}")
-        update_progress(instance)
+            constructed = []
 
-    """STEP 2.1 : For each constructed plugin's context, we render the result and save it."""
-    for runable in volweb_knowledge_base:
-        if volweb_knowledge_base[runable]["constructed"]:
-            logger.info(f"Running plugin : {runable}")
+        if constructed:
             try:
-                volweb_knowledge_base[runable]["result"] = DictRenderer().render(
-                    volweb_knowledge_base[runable]["constructed"].run()
-                )
-            except VolatilityException:
-                partial_results = True
-                volweb_knowledge_base[runable]["result"] = []
+                result = DictRenderer().render(
+                    constructed.run()
+                )            
+                if runable == "PsTree":
+                    for tree in result:
+                        rename_pstree(tree)
+                    json_pstree_artefact = json.dumps(result)
+                    PsTree(evidence=instance, graph=json_pstree_artefact).save()
+
+                elif runable == "UserAssist":
+                    fill_userassist(result, instance)     
+                    
+                elif runable == "DeviceTree":
+                    for tree in result:
+                        rename_devicetree(tree)
+                    json_devicetree_artefact = json.dumps(result)
+                    DeviceTree(evidence=instance, graph=json_devicetree_artefact).save()
+
+                else:
+                    for artefact in result:
+                        artefact = {x.translate({32: None}): y for x, y in artefact.items()}
+                        if "__children" in artefact:
+                            del artefact["__children"]
+                        if "Offset(V)" in artefact:
+                            artefact["Offset"] = artefact["Offset(V)"]
+                            del artefact["Offset(V)"]
+                        if "Tag" in artefact:
+                            artefact["VTag"] = artefact["Tag"]
+                            del artefact["Tag"]
+
+                        apps.get_model("windows_engine", runable)(
+                            evidence_id=instance.dump_id, **artefact
+                        ).save()
+
+                if runable == "NetScan":
+                    network_artefact = network_artefact + result
+                if runable == "NetStat":
+                    network_artefact = network_artefact + result
+                if runable == "Timeliner":
+                    TimeLineChart.objects.filter(evidence_id=instance.dump_id).delete()
+                    json_timeline_graph_artefact = json.dumps(
+                        build_timeline(result)
+                    )
+                    TimeLineChart(evidence=instance, graph=json_timeline_graph_artefact).save()
+
             except:
-                logger.info(f"Could not run {runable}")
-                partial_results = True
-                volweb_knowledge_base[runable]["result"] = []
-        else:
-            volweb_knowledge_base[runable]["result"] = []
-        update_progress(instance)
+                logger.error(f"Could not run {runable}")
 
-    """STEP 3.1 : We can now inject the results inside the database"""
-    for runable in volweb_knowledge_base:
-        if runable != "PsTree" and runable != "UserAssist" and runable != "DeviceTree":
-            for artifact in volweb_knowledge_base[runable]["result"]:
-                artifact = {x.translate({32: None}): y for x, y in artifact.items()}
-                if "__children" in artifact:
-                    del artifact["__children"]
-                if "Offset(V)" in artifact:
-                    artifact["Offset"] = artifact["Offset(V)"]
-                    del artifact["Offset(V)"]
-                if "Tag" in artifact:
-                    artifact["VTag"] = artifact["Tag"]
-                    del artifact["Tag"]
-
-                apps.get_model("windows_engine", runable)(
-                    evidence_id=instance.dump_id, **artifact
-                ).save()
-
-    """STEP 3.2 : Construct and inject the graphs"""
-
-    def rename_pstree(node):
-        if len(node["__children"]) == 0:
-            node["children"] = node["__children"]
-            node["name"] = node["ImageFileName"]
-            del node["__children"]
-            del node["ImageFileName"]
-        else:
-            node["children"] = node["__children"]
-            node["name"] = node["ImageFileName"]
-            del node["__children"]
-            del node["ImageFileName"]
-            for children in node["children"]:
-                rename_pstree(children)
-
-    def rename_devicetree(node):
-        if len(node["__children"]) == 0:
-            node["children"] = node["__children"]
-
-            node["name"] = ""
-
-            if node["DeviceName"]:
-                node["name"] += node["DeviceName"]
-            if node["DeviceType"]:
-                node["name"] += "/" + node["DeviceType"]
-            if node["DriverName"]:
-                node["name"] += "/" + node["DriverName"]
-            del node["__children"]
-        else:
-            node["children"] = node["__children"]
-
-            node["name"] = ""
-
-            if node["DeviceName"]:
-                node["name"] += node["DeviceName"]
-            if node["DeviceType"]:
-                node["name"] += "/" + node["DeviceType"]
-            if node["DriverName"]:
-                node["name"] += "/" + node["DriverName"]
-
-            del node["__children"]
-            for children in node["children"]:
-                rename_devicetree(children)
-
-    json_pstree_artifact = []
-    json_devicetree_artifact = []
-    json_netgraph_artifact = []
-    json_timeline_graph_artifact = []
-    if volweb_knowledge_base["PsTree"]["result"]:
-        pstree_artifact = volweb_knowledge_base["PsTree"]["result"]
-        for tree in pstree_artifact:
-            rename_pstree(tree)
-        json_pstree_artifact = json.dumps(pstree_artifact)
-
-    if volweb_knowledge_base["DeviceTree"]["result"]:
-        devicetree_artifact = volweb_knowledge_base["DeviceTree"]["result"]
-        for tree in devicetree_artifact:
-            rename_devicetree(tree)
-        json_devicetree_artifact = json.dumps(devicetree_artifact)
-
-    if (
-        volweb_knowledge_base["NetScan"]["result"]
-        or volweb_knowledge_base["NetStat"]["result"]
-    ):
-        json_netgraph_artifact = json.dumps(
-            generate_network_graph(
-                volweb_knowledge_base["NetScan"]["result"]
-                + volweb_knowledge_base["NetStat"]["result"]
-            )
+    json_netgraph_artefact = json.dumps(
+        generate_network_graph(
+            network_artefact
         )
+    )
+    NetGraph(evidence=instance, graph=json_netgraph_artefact).save()
 
-    if volweb_knowledge_base["Timeliner"]["result"]:
-        json_timeline_graph_artifact = json.dumps(
-            build_timeline(volweb_knowledge_base["Timeliner"]["result"])
-        )
 
-    PsTree(evidence=instance, graph=json_pstree_artifact).save()
-    DeviceTree(evidence=instance, graph=json_devicetree_artifact).save()
-    NetGraph(evidence=instance, graph=json_netgraph_artifact).save()
-    TimeLineChart(evidence=instance, graph=json_timeline_graph_artifact).save()
-
-    def fill_userassist(list, dump_id):
-        for artifact in list:
-            artifact = {x.translate({32: None}): y for x, y in artifact.items()}
-            apps.get_model("windows_engine", "UserAssist")(
-                evidence=dump_id,
-                HiveOffset=artifact["HiveOffset"],
-                HiveName=artifact["HiveName"],
-                Path=artifact["Path"],
-                LastWriteTime=artifact["LastWriteTime"],
-                Type=artifact["Type"],
-                Name=artifact["Name"],
-                ID=artifact["ID"],
-                Count=artifact["Count"],
-                FocusCount=artifact["FocusCount"],
-                TimeFocused=artifact["TimeFocused"],
-                LastUpdated=artifact["LastUpdated"],
-                RawData=artifact["RawData"],
-            ).save()
-            if artifact["__children"]:
-                fill_userassist(artifact["__children"], dump_id)
-
-    if volweb_knowledge_base["UserAssist"]["result"]:
-        fill_userassist(volweb_knowledge_base["UserAssist"]["result"], instance)
-    return partial_results

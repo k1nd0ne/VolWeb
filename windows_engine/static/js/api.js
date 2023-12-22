@@ -281,6 +281,7 @@ function display_network(evidence_id) {
     dataType: "json",
     success: function (data) {
       try {
+        theme = document.querySelector('[data-bs-theme]').getAttribute('data-bs-theme');
         $("#net_graph").empty();
         var data = JSON.parse(data[0].graph);
         // create a data tree
@@ -288,15 +289,15 @@ function display_network(evidence_id) {
         var netchart = anychart.graph(data);
         netchart
           .background()
-          .fill(getPreferredTheme() == "dark" ? "#212529" : "#FFF");
+          .fill((theme == "dark" ? "#212529" : "#FFF"));
         netchart
           .nodes()
           .normal()
-          .fill(getPreferredTheme() == "light" ? "#212529" : "#FFF");
+          .fill(theme == "light" ? "#212529" : "#FFF");
         netchart
           .nodes()
           .hovered()
-          .fill(getPreferredTheme() == "light" ? "#212529" : "#FFF");
+          .fill(theme == "light" ? "#212529" : "#FFF");
         netchart.nodes().labels().enabled(true);
         netchart.nodes().labels().format("{%id} ({%Owner(s)})");
         netchart.nodes().labels().fontSize(12);
@@ -304,15 +305,15 @@ function display_network(evidence_id) {
         netchart
           .nodes()
           .labels()
-          .fontColor(getPreferredTheme() == "light" ? "#212529" : "#FFF");
+          .fontColor(theme == "light" ? "#212529" : "#FFF");
         netchart
           .edges()
           .normal()
-          .stroke(getPreferredTheme() == "light" ? "#212529" : "#FFF", 1);
+          .stroke(theme == "light" ? "#212529" : "#FFF", 1);
         netchart
           .edges()
           .hovered()
-          .stroke(getPreferredTheme() == "light" ? "#212529" : "#FFF", 2);
+          .stroke(theme == "light" ? "#212529" : "#FFF", 2);
         netchart.edges().selected().stroke("#dc3545", 3);
 
         // configure tooltips of nodes
@@ -354,6 +355,7 @@ function display_timeline(evidence_id) {
     dataType: "json",
     success: function (evidence_data) {
       try {
+        theme = document.querySelector('[data-bs-theme]').getAttribute('data-bs-theme');
         var data = JSON.parse(evidence_data[0].graph);
         var chart = anychart.line();
         var series = chart.line(data);
@@ -368,9 +370,9 @@ function display_timeline(evidence_id) {
         yAxis.title("Events");
         chart
           .background()
-          .fill(getPreferredTheme() == "dark" ? "#212529" : "#FFF");
+          .fill(theme == "dark" ? "#212529" : "#FFF");
         series.stroke({
-          color: getPreferredTheme() == "light" ? "#212529" : "#FFF",
+          color: theme == "light" ? "#212529" : "#FFF",
           thickness: 2,
         });
         var animationSettings = chart.animation();
