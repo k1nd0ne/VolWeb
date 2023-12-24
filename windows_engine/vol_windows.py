@@ -23,7 +23,6 @@ def build_context(instance, context, base_config_path, plugin, output_path):
     context.config[
         "automagic.LayerStacker.stackers"
     ] = automagic.stacker.choose_os_stackers(plugin)
-    context.config["Cloud.AWS"] = True
     context.config["automagic.LayerStacker.single_location"] = (
         "s3://"
         + str(instance.dump_linked_case.case_bucket_id)
@@ -41,8 +40,37 @@ def build_context(instance, context, base_config_path, plugin, output_path):
     return constructed
 
 
-def dump_process_memmap(instance, pid, output_path):
-    """Dump the process requested by the user"""
+def pslist_dump(instance, pid):
+    """Dump the process requested by the user using the pslist plugin"""
+    volatility3.framework.require_interface_version(2, 0, 0)
+    failures = volatility3.framework.import_files(plugins, True)
+    if failures:
+        logger.info(f"Some volatility3 plugin couldn't be loaded : {failures}")
+    else:
+        logger.info(f"Plugins are loaded without failure")
+    plugin_list = volatility3.framework.list_plugins()
+    base_config_path = "plugins"
+    context = contexts.Context()
+    context.config["plugins.PsList.pid"] = [
+        pid,
+    ]
+    context.config["plugins.PsList.dump"] = True
+    output_path = "./"
+    constructed = build_context(
+        instance,
+        context,
+        base_config_path,
+        plugin_list["windows.pslist.PsList"],
+        output_path,
+    )
+    result = DictRenderer().render(constructed.run())
+    artefact = {x.translate({32: None}): y for x, y in result[0].items()}
+    print(artefact)
+    return artefact["Fileoutput"]
+
+
+def memmap_dump(instance, pid):
+    """Dump the process requested by the user using the memmap plugin"""
     volatility3.framework.require_interface_version(2, 0, 0)
     failures = volatility3.framework.import_files(plugins, True)
     if failures:
@@ -54,20 +82,17 @@ def dump_process_memmap(instance, pid, output_path):
     context = contexts.Context()
     context.config["plugins.Memmap.pid"] = int(pid)
     context.config["plugins.Memmap.dump"] = True
-    try:
-        constructed = build_context(
-            instance,
-            context,
-            base_config_path,
-            plugin_list["windows.memmap.Memmap"],
-            output_path,
-        )
-        result = DictRenderer().render(constructed.run())
-        artefact = {x.translate({32: None}): y for x, y in result[0].items()}
-        return artefact["Fileoutput"]
-    except:
-        return None
-
+    output_path = "./"
+    constructed = build_context(
+        instance,
+        context,
+        base_config_path,
+        plugin_list["windows.memmap.Memmap"],
+        output_path,
+    )
+    result = DictRenderer().render(constructed.run())
+    artefact = {x.translate({32: None}): y for x, y in result[0].items()}
+    return artefact["Fileoutput"]
 
 
 def get_handles(instance, pid):
@@ -82,7 +107,7 @@ def get_handles(instance, pid):
     base_config_path = "plugins"
     context = contexts.Context()
     context.config["plugins.Handles.pid"] = [int(pid)]
-    try: 
+    try:
         constructed = build_context(
             instance,
             context,
@@ -138,7 +163,7 @@ def dump_file(instance, offset, output_path):
     except:
         return None
 
-    
+
 def fill_userassist(list, dump_id):
     for artefact in list:
         artefact = {x.translate({32: None}): y for x, y in artefact.items()}
@@ -175,6 +200,7 @@ def rename_pstree(node):
         for children in node["children"]:
             rename_pstree(children)
 
+
 def rename_devicetree(node):
     if len(node["__children"]) == 0:
         node["children"] = node["__children"]
@@ -203,6 +229,7 @@ def rename_devicetree(node):
         del node["__children"]
         for children in node["children"]:
             rename_devicetree(children)
+
 
 def run_volweb_routine_windows(instance):
     partial_results = False
@@ -234,6 +261,7 @@ def run_volweb_routine_windows(instance):
         "Envars": {"plugin": plugin_list["windows.envars.Envars"]},
         "DllList": {"plugin": plugin_list["windows.dlllist.DllList"]},
         "LdrModules": {"plugin": plugin_list["windows.ldrmodules.LdrModules"]},
+        "Modules": {"plugin": plugin_list["windows.modules.Modules"]},
         "VadWalk": {"plugin": plugin_list["windows.vadwalk.VadWalk"]},
         # Network
         "NetScan": {"plugin": plugin_list["windows.netstat.NetStat"]},
@@ -294,9 +322,7 @@ def run_volweb_routine_windows(instance):
 
         if constructed:
             try:
-                result = DictRenderer().render(
-                    constructed.run()
-                )            
+                result = DictRenderer().render(constructed.run())
                 if runable == "PsTree":
                     for tree in result:
                         rename_pstree(tree)
@@ -304,8 +330,8 @@ def run_volweb_routine_windows(instance):
                     PsTree(evidence=instance, graph=json_pstree_artefact).save()
 
                 elif runable == "UserAssist":
-                    fill_userassist(result, instance)     
-                    
+                    fill_userassist(result, instance)
+
                 elif runable == "DeviceTree":
                     for tree in result:
                         rename_devicetree(tree)
@@ -314,7 +340,9 @@ def run_volweb_routine_windows(instance):
 
                 else:
                     for artefact in result:
-                        artefact = {x.translate({32: None}): y for x, y in artefact.items()}
+                        artefact = {
+                            x.translate({32: None}): y for x, y in artefact.items()
+                        }
                         if "__children" in artefact:
                             del artefact["__children"]
                         if "Offset(V)" in artefact:
@@ -334,19 +362,13 @@ def run_volweb_routine_windows(instance):
                     network_artefact = network_artefact + result
                 if runable == "Timeliner":
                     TimeLineChart.objects.filter(evidence_id=instance.dump_id).delete()
-                    json_timeline_graph_artefact = json.dumps(
-                        build_timeline(result)
-                    )
-                    TimeLineChart(evidence=instance, graph=json_timeline_graph_artefact).save()
+                    json_timeline_graph_artefact = json.dumps(build_timeline(result))
+                    TimeLineChart(
+                        evidence=instance, graph=json_timeline_graph_artefact
+                    ).save()
 
             except:
                 logger.error(f"Could not run {runable}")
 
-    json_netgraph_artefact = json.dumps(
-        generate_network_graph(
-            network_artefact
-        )
-    )
+    json_netgraph_artefact = json.dumps(generate_network_graph(network_artefact))
     NetGraph(evidence=instance, graph=json_netgraph_artefact).save()
-
-

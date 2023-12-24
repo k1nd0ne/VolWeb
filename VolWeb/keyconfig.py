@@ -2,21 +2,21 @@ import os
 
 
 class Database:
-    NAME = os.getenv("POSTGRES_DB", "volweb")
-    USER = os.getenv("POSTGRES_USER", "volweb")
-    PASSWORD = os.getenv("POSTGRES_PASSWORD", "volweb")
-    HOST = os.getenv("DATABASE_HOST", "localhost")
-    PORT = os.getenv("DATABASE_PORT", 5432)
+    NAME = os.getenv("POSTGRES_DB" ,None)
+    USER = os.getenv("POSTGRES_USER", None)
+    PASSWORD = os.getenv("POSTGRES_PASSWORD", None)
+    HOST = os.getenv("DATABASE_HOST", None)
+    PORT = os.getenv("DATABASE_PORT", None)
 
 
 class Secrets:
-    SECRET_KEY = os.getenv("DJANGO_SECRET", "DevSecretKey")
-    BROKER_URL = os.getenv("BROKER_URL", "amqp://admin:mypass@localhost:5672")
-    VT_API_KEY = os.getenv("VT_API_KEY", "DEV_API_KEY")
-    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "user")
-    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "password")
-    AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL", "http://127.0.0.1:9000")
+    SECRET_KEY = os.getenv("DJANGO_SECRET", None)
+    BROKER_URL = os.getenv("BROKER_URL", None)
+    VT_API_KEY = os.getenv("VT_API_KEY", None)
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", None)
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", None)
+    AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL", None)
 
 
 class Debug:
-    DEBUG_MODE = os.getenv("DEBUG_MODE")
+    DEBUG_MODE = os.getenv("DEBUG_MODE", None)

@@ -94,3 +94,6 @@
 [data-bs-theme="light"] #overview_graph {
   background-color: #ffffff;
 }
+.small-text{
+  font-size: 0.875rem;
+}

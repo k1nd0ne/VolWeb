@@ -135,6 +135,17 @@ class LdrModules(models.Model):
     Process = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+class Modules(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="windows_modules_evidence"
+    )
+    Base = models.TextField(null=True)
+    Fileoutput = models.TextField(null=True)
+    Name = models.TextField(null=True)
+    Offset = models.TextField(null=True)
+    Path = models.TextField(null=True)
+    Size = models.BigIntegerField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
 class Envars(models.Model):
     evidence = models.ForeignKey(

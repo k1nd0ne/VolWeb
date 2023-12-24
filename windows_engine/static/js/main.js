@@ -1,13 +1,12 @@
 $(document).ready(function () {
   const evidence_id = $(".main").attr("id");
-  var timeline_data;
-  let reconnectDelay = 1000; // milliseconds
-
+  reconnectDelay = 1000; // milliseconds
   connectWebSocket(evidence_id);
 
   display_pstree(evidence_id);
   display_timeline(evidence_id);
 
+  /* ======================= Overview ======================= */
   $(".card_handles").on("click", function () {
     pid = $(".process_id").attr("id");
     compute_handles(evidence_id, pid);
@@ -46,6 +45,46 @@ $(document).ready(function () {
     display_credentials(evidence_id);
   });
 
+  $(".card_process_dump").on("click", function () {
+    $("#process_dump_modal").modal("show");
+  });
+
+  $("#dump_process_pslist_btn").on("click", function () {
+    pid = $(".process_id").attr("id");
+    $("#process_dump_modal").modal("hide");
+    dump_process_pslist(evidence_id, pid);
+  });
+
+  $("#dump_process_memmaps_btn").on("click", function () {
+    pid = $(".process_id").attr("id");
+    $("#process_dump_modal").modal("hide");
+    dump_process_memmap(evidence_id, pid);
+  });
+
+
+  /* ======================= Injections and Rootkits ======================= */
+
+  $(".card_malfind").on("click", function () {
+    injections_rootkits_hide_all();
+    display_malfind(evidence_id);
+  });
+
+  $(".card_ldrmodules").on("click", function () {
+    injections_rootkits_hide_all();
+    display_ldrmodules(evidence_id);
+  });
+
+  $(".card_kernel_modules").on("click", function () {
+    injections_rootkits_hide_all();
+    display_kernel_modules(evidence_id);
+  });
+
+  $(".card_ssdt").on("click", function () {
+    console.log("TODO: Display the list from the ssdt");
+  });
+
+
+
   toastr.options = {
     closeButton: true,
     debug: false,
@@ -63,11 +102,10 @@ $(document).ready(function () {
     showMethod: "fadeIn",
     hideMethod: "fadeOut",
   };
-
-  // toastr.warning('Your toast message here');
-  // toastr.error('Your toast message here');
-  // toastr.success('Your Toast message here', 'Title');
 });
+
+
+/* ======================= WebSockets Management ======================= */
 
 function reconnectWebSocket(evidence_id) {
   toastr.info("Trying to reconnect in " + reconnectDelay / 1000 + "seconds");
@@ -80,7 +118,7 @@ function reconnectWebSocket(evidence_id) {
 
 function connectWebSocket(evidence_id) {
   const socket_volatility_tasks = new WebSocket(
-    "ws://192.168.1.25:8000/ws/volatility_tasks/windows/" + evidence_id + "/"
+    "ws://localhost:8000/ws/volatility_tasks/windows/" + evidence_id + "/"
   );
 
   socket_volatility_tasks.onopen = function () {
@@ -94,6 +132,11 @@ function connectWebSocket(evidence_id) {
       case "handles":
         handles_task_result(result.message);
         break;
+      case "pslist_dump":
+        pslist_dump_task_result(result.message);
+      case "memmap_dump":
+        process_dump_task_result(result.message);
+        break;
       default:
         break;
     }
@@ -106,6 +149,6 @@ function connectWebSocket(evidence_id) {
 
   socket_volatility_tasks.onerror = function (error) {
     toastr.warning("Engine synchronization error", error);
-    socket_alerte_modified.close(); // Close the WebSocket connection if an error occurs
+    socket_volatility_tasks.close(); // Close the WebSocket connection if an error occurs
   };
 }

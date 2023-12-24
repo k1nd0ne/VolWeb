@@ -6,12 +6,12 @@ function display_sids(evidence_id, process_id) {
     dataType: "json",
     success: function (data) {
       try {
-        sids_data.api().destroy();
+        sids_data.destroy();
       } catch {
         //Nothing to do, the datatable will be created.
       }
       try {
-        sids_data = $("#sids_datatable").dataTable({
+        sids_data = $("#sids_datatable").DataTable({
           aaData: data,
           aoColumns: [
             { data: "Process" },
@@ -29,7 +29,9 @@ function display_sids(evidence_id, process_id) {
             [25, 50, 75, "All"],
           ],
           iDisplayLength: 25,
+          searchBuilder: true,
         });
+        sids_data.searchBuilder.container().prependTo(sids_data.table().container());
       } catch {
         toastr.warning("An error occured when loading data for 'sids'.");
       }
@@ -49,13 +51,13 @@ function display_privs(evidence_id, process_id) {
     dataType: "json",
     success: function (data) {
       try {
-        privs_data.api().destroy();
+        privs_data.destroy();
       } catch {
         //Nothing to do, the datatable will be created.
       }
 
       try {
-        privs_data = $("#privs_datatable").dataTable({
+        privs_data = $("#privs_datatable").DataTable({
           aaData: data,
           aoColumns: [
             { data: "Process" },
@@ -75,7 +77,9 @@ function display_privs(evidence_id, process_id) {
             [25, 50, 75, "All"],
           ],
           iDisplayLength: 25,
+          searchBuilder: true,
         });
+        privs_data.searchBuilder.container().prependTo(privs_data.table().container());
       } catch {
         toastr.warning("An error occured when loading data for 'privileges'.");
       }
@@ -96,12 +100,12 @@ function display_envars(evidence_id, process_id) {
     dataType: "json",
     success: function (data) {
       try {
-        envars_data.api().destroy();
+        envars_data.destroy();
       } catch {
         //Nothing to do, the datatable will be created.
       }
       try {
-        envars_data = $("#envars_datatable").dataTable({
+        envars_data = $("#envars_datatable").DataTable({
           aaData: data,
           aoColumns: [
             { data: "Process" },
@@ -121,7 +125,9 @@ function display_envars(evidence_id, process_id) {
             [25, 50, 75, "All"],
           ],
           iDisplayLength: 25,
+          searchBuilder: true,
         });
+        envars_data.searchBuilder.container().prependTo(envars_data.table().container());
       } catch {
         toastr.warning("An error occured when loading data for 'envars'.");
       }
@@ -141,12 +147,12 @@ function display_dlllist(evidence_id, process_id) {
     dataType: "json",
     success: function (data) {
       try {
-        dlllist_data.api().destroy();
+        dlllist_data.destroy();
       } catch {
         //Nothing to do, the datatable will be created.
       }
       try {
-        dlllist_data = $("#dlllist_datatable").dataTable({
+        dlllist_data = $("#dlllist_datatable").DataTable({
           aaData: data,
           aoColumns: [
             { data: "Process" },
@@ -167,7 +173,9 @@ function display_dlllist(evidence_id, process_id) {
             [25, 50, 75, "All"],
           ],
           iDisplayLength: 25,
+          searchBuilder: true,
         });
+        dlllist_data.searchBuilder.container().prependTo(dlllist_data.table().container());
       } catch {
         toastr.warning("An error occured when loading data for 'dlllist'.");
       }
@@ -187,13 +195,13 @@ function display_network(evidence_id) {
     dataType: "json",
     success: function (data) {
       try {
-        netstat_data.api().destroy();
+        netstat_data.destroy();
       } catch {
         //Nothing to do, the datatable will be created.
       }
 
       try {
-        netstat_data = $("#netstat_datatable").dataTable({
+        netstat_data = $("#netstat_datatable").DataTable({
           aaData: data,
           aoColumns: [
             { data: "Proto" },
@@ -217,7 +225,9 @@ function display_network(evidence_id) {
             [25, 50, 75, "All"],
           ],
           iDisplayLength: 25,
+          searchBuilder: true,
         });
+        netstat_data.searchBuilder.container().prependTo(netstat_data.table().container());
       } catch {
         toastr.warning("An error occured when loading data for 'netstat'.");
       }
@@ -234,12 +244,12 @@ function display_network(evidence_id) {
     dataType: "json",
     success: function (data) {
       try {
-        netscan_data.api().destroy();
+        netscan_data.destroy();
       } catch {
         //Nothing to do, the datatable will be created.
       }
       try {
-        netscan_data = $("#netscan_datatable").dataTable({
+        netscan_data = $("#netscan_datatable").DataTable({
           aaData: data,
           aoColumns: [
             { data: "Proto" },
@@ -263,7 +273,9 @@ function display_network(evidence_id) {
             [25, 50, 75, "All"],
           ],
           iDisplayLength: 25,
+          searchBuilder: true,
         });
+        netscan_data.searchBuilder.container().prependTo(netscan_data.table().container());
       } catch {
         toastr.warning("An error occured when loading data for 'netscan'.");
       }
@@ -424,12 +436,12 @@ function display_timeliner(evidence_id, timestamp) {
     dataType: "json",
     success: function (data) {
       try {
-        timeline_data.api().destroy();
+        timeline_data.destroy();
       } catch {
         //Nothing to do, the datatable will be created.
       }
       try {
-        timeline_data = $("#timeline_datatable").dataTable({
+        timeline_data = $("#timeline_datatable").DataTable({
           aaData: data,
           aoColumns: [
             { data: "CreatedDate" },
@@ -450,7 +462,10 @@ function display_timeliner(evidence_id, timestamp) {
             [25, 50, 75, "All"],
           ],
           iDisplayLength: 25,
+          searchBuilder: true,
         });
+        timeline_data.searchBuilder.container().prependTo(timeline_data.table().container());
+
       } catch {
         toastr.error("The timline data could not be displayed.");
       }
@@ -462,6 +477,10 @@ function display_timeliner(evidence_id, timestamp) {
 }
 
 function display_credentials(evidence_id) {
+  /* 
+    Get the hashdump, lsadump, cachedump data from the API and display them
+    using the "build_credential_card" function from visualisation.js
+  */
   $.ajax({
     type: "GET",
     url: "/api/windows/" + evidence_id + "/hashdump/",
@@ -506,70 +525,159 @@ function display_credentials(evidence_id) {
   $("#credentials").modal("show");
 }
 
-function build_credential_card(plugin, data) {
-  const card_div = document.createElement("div");
-  card_div.setAttribute("class", "card shadow border-start-primary py-2 mt-2");
 
-  const card_body = document.createElement("div");
-  card_body.setAttribute("class", "card-body");
+function display_malfind(evidence_id) {
+  /* 
+    Get the malfind data from the API and display them using the 
+    "build_malfind_process_card" function from visualisation.js
+  */
+  $.ajax({
+    type: "GET",
+    url: "/api/windows/" + evidence_id + "/malfind/",
+    dataType: "json",
+    beforeSend: function () {
+      $("#malfind_process_list").empty();
+      $("#malfind_process_menu").show();
+      $("#malfind_process_loading").show();
+    },
+    success: function (data, status, xhr) {
+      if (data.length > 0){
+        $.each(data, function (_, value) {
+          build_malfind_process_card(value);
+        });
+      }
+      else{
+        let div = document.getElementById("malfind_process_list").textContent="Nothing was found by Malfind";
+      }
 
-  const card_row = document.createElement("div");
-  card_row.setAttribute("class", "row align-items-center d-flex no-gutters");
-
-  const card_col1 = document.createElement("div");
-  card_col1.setAttribute("class", "col-auto align-items-center d-flex");
-
-  const card_icon = document.createElement("i");
-  card_icon.setAttribute("class", "fas fa-user fa-2x text-gray-600");
-
-  card_col1.appendChild(card_icon);
-
-  const card_col2 = document.createElement("div");
-  card_col2.setAttribute("class", "col me-2");
-
-  const card_title = document.createElement("span");
-  card_title.setAttribute("class", "text-uppercase fw-bold text-xs mb-1");
-  const card_elements = document.createElement("div");
-  card_elements.setAttribute("class", "list-group-item");
-
-  card_row.appendChild(card_col1);
-  card_col1.appendChild(card_title);
-  card_col2.appendChild(card_elements);
-  card_row.appendChild(card_col2);
-  card_body.appendChild(card_row);
-  card_div.appendChild(card_body);
-
-  const li_1 = document.createElement("li");
-  const li_2 = document.createElement("li");
-  const li_3 = document.createElement("li");
-
-  if (plugin == "Hashdump") {
-    card_title.textContent = data.User;
-    li_1.textContent = "rid : " + data.rid;
-    li_2.textContent = "lmhash : " + data.lmhash;
-    li_3.textContent = "nthash : " + data.nthash;
-    card_elements.appendChild(li_1);
-    card_elements.appendChild(li_2);
-    card_elements.appendChild(li_3);
-    document.getElementById("credentials_cards_1").appendChild(card_div);
-  }
-  if (plugin == "Cachedump") {
-    card_title.textContent = data.UserName;
-    li_1.textContent = "Domain : " + data.Domain;
-    li_2.textContent = "Domain Name : " + data.Domainname;
-    li_3.textContent = "Hash : " + data.Hash;
-    card_elements.appendChild(li_1);
-    card_elements.appendChild(li_2);
-    card_elements.appendChild(li_3);
-    document.getElementById("credentials_cards_2").appendChild(card_div);
-  }
-
-  if (plugin == "Lsadump") {
-    card_title.textContent = data.Key;
-    li_1.textContent = "Secret (base64) : " + data.Secret;
-    li_2.textContent = "Hex : " + data.Hex;
-    card_elements.appendChild(li_1);
-    card_elements.appendChild(li_2);
-    document.getElementById("credentials_card_3").appendChild(card_div);
-  }
+    },
+    complete: function (data) {
+      $("#malfind_process_loading").hide();
+      $("#malfind_process_list").show();
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred while dumping the process : " + error);
+    },
+  });
 }
+
+function display_ldrmodules(evidence_id) {
+  /* 
+    Get the ldrmodules data from the API and display them using datatables  
+  */
+  $.ajax({
+    type: "GET",
+    url: "/api/windows/" + evidence_id + "/ldrmodules/",
+    dataType: "json",
+    beforeSend: function () {
+      $("#ldrmodules_datatable").hide();
+      $('#ldrmodule_details').show();
+      $('#ldrmodules_process_loading').show();
+    },
+    success: function (data, status, xhr) {
+      if (data.length > 0){
+        try {
+          ldrmodules_data.destroy();
+        } catch {
+          //Nothing to do, the datatable will be created.
+        }
+        try {
+          ldrmodules_data = $("#ldrmodules_datatable").DataTable({
+            aaData: data,
+            aoColumns: [
+              { data: "Base" },
+              { data: "Process" },
+              { data: "Pid" },
+              { data: "MappedPath" },
+              { data: "InInit" },
+              { data: "InLoad" },
+              { data: "InMem" },
+              {
+                mData: "id",
+                mRender: function (id, type, row) {
+                  return generate_tag("ldrmodules", row);
+                },
+              },
+            ],
+            aLengthMenu: [
+              [25, 50, 75, -1],
+              [25, 50, 75, "All"],
+            ],
+            iDisplayLength: 25,
+            searchBuilder: true,
+          });
+          ldrmodules_data.searchBuilder.container().prependTo(ldrmodules_data.table().container());
+
+        } catch {
+          toastr.error("The ldrmodules data could not be displayed.");
+        }
+      }
+    },
+    complete: function (data) {
+      $("#ldrmodules_process_loading").hide();
+      $("#ldrmodules_datatable").show();
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred while dumping the process : " + error);
+    },
+  });
+}
+
+
+function display_kernel_modules(evidence_id) {
+  /* 
+    Get the kernel_modules data from the API and display them using datatables  
+  */
+  $.ajax({
+    type: "GET",
+    url: "/api/windows/" + evidence_id + "/modules/",
+    dataType: "json",
+    beforeSend: function () {
+      $("#kernel_modules_datatable").hide();
+      $('#kernel_modules_details').show();
+      $('#kernel_modules_loading').show();
+    },
+    success: function (data, status, xhr) {
+      console.log(data);
+      if (data.length > 0){
+        try {
+          kernel_modules_data.destroy();
+        } catch {
+          //Nothing to do, the datatable will be created.
+        }
+
+          kernel_modules_data = $("#kernel_modules_datatable").DataTable({
+            aaData: data,
+            aoColumns: [
+              { data: "Base" },
+              { data: "Name" },
+              { data: "Offset" },
+              { data: "Path" },
+              { data: "Size" },
+              {
+                mData: "id",
+                mRender: function (id, type, row) {
+                  return generate_tag("modules", row);
+                },
+              },
+            ],
+            aLengthMenu: [
+              [25, 50, 75, -1],
+              [25, 50, 75, "All"],
+            ],
+            iDisplayLength: 25,
+            searchBuilder: true,
+          });
+          kernel_modules_data.searchBuilder.container().prependTo(kernel_modules_data.table().container());
+      }
+    },
+    complete: function (data) {
+      $("#kernel_modules_loading").hide();
+      $("#kernel_modules_datatable").show();
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred while dumping the process : " + error);
+    },
+  });
+}
+

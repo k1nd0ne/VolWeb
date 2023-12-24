@@ -1,0 +1,174 @@
+<div class="row mt-2">
+    <div class="col-md-3 col-xl-2 col-sm-3">
+        <div class="card shadow border-start-primary">
+            <div class="card-header p-2">
+                <div class="row align-items-center no-gutters">
+                    <div class="col-auto"><i class="fas fa-microscope fa-2x "></i></div>
+                    <div class="col me-2">
+                        <div class="text-uppercase fw-bold text-xs mb-1"><span>Utilities</span></div>
+                    </div>
+                </div>
+                <hr class="horizontal dark mt-0">
+                <div class="card-body p-1">
+
+                    <div class="card shadow border-start-primary card_clickable card_malfind m-2">
+                        <div class="card-body p-2">
+                            <div class="row align-items-center no-gutters">
+                                <div class="col-auto">
+                                    <i class="fas fa-bugs "></i>
+                                </div>
+                                <div class="col me-2">
+                                    <span class="fw-bold text-xs">Malfind</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow border-start-primary card_clickable card_ldrmodules m-2">
+                        <div class="card-body p-2">
+                            <div class="row align-items-center no-gutters">
+                                <div class="col-auto">
+                                    <i class="fas fa-gears "></i>
+                                </div>
+                                <div class="col me-2">
+                                    <span class="fw-bold text-xs">Process modules</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow border-start-primary card_clickable card_kernel_modules m-2">
+                        <div class="card-body p-2">
+                            <div class="row align-items-center no-gutters">
+                                <div class="col-auto">
+                                    <i class="fab fa-codepen "></i>
+                                </div>
+                                <div class="col me-2">
+                                    <span class="fw-bold text-xs">Kernel modules</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow border-start-primary card_clickable card_ssdt m-2">
+                        <div class="card-body p-2">
+                            <div class="row align-items-center no-gutters">
+                                <div class="col-auto">
+                                    <i class="fas fa-diagram-predecessor "></i>
+                                </div>
+                                <div class="col me-2">
+                                    <span class="fw-bold text-xs">System Call Table</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9 col-xl-10 col-sm-9 hide-by-default" id="ldrmodule_details">
+        <div class="card">
+            <div class="card-header">
+                Process modules
+            </div>
+            <div class="card-body">
+                <div class="text-center hide-by-default" id="ldrmodules_process_loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <table id="ldrmodules_datatable" class="table table-sm table-responsive table-hover hide-by-default"
+                    style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>Base</th>
+                            <th>Process</th>
+                            <th>Pid</th>
+                            <th>MappedPath</th>
+                            <th>InInit</th>
+                            <th>InLoad</th>
+                            <th>InMem</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9 col-xl-10 col-sm-9 hide-by-default" id="kernel_modules_details">
+        <div class="card">
+            <div class="card-header">
+                Kernel modules
+            </div>
+            <div class="card-body">
+                <div class="text-center hide-by-default" id="kernel_modules_loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <table id="kernel_modules_datatable" class="table table-sm table-responsive table-hover hide-by-default"
+                    style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>Base</th>
+                            <th>Name</th>
+                            <th>Offset</th>
+                            <th>Path</th>
+                            <th>Size</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-xl-2 col-sm-3 hide-by-default" id="malfind_process_menu">
+        <div class="text-center hide-by-default" id="malfind_process_loading">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <div id="malfind_process_list" class="hide-by-default"></div>
+    </div>
+
+    <div class="col-md-6 col-xl-8 col-sm-6 hide-by-default" id="malfind_details">
+        <div class="card">
+            <div class="card-header">
+                <div class="row justify-content-center small-text">
+                    <div class="col-3">
+                        <span>Start VPN : </span><code id="malfind_start_vpn"></code>
+                    </div>
+                    <div class="col-3">
+                        <span>End VPN : </span><code id="malfind_end_vpn"></code>
+                    </div>
+                    <div class="col-3">
+                        <span>Tag : </span><code id="malfind_tag"></code>
+                    </div>
+                    <div class="col-3">
+                        <span>Protection : </span><code id="malfind_protection"></code>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <code><pre id="malfind_hexdump"></pre></code>
+                    </div>
+                    <div class="col-6">
+                        <code><pre id="malfind_disasm"></pre></code>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>

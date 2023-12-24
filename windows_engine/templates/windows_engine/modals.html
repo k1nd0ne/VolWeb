@@ -3,19 +3,10 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5">Security IDs</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <table
-          id="sids_datatable"
-          class="table table-sm table-responsive table-hover"
-          style="width: 100%"
-        >
+        <table id="sids_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
           <thead>
             <tr>
               <th>Process</th>
@@ -36,19 +27,10 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5">Handles</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <table
-          id="handles_datatable"
-          class="table table-sm table-responsive table-hover"
-          style="width: 100%"
-        >
+        <table id="handles_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
           <thead>
             <tr>
               <th>Process</th>
@@ -71,19 +53,10 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5">Privileges</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <table
-          id="privs_datatable"
-          class="table table-sm table-responsive table-hover"
-          style="width: 100%"
-        >
+        <table id="privs_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
           <thead>
             <tr>
               <th>Process</th>
@@ -105,20 +78,11 @@
   <div class="modal-dialog modal-fullscreen">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5">Privileges</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <h1 class="modal-title fs-5">Envars</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <table
-          id="envars_datatable"
-          class="table table-sm table-responsive table-hover"
-          style="width: 100%"
-        >
+        <table id="envars_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
           <thead>
             <tr>
               <th>Process</th>
@@ -141,19 +105,10 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5">DLL list</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <table
-          id="dlllist_datatable"
-          class="table table-sm table-responsive table-hover"
-          style="width: 100%"
-        >
+        <table id="dlllist_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
           <thead>
             <tr>
               <th>Process</th>
@@ -177,12 +132,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5">Network</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="row">
@@ -194,28 +144,15 @@
         <div class="accordion" id="netaccordion">
           <div class="accordion-item">
             <h2 class="accordion-header" id="flush-headingOne">
-              <button
-                class="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#flush-collapseOne"
-                aria-expanded="false"
-              >
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#flush-collapseOne" aria-expanded="false">
                 <i class="fa fa-circle-nodes text-gray-600"></i>&nbsp;NetScan
               </button>
             </h2>
-            <div
-              id="flush-collapseOne"
-              class="accordion-collapse collapse"
-              aria-labelledby="flush-headingOne"
-              data-bs-parent="#netaccordion"
-            >
+            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+              data-bs-parent="#netaccordion">
               <div class="accordion-body">
-                <table
-                  id="netscan_datatable"
-                  class="table table-sm table-responsive table-hover"
-                  style="width: 100%"
-                >
+                <table id="netscan_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
                   <thead>
                     <tr>
                       <th>Proto</th>
@@ -237,28 +174,15 @@
           </div>
           <div class="accordion-item">
             <h2 class="accordion-header" id="flush-headingTwo">
-              <button
-                class="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#flush-collapseTwo"
-                aria-expanded="false"
-              >
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#flush-collapseTwo" aria-expanded="false">
                 <i class="fa fa-diagram-project text-gray-600"></i>&nbsp;NetStat
               </button>
             </h2>
-            <div
-              id="flush-collapseTwo"
-              class="accordion-collapse collapse show"
-              aria-labelledby="flush-headingTwo"
-              data-bs-parent="#netaccordion"
-            >
+            <div id="flush-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="flush-headingTwo"
+              data-bs-parent="#netaccordion">
               <div class="accordion-body">
-                <table
-                  id="netstat_datatable"
-                  class="table table-sm table-responsive table-hover"
-                  style="width: 100%"
-                >
+                <table id="netstat_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
                   <thead>
                     <tr>
                       <th>Proto</th>
@@ -289,12 +213,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5">Credentials</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="row">
@@ -304,6 +223,25 @@
 
           <div id="credentials_card_3" class="col-12"></div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="process_dump_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6">Dump <code class="text-uppercase fw-bold process_title"></code></h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Which dumping method would you like to use ?
+      </div>
+      <div class="modal-footer d-flex justify-content-center align-items-center">
+        <button href="#" id="dump_process_pslist_btn" class="btn btn-sm btn-outline-info">PsList</button>
+        <button href="#" id="dump_process_memmaps_btn" class="btn btn-sm btn-outline-primary">Memmap</button>
       </div>
     </div>
   </div>

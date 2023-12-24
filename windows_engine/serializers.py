@@ -104,6 +104,20 @@ class HandlesSerializer(serializers.ModelSerializer):
         model = Handles
         fields = "__all__"
 
+class MalfindSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Malfind
+        fields = "__all__"
+
+class LdrModulesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LdrModules
+        fields = "__all__"
+
+class ModulesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Modules
+        fields = "__all__"
 
 class TasksSerializer(serializers.ModelSerializer):
     task_kwargs = serializers.JSONField

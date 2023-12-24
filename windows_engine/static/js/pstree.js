@@ -53,20 +53,52 @@ function display_process_info(process, evidence_id) {
     success: function (tasks, status, xhr) {
       $(".card_handles").show();
       $(".loading_handles").hide();
+      $(".card_process_dump").show();
+      $(".loading_process_dump").hide();
 
       tasks.forEach(function (task) {
         switch (task.task_name) {
           case "windows_engine.tasks.compute_handles":
             test = task.task_kwargs;
-            const result = JSON.parse(test.substring(1, test.length - 1));
+            result = JSON.parse(test.substring(1, test.length - 1));
             if (
               result.pid == process.PID &&
               result.evidence_id == evidence_id &&
-              task.status != "SUCCESS"
+              task.status != "SUCCESS" && 
+              task.status != "FAILURE"
             ) {
               $(".card_handles").hide();
               $(".loading_handles").show();
             }
+            break;
+          case "windows_engine.tasks.dump_process_memmap":
+            test = task.task_kwargs;
+            result = JSON.parse(test.substring(1, test.length - 1));
+            if (
+              result.pid == process.PID &&
+              result.evidence_id == evidence_id &&
+              task.status != "SUCCESS" && 
+              task.status != "FAILURE"
+            ) {
+              $(".card_process_dump").hide();
+              $(".loading_process_dump").show();
+            }
+            break;
+            
+          case "windows_engine.tasks.dump_process_pslist":
+            test = task.task_kwargs;
+            result = JSON.parse(test.substring(1, test.length - 1));
+            if (
+              result.pid == process.PID &&
+              result.evidence_id == evidence_id &&
+              task.status != "SUCCESS" && 
+              task.status != "FAILURE"
+            ) {
+              $(".card_process_dump").hide();
+              $(".loading_process_dump").show();
+            }
+            
+            break;       
         }
       });
       $(".process_id").attr("id", process.PID);

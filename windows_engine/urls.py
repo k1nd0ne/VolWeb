@@ -68,8 +68,19 @@ urlpatterns = [
         views.HandlesApiView.as_view(),
     ),
     path(
+        "tasks/windows/<int:dump_id>/dump/<int:pid>/pslist/",
+        views.PsListDumpApiView.as_view(),
+    ),
+    path(
+        "tasks/windows/<int:dump_id>/dump/<int:pid>/memmap/",
+        views.MemmapDumpApiView.as_view(),
+    ),
+    path(
         "api/windows/<int:dump_id>/handles/<int:artifact_id>/<str:tag>/",
         views.HandlesApiView.as_view(),
     ),
     path("tasks/windows/tasks/", views.TasksApiView.as_view()),
+    path("api/windows/<int:dump_id>/malfind/", views.MalfindApiView.as_view()),
+    path("api/windows/<int:dump_id>/ldrmodules/", views.LdrModulesApiView.as_view()),
+    path("api/windows/<int:dump_id>/modules/", views.ModulesApiView.as_view()),
 ]

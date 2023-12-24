@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from windows_engine.tasks import compute_handles
+from windows_engine.tasks import compute_handles, dump_process_pslist, dump_process_memmap
 from windows_engine.models import *
 from evidences.models import Evidence
 from django_celery_results.models import TaskResult 
@@ -280,7 +280,7 @@ class HashdumpApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested netgraph data
+        Give the requested Hashdump data
         """
         data = Hashdump.objects.filter(evidence_id=dump_id)
         serializer = HashdumpSerializer(data, many=True)
@@ -292,7 +292,7 @@ class CachedumpApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested netgraph data
+        Give the requested Cachedump data
         """
         data = Cachedump.objects.filter(evidence_id=dump_id)
         serializer = CachedumpSerializer(data, many=True)
@@ -304,10 +304,44 @@ class LsadumpApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested netgraph data
+        Give the requested Lsadump data
         """
         data = Lsadump.objects.filter(evidence_id=dump_id)
         serializer = LsadumpSerializer(data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class MalfindApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested malfind data
+        """
+        data = Malfind.objects.filter(evidence_id=dump_id)
+        serializer = MalfindSerializer(data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LdrModulesApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested ldrmodules data
+        """
+        data = LdrModules.objects.filter(evidence_id=dump_id)
+        serializer = LdrModulesSerializer(data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ModulesApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested modules data
+        """
+        data = Modules.objects.filter(evidence_id=dump_id)
+        serializer = ModulesSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -339,6 +373,26 @@ class HandlesApiView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PsListDumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, _request, dump_id, pid, *args, **kwargs):
+        """
+        Dump the requested process using the pslist plugin
+        """
+        dump_process_pslist.delay(evidence_id=dump_id, pid=pid)
+        return Response({}, status=status.HTTP_201_CREATED)
+
+class MemmapDumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, _request, dump_id, pid, *args, **kwargs):
+        """
+        Dump the requested process using the pslist plugin
+        """
+        dump_process_memmap.delay(evidence_id=dump_id, pid=pid)
+        return Response({}, status=status.HTTP_201_CREATED)
 
 class TasksApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
