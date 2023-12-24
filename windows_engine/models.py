@@ -135,6 +135,7 @@ class LdrModules(models.Model):
     Process = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+
 class Modules(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="windows_modules_evidence"
@@ -146,6 +147,23 @@ class Modules(models.Model):
     Path = models.TextField(null=True)
     Size = models.BigIntegerField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+
+class SvcScan(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="windows_svcscan_evidence"
+    )
+    Binary = models.TextField(null=True)
+    Display = models.TextField(null=True)
+    Name = models.TextField(null=True)
+    Offset = models.TextField(null=True)
+    Order = models.TextField(null=True)
+    PID = models.BigIntegerField(null=True)
+    Start = models.TextField(null=True)
+    State = models.TextField(null=True)
+    Type = models.TextField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
 
 class Envars(models.Model):
     evidence = models.ForeignKey(
@@ -375,3 +393,13 @@ class VadWalk(models.Model):
     VTag = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+
+class SSDT(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="windows_ssdt_evidence"
+    )
+    Address = models.TextField(null=True)
+    Index = models.BigIntegerField(null=True)
+    Module = models.TextField(null=True)
+    Symbol = models.TextField(null=True)
+    Tag = models.CharField(null=True, max_length=11, choices=TAGS)

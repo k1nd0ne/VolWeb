@@ -274,6 +274,17 @@ class NetGraphApiView(APIView):
         serializer = NetGraphSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class SvcScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested modules data
+        """
+        data = SvcScan.objects.filter(evidence_id=dump_id)
+        serializer = SvcScanSerializer(data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class HashdumpApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -342,6 +353,28 @@ class ModulesApiView(APIView):
         """
         data = Modules.objects.filter(evidence_id=dump_id)
         serializer = ModulesSerializer(data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SSDTApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested SSDT data
+        """
+        data = SSDT.objects.filter(evidence_id=dump_id)
+        serializer = SSDTSerializer(data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class FileScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested FileScan data
+        """
+        data = FileScan.objects.filter(evidence_id=dump_id)
+        serializer = FileScanSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

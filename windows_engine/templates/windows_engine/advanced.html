@@ -129,6 +129,36 @@
         </div>
     </div>
 
+    <div class="col-md-9 col-xl-10 col-sm-9 hide-by-default" id="ssdt_details">
+        <div class="card">
+            <div class="card-header">
+                SSDT
+            </div>
+            <div class="card-body">
+                <div class="text-center hide-by-default" id="ssdt_loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <table id="ssdt_datatable" class="table table-sm table-responsive table-hover hide-by-default"
+                    style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>Address</th>
+                            <th>Index</th>
+                            <th>Module</th>
+                            <th>Symbol</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
     <div class="col-md-3 col-xl-2 col-sm-3 hide-by-default" id="malfind_process_menu">
         <div class="text-center hide-by-default" id="malfind_process_loading">
             <div class="spinner-border" role="status">

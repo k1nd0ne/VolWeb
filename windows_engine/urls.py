@@ -83,4 +83,8 @@ urlpatterns = [
     path("api/windows/<int:dump_id>/malfind/", views.MalfindApiView.as_view()),
     path("api/windows/<int:dump_id>/ldrmodules/", views.LdrModulesApiView.as_view()),
     path("api/windows/<int:dump_id>/modules/", views.ModulesApiView.as_view()),
+    path("api/windows/<int:dump_id>/ssdt/", views.SSDTApiView.as_view()),
+    path("api/windows/<int:dump_id>/svcscan/", views.SvcScanApiView.as_view()),
+    path("api/windows/<int:dump_id>/filescan/", views.FileScanApiView.as_view()),
+
 ]

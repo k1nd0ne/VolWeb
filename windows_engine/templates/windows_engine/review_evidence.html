@@ -42,9 +42,9 @@
   <div class="container-fluid">
     <div class="navbar-brand">
       <i class="fas fa-suitcase"></i>
-      Case <span class="case_name"></span>
+      {{evidence.dump_linked_case.case_name}} <span class="case_name"></span>
       <i class="fas fa-chevron-right"></i>
-      Evidence <span class="evidence_name"></span>
+      {{evidence.dump_name}} <span class="evidence_name"></span>
     </div>
     {% csrf_token %}
     <div class="collapse navbar-collapse" id="navbarNav">

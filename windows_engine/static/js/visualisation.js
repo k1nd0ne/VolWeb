@@ -191,7 +191,7 @@ function build_malfind_process_card(data) {
 
   const cardDiv = document.createElement('div');
   cardDiv.classList.add('card', 'shadow', 'border-start-primary', 'card_clickable', 'm-2');
-  cardDiv.id = "malfind_process_" + data.PID;
+  cardDiv.id = "malfind_process_" + data.id;
 
   const cardBodyDiv = document.createElement('div');
   cardBodyDiv.classList.add('card-body', 'p-2');
@@ -245,6 +245,7 @@ function display_malfind_details(data) {
 function injections_rootkits_hide_all() {
   $("#ldrmodule_details").hide();
   $("#kernel_modules_details").hide();
+  $("#ssdt_details").hide();
   $("#malfind_process_menu").hide();
   $("#malfind_details").hide();
 }

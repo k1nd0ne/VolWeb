@@ -263,6 +263,7 @@ def run_volweb_routine_windows(instance):
         "LdrModules": {"plugin": plugin_list["windows.ldrmodules.LdrModules"]},
         "Modules": {"plugin": plugin_list["windows.modules.Modules"]},
         "VadWalk": {"plugin": plugin_list["windows.vadwalk.VadWalk"]},
+        "SvcScan": {"plugin": plugin_list["windows.svcscan.SvcScan"]},
         # Network
         "NetScan": {"plugin": plugin_list["windows.netstat.NetStat"]},
         "NetStat": {"plugin": plugin_list["windows.netscan.NetScan"]},
@@ -278,6 +279,7 @@ def run_volweb_routine_windows(instance):
         # # Malware analysis
         "Timeliner": {"plugin": plugin_list["timeliner.Timeliner"]},
         "Malfind": {"plugin": plugin_list["windows.malfind.Malfind"]},
+        "SSDT": {"plugin": plugin_list["windows.ssdt.SSDT"]},
         "SkeletonKeyCheck": {
             "plugin": plugin_list["windows.skeleton_key_check.Skeleton_Key_Check"]
         },

@@ -41,8 +41,16 @@ $(document).ready(function () {
     display_sessions(evidence_id, pid);
   });
 
+  $(".card_svcscan").on("click", function () {
+    display_svcscan(evidence_id);
+  });
+
   $(".card_credentials").on("click", function () {
     display_credentials(evidence_id);
+  });
+
+  $(".card_filescan").on("click", function () {
+      display_filescan(evidence_id);
   });
 
   $(".card_process_dump").on("click", function () {
@@ -80,7 +88,8 @@ $(document).ready(function () {
   });
 
   $(".card_ssdt").on("click", function () {
-    console.log("TODO: Display the list from the ssdt");
+    injections_rootkits_hide_all();
+    display_ssdt(evidence_id);
   });
 
 

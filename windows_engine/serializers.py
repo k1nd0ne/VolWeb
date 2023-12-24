@@ -44,6 +44,11 @@ class PrivsSerializer(serializers.ModelSerializer):
         model = Privs
         fields = "__all__"
 
+class SvcScanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SvcScan
+        fields = "__all__"
+
 
 class EnvarsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -117,6 +122,16 @@ class LdrModulesSerializer(serializers.ModelSerializer):
 class ModulesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Modules
+        fields = "__all__"
+
+class SSDTSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SSDT
+        fields = "__all__"
+
+class FileScanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FileScan
         fields = "__all__"
 
 class TasksSerializer(serializers.ModelSerializer):

@@ -139,6 +139,60 @@ function display_envars(evidence_id, process_id) {
   });
 }
 
+function display_svcscan(evidence_id) {
+  $("#svcscan").modal("show");
+  $.ajax({
+    type: "GET",
+    url: "/api/windows/" + evidence_id + "/svcscan/",
+    dataType: "json",
+    success: function (data) {
+      try {
+        svcscan_data.destroy();
+      } catch {
+        // Nothing to do, the datatable will be created.
+      }
+      try {
+        svcscan_data = $("#svcscan_datatable").DataTable({
+          aaData: data,
+          aoColumns: [
+            { data: "Offset" },
+            { data: "PID" },
+            { data: "Order" },
+            { data: "Name" },
+            { data: "Display" },
+            { data: "Binary" },
+            { data: "Start" },
+            { data: "State" },
+            { data: "Type" },
+            {
+              mData: "id",
+              mRender: function (id, type, row) {
+                return generate_tag("svcscan", row);
+              },
+            },
+          ],
+          aLengthMenu: [
+            [25, 50, 75, -1],
+            [25, 50, 75, "All"],
+          ],
+          iDisplayLength: 25,
+          searchBuilder: true,
+        });
+        svcscan_data.searchBuilder.container().prependTo(svcscan_data.table().container());
+      } catch {
+        toastr.warning("An error occured when loading data for 'svcscan'.");
+      }
+      $("#svcscan_datatable").show("fast");
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred : " + error);
+    },
+  });
+}
+
+
+
+
 function display_dlllist(evidence_id, process_id) {
   $("#dlllist").modal("show");
   $.ajax({
@@ -180,6 +234,57 @@ function display_dlllist(evidence_id, process_id) {
         toastr.warning("An error occured when loading data for 'dlllist'.");
       }
       $("#dlllist_datatable").show("fast");
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred : " + error);
+    },
+  });
+}
+
+function display_filescan(evidence_id) {
+  $("#filescan").modal("show");
+  $.ajax({
+    type: "GET",
+    url: "/api/windows/" + evidence_id + "/filescan/",
+    dataType: "json",
+    success: function (data) {
+      try {
+        filescan_data.destroy();
+      } catch {
+        //Nothing to do, the datatable will be created.
+      }
+      try {
+        filescan_data = $("#filescan_datatable").DataTable({
+          aaData: data,
+          aoColumns: [
+            { data: "Offset" },
+            { data: "Name" },
+            { data: "Size" },
+            {
+              mData: "id",
+              mRender: function (id, type, row) {
+                return "ACTIONS HERE"
+              },
+            },
+            {
+              mData: "id",
+              mRender: function (id, type, row) {
+                return generate_tag("filescan", row);
+              },
+            },
+          ],
+          aLengthMenu: [
+            [25, 50, 75, -1],
+            [25, 50, 75, "All"],
+          ],
+          iDisplayLength: 25,
+          searchBuilder: true,
+        });
+        filescan_data.searchBuilder.container().prependTo(filescan_data.table().container());
+      } catch {
+        toastr.warning("An error occured when loading data for 'filescan'.");
+      }
+      $("#filescan_datatable").show("fast");
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -556,7 +661,7 @@ function display_malfind(evidence_id) {
       $("#malfind_process_list").show();
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred while dumping the process : " + error);
+      toastr.error("An error occurred while fetching result : " + error);
     },
   });
 }
@@ -618,7 +723,7 @@ function display_ldrmodules(evidence_id) {
       $("#ldrmodules_datatable").show();
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred while dumping the process : " + error);
+      toastr.error("An error occurred while fetching the modules : " + error);
     },
   });
 }
@@ -676,7 +781,63 @@ function display_kernel_modules(evidence_id) {
       $("#kernel_modules_datatable").show();
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred while dumping the process : " + error);
+      toastr.error("An error occurred while fetching the modules : " + error);
+    },
+  });
+}
+
+function display_ssdt(evidence_id) {
+  /* 
+    Get the ssdt data from the API and display them using datatables  
+  */
+  $.ajax({
+    type: "GET",
+    url: "/api/windows/" + evidence_id + "/ssdt/",
+    dataType: "json",
+    beforeSend: function () {
+      $("#ssdt_datatable").hide();
+      $('#ssdt_details').show();
+      $('#ssdt_loading').show();
+    },
+    success: function (data, status, xhr) {
+      console.log(data);
+      if (data.length > 0){
+        try {
+          ssdt_data.destroy();
+        } catch {
+          //Nothing to do, the datatable will be created.
+        }
+
+          ssdt_data = $("#ssdt_datatable").DataTable({
+            aaData: data,
+            aoColumns: [
+              { data: "Address" },
+              { data: "Index" },
+              { data: "Module" },
+              { data: "Symbol" },
+              {
+                mData: "id",
+                mRender: function (id, type, row) {
+                  return generate_tag("ssdt", row);
+                },
+              },
+            ],
+            aLengthMenu: [
+              [25, 50, 75, -1],
+              [25, 50, 75, "All"],
+            ],
+            iDisplayLength: 25,
+            searchBuilder: true,
+          });
+          ssdt_data.searchBuilder.container().prependTo(ssdt_data.table().container());
+      }
+    },
+    complete: function (data) {
+      $("#ssdt_loading").hide();
+      $("#ssdt_datatable").show();
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred while fetching the ssdt : " + error);
     },
   });
 }
