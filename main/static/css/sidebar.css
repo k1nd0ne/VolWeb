@@ -9,6 +9,7 @@
 .active.fas.fa-table.icon.icon-shape.icon-sm.border-radius-md {
   color: var(--bs-light);
 }
+
 .active.fas.fa-memory.icon.icon-shape.icon-sm.border-radius-md {
   color: var(--bs-light);
 }
@@ -30,6 +31,13 @@
 }
 
 
+[data-bs-theme=light] .fas.fa-suitcase.icon.icon-shape.icon-sm.border-radius-md {
+  color: var(--bs-dark);
+}
+
+[data-bs-theme=dark] .fas.fa-suitcase.icon.icon-shape.icon-sm.border-radius-md {
+  color: var(--bs-light);
+}
 
 .icon {
   display: inline-block;
@@ -72,7 +80,7 @@ hr.horizontal {
 .nav-link {
   display: block;
   padding: .5rem 1rem;
-  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+  transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
   border-radius: .5rem;
 }
 
@@ -96,12 +104,12 @@ hr.horizontal {
 }
 
 
-[data-bs-theme=light]  hr.horizontal.dark {
-  background-image: linear-gradient(90deg,transparent,rgba(0,0,0,.4),transparent);
+[data-bs-theme=light] hr.horizontal.dark {
+  background-image: linear-gradient(90deg, transparent, rgba(0, 0, 0, .4), transparent);
 }
 
-[data-bs-theme=dark]  hr.horizontal.dark {
-  background-image: linear-gradient(90deg,transparent,rgba(255, 255, 255, 0.4),transparent);
+[data-bs-theme=dark] hr.horizontal.dark {
+  background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
 }
 
 
@@ -126,15 +134,15 @@ html * {
 }
 
 .text-xs {
-  font-size: .75rem!important;
+  font-size: .75rem !important;
 }
 
 
 .font-weight-bolder {
-  font-weight: 700!important;
+  font-weight: 700 !important;
 }
 
-.nav-item{
+.nav-item {
   width: 200px;
 }
 
@@ -162,20 +170,14 @@ html * {
 }
 
 .nav-link.active .icon {
-  background-image: linear-gradient(310deg,#101010,#ffffff);
+  background-image: linear-gradient(310deg, #101010, #ffffff);
 }
 
-.nav-link:hover{
-  transition: transform 1s; /* Animation */
+.nav-link:hover {
+  transition: transform 1s;
+  /* Animation */
   color: #555;
-  box-shadow: 0 20px 27px 0 rgba(0,0,0,.05);
-  background-color: rgba(59,113,202,.05);
+  box-shadow: 0 20px 27px 0 rgba(0, 0, 0, .05);
+  background-color: rgba(59, 113, 202, .05);
   border-radius: .5rem;
 }
-
-
-
-
-
-
-  

@@ -58,7 +58,7 @@ function upload_and_create_evidence(bucket_id){
 }
 
 function refresh_evidences(){
-    evidences.api().destroy();
+    evidences.destroy();
     get_evidences();
 }
 
@@ -69,16 +69,75 @@ function get_evidences(){
         'method': "GET",
         'contentType': 'application/json'
     }).done(function(data) {
-        evidences = $('#evidences').dataTable({      
+        evidences = $('#evidences').DataTable({      
             rowCallback: function(row, data, index) {
                 $(row).attr('value', data.dump_id); // Add id to the tr element
               },
             "aaData" : data,
             "aoColumns": [
-                { "data": "dump_name" },
-                { "data": "dump_os" },
-                { "data": "dump_linked_case" },
-                { "data": "dump_etag" },
+                {  
+                    mData: "dump_name",
+                    mRender: function (dump_name, type) {
+                        div = document.createElement('div');
+                        div.setAttribute('class','align-items-center');
+                        logo = document.createElement('i');
+                        code = document.createElement('code');
+                        logo.setAttribute('class','fas fa-memory m-2');
+                        code.textContent = dump_name;
+                        div.appendChild(logo);
+                        div.appendChild(code);
+                        return div.outerHTML;
+                    }
+                },
+                {  
+                    mData: "dump_os",
+                    mRender: function (dump_os, type) {
+                        div = document.createElement('div');
+                        div.setAttribute('class','align-items-center');
+                        logo = document.createElement('i');
+                        span = document.createElement('span');
+                        if(dump_os == "Windows"){
+                            logo.setAttribute('class','fab fa-windows m-2');
+                            span.setAttribute('class','text-primary');
+                        }
+                        else{
+                            logo.setAttribute('class','fab fa-linux m-2');
+                            span.setAttribute('class','text-info');
+                        }
+                        span.textContent = dump_os;
+                        div.appendChild(logo);
+                        div.appendChild(span);
+                        return div.outerHTML;
+                    }
+                },
+                {  
+                    mData: "dump_linked_case",
+                    mRender: function (dump_linked_case, type) {
+                        div = document.createElement('div');
+                        div.setAttribute('class','align-items-center');
+                        logo = document.createElement('i');
+                        span = document.createElement('span');
+                        logo.setAttribute('class','fas fa-suitcase m-2');
+                        span.textContent = dump_linked_case;
+                        div.appendChild(logo);
+                        div.appendChild(span);
+                        return div.outerHTML;
+                    }
+                },
+                {  
+                    mData: "dump_etag",
+                    mRender: function (dump_etag, type) {
+                        div = document.createElement('div');
+                        div.setAttribute('class','align-items-center');
+                        logo = document.createElement('i');
+                        span = document.createElement('span');
+                        logo.setAttribute('class','fas fa-bucket m-2');
+                        span.textContent = dump_etag;
+                        div.appendChild(logo);
+                        div.appendChild(span);
+                        return div.outerHTML;
+                    }
+                },
             ],
             "aLengthMenu": [[25, 50, 75, -1], [25, 50, 75, "All"]],
             "iDisplayLength": 25
@@ -169,8 +228,63 @@ function clear_form(){
     .prop('selected', false);
 }
 
+function reconnectWebSocket() {
+    toastr.info("Trying to reconnect in " + reconnectDelay / 1000 + "seconds");
+    setTimeout(function () {
+        connectWebSocket(); // Call the function to connect WebSocket again
+        // Increase the reconnect delay exponentially
+        reconnectDelay *= 2;
+    }, reconnectDelay);
+}
+
+function connectWebSocket() {
+    const socket_evidences = new WebSocket(
+        "ws://localhost:8000/ws/evidences/"
+    );
+
+    socket_evidences.onopen = function () {
+        reconnectDelay = 1000;
+        get_evidences();
+    };
+
+    socket_evidences.onmessage = function (e) {
+        result = JSON.parse(e.data);
+        if(result.status == "created"){
+            try {
+                evidences.row("#" + result.message.evidence_id).data(result.message);
+            }
+            catch {
+                evidences.row.add(result.message).draw().node();
+            }
+        }
+
+        if(result.status == "deleted"){
+            try {
+                evidences.row("#" + result.message.evidence_id).remove().draw();   
+            }
+            catch {
+                toastr.error('Could not delete the case, please try again.');
+            }           
+        }
+
+    };
+
+    socket_evidences.onclose = function () {
+        toastr.warning("Synchronization lost.");
+        evidences.rows().remove().draw();
+        reconnectWebSocket(); // Call the function to reconnect after connection is closed
+    };
+
+    socket_evidences.onerror = function (error) {
+        toastr.error("Can't connect to the server.", error);
+        socket_evidences.close(); // Close the WebSocket connection if an error occurs
+    };
+}
+
+
 $(document).ready(function() {   
-    get_evidences();
+    connectWebSocket();
+
     document.getElementById('upload-button').addEventListener('click', () => {
         
         // First we go an fetch the uuid of the bucket associated with the case selected by the user.

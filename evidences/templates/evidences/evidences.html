@@ -8,7 +8,7 @@
 <script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/r-2.5.0/sc-2.2.0/sp-2.2.0/sl-1.7.0/datatables.min.js"></script>
 <script src="{% static 'evidences/js/evidences.js'%}"></script>
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1439.0.min.js"></script>
-<div class="container">
+<div class="container-fluid">
   <div class="row mt-4 justify-content-center">
     <div class="col-6 d-flex align-items-center highlight-toolbar border ps-3 pe-2 py-1">
         <small class="font-monospace text-muted text-uppercase">ACTIONS</small>
@@ -42,8 +42,8 @@
       <div class="modal-content">
         <div class="modal-header">
             <div class="align-items-center d-flex">
-                <i class="fas fa-suitcase icon icon-shape icon-sm text-center me-2 d-flex align-items-center justify-content-center"></i>
-                <h1 class="modal-title fs-5 " id="modal_case_number">Upload a new evidence</h1>
+                <i class="fas fa-2x fa-upload icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center  justify-content-center"></i>
+                <h1 class="modal-title fs-5 p-2 " id="modal_case_number">Upload a new evidence</h1>
 
             </div>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -77,7 +77,7 @@
            </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-sm btn-dark" id="upload-button">Upload</button>
+          <button class="btn btn-sm btn-outline-success" id="upload-button">Upload</button>
         </div>
       </div>
     </div>
@@ -102,9 +102,9 @@
                 </div>
           </div>
           <div class="modal-footer">
-            <button href="#" id="review_evidence" class="evidence_info btn btn-sm btn-dark placeholder">Review</button>
-            <button href="#" id="delete_evidence" class="evidence_info btn btn-sm btn-danger placeholder">Delete</button>
-            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" id="review_evidence" class="evidence_info btn btn-sm btn-outline-success placeholder">Review</button>
+            <button type="button" id="delete_evidence" class="evidence_info btn btn-sm btn-outline-danger placeholder">Delete</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>

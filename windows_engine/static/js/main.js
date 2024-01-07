@@ -142,7 +142,7 @@ function connectWebSocket(evidence_id) {
         handles_task_result(result.message);
         break;
       case "pslist_dump":
-        pslist_dump_task_result(result.message);
+        process_dump_task_result(result.message);
       case "memmap_dump":
         process_dump_task_result(result.message);
         break;

@@ -10,6 +10,7 @@ from VolWeb.voltools import *
 from volatility3.framework.exceptions import *
 from volatility3.cli import MuteProgress
 
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -65,7 +66,6 @@ def pslist_dump(instance, pid):
     )
     result = DictRenderer().render(constructed.run())
     artefact = {x.translate({32: None}): y for x, y in result[0].items()}
-    print(artefact)
     return artefact["Fileoutput"]
 
 
