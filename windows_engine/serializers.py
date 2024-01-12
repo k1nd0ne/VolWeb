@@ -145,3 +145,8 @@ class TasksSerializer(serializers.ModelSerializer):
         # We have to do this because the json is not respecting the rfc.
         ret['task_kwargs'] = ret['task_kwargs'].replace("'",'"')
         return ret
+
+class LootSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Loot
+        fields = "__all__"

@@ -438,3 +438,13 @@ class TasksApiView(APIView):
         serializer = TasksSerializer(tasks, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class LootApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Get all the loot items
+        """
+        tasks = Loot.objects.filter(evidence_id=dump_id)
+        serializer = LootSerializer(tasks, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

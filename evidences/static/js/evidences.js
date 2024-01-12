@@ -1,4 +1,5 @@
 var evidences;
+var reconnectDelay = 10000;
 
 function upload_and_create_evidence(bucket_id){
     // configuration for Minio/AWS
@@ -49,7 +50,6 @@ function upload_and_create_evidence(bucket_id){
             $('#evidence_form').show();
             $('#upload-button').show();
             clear_form();
-            refresh_evidences();
         }
         });
     } else {
@@ -57,10 +57,6 @@ function upload_and_create_evidence(bucket_id){
     }
 }
 
-function refresh_evidences(){
-    evidences.destroy();
-    get_evidences();
-}
 
 
 function get_evidences(){
@@ -69,15 +65,30 @@ function get_evidences(){
         'method': "GET",
         'contentType': 'application/json'
     }).done(function(data) {
+        try{
+            evidences.destroy();
+        }
+        catch{
+            // Nothing
+        }
         evidences = $('#evidences').DataTable({      
             rowCallback: function(row, data, index) {
-                $(row).attr('value', data.dump_id); // Add id to the tr element
+                $(row).attr('value', data.dump_id);
+                $(row).attr('id', data.dump_id);
+                if(data.dump_status == "100"){
+                    $(row).removeClass('not-completed');
+                    $(row).addClass('completed');
+                }
+                else{
+                    $(row).removeClass('completed');
+                    $(row).addClass('not-completed');
+                }
               },
             "aaData" : data,
             "aoColumns": [
                 {  
                     mData: "dump_name",
-                    mRender: function (dump_name, type) {
+                    mRender: function (dump_name, type, row) {
                         div = document.createElement('div');
                         div.setAttribute('class','align-items-center');
                         logo = document.createElement('i');
@@ -86,12 +97,16 @@ function get_evidences(){
                         code.textContent = dump_name;
                         div.appendChild(logo);
                         div.appendChild(code);
+
+                        if(row.dump_status != "100"){
+                            $(code).addClass('text-muted');
+                        }
                         return div.outerHTML;
                     }
                 },
                 {  
                     mData: "dump_os",
-                    mRender: function (dump_os, type) {
+                    mRender: function (dump_os, type, row) {
                         div = document.createElement('div');
                         div.setAttribute('class','align-items-center');
                         logo = document.createElement('i');
@@ -107,12 +122,16 @@ function get_evidences(){
                         span.textContent = dump_os;
                         div.appendChild(logo);
                         div.appendChild(span);
+
+                        if(row.dump_status != "100"){
+                            span.setAttribute('class','text-muted');
+                        }
                         return div.outerHTML;
                     }
                 },
                 {  
                     mData: "dump_linked_case",
-                    mRender: function (dump_linked_case, type) {
+                    mRender: function (dump_linked_case, type, row) {
                         div = document.createElement('div');
                         div.setAttribute('class','align-items-center');
                         logo = document.createElement('i');
@@ -121,12 +140,15 @@ function get_evidences(){
                         span.textContent = dump_linked_case;
                         div.appendChild(logo);
                         div.appendChild(span);
+                        if(row.dump_status != "100"){
+                            span.setAttribute('class','text-muted');
+                        }
                         return div.outerHTML;
                     }
                 },
                 {  
                     mData: "dump_etag",
-                    mRender: function (dump_etag, type) {
+                    mRender: function (dump_etag, type, row) {
                         div = document.createElement('div');
                         div.setAttribute('class','align-items-center');
                         logo = document.createElement('i');
@@ -135,6 +157,30 @@ function get_evidences(){
                         span.textContent = dump_etag;
                         div.appendChild(logo);
                         div.appendChild(span);
+                        if(row.dump_status != "100"){
+                            span.setAttribute('class','text-muted');
+                        }
+                        return div.outerHTML;
+                    }
+                },
+                {  
+                    mData: "dump_status",
+                    mRender: function (dump_status, type) {
+                        div = document.createElement('div');
+                        div.setAttribute('class','align-items-center');
+                        span = document.createElement('span');
+                        logo = document.createElement('i');
+                        if(dump_status == "100"){
+                            logo.setAttribute('class','fas fa-check m-2');
+                            span.setAttribute('class', 'text-success');
+                            span.textContent = "Completed"  
+                        }                        
+                        else{
+                            logo.setAttribute('class','fas fa-percentage m-2');
+                            span.textContent = dump_status;   
+                        }
+                        div.appendChild(span); 
+                        div.appendChild(logo);
                         return div.outerHTML;
                     }
                 },
@@ -142,9 +188,6 @@ function get_evidences(){
             "aLengthMenu": [[25, 50, 75, -1], [25, 50, 75, "All"]],
             "iDisplayLength": 25
         });
-        $('.dataTable').on('click', 'tbody tr', function() {
-            display_evidence($(this).attr('value')); 
-         });
     });
 }
 
@@ -169,9 +212,7 @@ function display_evidence(evidence_id){
         });
 }
 
-//TODO : ERROR HANDLING
 function create_evidence(filename, etag){
-    console.log(filename)
     var formData = {
         dump_name: filename,
         dump_etag: etag,
@@ -189,7 +230,6 @@ function create_evidence(filename, etag){
         data: formData,
         dataType: "json",
         success: function(response) {
-            // Handle successful response
             console.log(response)
         },
         error: function(xhr, status, error) {
@@ -198,7 +238,6 @@ function create_evidence(filename, etag){
     });
 }
 
-// TODO : ERROR HANDLING
 function delete_evidence(dump_id){
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
@@ -211,8 +250,6 @@ function delete_evidence(dump_id){
         dataType: "json",
         success: function(data) {
             $('.modal_evidence_review').attr("id",NaN);
-            $('.modal_evidence_review').modal('toggle');
-            refresh_evidences();
         },
         error: function(xhr, status, error) {
             toastr.error("An error occurred : "  + error);
@@ -239,7 +276,7 @@ function reconnectWebSocket() {
 
 function connectWebSocket() {
     const socket_evidences = new WebSocket(
-        "ws://localhost:8000/ws/evidences/"
+        "ws://localhost:8001/ws/evidences/"
     );
 
     socket_evidences.onopen = function () {
@@ -250,8 +287,9 @@ function connectWebSocket() {
     socket_evidences.onmessage = function (e) {
         result = JSON.parse(e.data);
         if(result.status == "created"){
+            console.log(result.message.dump_id)
             try {
-                evidences.row("#" + result.message.evidence_id).data(result.message);
+                evidences.row("#" + result.message.dump_id).data(result.message);
             }
             catch {
                 evidences.row.add(result.message).draw().node();
@@ -260,7 +298,7 @@ function connectWebSocket() {
 
         if(result.status == "deleted"){
             try {
-                evidences.row("#" + result.message.evidence_id).remove().draw();   
+                evidences.row("#" + result.message.dump_id).remove().draw();   
             }
             catch {
                 toastr.error('Could not delete the case, please try again.');
@@ -271,7 +309,12 @@ function connectWebSocket() {
 
     socket_evidences.onclose = function () {
         toastr.warning("Synchronization lost.");
-        evidences.rows().remove().draw();
+        try{
+            evidences.rows().remove().draw();
+        }
+        catch{
+            
+        }
         reconnectWebSocket(); // Call the function to reconnect after connection is closed
     };
 
@@ -326,10 +369,18 @@ $(document).ready(function() {
 
 
     $('#delete_evidence').on('click', function() {
-        const evidence_id = $('.modal_evidence_review').attr('id');
+        // Display "are you sure modal"
+        $('.modal_evidence_review').modal('hide');
+        $('.modal_evidence_delete').modal('show');
+    });
+
+    $('#delete_evidence_confirmed').on('click', function() {
         clear_form();
+        const evidence_id = $('.modal_evidence_review').attr('id');
         delete_evidence(evidence_id);
     });
+
+    
 
     $('#review_evidence').on("click", function(){
         const evidence_id = $('.modal_evidence_review').attr('id');
@@ -344,5 +395,11 @@ $(document).ready(function() {
     $('#modal_evidence_create').on('hide.bs.modal', function() {
         clear_form();
     });
+
+    $('#evidences').on('click', 'tbody tr', function() {
+        if(!$(this).hasClass('not-completed')){
+            display_evidence($(this).attr('value')); 
+        }
+     });
 
 });

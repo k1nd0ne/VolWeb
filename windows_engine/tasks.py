@@ -1,6 +1,7 @@
 from celery import shared_task
 from windows_engine.vol_windows import get_handles, pslist_dump, memmap_dump
 from evidences.models import Evidence
+from windows_engine.models import Loot
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
@@ -43,8 +44,11 @@ def dump_process_pslist(self, evidence_id, pid):
     channel_layer = get_channel_layer()
     instance = Evidence.objects.get(dump_id=evidence_id)
     result = pslist_dump(instance, pid)
-    print(result)
+    loot = Loot()
+    loot.evidence = instance
     if result != "Error outputting file":
+        loot.Status = True
+        loot.Name = f"Process with PID {pid} - FileName: {result} - Dumped using PsList."
         async_to_sync(channel_layer.group_send)(
             f"volatility_tasks_{evidence_id}",
             {
@@ -58,6 +62,8 @@ def dump_process_pslist(self, evidence_id, pid):
             },
         )
     else:
+        loot.Status = False
+        loot.Name = f"Process with PID {pid} - Result: {result} - Dumped using PsList"
         async_to_sync(channel_layer.group_send)(
             f"volatility_tasks_{evidence_id}",
             {
@@ -70,6 +76,7 @@ def dump_process_pslist(self, evidence_id, pid):
                 },
             },
         )
+    loot.save()
 
 
 @shared_task(bind=True)
@@ -77,8 +84,11 @@ def dump_process_memmap(self, evidence_id, pid):
     channel_layer = get_channel_layer()
     instance = Evidence.objects.get(dump_id=evidence_id)
     result = memmap_dump(instance, pid)
-    print(result)
+    loot = Loot()
+    loot.evidence = instance
     if result != "Error outputting file":
+        loot.Name = f"Process with PID {pid} - FileName: {result} - Dumped using Memmap."
+        loot.Status = True
         async_to_sync(channel_layer.group_send)(
             f"volatility_tasks_{evidence_id}",
             {
@@ -92,6 +102,8 @@ def dump_process_memmap(self, evidence_id, pid):
             },
         )
     else:
+        loot.Status = False
+        loot.Name = f"Process with PID {pid} - Result: {result} - Dumped using Memmap"
         async_to_sync(channel_layer.group_send)(
             f"volatility_tasks_{evidence_id}",
             {
@@ -104,3 +116,4 @@ def dump_process_memmap(self, evidence_id, pid):
                 },
             },
         )
+    loot.save()

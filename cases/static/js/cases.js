@@ -1,5 +1,5 @@
 var cases;
-
+var reconnectDelay = 10000;
 function get_cases() {
     $.ajax({
         'url': "/api/cases/",
@@ -207,7 +207,6 @@ function delete_case(case_id) {
         dataType: "json",
         success: function (data) {
             $('.modal_case_review').attr("id", NaN);
-            $('.modal_case_review').modal('toggle');
         },
         error: function (xhr, status, error) {
             toastr.error("Could not delete the case: " + error);
@@ -262,7 +261,7 @@ function reconnectWebSocket() {
 
 function connectWebSocket() {
     const socket_cases = new WebSocket(
-        "ws://localhost:8000/ws/cases/"
+        "ws://localhost:8001/ws/cases/"
     );
 
     socket_cases.onopen = function () {
@@ -294,7 +293,12 @@ function connectWebSocket() {
 
     socket_cases.onclose = function () {
         toastr.warning("Synchronization lost.");
-        cases.rows().remove().draw();
+        try{
+            cases.rows().remove().draw();
+        }
+        catch{
+
+        }
         reconnectWebSocket(); // Call the function to reconnect after connection is closed
     };
 
@@ -330,6 +334,11 @@ $(document).ready(function () {
 
 
     $('#delete_case').on('click', function () {
+        $('.modal_case_review').modal('hide');
+        $('.modal_case_delete').modal('show');
+    });
+
+    $('#delete_case_confirm').on('click', function () {
         const case_id = $('.modal_case_review').attr('id');
         clear_form();
         delete_case(case_id);

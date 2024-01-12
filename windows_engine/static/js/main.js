@@ -1,10 +1,10 @@
 $(document).ready(function () {
-  const evidence_id = $(".main").attr("id");
+  evidence_id = $(".main").attr("id");
   reconnectDelay = 1000; // milliseconds
   connectWebSocket(evidence_id);
-
   display_pstree(evidence_id);
   display_timeline(evidence_id);
+  display_loot(evidence_id);
 
   /* ======================= Overview ======================= */
   $(".card_handles").on("click", function () {
@@ -127,7 +127,7 @@ function reconnectWebSocket(evidence_id) {
 
 function connectWebSocket(evidence_id) {
   const socket_volatility_tasks = new WebSocket(
-    "ws://localhost:8000/ws/volatility_tasks/windows/" + evidence_id + "/"
+    "ws://localhost:8001/ws/volatility_tasks/windows/" + evidence_id + "/"
   );
 
   socket_volatility_tasks.onopen = function () {
@@ -153,7 +153,7 @@ function connectWebSocket(evidence_id) {
 
   socket_volatility_tasks.onclose = function () {
     toastr.warning("Engine synchronization lost.");
-    reconnectWebSocket($(".main").attr("id")); // Call the function to reconnect after connection is closed
+    reconnectWebSocket(evidence_id); // Call the function to reconnect after connection is closed
   };
 
   socket_volatility_tasks.onerror = function (error) {

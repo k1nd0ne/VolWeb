@@ -56,7 +56,7 @@ def pslist_dump(instance, pid):
         pid,
     ]
     context.config["plugins.PsList.dump"] = True
-    output_path = "./"
+    output_path = "./media/"
     constructed = build_context(
         instance,
         context,
@@ -82,7 +82,7 @@ def memmap_dump(instance, pid):
     context = contexts.Context()
     context.config["plugins.Memmap.pid"] = int(pid)
     context.config["plugins.Memmap.dump"] = True
-    output_path = "./"
+    output_path = "./media/"
     constructed = build_context(
         instance,
         context,
@@ -232,7 +232,6 @@ def rename_devicetree(node):
 
 
 def run_volweb_routine_windows(instance):
-    partial_results = False
     logger.info("Starting VolWeb Engine")
     volatility3.framework.require_interface_version(2, 0, 0)
     # TODO : DON'T FORGET ME
@@ -286,13 +285,12 @@ def run_volweb_routine_windows(instance):
         "FileScan": {"plugin": plugin_list["windows.filescan.FileScan"]},
     }
 
-    """Progress Function"""
-
-    # def update_progress(instance):
-    #     MODULES_TO_RUN = len(volweb_knowledge_base) * 2
-    #     percentage = str(int(instance.dump_status) + 100 // MODULES_TO_RUN)
-    #     instance.dump_status = percentage
-    #     instance.save()
+    def update_progress(instance):
+        """Progress Function"""
+        MODULES_TO_RUN = len(volweb_knowledge_base)
+        percentage = str(int(instance.dump_status) + 100 // MODULES_TO_RUN)
+        instance.dump_status = percentage
+        instance.save()
 
     json_pstree_artefact = []
     json_devicetree_artefact = []
@@ -319,7 +317,7 @@ def run_volweb_routine_windows(instance):
                 "Loot/" + str(instance.dump_id) + "/files/",
             )
         except Exception as e:
-            logger.info(f"Could not build context for {runable} : {e}")
+            logger.warning(f"Could not build context for {runable} : {e}")
             constructed = []
 
         if constructed:
@@ -371,6 +369,10 @@ def run_volweb_routine_windows(instance):
 
             except:
                 logger.error(f"Could not run {runable}")
+            update_progress(instance)
 
     json_netgraph_artefact = json.dumps(generate_network_graph(network_artefact))
     NetGraph(evidence=instance, graph=json_netgraph_artefact).save()
+    instance.dump_status = 100
+    instance.save()
+

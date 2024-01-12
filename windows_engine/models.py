@@ -403,3 +403,10 @@ class SSDT(models.Model):
     Module = models.TextField(null=True)
     Symbol = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+class Loot(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="windows_loot"
+    )
+    Name = models.TextField()
+    Status = models.BooleanField()

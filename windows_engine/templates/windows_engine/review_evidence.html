@@ -8,6 +8,7 @@
 <script src="{% static 'windows_engine/js/tag.js'%}"></script>
 <script src="{% static 'windows_engine/js/tree.js'%}"></script>
 <script src="{% static 'windows_engine/js/tasks.js'%}"></script>
+<script src="{% static 'windows_engine/js/loot.js'%}"></script>
 <link rel="stylesheet" href="{% static 'windows_engine/css/treejs.min.css'%}" id="treejs_styles" />
 <link rel="stylesheet" type="text/css" href="{% static 'windows_engine/css/windows_engine.css'%}" />
 <link rel="stylesheet" type="text/css" href="{% static 'windows_engine/css/windows_engine.css'%}" />
@@ -84,7 +85,7 @@
     </div>
     <div class="tab-pane fade" id="timeliner" role="tabpanel" aria-labelledby="timeliner-tab" tabindex="0">
       <div style="height: 20rem" id="timeline"></div>
-      <table id="timeline_datatable" class="table table-sm table-responsive table-hover">
+      <table id="timeline_datatable" class="table table-sm table-responsive table-hover" style="width: 100%;">
         <thead>
           <tr>
             <th>Created Date</th>
@@ -103,7 +104,16 @@
       {% include "windows_engine/advanced.html" %}
     </div>
     <div class="tab-pane fade" id="loot" role="tabpanel" aria-labelledby="loot-tab" tabindex="0">
-      ...
+      <table id="loot_datatable" class="table table-sm table-responsive table-hover" style="width: 100%;">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Result</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
   </div>
 </div>
