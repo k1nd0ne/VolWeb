@@ -263,7 +263,7 @@ function display_filescan(evidence_id) {
             {
               mData: "id",
               mRender: function (id, type, row) {
-                return "ACTIONS HERE"
+                return generate_file_download_btn(row);
               },
             },
             {
@@ -285,6 +285,11 @@ function display_filescan(evidence_id) {
         toastr.warning("An error occured when loading data for 'filescan'.");
       }
       $("#filescan_datatable").show("fast");
+      $('.btn-dump-file').off('click');
+      $(".btn-dump-file").on("click", function () {
+        file_id = $(this).attr("id");
+        dump_file(evidence_id, file_id);
+      });
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -842,3 +847,11 @@ function display_ssdt(evidence_id) {
   });
 }
 
+function generate_file_download_btn(data){
+  console.log(data);
+  btn = document.createElement('a');
+  btn.setAttribute('class','btn btn-sm btn-outline-primary p-1 btn-dump-file')
+  btn.textContent = "Dump";
+  btn.setAttribute('id',data.id);
+  return btn.outerHTML;
+}

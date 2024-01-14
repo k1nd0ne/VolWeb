@@ -11,7 +11,7 @@ $(document).ready(function () {
     pid = $(".process_id").attr("id");
     compute_handles(evidence_id, pid);
   });
-
+  
   $(".card_sids").on("click", function () {
     pid = $(".process_id").attr("id");
     display_sids(evidence_id, pid);
@@ -143,8 +143,12 @@ function connectWebSocket(evidence_id) {
         break;
       case "pslist_dump":
         process_dump_task_result(result.message);
+        break;
       case "memmap_dump":
         process_dump_task_result(result.message);
+        break;
+      case "file_dump":
+        filedump_task_result(result.message);
         break;
       default:
         break;

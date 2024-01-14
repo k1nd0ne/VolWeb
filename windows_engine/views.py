@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from windows_engine.tasks import compute_handles, dump_process_pslist, dump_process_memmap
+from windows_engine.tasks import compute_handles, dump_process_pslist, dump_process_memmap, dump_file
 from windows_engine.models import *
 from evidences.models import Evidence
 from django_celery_results.models import TaskResult 
@@ -415,6 +415,16 @@ class PsListDumpApiView(APIView):
         Dump the requested process using the pslist plugin
         """
         dump_process_pslist.delay(evidence_id=dump_id, pid=pid)
+        return Response({}, status=status.HTTP_201_CREATED)
+
+class FileScanDumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, _request, dump_id, file_id, *args, **kwargs):
+        """
+        Dump the requested process using the pslist plugin
+        """
+        dump_file.delay(evidence_id=dump_id, file_id=file_id)
         return Response({}, status=status.HTTP_201_CREATED)
 
 class MemmapDumpApiView(APIView):

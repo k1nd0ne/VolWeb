@@ -130,7 +130,7 @@ def get_handles(instance, pid):
         return None
 
 
-def dump_file(instance, offset, output_path):
+def file_dump(instance, offset):
     """Dump the file requested by the user"""
     volatility3.framework.require_interface_version(2, 0, 0)
     failures = volatility3.framework.import_files(plugins, True)
@@ -142,6 +142,9 @@ def dump_file(instance, offset, output_path):
     base_config_path = "plugins"
     context = contexts.Context()
     context.config["plugins.DumpFiles.virtaddr"] = int(offset)
+    output_path = f"media/{instance.dump_id}/"
+    if not os.path.exists(os.path.dirname(output_path)):
+        os.makedirs(os.path.dirname(output_path))
     try:
         constructed = build_context(
             instance,

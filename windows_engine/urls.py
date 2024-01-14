@@ -76,6 +76,10 @@ urlpatterns = [
         views.MemmapDumpApiView.as_view(),
     ),
     path(
+        "tasks/windows/<int:dump_id>/dump/<int:file_id>/filescan/",
+        views.FileScanDumpApiView.as_view(),
+    ),
+    path(
         "api/windows/<int:dump_id>/handles/<int:artifact_id>/<str:tag>/",
         views.HandlesApiView.as_view(),
     ),
@@ -87,5 +91,4 @@ urlpatterns = [
     path("api/windows/<int:dump_id>/svcscan/", views.SvcScanApiView.as_view()),
     path("api/windows/<int:dump_id>/filescan/", views.FileScanApiView.as_view()),
     path("api/windows/<int:dump_id>/loot/", views.LootApiView.as_view()),
-
 ]

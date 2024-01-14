@@ -287,7 +287,6 @@ function connectWebSocket() {
     socket_evidences.onmessage = function (e) {
         result = JSON.parse(e.data);
         if(result.status == "created"){
-            console.log(result.message.dump_id)
             try {
                 evidences.row("#" + result.message.dump_id).data(result.message);
             }
