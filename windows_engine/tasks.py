@@ -49,6 +49,7 @@ def dump_process_pslist(self, evidence_id, pid):
     if result != "Error outputting file":
         loot.Status = True
         loot.Name = f"Process with PID {pid} - FileName: {result} - Dumped using PsList."
+        loot.FileName = result
         async_to_sync(channel_layer.group_send)(
             f"volatility_tasks_{evidence_id}",
             {
@@ -64,6 +65,7 @@ def dump_process_pslist(self, evidence_id, pid):
     else:
         loot.Status = False
         loot.Name = f"Process with PID {pid} - Result: {result} - Dumped using PsList"
+        loot.FileName = result
         async_to_sync(channel_layer.group_send)(
             f"volatility_tasks_{evidence_id}",
             {
@@ -89,6 +91,7 @@ def dump_process_memmap(self, evidence_id, pid):
     if result != "Error outputting file":
         loot.Name = f"Process with PID {pid} - FileName: {result} - Dumped using Memmap."
         loot.Status = True
+        loot.FileName = result
         async_to_sync(channel_layer.group_send)(
             f"volatility_tasks_{evidence_id}",
             {
@@ -104,6 +107,7 @@ def dump_process_memmap(self, evidence_id, pid):
     else:
         loot.Status = False
         loot.Name = f"Process with PID {pid} - Result: {result} - Dumped using Memmap"
+        loot.FileName = result
         async_to_sync(channel_layer.group_send)(
             f"volatility_tasks_{evidence_id}",
             {

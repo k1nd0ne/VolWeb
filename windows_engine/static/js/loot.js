@@ -23,7 +23,7 @@ function display_loot(evidence_id) {
             {
               mData: "id",
               mRender: function (id, type, row) {
-                return "BTN DOWNLOAD HERE"
+                return generate_loot_download(row);
               },
             },
           ],
@@ -45,15 +45,29 @@ function display_loot(evidence_id) {
   });
 }
 
-function generate_loot_status(status){
+function generate_loot_status(status) {
   message = document.createElement('code');
-  if(status){
+  if (status) {
     message.setAttribute('class', 'text-success');
     message.textContent = "The task was completed with success.";
   }
-  else{
+  else {
     message.setAttribute('class', 'text-danger');
     message.textContent = "The task did not complete. The data you are trying to recover are probably freed.";
   }
   return message.outerHTML;
+}
+
+function generate_loot_download(data) {
+  if (data.Status) {
+    link = document.createElement('a');
+    link.setAttribute('href', '/media/' + data.evidence + '/' + data.FileName);
+    link.setAttribute('target','_blank');
+    link.setAttribute('class','btn btn-sm btn-success p-1')
+    link.textContent = "Download";
+    return link.outerHTML;
+  }
+  else{
+    return "N/A";
+  }
 }

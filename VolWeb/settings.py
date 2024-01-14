@@ -162,8 +162,8 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-MEDIA_ROOT = str(os.path.join(BASE_DIR, "data/evidences/"))
-MEDIA_URL = "/data/evidences/"
+MEDIA_ROOT = str(os.path.join(BASE_DIR, "media/"))
+MEDIA_URL = "/media/"
 
 CELERY_BROKER_URL = Secrets.BROKER_URL
 CELERY_RESULT_BACKEND = 'django-db'

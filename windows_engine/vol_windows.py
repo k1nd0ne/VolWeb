@@ -56,7 +56,9 @@ def pslist_dump(instance, pid):
         pid,
     ]
     context.config["plugins.PsList.dump"] = True
-    output_path = "./media/"
+    output_path = f"media/{instance.dump_id}/"
+    if not os.path.exists(os.path.dirname(output_path)):
+        os.makedirs(os.path.dirname(output_path))
     constructed = build_context(
         instance,
         context,
@@ -82,7 +84,10 @@ def memmap_dump(instance, pid):
     context = contexts.Context()
     context.config["plugins.Memmap.pid"] = int(pid)
     context.config["plugins.Memmap.dump"] = True
-    output_path = "./media/"
+    output_path = f"media/{instance.dump_id}/"
+    if not os.path.exists(os.path.dirname(output_path)):
+        os.makedirs(os.path.dirname(output_path))
+
     constructed = build_context(
         instance,
         context,
@@ -314,7 +319,7 @@ def run_volweb_routine_windows(instance):
                 context,
                 base_config_path,
                 volweb_knowledge_base[runable]["plugin"],
-                "Loot/" + str(instance.dump_id) + "/files/",
+                "media/" + str(instance.dump_id) + "/files/",
             )
         except Exception as e:
             logger.warning(f"Could not build context for {runable} : {e}")

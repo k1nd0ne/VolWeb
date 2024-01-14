@@ -408,5 +408,6 @@ class Loot(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="windows_loot"
     )
+    FileName = models.TextField(null=True) 
     Name = models.TextField()
     Status = models.BooleanField()
