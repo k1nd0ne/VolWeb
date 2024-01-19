@@ -79,6 +79,11 @@ urlpatterns = [
         "tasks/windows/<int:dump_id>/dump/<int:file_id>/filescan/",
         views.FileScanDumpApiView.as_view(),
     ),
+    path("api/windows/<int:dump_id>/filescan/", views.FileScanApiView.as_view()),
+    path(
+        "api/windows/<int:dump_id>/filescan/<int:artifact_id>/<str:tag>/",
+        views.FileScanApiView.as_view(),
+    ),
     path(
         "api/windows/<int:dump_id>/handles/<int:artifact_id>/<str:tag>/",
         views.HandlesApiView.as_view(),
@@ -86,9 +91,12 @@ urlpatterns = [
     path("tasks/windows/tasks/", views.TasksApiView.as_view()),
     path("api/windows/<int:dump_id>/malfind/", views.MalfindApiView.as_view()),
     path("api/windows/<int:dump_id>/ldrmodules/", views.LdrModulesApiView.as_view()),
+    path("api/windows/<int:dump_id>/ldrmodules/<int:artifact_id>/<str:tag>/", views.LdrModulesApiView.as_view()),
     path("api/windows/<int:dump_id>/modules/", views.ModulesApiView.as_view()),
+    path("api/windows/<int:dump_id>/modules/<int:artifact_id>/<str:tag>/", views.ModulesApiView.as_view()),
     path("api/windows/<int:dump_id>/ssdt/", views.SSDTApiView.as_view()),
+    path("api/windows/<int:dump_id>/ssdt/<int:artifact_id>/<str:tag>/", views.SSDTApiView.as_view()),
     path("api/windows/<int:dump_id>/svcscan/", views.SvcScanApiView.as_view()),
-    path("api/windows/<int:dump_id>/filescan/", views.FileScanApiView.as_view()),
+    path("api/windows/<int:dump_id>/svcscan/<int:artifact_id>/<str:tag>/", views.SvcScanApiView.as_view()),
     path("api/windows/<int:dump_id>/loot/", views.LootApiView.as_view()),
 ]

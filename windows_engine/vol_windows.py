@@ -15,10 +15,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def build_context(instance, context, base_config_path, plugin, output_path):
+def build_context(instance, context, base_config_path, plugin):
     """This function is used to buid the context and construct each plugin
     Return : The contructed plugin.
     """
+    output_path = f"media/{self.evidence.dump_id}/"
+    if not os.path.exists(os.path.dirname(output_path)):
+        os.makedirs(os.path.dirname(output_path))
     available_automagics = automagic.available(context)
     automagics = automagic.choose_automagic(available_automagics, plugin)
     context.config[
@@ -41,93 +44,19 @@ def build_context(instance, context, base_config_path, plugin, output_path):
     return constructed
 
 
-def pslist_dump(instance, pid):
-    """Dump the process requested by the user using the pslist plugin"""
-    volatility3.framework.require_interface_version(2, 0, 0)
-    failures = volatility3.framework.import_files(plugins, True)
-    if failures:
-        logger.info(f"Some volatility3 plugin couldn't be loaded : {failures}")
-    else:
-        logger.info(f"Plugins are loaded without failure")
-    plugin_list = volatility3.framework.list_plugins()
-    base_config_path = "plugins"
-    context = contexts.Context()
-    context.config["plugins.PsList.pid"] = [
-        pid,
-    ]
-    context.config["plugins.PsList.dump"] = True
-    output_path = f"media/{instance.dump_id}/"
-    if not os.path.exists(os.path.dirname(output_path)):
-        os.makedirs(os.path.dirname(output_path))
-    constructed = build_context(
-        instance,
-        context,
-        base_config_path,
-        plugin_list["windows.pslist.PsList"],
-        output_path,
-    )
-    result = DictRenderer().render(constructed.run())
-    artefact = {x.translate({32: None}): y for x, y in result[0].items()}
-    return artefact["Fileoutput"]
-
-
-def memmap_dump(instance, pid):
-    """Dump the process requested by the user using the memmap plugin"""
-    volatility3.framework.require_interface_version(2, 0, 0)
-    failures = volatility3.framework.import_files(plugins, True)
-    if failures:
-        logger.info(f"Some volatility3 plugin couldn't be loaded : {failures}")
-    else:
-        logger.info(f"Plugins are loaded without failure")
-    plugin_list = volatility3.framework.list_plugins()
-    base_config_path = "plugins"
-    context = contexts.Context()
-    context.config["plugins.Memmap.pid"] = int(pid)
-    context.config["plugins.Memmap.dump"] = True
-    output_path = f"media/{instance.dump_id}/"
-    if not os.path.exists(os.path.dirname(output_path)):
-        os.makedirs(os.path.dirname(output_path))
-
-    constructed = build_context(
-        instance,
-        context,
-        base_config_path,
-        plugin_list["windows.memmap.Memmap"],
-        output_path,
-    )
-    result = DictRenderer().render(constructed.run())
-    artefact = {x.translate({32: None}): y for x, y in result[0].items()}
-    return artefact["Fileoutput"]
-
-
-def get_handles(instance, pid):
-    """Compute Handles for a specific PID"""
-    volatility3.framework.require_interface_version(2, 0, 0)
-    failures = volatility3.framework.import_files(plugins, True)
-    if failures:
-        logger.info(f"Some volatility3 plugin couldn't be loaded : {failures}")
-    else:
-        logger.info(f"Plugins are loaded without failure")
-    plugin_list = volatility3.framework.list_plugins()
-    base_config_path = "plugins"
-    context = contexts.Context()
-    context.config["plugins.Handles.pid"] = [int(pid)]
-    try:
-        constructed = build_context(
-            instance,
-            context,
-            base_config_path,
-            plugin_list["windows.handles.Handles"],
-            output_path=None,
-        )
-        result = DictRenderer().render(constructed.run())
-        for artefact in result:
-            artefact = {x.translate({32: None}): y for x, y in artefact.items()}
+def clean_result(result):
+    for artefact in result:
+        artefact = {
+            x.translate({32: None}): y for x, y in artefact.items()
+        }
+        if "__children" in artefact:
             del artefact["__children"]
-            Handles(evidence=instance, **artefact).save()
-        return instance
-    except:
-        return None
+        if "Offset(V)" in artefact:
+            artefact["Offset"] = artefact["Offset(V)"]
+            del artefact["Offset(V)"]
+        if "Tag" in artefact:
+            artefact["VTag"] = artefact["Tag"]
+            del artefact["Tag"]
 
 
 def file_dump(instance, offset):
@@ -172,72 +101,6 @@ def file_dump(instance, offset):
         return None
 
 
-def fill_userassist(list, dump_id):
-    for artefact in list:
-        artefact = {x.translate({32: None}): y for x, y in artefact.items()}
-        apps.get_model("windows_engine", "UserAssist")(
-            evidence=dump_id,
-            HiveOffset=artefact["HiveOffset"],
-            HiveName=artefact["HiveName"],
-            Path=artefact["Path"],
-            LastWriteTime=artefact["LastWriteTime"],
-            Type=artefact["Type"],
-            Name=artefact["Name"],
-            ID=artefact["ID"],
-            Count=artefact["Count"],
-            FocusCount=artefact["FocusCount"],
-            TimeFocused=artefact["TimeFocused"],
-            LastUpdated=artefact["LastUpdated"],
-            RawData=artefact["RawData"],
-        ).save()
-        if artefact["__children"]:
-            fill_userassist(artefact["__children"], dump_id)
-
-
-def rename_pstree(node):
-    if len(node["__children"]) == 0:
-        node["children"] = node["__children"]
-        node["name"] = node["ImageFileName"]
-        del node["__children"]
-        del node["ImageFileName"]
-    else:
-        node["children"] = node["__children"]
-        node["name"] = node["ImageFileName"]
-        del node["__children"]
-        del node["ImageFileName"]
-        for children in node["children"]:
-            rename_pstree(children)
-
-
-def rename_devicetree(node):
-    if len(node["__children"]) == 0:
-        node["children"] = node["__children"]
-
-        node["name"] = ""
-
-        if node["DeviceName"]:
-            node["name"] += node["DeviceName"]
-        if node["DeviceType"]:
-            node["name"] += "/" + node["DeviceType"]
-        if node["DriverName"]:
-            node["name"] += "/" + node["DriverName"]
-        del node["__children"]
-    else:
-        node["children"] = node["__children"]
-
-        node["name"] = ""
-
-        if node["DeviceName"]:
-            node["name"] += node["DeviceName"]
-        if node["DeviceType"]:
-            node["name"] += "/" + node["DeviceType"]
-        if node["DriverName"]:
-            node["name"] += "/" + node["DriverName"]
-
-        del node["__children"]
-        for children in node["children"]:
-            rename_devicetree(children)
-
 
 def run_volweb_routine_windows(instance):
     logger.info("Starting VolWeb Engine")
@@ -255,43 +118,6 @@ def run_volweb_routine_windows(instance):
     plugin_list = volatility3.framework.list_plugins()
     base_config_path = "plugins"
 
-    """Full list of plugins supported by VolWeb"""
-    volweb_knowledge_base = {
-        # Process
-        "PsScan": {"plugin": plugin_list["windows.psscan.PsScan"]},
-        "PsTree": {"plugin": plugin_list["windows.pstree.PsTree"]},
-        "DeviceTree": {"plugin": plugin_list["windows.devicetree.DeviceTree"]},
-        "CmdLine": {"plugin": plugin_list["windows.cmdline.CmdLine"]},
-        "GetSIDs": {"plugin": plugin_list["windows.getsids.GetSIDs"]},
-        "Sessions": {"plugin": plugin_list["windows.sessions.Sessions"]},
-        "Privs": {"plugin": plugin_list["windows.privileges.Privs"]},
-        "Envars": {"plugin": plugin_list["windows.envars.Envars"]},
-        "DllList": {"plugin": plugin_list["windows.dlllist.DllList"]},
-        "LdrModules": {"plugin": plugin_list["windows.ldrmodules.LdrModules"]},
-        "Modules": {"plugin": plugin_list["windows.modules.Modules"]},
-        "VadWalk": {"plugin": plugin_list["windows.vadwalk.VadWalk"]},
-        "SvcScan": {"plugin": plugin_list["windows.svcscan.SvcScan"]},
-        # Network
-        "NetScan": {"plugin": plugin_list["windows.netstat.NetStat"]},
-        "NetStat": {"plugin": plugin_list["windows.netscan.NetScan"]},
-        # Others
-        "DriverModule": {"plugin": plugin_list["windows.drivermodule.DriverModule"]},
-        # Cryptography
-        "Hashdump": {"plugin": plugin_list["windows.hashdump.Hashdump"]},
-        "Lsadump": {"plugin": plugin_list["windows.lsadump.Lsadump"]},
-        "Cachedump": {"plugin": plugin_list["windows.cachedump.Cachedump"]},
-        # Registry
-        "HiveList": {"plugin": plugin_list["windows.registry.hivelist.HiveList"]},
-        "UserAssist": {"plugin": plugin_list["windows.registry.userassist.UserAssist"]},
-        # # Malware analysis
-        "Timeliner": {"plugin": plugin_list["timeliner.Timeliner"]},
-        "Malfind": {"plugin": plugin_list["windows.malfind.Malfind"]},
-        "SSDT": {"plugin": plugin_list["windows.ssdt.SSDT"]},
-        "SkeletonKeyCheck": {
-            "plugin": plugin_list["windows.skeleton_key_check.Skeleton_Key_Check"]
-        },
-        "FileScan": {"plugin": plugin_list["windows.filescan.FileScan"]},
-    }
 
     def update_progress(instance):
         """Progress Function"""
@@ -312,9 +138,9 @@ def run_volweb_routine_windows(instance):
             evidence_id=instance.dump_id
         ).delete()
         logger.info(f"Constructing context for {runable} ")
-        """Add pluging argument for hivelist"""
-        if runable == "HiveList":
-            context.config["plugins.HiveList.dump"] = True
+        output_path = f"media/{instance.dump_id}/"
+        if not os.path.exists(os.path.dirname(output_path)):
+            os.makedirs(os.path.dirname(output_path))
         try:
             # TODO NEED TO SAVE THE KEY WITH THE EVIDENCE IN CASE OF NAME DUPLICATION
             constructed = build_context(
@@ -322,7 +148,7 @@ def run_volweb_routine_windows(instance):
                 context,
                 base_config_path,
                 volweb_knowledge_base[runable]["plugin"],
-                "media/" + str(instance.dump_id) + "/files/",
+                output_path,
             )
         except Exception as e:
             logger.warning(f"Could not build context for {runable} : {e}")

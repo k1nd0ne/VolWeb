@@ -342,6 +342,7 @@ $(document).ready(function () {
         const case_id = $('.modal_case_review').attr('id');
         clear_form();
         delete_case(case_id);
+        $('.modal_case_delete').modal('hide');
     });
 
     $('#edit_case').on('click', function () {

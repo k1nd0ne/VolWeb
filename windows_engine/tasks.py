@@ -7,7 +7,6 @@ from asgiref.sync import async_to_sync
 from django.forms.models import model_to_dict
 import json
 
-
 @shared_task(bind=True)
 def compute_handles(self, evidence_id, pid):
     channel_layer = get_channel_layer()

@@ -137,7 +137,8 @@ function handles_task_result(result) {
   } else {
     toastr.warning(result.msg);
   }
-  if (result.pid === $(".process_id").attr("id")) {
+  console.log(result);
+  if (result.pid == $(".process_id").attr("id")) {
     $(".card_handles").show();
     $(".loading_handles").hide();
   }
@@ -179,7 +180,7 @@ function process_dump_task_result(result) {
   catch {
     loot_datatable.row.add(loot).draw().node();
   }
-  if (result.pid === $(".process_id").attr("id")) {
+  if (result.pid == $(".process_id").attr("id")) {
     $(".card_process_dump").show();
     $(".loading_process_dump").hide();
   }

@@ -1,9 +1,32 @@
 from django.db import models
-
-# Create your models here.
 from django.db import models
 from evidences.models import Evidence
 import base64
+from vol_windows import build_context, clean_result  # TODO: merge to voltools.py
+import logging, json
+import volatility3
+from volatility3.framework.plugins import construct_plugin
+from volatility3.framework import automagic, contexts
+from evidences.models import Evidence
+from windows_engine.models import *
+from volatility3 import plugins
+from django.apps import apps
+from VolWeb.voltools import *
+from volatility3.framework.exceptions import *
+from volatility3.cli import MuteProgress
+
+volatility3.framework.require_interface_version(2, 0, 0)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+base_config_path = "plugins"
+failures = volatility3.framework.import_files(plugins, True)
+if failures:
+    logger.error(f"Some volatility3 plugin couldn't be loaded : {failures}")
+else:
+    logger.info(f"Volatility3 Plugins are loaded without failure")
+
+PLUGIN_LIST = volatility3.framework.list_plugins()
 
 TAGS = (
     ("Evidence", "Evidence"),
@@ -12,36 +35,122 @@ TAGS = (
 )
 
 
-class ProcessDump(models.Model):
-    process_dump_id = models.AutoField(primary_key=True)
-    dump_id = models.ForeignKey(
-        Evidence, on_delete=models.CASCADE, related_name="windows_processdump_evidence"
-    )
-    pid = models.BigIntegerField()
-    filename = models.TextField(null=True)
-
-
-class FileDump(models.Model):
-    file_dump_id = models.AutoField(primary_key=True)
-    dump_id = models.ForeignKey(
-        Evidence, on_delete=models.CASCADE, related_name="windows_filedump_evidence"
-    )
-    offset = models.TextField(null=True)
-    filename = models.TextField(null=True)
-
-
 class PsTree(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="windows_pstree_evidence"
     )
     graph = models.JSONField(null=True)
 
+    @staticmethod
+    def rename_pstree(node):
+        if len(node["__children"]) == 0:
+            node["children"] = node["__children"]
+            node["name"] = node["ImageFileName"]
+            del node["__children"]
+            del node["ImageFileName"]
+        else:
+            node["children"] = node["__children"]
+            node["name"] = node["ImageFileName"]
+            del node["__children"]
+            del node["ImageFileName"]
+            for children in node["children"]:
+                PsTree.rename_pstree(children)
+
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.pstree.PsTree"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            for tree in result:
+                self.rename_pstree(tree)
+            self.graph = json.dumps(result)
+
+    def pslist_dump(self, pid):
+        """Dump the process requested by the user using the pslist plugin"""
+        context = contexts.Context()
+        context.config["plugins.PsList.pid"] = [
+            pid,
+        ]
+        context.config["plugins.PsList.dump"] = True
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.pslist.PsList"],
+        )
+        result = DictRenderer().render(constructed.run())
+        artefact = {x.translate({32: None}): y for x, y in result[0].items()}
+        return artefact["Fileoutput"]
+
+    def memmap_dump(self, pid):
+        """Dump the process requested by the user using the memmap plugin"""
+        context = contexts.Context()
+        context.config["plugins.Memmap.pid"] = int(pid)
+        context.config["plugins.Memmap.dump"] = True
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.memmap.Memmap"],
+        )
+        result = DictRenderer().render(constructed.run())
+        artefact = clean_result(result)
+        return artefact["Fileoutput"]
 
 class DeviceTree(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="windows_devicetree_evidence"
     )
     graph = models.JSONField(null=True)
+
+    @staticmethod
+    def rename_devicetree(node):
+        if len(node["__children"]) == 0:
+            node["children"] = node["__children"]
+
+            node["name"] = ""
+
+            if node["DeviceName"]:
+                node["name"] += node["DeviceName"]
+            if node["DeviceType"]:
+                node["name"] += "/" + node["DeviceType"]
+            if node["DriverName"]:
+                node["name"] += "/" + node["DriverName"]
+            del node["__children"]
+        else:
+            node["children"] = node["__children"]
+
+            node["name"] = ""
+
+            if node["DeviceName"]:
+                node["name"] += node["DeviceName"]
+            if node["DeviceType"]:
+                node["name"] += "/" + node["DeviceType"]
+            if node["DriverName"]:
+                node["name"] += "/" + node["DriverName"]
+
+            del node["__children"]
+            for children in node["children"]:
+                DeviceTree.rename_devicetree(children)
+
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.devicetree.DeviceTree"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            for tree in result:
+                self.rename_devicetree(tree)
+            self.graph = json.dumps(result)
 
 
 class NetGraph(models.Model):
@@ -74,6 +183,20 @@ class PsScan(models.Model):
     ExitTime = models.TextField(null=True)
     Fileoutput = models.TextField(null=True)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.psscan.PsScan"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class CmdLine(models.Model):
     evidence = models.ForeignKey(
@@ -83,6 +206,20 @@ class CmdLine(models.Model):
     Process = models.TextField(null=True)
     Args = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.cmdline.CmdLine"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
 
 
 class Privs(models.Model):
@@ -97,6 +234,20 @@ class Privs(models.Model):
     Description = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.privileges.Privs"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class Sessions(models.Model):
     evidence = models.ForeignKey(
@@ -110,6 +261,20 @@ class Sessions(models.Model):
     UserName = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.sessions.Sessions"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class GetSIDs(models.Model):
     evidence = models.ForeignKey(
@@ -120,6 +285,20 @@ class GetSIDs(models.Model):
     Process = models.TextField(null=True)
     SID = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.getsids.GetSIDs"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
 
 
 class LdrModules(models.Model):
@@ -135,6 +314,20 @@ class LdrModules(models.Model):
     Process = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.ldrmodules.LdrModules"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class Modules(models.Model):
     evidence = models.ForeignKey(
@@ -147,6 +340,20 @@ class Modules(models.Model):
     Path = models.TextField(null=True)
     Size = models.BigIntegerField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.modules.Modules"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
 
 
 class SvcScan(models.Model):
@@ -164,6 +371,20 @@ class SvcScan(models.Model):
     Type = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.svcscan.SvcScan"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class Envars(models.Model):
     evidence = models.ForeignKey(
@@ -176,6 +397,20 @@ class Envars(models.Model):
     Value = models.TextField(null=True)
     Description = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.envars.Envars"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
 
 
 class NetScan(models.Model):
@@ -194,6 +429,20 @@ class NetScan(models.Model):
     Created = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.netscan.NetScan"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class NetStat(models.Model):
     evidence = models.ForeignKey(
@@ -211,6 +460,20 @@ class NetStat(models.Model):
     Created = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.netstat.NetStat"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class Hashdump(models.Model):
     evidence = models.ForeignKey(
@@ -221,6 +484,20 @@ class Hashdump(models.Model):
     lmhash = models.TextField(null=True)
     nthash = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.hashdump.Hashdump"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
 
 
 class Lsadump(models.Model):
@@ -235,6 +512,20 @@ class Lsadump(models.Model):
         self.Secret = base64.b64encode(bytes(self.Secret, "utf-8"))
         super().save(*args, **kwargs)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.lsadump.Lsadump"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class Cachedump(models.Model):
     evidence = models.ForeignKey(
@@ -245,6 +536,20 @@ class Cachedump(models.Model):
     Hash = models.TextField(null=True)
     Username = models.TextField(null=True)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.cachedump.Cachedump"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class HiveList(models.Model):
     evidence = models.ForeignKey(
@@ -253,6 +558,21 @@ class HiveList(models.Model):
     FileFullPath = models.TextField(null=True)
     Offset = models.TextField(null=True)
     Fileoutput = models.TextField(null=True)
+
+    def run(self):
+        context = contexts.Context()
+        context.config["plugins.HiveList.dump"] = True
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.registry.hivelist.HiveList"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
 
 
 class Timeliner(models.Model):
@@ -267,6 +587,20 @@ class Timeliner(models.Model):
     ModifiedDate = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["timeliner.Timeliner"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class SkeletonKeyCheck(models.Model):
     evidence = models.ForeignKey(
@@ -278,6 +612,20 @@ class SkeletonKeyCheck(models.Model):
     rc4HmacInitialize = models.TextField(null=True)
     rc4HmacDecrypt = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.skeleton_key_check.Skeleton_Key_Check"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
 
 
 class Malfind(models.Model):
@@ -296,6 +644,20 @@ class Malfind(models.Model):
     Fileoutput = models.TextField(null=True)
     Hexdump = models.TextField(null=True)
     Disasm = models.TextField(null=True)
+
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.malfind.Malfind"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
 
 
 class UserAssist(models.Model):
@@ -316,6 +678,40 @@ class UserAssist(models.Model):
     RawData = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+    def fill_userassist(list, self):
+        for artefact in list:
+            UserAssist(
+                evidence=self.evidence.dump_id,
+                HiveOffset=artefact["HiveOffset"],
+                HiveName=artefact["HiveName"],
+                Path=artefact["Path"],
+                LastWriteTime=artefact["LastWriteTime"],
+                Type=artefact["Type"],
+                Name=artefact["Name"],
+                ID=artefact["ID"],
+                Count=artefact["Count"],
+                FocusCount=artefact["FocusCount"],
+                TimeFocused=artefact["TimeFocused"],
+                LastUpdated=artefact["LastUpdated"],
+                RawData=artefact["RawData"],
+            ).save()
+            if artefact["__children"]:
+                self.fill_userassist(artefact["__children"])
+
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.registry.userassist.UserAssist"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            self.fill_userassist(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class FileScan(models.Model):
     evidence = models.ForeignKey(
@@ -325,6 +721,20 @@ class FileScan(models.Model):
     Name = models.TextField(null=True)
     Size = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.filescan.FileScan"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
 
 
 class Strings(models.Model):
@@ -351,6 +761,20 @@ class DllList(models.Model):
     Fileoutput = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.dlllist.DllList"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class Handles(models.Model):
     evidence = models.ForeignKey(
@@ -365,6 +789,41 @@ class Handles(models.Model):
     Type = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.handles.Handles"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
+    def get_handles(self, pid):
+        """Compute Handles for a specific PID"""
+        context = contexts.Context()
+        context.config["plugins.Handles.pid"] = [int(pid)]
+        try:
+            constructed = build_context(
+                self.evidence,
+                context,
+                base_config_path,
+                PLUGIN_LIST["windows.handles.Handles"],
+            )
+            result = DictRenderer().render(constructed.run())
+            for artefact in result:
+                artefact = {x.translate({32: None}): y for x, y in artefact.items()}
+                del artefact["__children"]
+                Handles(evidence=self.evidence, **artefact).save()
+            return 0
+        except:
+            return -1
+
+
 
 class DriverModule(models.Model):
     evidence = models.ForeignKey(
@@ -376,6 +835,20 @@ class DriverModule(models.Model):
     Offset = models.TextField(null=True)
     ServiceKey = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.drivermodule.DriverModule"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
 
 
 class VadWalk(models.Model):
@@ -393,6 +866,20 @@ class VadWalk(models.Model):
     VTag = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.vadwalk.VadWalk"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
 
 class SSDT(models.Model):
     evidence = models.ForeignKey(
@@ -404,10 +891,25 @@ class SSDT(models.Model):
     Symbol = models.TextField(null=True)
     Tag = models.CharField(null=True, max_length=11, choices=TAGS)
 
+    def run(self):
+        context = contexts.Context()
+        constructed = build_context(
+            self.evidence,
+            context,
+            base_config_path,
+            PLUGIN_LIST["windows.ssdt.SSDT"],
+        )
+        if constructed:
+            result = DictRenderer().render(constructed.run())
+            clean_result(result)
+            for key, value in result.items():
+                setattr(self, key, value)
+
+
 class Loot(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="windows_loot"
     )
-    FileName = models.TextField(null=True) 
+    FileName = models.TextField(null=True)
     Name = models.TextField()
     Status = models.BooleanField()

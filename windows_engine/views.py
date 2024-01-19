@@ -284,7 +284,19 @@ class SvcScanApiView(APIView):
         data = SvcScan.objects.filter(evidence_id=dump_id)
         serializer = SvcScanSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
+    
+    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
+        try:
+            instance = SvcScan.objects.get(evidence_id=dump_id, pk=artifact_id)
+        except Handles.DoesNotExist:
+            return Response(
+                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = SvcScanSerializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class HashdumpApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -344,6 +356,19 @@ class LdrModulesApiView(APIView):
         serializer = LdrModulesSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
+        try:
+            instance = LdrModules.objects.get(evidence_id=dump_id, pk=artifact_id)
+        except Handles.DoesNotExist:
+            return Response(
+                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = LdrModulesSerializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class ModulesApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -354,6 +379,19 @@ class ModulesApiView(APIView):
         data = Modules.objects.filter(evidence_id=dump_id)
         serializer = ModulesSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
+        try:
+            instance = Modules.objects.get(evidence_id=dump_id, pk=artifact_id)
+        except Handles.DoesNotExist:
+            return Response(
+                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = ModulesSerializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SSDTApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -366,6 +404,20 @@ class SSDTApiView(APIView):
         serializer = SSDTSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
+        try:
+            instance = SSDT.objects.get(evidence_id=dump_id, pk=artifact_id)
+        except Handles.DoesNotExist:
+            return Response(
+                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = SSDTSerializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class FileScanApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -377,6 +429,19 @@ class FileScanApiView(APIView):
         serializer = FileScanSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
+        try:
+            instance = FileScan.objects.get(evidence_id=dump_id, pk=artifact_id)
+        except Handles.DoesNotExist:
+            return Response(
+                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = FileScanSerializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class HandlesApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]

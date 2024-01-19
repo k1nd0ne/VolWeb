@@ -137,6 +137,7 @@ function connectWebSocket(evidence_id) {
 
   socket_volatility_tasks.onmessage = function (e) {
     result = JSON.parse(e.data);
+    console.log(result.message.name);
     switch(result.message.name){
       case "handles":
         handles_task_result(result.message);

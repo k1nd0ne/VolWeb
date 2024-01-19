@@ -75,7 +75,7 @@ function get_evidences(){
             rowCallback: function(row, data, index) {
                 $(row).attr('value', data.dump_id);
                 $(row).attr('id', data.dump_id);
-                if(data.dump_status == "100"){
+                if(data.dump_status === 100){
                     $(row).removeClass('not-completed');
                     $(row).addClass('completed');
                 }
@@ -250,6 +250,7 @@ function delete_evidence(dump_id){
         dataType: "json",
         success: function(data) {
             $('.modal_evidence_review').attr("id",NaN);
+            
         },
         error: function(xhr, status, error) {
             toastr.error("An error occurred : "  + error);
@@ -292,6 +293,14 @@ function connectWebSocket() {
             }
             catch {
                 evidences.row.add(result.message).draw().node();
+            }
+            if(result.message.dump_status === 100){
+                $("#" + result.message.dump_id).removeClass('not-completed');
+                $("#" + result.message.dump_id).addClass('completed');
+            }
+            else{
+                $("#" + result.message.dump_id).removeClass('completed');
+                $("#" + result.message.dump_id).addClass('not-completed');
             }
         }
 
@@ -377,6 +386,7 @@ $(document).ready(function() {
         clear_form();
         const evidence_id = $('.modal_evidence_review').attr('id');
         delete_evidence(evidence_id);
+        $('.modal_evidence_delete').modal('hide');
     });
 
     
