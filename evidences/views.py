@@ -114,6 +114,7 @@ class EvidenceDetailApiView(APIView):
         bucket = evidence_instance.dump_linked_case.case_bucket_id
         object = evidence_instance.dump_name
         try:
+            # TODO: Env variables!
             client = Minio("localhost:9000", "user", "password", secure=False)
             client.remove_object(str(bucket), object)
         except:

@@ -110,7 +110,6 @@ function display_envars(evidence_id, process_id) {
           aoColumns: [
             { data: "Process" },
             { data: "Block" },
-            { data: "Description" },
             { data: "Variable" },
             { data: "Value" },
             {
@@ -518,7 +517,7 @@ function display_sessions(evidence_id, process_id) {
     url: "/api/windows/" + evidence_id + "/sessions/" + process_id + "/",
     dataType: "json",
     success: function (data) {
-      $(".p_session_username").text(data[0].UserName);
+      $(".p_session_username").text(data[0]['User Name']);
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);

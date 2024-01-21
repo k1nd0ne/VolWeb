@@ -10,53 +10,29 @@ from VolWeb.voltools import *
 from volatility3.framework.exceptions import *
 from volatility3.cli import MuteProgress
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def build_context(instance, context, base_config_path, plugin):
+def build_context(evidence_data, context, base_config_path, plugin):
     """This function is used to buid the context and construct each plugin
     Return : The contructed plugin.
     """
-    output_path = f"media/{self.evidence.dump_id}/"
-    if not os.path.exists(os.path.dirname(output_path)):
-        os.makedirs(os.path.dirname(output_path))
     available_automagics = automagic.available(context)
     automagics = automagic.choose_automagic(available_automagics, plugin)
     context.config[
         "automagic.LayerStacker.stackers"
     ] = automagic.stacker.choose_os_stackers(plugin)
-    context.config["automagic.LayerStacker.single_location"] = (
-        "s3://"
-        + str(instance.dump_linked_case.case_bucket_id)
-        + "/"
-        + instance.dump_name
-    )
+    context.config["automagic.LayerStacker.single_location"] = (evidence_data["bucket"])
     constructed = construct_plugin(
         context,
         automagics,
         plugin,
         base_config_path,
         MuteProgress(),
-        file_handler(output_path),
+        file_handler(evidence_data["output_path"]),
     )
     return constructed
-
-
-def clean_result(result):
-    for artefact in result:
-        artefact = {
-            x.translate({32: None}): y for x, y in artefact.items()
-        }
-        if "__children" in artefact:
-            del artefact["__children"]
-        if "Offset(V)" in artefact:
-            artefact["Offset"] = artefact["Offset(V)"]
-            del artefact["Offset(V)"]
-        if "Tag" in artefact:
-            artefact["VTag"] = artefact["Tag"]
-            del artefact["Tag"]
 
 
 def file_dump(instance, offset):
@@ -142,7 +118,6 @@ def run_volweb_routine_windows(instance):
         if not os.path.exists(os.path.dirname(output_path)):
             os.makedirs(os.path.dirname(output_path))
         try:
-            # TODO NEED TO SAVE THE KEY WITH THE EVIDENCE IN CASE OF NAME DUPLICATION
             constructed = build_context(
                 instance,
                 context,

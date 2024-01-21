@@ -165,30 +165,30 @@ function TreeView(root, container, options) {
       } else {
         span_desc.className = "tj_description";
       }
-      if (process.name == "System") {
+      if (process.ImageFileName == "System") {
         if (process.PID == 4) {
           span_desc.className = "tj_description text-success";
         } else {
           span_desc.className = "tj_description text-danger";
         }
       }
-      if (process.name == "cmd.exe") {
+      if (process.ImageFileName == "cmd.exe") {
         span_desc.className = "tj_description text-warning";
       }
-      if (process.name == "powershell.exe") {
+      if (process.ImageFileName == "powershell.exe") {
         span_desc.className = "tj_description text-warning";
       }
-      if (process.name == "WmiPrvSE.exe") {
+      if (process.ImageFileName == "WmiPrvSE.exe") {
         span_desc.className = "tj_description text-warning";
       }
 
       // Check if the creation of an svchost is not within seconds after the service.exe creation
 
-      if (process.name == "services.exe") {
+      if (process.ImageFileName == "services.exe") {
         service_exe_creation_time = process.CreateTime;
       }
 
-      if (process.name == "svchost.exe") {
+      if (process.ImageFileName == "svchost.exe") {
         if (process.CreateTime) {
           if (
             !isWithinTenSeconds(process.CreateTime, service_exe_creation_time)

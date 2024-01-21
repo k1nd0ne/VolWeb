@@ -5,7 +5,8 @@ function display_pstree(evidence_id) {
     url: "/api/windows/" + evidence_id + "/pstree/",
     dataType: "json",
     success: function (evidence_data) {
-      var process_list = JSON.parse(evidence_data[0].graph);
+      console.log(evidence_data[0].artefacts)
+      var process_list = JSON.parse(evidence_data[0].artefacts);
       var root = new TreeNode("root");
       $.each(process_list, function (_, node) {
         build_tree(node, root);
@@ -24,10 +25,10 @@ function display_pstree(evidence_id) {
 
       function build_tree(node, root) {
         // create node and add to elements
-        var newNode = new TreeNode(node.PID + " - " + node.name, node);
+        var newNode = new TreeNode(node.PID + " - " + node.ImageFileName, node);
         // now create links
-        if (node.children) {
-          $.each(node.children, function (_, childNode) {
+        if (node.__children) {
+          $.each(node.__children, function (_, childNode) {
             build_tree(childNode, newNode);
           });
         }
@@ -102,7 +103,7 @@ function display_process_info(process, evidence_id) {
         }
       });
       $(".process_id").attr("id", process.PID);
-      $(".process_title").text(process.name);
+      $(".process_title").text(process.ImageFileName);
       $(".p_pid").text(process.PID);
       $(".p_offset").text(process["Offset(V)"]);
       $(".p_threads").text(process.Threads);

@@ -19,8 +19,8 @@ function generate_visualisation(process, pstree) {
   function find_childs(pid, node, elements, links) {
     // Check if there is not too much elements
     if (node.PID == pid) {
-      if (node.children) {
-        $.each(node.children, function (_, childNode) {
+      if (node.__children) {
+        $.each(node.__children, function (_, childNode) {
           elements.push(MakeNode(childNode));
           links.push(makeLink(pid, childNode.PID));
           find_childs(childNode.PID, childNode, elements, links);
@@ -28,8 +28,8 @@ function generate_visualisation(process, pstree) {
         elements.push(MakeNode(node));
       }
     } else {
-      if (node.children) {
-        $.each(node.children, function (_, childNode) {
+      if (node.__children) {
+        $.each(node.__children, function (_, childNode) {
           find_childs(pid, childNode, elements, links);
         });
       }
@@ -76,7 +76,7 @@ function makeLink(parentElementLabel, childElementLabel) {
 }
 
 function MakeNode(node) {
-  var info = node.name + "\n\nPID : " + node.PID + "\n";
+  var info = node.ImageFileName + "\n\nPID : " + node.PID + "\n";
   var maxLineLength = _.max(info.split("\n"), function (l) {
     return l.length;
   }).length;

@@ -1,17 +1,19 @@
 from celery import shared_task
-from windows_engine.vol_windows import get_handles, pslist_dump, memmap_dump, file_dump
 from evidences.models import Evidence
-from windows_engine.models import Loot, FileScan
+from windows_engine.models import PsTree
+from windows_engine.models import Loot, FileScan, Handles
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.forms.models import model_to_dict
 import json
 
-@shared_task(bind=True)
-def compute_handles(self, evidence_id, pid):
+
+
+@shared_task
+def compute_handles(evidence_id, pid):
     channel_layer = get_channel_layer()
     instance = Evidence.objects.get(dump_id=evidence_id)
-    result = get_handles(instance, pid)
+    result = Handles(evidence = instance).run(pid)
     if result:
         async_to_sync(channel_layer.group_send)(
             f"volatility_tasks_{evidence_id}",
@@ -40,13 +42,13 @@ def compute_handles(self, evidence_id, pid):
         )
 
 
-@shared_task(bind=True)
-def dump_process_pslist(self, evidence_id, pid):
+@shared_task
+def dump_process_pslist(evidence_id, pid):
     channel_layer = get_channel_layer()
-    instance = Evidence.objects.get(dump_id=evidence_id)
-    result = pslist_dump(instance, pid)
+    instance = PsTree.objects.get(evidence_id=evidence_id)
+    result = instance.pslist_dump(pid)
     loot = Loot()
-    loot.evidence = instance
+    loot.evidence = instance.evidence
     if result != "Error outputting file":
         loot.Status = True
         loot.Name = f"Process with PID {pid} - FileName: {result} - Dumped using PsList."
@@ -85,10 +87,10 @@ def dump_process_pslist(self, evidence_id, pid):
 @shared_task(bind=True)
 def dump_process_memmap(self, evidence_id, pid):
     channel_layer = get_channel_layer()
-    instance = Evidence.objects.get(dump_id=evidence_id)
-    result = memmap_dump(instance, pid)
+    instance = PsTree.objects.get(evidence_id=evidence_id)
+    result = instance.memmap_dump(pid)
     loot = Loot()
-    loot.evidence = instance
+    loot.evidence = instance.evidence
     if result != "Error outputting file":
         loot.Name = f"Process with PID {pid} - FileName: {result} - Dumped using Memmap."
         loot.Status = True
@@ -131,7 +133,7 @@ def dump_file(self, evidence_id, file_id):
         instance = Evidence.objects.get(dump_id=evidence_id)
         file_obj = FileScan.objects.get(id=file_id)
         offset = file_obj.Offset
-        result = file_dump(instance, offset)
+        result = None
         if result:
             for file in result:
                 loot = Loot()

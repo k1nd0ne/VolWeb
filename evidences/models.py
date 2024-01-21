@@ -1,5 +1,6 @@
 from django.db import models
 from cases.models import Case
+from celery import group
 
 OS = (
     ("Windows", "Windows"),

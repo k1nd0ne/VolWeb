@@ -76,10 +76,10 @@ class CmdLineApiView(APIView):
         """
         Give the requested cmdline from the pid.
         """
-        data = CmdLine.objects.filter(evidence_id=dump_id, PID=pid)
-        serializer = CmdLineSerializer(data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+        data = CmdLine.objects.get(evidence_id=dump_id).artefacts
+        if data:
+            filtered_data = [d for d in json.loads(data) if d['PID'] == pid]
+        return Response(filtered_data, status=status.HTTP_200_OK)
 
 class GetSIDsApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -88,9 +88,10 @@ class GetSIDsApiView(APIView):
         """
         Give the requested cmdline from the pid.
         """
-        data = GetSIDs.objects.filter(evidence_id=dump_id, PID=pid)
-        serializer = GetSIDsSerializer(data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = GetSIDs.objects.get(evidence_id=dump_id).artefacts
+        if data:
+            filtered_data = [d for d in json.loads(data) if d['PID'] == pid]
+        return Response(filtered_data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
@@ -114,9 +115,10 @@ class PrivsApiView(APIView):
         """
         Give the requested cmdline from the pid.
         """
-        data = Privs.objects.filter(evidence_id=dump_id, PID=pid)
-        serializer = PrivsSerializer(data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = Privs.objects.get(evidence_id=dump_id).artefacts
+        if data:
+            filtered_data = [d for d in json.loads(data) if d['PID'] == pid]
+        return Response(filtered_data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
@@ -140,9 +142,12 @@ class EnvarsApiView(APIView):
         """
         Give the requested cmdline from the pid.
         """
-        data = Envars.objects.filter(evidence_id=dump_id, PID=pid)
-        serializer = EnvarsSerializer(data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = Envars.objects.get(evidence_id=dump_id).artefacts
+        if data:
+            
+            filtered_data = [d for d in json.loads(data) if d['PID'] == pid]
+            print(filtered_data)
+        return Response(filtered_data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
@@ -166,9 +171,10 @@ class DllListApiView(APIView):
         """
         Give the requested cmdline from the pid.
         """
-        data = DllList.objects.filter(evidence_id=dump_id, PID=pid)
-        serializer = DllListSerializer(data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = DllList.objects.get(evidence_id=dump_id).artefacts
+        if data:
+            filtered_data = [d for d in json.loads(data) if d['PID'] == pid]
+        return Response(filtered_data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
@@ -190,11 +196,12 @@ class SessionsApiView(APIView):
 
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
-        Give the requested cmdline from the pid.
+        Give the requested session from the pid.
         """
-        data = Sessions.objects.filter(evidence_id=dump_id, ProcessID=pid)
-        serializer = SessionsSerializer(data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = Sessions.objects.get(evidence_id=dump_id).artefacts
+        if data:
+            filtered_data = [d for d in json.loads(data) if d['Process ID'] == pid]
+        return Response(filtered_data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
@@ -288,7 +295,7 @@ class SvcScanApiView(APIView):
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
             instance = SvcScan.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except Handles.DoesNotExist:
+        except SvcScan.DoesNotExist:
             return Response(
                 {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
             )
@@ -359,7 +366,7 @@ class LdrModulesApiView(APIView):
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
             instance = LdrModules.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except Handles.DoesNotExist:
+        except LdrModules.DoesNotExist:
             return Response(
                 {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
             )
@@ -383,7 +390,7 @@ class ModulesApiView(APIView):
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
             instance = Modules.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except Handles.DoesNotExist:
+        except Modules.DoesNotExist:
             return Response(
                 {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
             )
@@ -407,7 +414,7 @@ class SSDTApiView(APIView):
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
             instance = SSDT.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except Handles.DoesNotExist:
+        except SSDT.DoesNotExist:
             return Response(
                 {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
             )
@@ -432,7 +439,7 @@ class FileScanApiView(APIView):
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
             instance = FileScan.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except Handles.DoesNotExist:
+        except FileScan.DoesNotExist:
             return Response(
                 {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
             )
@@ -445,18 +452,21 @@ class FileScanApiView(APIView):
 
 class HandlesApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    def get_object(self, dump_id, pid):
+        try:
+            return Handles.objects.get(evidence_id=dump_id, PID=pid)
+        except Handles.DoesNotExist:
+            return None
+        
     def get(self, request, dump_id, pid, *args, **kwargs):
-        """
-        Give the requested handles if existing.
-        """
-        data = Handles.objects.filter(evidence_id=dump_id, PID=pid)
-        serializer = HandlesSerializer(data, many=True)
-        if len(data) > 0:
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        instance = self.get_object(dump_id, pid)
+        if instance:
+            filtered_data = [d for d in json.loads(instance.artefacts) if d['PID'] == pid]
+            if len(filtered_data) > 0:
+                return Response(filtered_data, status=status.HTTP_200_OK)
         else:
             compute_handles.delay(evidence_id=dump_id, pid=pid)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({},status=status.HTTP_201_CREATED)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
