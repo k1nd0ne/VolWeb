@@ -1,4 +1,4 @@
-import datetime, hashlib, io, tempfile, os, vt
+import datetime, hashlib, io, tempfile, os, vt, json
 from typing import Dict, Type, Union, Any, List, Tuple
 from volatility3.framework import interfaces
 from volatility3.cli import text_renderer
@@ -351,6 +351,7 @@ def build_timeline(data):
     timeline = []
     nb_event = 1
     actual_date = ""
+    print(data[0]["Created Date"])
     try:
         saved_date = data[0]["Created Date"]
     except:

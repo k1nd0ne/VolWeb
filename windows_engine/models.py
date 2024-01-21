@@ -53,7 +53,7 @@ class PsTree(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -117,7 +117,7 @@ class DeviceTree(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -134,7 +134,6 @@ class TimeLineChart(models.Model):
         Evidence, on_delete=models.CASCADE, related_name="windows_timeline_evidence"
     )
     artefacts = models.JSONField(null=True)
-
 
 class PsScan(models.Model):
     evidence = models.ForeignKey(
@@ -155,7 +154,7 @@ class PsScan(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -179,7 +178,7 @@ class CmdLine(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -203,7 +202,7 @@ class Privs(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -227,7 +226,7 @@ class Sessions(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -251,7 +250,7 @@ class GetSIDs(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -275,7 +274,7 @@ class LdrModules(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -299,7 +298,7 @@ class Modules(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -323,7 +322,7 @@ class SvcScan(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -347,7 +346,7 @@ class Envars(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -371,7 +370,7 @@ class NetScan(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -395,7 +394,7 @@ class NetStat(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -419,7 +418,7 @@ class Hashdump(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -443,7 +442,7 @@ class Lsadump(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -468,7 +467,7 @@ class Cachedump(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -493,7 +492,7 @@ class HiveList(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -518,7 +517,7 @@ class Timeliner(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -543,7 +542,7 @@ class SkeletonKeyCheck(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -568,7 +567,7 @@ class Malfind(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -593,7 +592,7 @@ class UserAssist(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -618,7 +617,7 @@ class FileScan(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -643,7 +642,7 @@ class DllList(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -671,7 +670,7 @@ class Handles(models.Model):
                 PLUGIN_LIST["windows.handles.Handles"],
             )
             result = DictRenderer().render(constructed.run())
-            self.artefacts = json.dumps(result)
+            self.artefacts = result
             self.PID = pid
             self.save()
             return self
@@ -699,7 +698,7 @@ class DriverModule(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -724,7 +723,7 @@ class VadWalk(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 
@@ -749,7 +748,7 @@ class SSDT(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
-                return json.dumps(result)
+                return result
         except:
             return None
 

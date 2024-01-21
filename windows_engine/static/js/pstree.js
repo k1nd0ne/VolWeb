@@ -5,8 +5,7 @@ function display_pstree(evidence_id) {
     url: "/api/windows/" + evidence_id + "/pstree/",
     dataType: "json",
     success: function (evidence_data) {
-      console.log(evidence_data[0].artefacts)
-      var process_list = JSON.parse(evidence_data[0].artefacts);
+      var process_list = evidence_data.artefacts
       var root = new TreeNode("root");
       $.each(process_list, function (_, node) {
         build_tree(node, root);

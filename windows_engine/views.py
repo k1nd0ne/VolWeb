@@ -22,37 +22,56 @@ def review(request, dump_id):
 class PsTreeApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, dump_id):
+        try:
+            return PsTree.objects.get(evidence_id=dump_id)
+        except PsTree.DoesNotExist:
+            return None
+
+
     def get(self, request, dump_id, *args, **kwargs):
         """
         Give the requested PSTree.
         """
-        tree = PsTree.objects.filter(evidence_id=dump_id)
-        serializer = PsTreeSerializer(tree, many=True)
+        data = self.get_object(dump_id)
+        serializer = PsTreeSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TimelineChartApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    def get_object(self, dump_id):
+        try:
+            return TimeLineChart.objects.get(evidence_id=dump_id)
+        except TimeLineChart.DoesNotExist:
+            return None
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested Timeline.
+        Give the requested TimelineChart.
         """
-        timeline = TimeLineChart.objects.filter(evidence_id=dump_id)
-        serializer = TimelineChartSerializer(timeline, many=True)
+        data = self.get_object(dump_id)
+        serializer = TimelineChartSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TimelineDataApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, dump_id):
+        try:
+            return Timeliner.objects.get(evidence_id=dump_id)
+        except Timeliner.DoesNotExist:
+            return None
+
     def get(self, request, dump_id, timestamp, *args, **kwargs):
         """
         Give the requested Timeline Date from the timestamp.
         """
-        data = Timeliner.objects.filter(evidence_id=dump_id, CreatedDate=timestamp)
-        serializer = TimelineDataSerializer(data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = self.get_object(dump_id)
+        if data:
+            filtered_data = [d for d in data.artefacts if d['Created Date'] == timestamp]
+        return Response(filtered_data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
@@ -71,26 +90,37 @@ class TimelineDataApiView(APIView):
 
 class CmdLineApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    def get_object(self, dump_id):
+        try:
+            return CmdLine.objects.get(evidence_id=dump_id)
+        except CmdLine.DoesNotExist:
+            return None
 
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
         Give the requested cmdline from the pid.
         """
-        data = CmdLine.objects.get(evidence_id=dump_id).artefacts
+        data = self.get_object(dump_id)
         if data:
-            filtered_data = [d for d in json.loads(data) if d['PID'] == pid]
+            filtered_data = [d for d in data.artefacts if d['PID'] == pid]
         return Response(filtered_data, status=status.HTTP_200_OK)
 
 class GetSIDsApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, dump_id):
+        try:
+            return GetSIDs.objects.get(evidence_id=dump_id)
+        except GetSIDs.DoesNotExist:
+            return None
+
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
         Give the requested cmdline from the pid.
         """
-        data = GetSIDs.objects.get(evidence_id=dump_id).artefacts
+        data = self.get_object(dump_id)
         if data:
-            filtered_data = [d for d in json.loads(data) if d['PID'] == pid]
+            filtered_data = [d for d in data.artefacts if d['PID'] == pid]
         return Response(filtered_data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -111,13 +141,19 @@ class GetSIDsApiView(APIView):
 class PrivsApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, dump_id):
+        try:
+            return Privs.objects.get(evidence_id=dump_id)
+        except Privs.DoesNotExist:
+            return None
+        
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
         Give the requested cmdline from the pid.
         """
-        data = Privs.objects.get(evidence_id=dump_id).artefacts
+        data = self.get_object(dump_id)
         if data:
-            filtered_data = [d for d in json.loads(data) if d['PID'] == pid]
+            filtered_data = [d for d in data.artefacts if d['PID'] == pid]
         return Response(filtered_data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -138,15 +174,19 @@ class PrivsApiView(APIView):
 class EnvarsApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, dump_id):
+        try:
+            return Envars.objects.get(evidence_id=dump_id)
+        except Envars.DoesNotExist:
+            return None
+        
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
         Give the requested cmdline from the pid.
         """
-        data = Envars.objects.get(evidence_id=dump_id).artefacts
+        data = self.get_object(dump_id)
         if data:
-            
-            filtered_data = [d for d in json.loads(data) if d['PID'] == pid]
-            print(filtered_data)
+            filtered_data = [d for d in data.artefacts if d['PID'] == pid]
         return Response(filtered_data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -166,14 +206,19 @@ class EnvarsApiView(APIView):
 
 class DllListApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    def get_object(self, dump_id):
+        try:
+            return DllList.objects.get(evidence_id=dump_id)
+        except DllList.DoesNotExist:
+            return None
+        
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
         Give the requested cmdline from the pid.
         """
-        data = DllList.objects.get(evidence_id=dump_id).artefacts
+        data = self.get_object(dump_id)
         if data:
-            filtered_data = [d for d in json.loads(data) if d['PID'] == pid]
+            filtered_data = [d for d in data.artefacts if d['PID'] == pid]
         return Response(filtered_data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -193,14 +238,19 @@ class DllListApiView(APIView):
 
 class SessionsApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    def get_object(self, dump_id):
+        try:
+            return Sessions.objects.get(evidence_id=dump_id)
+        except Sessions.DoesNotExist:
+            return None
+        
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
         Give the requested session from the pid.
         """
-        data = Sessions.objects.get(evidence_id=dump_id).artefacts
+        data = self.get_object(dump_id)
         if data:
-            filtered_data = [d for d in json.loads(data) if d['Process ID'] == pid]
+            filtered_data = [d for d in data.artefacts if d['Process ID'] == pid]
         return Response(filtered_data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -220,13 +270,17 @@ class SessionsApiView(APIView):
 
 class NetStatApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    def get_object(self, dump_id):
+        try:
+            return NetStat.objects.get(evidence_id=dump_id)
+        except NetStat.DoesNotExist:
+            return None
     def get(self, request, dump_id, *args, **kwargs):
         """
         Give the requested netstat data
         """
-        data = NetStat.objects.filter(evidence_id=dump_id)
-        serializer = NetStatSerializer(data, many=True)
+        data = self.get_object(dump_id)
+        serializer = NetStatSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -246,13 +300,17 @@ class NetStatApiView(APIView):
 
 class NetScanApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    def get_object(self, dump_id):
+        try:
+            return NetScan.objects.get(evidence_id=dump_id)
+        except NetScan.DoesNotExist:
+            return None
     def get(self, request, dump_id, *args, **kwargs):
         """
         Give the requested netscan data
         """
-        data = NetScan.objects.filter(evidence_id=dump_id)
-        serializer = NetScanSerializer(data, many=True)
+        data = self.get_object(dump_id)
+        serializer = NetScanSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -283,13 +341,18 @@ class NetGraphApiView(APIView):
 
 class SvcScanApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    def get_object(self, dump_id):
+        try:
+            return SvcScan.objects.get(evidence_id=dump_id)
+        except SvcScan.DoesNotExist:
+            return None
+        
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested modules data
+        Give the requested services data
         """
-        data = SvcScan.objects.filter(evidence_id=dump_id)
-        serializer = SvcScanSerializer(data, many=True)
+        data = self.get_object(dump_id)
+        serializer = SvcScanSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -307,60 +370,86 @@ class SvcScanApiView(APIView):
 
 class HashdumpApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    def get_object(self, dump_id):
+        try:
+            return Hashdump.objects.get(evidence_id=dump_id)
+        except Hashdump.DoesNotExist:
+            return None
     def get(self, request, dump_id, *args, **kwargs):
         """
         Give the requested Hashdump data
         """
-        data = Hashdump.objects.filter(evidence_id=dump_id)
-        serializer = HashdumpSerializer(data, many=True)
+        data = self.get_object(dump_id)
+        serializer = HashdumpSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CachedumpApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    def get_object(self, dump_id):
+        try:
+            return Cachedump.objects.get(evidence_id=dump_id)
+        except Cachedump.DoesNotExist:
+            return None
     def get(self, request, dump_id, *args, **kwargs):
         """
         Give the requested Cachedump data
         """
-        data = Cachedump.objects.filter(evidence_id=dump_id)
-        serializer = CachedumpSerializer(data, many=True)
+        data = self.get_object(dump_id)
+        serializer = CachedumpSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class LsadumpApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, dump_id):
+        try:
+            return Lsadump.objects.get(evidence_id=dump_id)
+        except Lsadump.DoesNotExist:
+            return None
+        
     def get(self, request, dump_id, *args, **kwargs):
         """
         Give the requested Lsadump data
         """
-        data = Lsadump.objects.filter(evidence_id=dump_id)
-        serializer = LsadumpSerializer(data, many=True)
+        data = self.get_object(dump_id)
+        serializer = LsadumpSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class MalfindApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, dump_id):
+        try:
+            return Malfind.objects.get(evidence_id=dump_id)
+        except Malfind.DoesNotExist:
+            return None
+
     def get(self, request, dump_id, *args, **kwargs):
         """
         Give the requested malfind data
         """
-        data = Malfind.objects.filter(evidence_id=dump_id)
-        serializer = MalfindSerializer(data, many=True)
+        data = self.get_object(dump_id)
+        serializer = MalfindSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class LdrModulesApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, dump_id):
+        try:
+            return LdrModules.objects.get(evidence_id=dump_id)
+        except LdrModules.DoesNotExist:
+            return None
+        
     def get(self, request, dump_id, *args, **kwargs):
         """
         Give the requested ldrmodules data
         """
-        data = LdrModules.objects.filter(evidence_id=dump_id)
-        serializer = LdrModulesSerializer(data, many=True)
+        data = self.get_object(dump_id)
+        serializer = LdrModulesSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -379,12 +468,18 @@ class LdrModulesApiView(APIView):
 class ModulesApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, dump_id):
+        try:
+            return Modules.objects.get(evidence_id=dump_id)
+        except Modules.DoesNotExist:
+            return None
+        
     def get(self, request, dump_id, *args, **kwargs):
         """
         Give the requested modules data
         """
-        data = Modules.objects.filter(evidence_id=dump_id)
-        serializer = ModulesSerializer(data, many=True)
+        data = self.get_object(dump_id)
+        serializer = ModulesSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -403,12 +498,18 @@ class ModulesApiView(APIView):
 class SSDTApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, dump_id):
+        try:
+            return SSDT.objects.get(evidence_id=dump_id)
+        except SSDT.DoesNotExist:
+            return None
+        
     def get(self, request, dump_id, *args, **kwargs):
         """
         Give the requested SSDT data
         """
-        data = SSDT.objects.filter(evidence_id=dump_id)
-        serializer = SSDTSerializer(data, many=True)
+        data = self.get_object(dump_id)
+        serializer = SSDTSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -428,12 +529,18 @@ class SSDTApiView(APIView):
 class FileScanApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, dump_id):
+        try:
+            return FileScan.objects.get(evidence_id=dump_id)
+        except FileScan.DoesNotExist:
+            return None
+
     def get(self, request, dump_id, *args, **kwargs):
         """
         Give the requested FileScan data
         """
-        data = FileScan.objects.filter(evidence_id=dump_id)
-        serializer = FileScanSerializer(data, many=True)
+        data = self.get_object(dump_id)
+        serializer = FileScanSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -461,7 +568,7 @@ class HandlesApiView(APIView):
     def get(self, request, dump_id, pid, *args, **kwargs):
         instance = self.get_object(dump_id, pid)
         if instance:
-            filtered_data = [d for d in json.loads(instance.artefacts) if d['PID'] == pid]
+            filtered_data = [d for d in instance.artefacts if d['PID'] == pid]
             if len(filtered_data) > 0:
                 return Response(filtered_data, status=status.HTTP_200_OK)
         else:
@@ -484,7 +591,6 @@ class HandlesApiView(APIView):
 
 class PsListDumpApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
     def get(self, _request, dump_id, pid, *args, **kwargs):
         """
         Dump the requested process using the pslist plugin

@@ -189,9 +189,10 @@ function build_malfind_process_card(data) {
     Also add event listeners to then fill the info about each process.
   */
 
+  console.log(data)
   const cardDiv = document.createElement('div');
   cardDiv.classList.add('card', 'shadow', 'border-start-primary', 'card_clickable', 'm-2');
-  cardDiv.id = "malfind_process_" + data.id;
+  cardDiv.id = "malfind_process_" + data["Start VPN"];
 
   const cardBodyDiv = document.createElement('div');
   cardBodyDiv.classList.add('card-body', 'p-2');
@@ -233,9 +234,9 @@ function display_malfind_details(data) {
   /*
     Display the detailled info when a malfind process card is clicked. 
   */
-  $("#malfind_start_vpn").text(data.StartVPN);
-  $("#malfind_end_vpn").text(data.EndVPN);
-  $("#malfind_tag").text(data.VTag);
+  $("#malfind_start_vpn").text(data['Start VPN']);
+  $("#malfind_end_vpn").text(data['End VPN']);
+  $("#malfind_tag").text(data.Tag);
   $("#malfind_protection").text(data.Protection);
   $("#malfind_hexdump").text(data.Hexdump);
   $("#malfind_disasm").text(data.Disasm);

@@ -1,6 +1,7 @@
 from celery import shared_task
 from evidences.models import Evidence
 from windows_engine.models import *
+from VolWeb.voltools import build_timeline
 from celery.result import allow_join_result
 from celery import group
 import os
@@ -48,7 +49,6 @@ def start_analysis(dump_id):
         task_group = group(
             plugin.run.s(evidence_data) for plugin in volweb_plugins
         )
-        print(task_group)
         group_result = task_group.apply_async()
         with allow_join_result():
             result = group_result.get()
@@ -56,6 +56,8 @@ def start_analysis(dump_id):
                 volweb_plugins[i].artefacts = result[i]
                 volweb_plugins[i].save()
 
+            # We need to take care of some specific models
+            TimeLineChart(evidence=instance, artefacts=build_timeline(result[17])).save()
             instance.dump_status = 100
             instance.save() 
 

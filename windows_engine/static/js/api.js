@@ -152,7 +152,7 @@ function display_svcscan(evidence_id) {
       }
       try {
         svcscan_data = $("#svcscan_datatable").DataTable({
-          aaData: data,
+          aaData: data.artefacts,
           aoColumns: [
             { data: "Offset" },
             { data: "PID" },
@@ -254,7 +254,7 @@ function display_filescan(evidence_id) {
       }
       try {
         filescan_data = $("#filescan_datatable").DataTable({
-          aaData: data,
+          aaData: data.artefacts,
           aoColumns: [
             { data: "Offset" },
             { data: "Name" },
@@ -477,7 +477,7 @@ function display_timeline(evidence_id) {
     success: function (evidence_data) {
       try {
         theme = document.querySelector('[data-bs-theme]').getAttribute('data-bs-theme');
-        var data = JSON.parse(evidence_data[0].graph);
+        var data = evidence_data.artefacts
         var chart = anychart.line();
         var series = chart.line(data);
         chart.xScroller(true);
@@ -553,11 +553,11 @@ function display_timeliner(evidence_id, timestamp) {
         timeline_data = $("#timeline_datatable").DataTable({
           aaData: data,
           aoColumns: [
-            { data: "CreatedDate" },
-            { data: "AccessedDate" },
-            { data: "ChangedDate" },
+            { data: "Created Date" },
+            { data: "Accessed Date" },
+            { data: "Changed Date" },
             { data: "Description" },
-            { data: "ModifiedDate" },
+            { data: "Modified Date" },
             { data: "Plugin" },
             {
               mData: "id",
@@ -595,9 +595,11 @@ function display_credentials(evidence_id) {
     url: "/api/windows/" + evidence_id + "/hashdump/",
     dataType: "json",
     success: function (data) {
-      $.each(data, function (_, value) {
-        build_credential_card("Hashdump", value);
-      });
+      if(data.artefacts.length > 0){
+        $.each(data.artefacts, function (_, value) {
+          build_credential_card("Hashdump", value);
+        });
+      }
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -609,9 +611,11 @@ function display_credentials(evidence_id) {
     url: "/api/windows/" + evidence_id + "/cachedump/",
     dataType: "json",
     success: function (data) {
-      $.each(data, function (_, value) {
-        build_credential_card("Cachedump", value);
-      });
+      if(data.artefacts.length > 0){
+        $.each(data, function (_, value) {
+          build_credential_card("Cachedump", value);
+        });
+      }
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -623,9 +627,12 @@ function display_credentials(evidence_id) {
     url: "/api/windows/" + evidence_id + "/lsadump/",
     dataType: "json",
     success: function (data) {
-      $.each(data, function (_, value) {
-        build_credential_card("Lsadump", value);
-      });
+      if(data.artefacts.length > 0){
+        $.each(data, function (_, value) {
+          build_credential_card("Lsadump", value);
+        });       
+      }
+
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -650,8 +657,8 @@ function display_malfind(evidence_id) {
       $("#malfind_process_loading").show();
     },
     success: function (data, status, xhr) {
-      if (data.length > 0){
-        $.each(data, function (_, value) {
+      if (data.artefacts.length > 0){
+        $.each(data.artefacts, function (_, value) {
           build_malfind_process_card(value);
         });
       }
@@ -684,7 +691,7 @@ function display_ldrmodules(evidence_id) {
       $('#ldrmodules_process_loading').show();
     },
     success: function (data, status, xhr) {
-      if (data.length > 0){
+      if (data.artefacts.length > 0){
         try {
           ldrmodules_data.destroy();
         } catch {
@@ -692,7 +699,7 @@ function display_ldrmodules(evidence_id) {
         }
         try {
           ldrmodules_data = $("#ldrmodules_datatable").DataTable({
-            aaData: data,
+            aaData: data.artefacts,
             aoColumns: [
               { data: "Base" },
               { data: "Process" },
@@ -747,8 +754,7 @@ function display_kernel_modules(evidence_id) {
       $('#kernel_modules_loading').show();
     },
     success: function (data, status, xhr) {
-      console.log(data);
-      if (data.length > 0){
+      if (data.artefacts.length > 0){
         try {
           kernel_modules_data.destroy();
         } catch {
@@ -756,7 +762,7 @@ function display_kernel_modules(evidence_id) {
         }
 
           kernel_modules_data = $("#kernel_modules_datatable").DataTable({
-            aaData: data,
+            aaData: data.artefacts,
             aoColumns: [
               { data: "Base" },
               { data: "Name" },
@@ -804,8 +810,7 @@ function display_ssdt(evidence_id) {
       $('#ssdt_loading').show();
     },
     success: function (data, status, xhr) {
-      console.log(data);
-      if (data.length > 0){
+      if (data.artefacts.length > 0){
         try {
           ssdt_data.destroy();
         } catch {
@@ -813,7 +818,7 @@ function display_ssdt(evidence_id) {
         }
 
           ssdt_data = $("#ssdt_datatable").DataTable({
-            aaData: data,
+            aaData: data.artefacts,
             aoColumns: [
               { data: "Address" },
               { data: "Index" },
