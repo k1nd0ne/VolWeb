@@ -138,6 +138,47 @@ function display_envars(evidence_id, process_id) {
   });
 }
 
+
+function display_registry(evidence_id) {
+  $("#registry").modal("show");
+  $.ajax({
+    type: "GET",
+    url: "/api/windows/" + evidence_id + "/registry/hivelist/",
+    dataType: "json",
+    success: function (data) {
+      try {
+        hivelist_data.destroy();
+      } catch {
+        // Nothing to do, the datatable will be created.
+      }
+        hivelist_data = $("#hivelist_datatable").DataTable({
+          aaData: data.artefacts,
+          aoColumns: [
+            { data: "Offset" },
+            { data: "FileFullPath" },
+            {
+              mData: "id",
+              mRender: function (id, type, row) {
+                return generate_hive_download(row, data.evidence);
+              },
+            },
+          ],
+          aLengthMenu: [
+            [25, 50, 75, -1],
+            [25, 50, 75, "All"],
+          ],
+          iDisplayLength: 25,
+          searchBuilder: true,
+        });
+        hivelist_data.searchBuilder.container().prependTo(hivelist_data.table().container());
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred : " + error);
+    },
+  });
+}
+
+
 function display_svcscan(evidence_id) {
   $("#svcscan").modal("show");
   $.ajax({
@@ -401,7 +442,9 @@ function display_network(evidence_id) {
     url: "/api/windows/" + evidence_id + "/netgraph/",
     dataType: "json",
     success: function (data) {
-      generate_network_visualisation(data);
+      if(data.artefacts !== null){
+        generate_network_visualisation(data);
+      }
     }
   });
 }
@@ -853,11 +896,25 @@ function generate_label(row){
 
 }
 
-
 function generate_file_download_btn(data) {
   btn = document.createElement('a');
   btn.setAttribute('class', 'btn btn-sm btn-outline-primary p-1 btn-dump-file')
   btn.textContent = "Dump";
-  btn.setAttribute('id', data.id);
+  btn.setAttribute('id', data.Offset);
   return btn.outerHTML;
+}
+
+function generate_hive_download(data, evidence_data) {
+  if (data["File output"]) {
+    console.log(data["File output"])
+    link = document.createElement('a');
+    link.setAttribute('href', '/media/' + evidence_data + '/' + data["File output"]);
+    link.setAttribute('target','_blank');
+    link.setAttribute('class','btn btn-sm btn-outline-success p-1')
+    link.textContent = "Download";
+    return link.outerHTML;
+  }
+  else{
+    return "N/A";
+  }
 }

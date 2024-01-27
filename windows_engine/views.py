@@ -345,6 +345,25 @@ class NetGraphApiView(APIView):
         serializer = NetGraphSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class HiveListApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get_object(self, dump_id):
+        try:
+            return HiveList.objects.get(evidence_id=dump_id)
+        except HiveList.DoesNotExist:
+            return None
+        
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested services data
+        """
+        data = self.get_object(dump_id)
+        serializer = HiveListSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
 class SvcScanApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def get_object(self, dump_id):
@@ -534,14 +553,13 @@ class SSDTApiView(APIView):
 
 class FileScanApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
     def get_object(self, dump_id):
         try:
             return FileScan.objects.get(evidence_id=dump_id)
         except FileScan.DoesNotExist:
             return None
 
-    def get(self, request, dump_id, *args, **kwargs):
+    def get(self, request, dump_id,  *args, **kwargs):
         """
         Give the requested FileScan data
         """
@@ -606,12 +624,8 @@ class PsListDumpApiView(APIView):
 
 class FileScanDumpApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, _request, dump_id, file_id, *args, **kwargs):
-        """
-        Dump the requested process using the pslist plugin
-        """
-        dump_file.delay(evidence_id=dump_id, file_id=file_id)
+    def get(self, _request, dump_id, offset, *args, **kwargs):
+        dump_file.delay(evidence_id=dump_id, offset=offset)
         return Response({}, status=status.HTTP_201_CREATED)
 
 class MemmapDumpApiView(APIView):

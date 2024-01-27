@@ -127,18 +127,18 @@ def dump_process_memmap(self, evidence_id, pid):
         )
     
 @shared_task(bind=True)
-def dump_file(self, evidence_id, file_id):
+def dump_file(self, evidence_id, offset):
     channel_layer = get_channel_layer()
+    instance = Evidence.objects.get(dump_id=evidence_id)
     try:
-        instance = Evidence.objects.get(dump_id=evidence_id)
-        file_obj = FileScan.objects.get(id=file_id)
-        offset = file_obj.Offset
-        result = None
+        file_obj = FileScan.objects.get(evidence_id=evidence_id)
+        filename = [d for d in file_obj.artefacts if d['Offset'] == offset][0]['Name']
+        result = file_obj.file_dump(offset)
         if result:
             for file in result:
                 loot = Loot()
                 loot.evidence = instance
-                loot.Name = f"File {file_obj.Name} - found in {file['Cache']} and dumped as {file['FileName']}."
+                loot.Name = f"File {filename} - found in {file['Cache']} and dumped as {file['FileName']}."
                 loot.Status = True
                 loot.FileName = file['Result']
                 loot.save()
@@ -157,7 +157,7 @@ def dump_file(self, evidence_id, file_id):
             loot = Loot()
             loot.Status = False
             loot.evidence = instance
-            loot.Name = f"File {file_obj.Name} - Dump failed (data not available)."
+            loot.Name = f"File {filename} - Dump failed (data not available)."
             loot.FileName = result
             loot.save()
             async_to_sync(channel_layer.group_send)(

@@ -41,6 +41,12 @@ $(document).ready(function () {
     display_sessions(evidence_id, pid);
   });
 
+
+  $(".card_registry").on("click", function () {
+    display_registry(evidence_id);
+  });
+
+  
   $(".card_svcscan").on("click", function () {
     display_svcscan(evidence_id);
   });

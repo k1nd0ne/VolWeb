@@ -1,17 +1,9 @@
 
 function generate_network_visualisation(data) {
-
-  var elements = [];
-  var links = [];
-
-
-
-
-  var namespace = joint.shapes;
-                
+  var namespace = joint.shapes;                
   var graph = new joint.dia.Graph({}, { cellNamespace: namespace });
 
-  var paper = new joint.dia.Paper({
+  new joint.dia.Paper({
     el: document.getElementById("net_graph"),
     model: graph,
     width: "100%",
@@ -64,12 +56,18 @@ function MakeNetNode(item) {
   if (item.State.length > maxLineLength){
     maxLineLength = item.State.length
   }
-  item["Owner(s)"].forEach(owner => {
-    info += "\n" + owner;
-    if (owner.length > maxLineLength){
-      maxLineLength = owner.length
-    }
-  });
+
+  if (item["Owner(s)"] !== null){
+    item["Owner(s)"].forEach(owner => {
+      if(owner !== null){
+        info += "\n" + owner;
+        if (owner.length > maxLineLength){
+          maxLineLength = owner.length
+        }
+      }
+    });
+  }
+
   var letterSize = 10;
   var width = 1.2 * (letterSize * (0.8 * maxLineLength + 1));
   var height = 1 * ((info.split("\n").length + 1) * letterSize);

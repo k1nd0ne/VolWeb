@@ -624,6 +624,38 @@ class FileScan(models.Model):
         except:
             return None
 
+    def file_dump(self, offset):
+        evidence_data = {
+            'bucket': f"s3://{str(self.evidence.dump_linked_case.case_bucket_id)}/{self.evidence.dump_name}",
+            'output_path': f"media/{self.evidence.dump_id}/",
+        }
+        """Dump the file requested by the user"""
+        context = contexts.Context()
+        context.config["plugins.DumpFiles.virtaddr"] = int(offset)
+        try:
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["windows.dumpfiles.DumpFiles"]
+            )
+            result = DictRenderer().render(constructed.run())
+            if len(result) == 0:
+                del context.config["plugins.DumpFiles.virtaddr"]
+                context.config["plugins.DumpFiles.physaddr"] = int(offset)
+                constructed = build_context(
+                    evidence_data,
+                    context,
+                    base_config_path,
+                    PLUGIN_LIST["windows.dumpfiles.DumpFiles"]
+                )
+            result = DictRenderer().render(constructed.run())
+            for artefact in result:
+                artefact = {x.translate({32: None}): y for x, y in artefact.items()}
+            return result
+        except:
+            return None
+
 
 class DllList(models.Model):
     evidence = models.ForeignKey(

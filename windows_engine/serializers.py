@@ -44,6 +44,13 @@ class PrivsSerializer(serializers.ModelSerializer):
         model = Privs
         fields = "__all__"
 
+
+class HiveListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HiveList
+        fields = "__all__"
+
+
 class SvcScanSerializer(serializers.ModelSerializer):
     class Meta:
         model = SvcScan
