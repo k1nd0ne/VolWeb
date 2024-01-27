@@ -94,6 +94,15 @@
 [data-bs-theme="light"] #overview_graph {
   background-color: #ffffff;
 }
+
+
+[data-bs-theme="dark"] #net_graph {
+  background-color: #212529;
+}
+
+[data-bs-theme="light"] #net_graph {
+  background-color: #ffffff;
+}
 .small-text{
   font-size: 0.875rem;
 }

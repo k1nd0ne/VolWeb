@@ -63,7 +63,7 @@ function generate_loot_download(data) {
     link = document.createElement('a');
     link.setAttribute('href', '/media/' + data.evidence + '/' + data.FileName);
     link.setAttribute('target','_blank');
-    link.setAttribute('class','btn btn-sm btn-success p-1')
+    link.setAttribute('class','btn btn-sm btn-outline-success p-1')
     link.textContent = "Download";
     return link.outerHTML;
   }

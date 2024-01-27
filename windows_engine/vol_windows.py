@@ -94,14 +94,6 @@ def run_volweb_routine_windows(instance):
     plugin_list = volatility3.framework.list_plugins()
     base_config_path = "plugins"
 
-
-    def update_progress(instance):
-        """Progress Function"""
-        MODULES_TO_RUN = len(volweb_knowledge_base)
-        percentage = str(int(instance.dump_status) + 100 // MODULES_TO_RUN)
-        instance.dump_status = percentage
-        instance.save()
-
     json_pstree_artefact = []
     json_devicetree_artefact = []
     json_netgraph_artefact = []

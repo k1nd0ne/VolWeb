@@ -331,12 +331,18 @@ class NetScanApiView(APIView):
 class NetGraphApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, dump_id):
+        try:
+            return NetGraph.objects.get(evidence_id=dump_id)
+        except NetGraph.DoesNotExist:
+            return None
+        
     def get(self, request, dump_id, *args, **kwargs):
         """
         Give the requested netgraph data
         """
-        data = NetGraph.objects.filter(evidence_id=dump_id)
-        serializer = NetGraphSerializer(data, many=True)
+        data = self.get_object(dump_id)
+        serializer = NetGraphSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class SvcScanApiView(APIView):

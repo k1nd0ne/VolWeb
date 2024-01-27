@@ -1,3 +1,6 @@
+body{
+    font-family: Montserrat, Arial, sans-serif;
+}
 .active.fas.fa-home.icon.icon-shape.icon-sm.border-radius-md {
   color: var(--bs-light);
 }
@@ -181,3 +184,4 @@ html * {
   background-color: rgba(59, 113, 202, .05);
   border-radius: .5rem;
 }
+

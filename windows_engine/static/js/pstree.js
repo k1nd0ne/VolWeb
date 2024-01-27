@@ -45,11 +45,31 @@ function display_pstree(evidence_id) {
 }
 
 function display_process_info(process, evidence_id) {
+  $(".process_id").attr("id", process.PID);
+  $(".process_title").text(process.ImageFileName);
+  $(".p_pid").text(process.PID);
+  $(".p_offset").text(process["Offset(V)"]);
+  $(".p_threads").text(process.Threads);
+  $(".p_handles").text(process.Handles);
+  $(".p_session").text(process.SessionId);
+  if (process.Wow64 == true) {
+    $(".p_wow64").addClass("text-danger");
+  } else {
+    $(".p_wow64").removeClass("text-danger");
+  }
+  $(".p_wow64").text(process.Wow64);
+  $(".p_ctime").text(process.CreateTime);
+  $(".p_etime").text(process.ExitTime);
+  display_sessions(evidence_id, process.PID);
+  display_cmdline(evidence_id, process.PID);
+
   $.ajax({
     type: "GET",
     url: "/tasks/windows/tasks/",
     dataType: "json",
-    beforeSend: function () {},
+    beforeSend: function () {
+      $('.tool_card').addClass('placeholder');
+    },
     success: function (tasks, status, xhr) {
       $(".card_handles").show();
       $(".loading_handles").hide();
@@ -101,29 +121,14 @@ function display_process_info(process, evidence_id) {
             break;       
         }
       });
-      $(".process_id").attr("id", process.PID);
-      $(".process_title").text(process.ImageFileName);
-      $(".p_pid").text(process.PID);
-      $(".p_offset").text(process["Offset(V)"]);
-      $(".p_threads").text(process.Threads);
-      $(".p_handles").text(process.Handles);
-      $(".p_session").text(process.SessionId);
-      if (process.Wow64 == true) {
-        $(".p_wow64").addClass("text-danger");
-      } else {
-        $(".p_wow64").removeClass("text-danger");
-      }
-      $(".p_wow64").text(process.Wow64);
-      $(".p_ctime").text(process.CreateTime);
-      $(".p_etime").text(process.ExitTime);
 
-      display_sessions(evidence_id, process.PID);
-      display_cmdline(evidence_id, process.PID);
 
       var url = "/review/windows/" + evidence_id + "/" + process.PID + "/";
       $(".investigate-btn").attr("href", url);
     },
-    complete: function (data) {},
+    complete: function (data) {
+      $('.tool_card').removeClass('placeholder');
+    },
     error: function (xhr, status, error) {
       toastr.error("An error occurred while getting the tasks : " + error);
     },

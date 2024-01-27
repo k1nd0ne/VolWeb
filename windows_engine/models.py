@@ -442,6 +442,9 @@ class Lsadump(models.Model):
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())
+                for artefact in result:
+                    encode = base64.b64encode(artefact['Secret'], "utf-8")
+                    artefact['Secret'] = encode
                 return result
         except:
             return None

@@ -351,7 +351,6 @@ def build_timeline(data):
     timeline = []
     nb_event = 1
     actual_date = ""
-    print(data[0]["Created Date"])
     try:
         saved_date = data[0]["Created Date"]
     except:

@@ -28,7 +28,7 @@ function compute_handles(evidence_id, pid) {
               {
                 mData: "id",
                 mRender: function (id, type, row) {
-                  return generate_tag("handles", row);
+                  return generate_label(row);
                 },
               },
             ],

@@ -20,7 +20,7 @@ function display_sids(evidence_id, process_id) {
             {
               mData: "id",
               mRender: function (id, type, row) {
-                return generate_tag("sids", row);
+                return generate_label(row);
               },
             },
           ],
@@ -68,7 +68,7 @@ function display_privs(evidence_id, process_id) {
             {
               mData: "id",
               mRender: function (id, type, row) {
-                return generate_tag("privileges", row);
+                return generate_label(row);
               },
             },
           ],
@@ -115,7 +115,7 @@ function display_envars(evidence_id, process_id) {
             {
               mData: "id",
               mRender: function (id, type, row) {
-                return generate_tag("envars", row);
+                return generate_label(row);
               },
             },
           ],
@@ -166,7 +166,7 @@ function display_svcscan(evidence_id) {
             {
               mData: "id",
               mRender: function (id, type, row) {
-                return generate_tag("svcscan", row);
+                return generate_label(row);
               },
             },
           ],
@@ -217,7 +217,7 @@ function display_dlllist(evidence_id, process_id) {
             {
               mData: "id",
               mRender: function (id, type, row) {
-                return generate_tag("dlllist", row);
+                return generate_label(row);
               },
             },
           ],
@@ -268,7 +268,7 @@ function display_filescan(evidence_id) {
             {
               mData: "id",
               mRender: function (id, type, row) {
-                return generate_tag("filescan", row);
+                return generate_label(row);
               },
             },
           ],
@@ -311,7 +311,7 @@ function display_network(evidence_id) {
 
       try {
         netstat_data = $("#netstat_datatable").DataTable({
-          aaData: data,
+          aaData: data.artefacts,
           aoColumns: [
             { data: "Proto" },
             { data: "LocalAddr" },
@@ -325,7 +325,7 @@ function display_network(evidence_id) {
             {
               mData: "id",
               mRender: function (id, type, row) {
-                return generate_tag("netstat", row);
+                return generate_label(row);
               },
             },
           ],
@@ -359,7 +359,7 @@ function display_network(evidence_id) {
       }
       try {
         netscan_data = $("#netscan_datatable").DataTable({
-          aaData: data,
+          aaData: data.artefacts,
           aoColumns: [
             { data: "Proto" },
             { data: "LocalAddr" },
@@ -373,7 +373,7 @@ function display_network(evidence_id) {
             {
               mData: "id",
               mRender: function (id, type, row) {
-                return generate_tag("netscan", row);
+                return generate_label(row);
               },
             },
           ],
@@ -389,7 +389,7 @@ function display_network(evidence_id) {
         toastr.warning("An error occured when loading data for 'netscan'.");
       }
 
-      $("#netscan_datatable").show("fast");
+      $("#netscan_datatable").show();
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -401,71 +401,8 @@ function display_network(evidence_id) {
     url: "/api/windows/" + evidence_id + "/netgraph/",
     dataType: "json",
     success: function (data) {
-      try {
-        theme = document.querySelector('[data-bs-theme]').getAttribute('data-bs-theme');
-        $("#net_graph").empty();
-        var data = JSON.parse(data[0].graph);
-        // create a data tree
-        // create a chart and set the data
-        var netchart = anychart.graph(data);
-        netchart
-          .background()
-          .fill((theme == "dark" ? "#212529" : "#FFF"));
-        netchart
-          .nodes()
-          .normal()
-          .fill(theme == "light" ? "#212529" : "#FFF");
-        netchart
-          .nodes()
-          .hovered()
-          .fill(theme == "light" ? "#212529" : "#FFF");
-        netchart.nodes().labels().enabled(true);
-        netchart.nodes().labels().format("{%id} ({%Owner(s)})");
-        netchart.nodes().labels().fontSize(12);
-        netchart.nodes().labels().fontWeight(600);
-        netchart
-          .nodes()
-          .labels()
-          .fontColor(theme == "light" ? "#212529" : "#FFF");
-        netchart
-          .edges()
-          .normal()
-          .stroke(theme == "light" ? "#212529" : "#FFF", 1);
-        netchart
-          .edges()
-          .hovered()
-          .stroke(theme == "light" ? "#212529" : "#FFF", 2);
-        netchart.edges().selected().stroke("#dc3545", 3);
-
-        // configure tooltips of nodes
-        netchart.nodes().tooltip().useHtml(true);
-        netchart
-          .nodes()
-          .tooltip()
-          .format(
-            "<span style='font-weight:bold'>Involved PIDs : {%Involved_PIDs}</span><br><spanstyle='font-weight:bold'>Owner : {%Owner(s)}</span><br><span style='font-weight:bold'>Local Ports: {%Local_Ports}</span>"
-          );
-        var animationSettings = netchart.animation();
-        animationSettings.duration(1000);
-        animationSettings.enabled(true);
-        netchart.container("net_graph");
-
-        netchart.interactivity().scrollOnMouseWheel(false);
-        netchart.interactivity().zoomOnMouseWheel(false);
-        // add a zoom control panel
-        var zoomController = anychart.ui.zoom();
-        zoomController.target(netchart);
-        zoomController.render();
-
-        // initiate drawing the chart
-        netchart.draw();
-      } catch {
-        toastr.error("The network graph could not be displayed.");
-      }
-    },
-    error: function (xhr, status, error) {
-      toastr.error("An error occurred : " + error);
-    },
+      generate_network_visualisation(data);
+    }
   });
 }
 
@@ -474,41 +411,99 @@ function display_timeline(evidence_id) {
     type: "GET",
     url: "/api/windows/" + evidence_id + "/timeline/",
     dataType: "json",
-    success: function (evidence_data) {
-      try {
-        theme = document.querySelector('[data-bs-theme]').getAttribute('data-bs-theme');
-        var data = evidence_data.artefacts
-        var chart = anychart.line();
-        var series = chart.line(data);
-        chart.xScroller(true);
-        chart.listen("click", function (x) {
-          index = x.pointIndex;
-          display_timeliner(evidence_id, data[index][0]);
-        });
-        var xAxis = chart.xAxis();
-        xAxis.title("Time");
-        var yAxis = chart.yAxis();
-        yAxis.title("Events");
-        chart
-          .background()
-          .fill(theme == "dark" ? "#212529" : "#FFF");
-        series.stroke({
-          color: theme == "light" ? "#212529" : "#FFF",
-          thickness: 2,
-        });
-        var animationSettings = chart.animation();
-        animationSettings.duration(1000);
-        animationSettings.enabled(true);
-        chart.container("timeline");
-        chart.draw();
-      } catch {
-        toastr.error("The timline data could not be displayed.");
-      }
+    success: function (data) {
+
+      theme = document.querySelector('[data-bs-theme]').getAttribute('data-bs-theme');
+      let seriesData = [];
+      data.artefacts.forEach(item => {
+        seriesData.push({ x: item[0], y: item[1] });
+      });
+      var options = {
+        theme: {
+          mode: theme,
+          palette: 'palette1',
+          monochrome: {
+            enabled: true,
+            color: '#6f42c1',
+            shadeTo: 'light',
+            shadeIntensity: 0.65
+          },
+        },
+        series: [{
+          data: seriesData
+        }],
+        chart: {
+          background: (theme === "dark" ? "#212529" : "#fff"),
+          type: 'area',
+          stacked: false,
+          height: 350,
+          zoom: {
+            type: 'x',
+            enabled: true,
+            autoScaleYaxis: true
+          },
+          events: {
+            markerClick: function (event, chartContext, { seriesIndex, dataPointIndex, config }) {
+              var timestamp = chartContext.w.config.series[seriesIndex].data[dataPointIndex].x;
+              display_timeliner(evidence_id, timestamp);
+            },
+            zoomed: function (chartContext, { xaxis, yaxis }) {
+              display_timeliner(evidence_id, data.artefacts[xaxis.min - 1][0]);
+            }
+          }
+        },
+        dataLabels: {
+          enabled: true
+        },
+        markers: {
+          size: 0,
+        },
+        title: {
+          text: 'Timeline of events',
+          align: 'left'
+        },
+        fill: {
+          type: 'gradient',
+          gradient: {
+            shadeIntensity: 1,
+            inverseColors: false,
+            opacityFrom: 0.5,
+            opacityTo: 0,
+            stops: [0, 70, 80, 100]
+          },
+        },
+        yaxis: {
+          labels: {
+            formatter: function (val) {
+              return (val).toFixed(0);
+            },
+          },
+          title: {
+            text: 'Event Count'
+          },
+        },
+        xaxis: {
+
+        },
+        tooltip: {
+          shared: false,
+          y: {
+            formatter: function (val) {
+              return (val).toFixed(0)
+            }
+          }
+        }
+      };
+
+      var chart = new ApexCharts(document.querySelector("#timeline"), options);
+      chart.render();
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
     },
   });
+
+
 }
 
 function display_sessions(evidence_id, process_id) {
@@ -562,7 +557,7 @@ function display_timeliner(evidence_id, timestamp) {
             {
               mData: "id",
               mRender: function (id, type, row) {
-                return generate_tag("timeliner", row);
+                return generate_label(row);
               },
             },
           ],
@@ -595,7 +590,7 @@ function display_credentials(evidence_id) {
     url: "/api/windows/" + evidence_id + "/hashdump/",
     dataType: "json",
     success: function (data) {
-      if(data.artefacts.length > 0){
+      if (data.artefacts.length > 0) {
         $.each(data.artefacts, function (_, value) {
           build_credential_card("Hashdump", value);
         });
@@ -611,7 +606,7 @@ function display_credentials(evidence_id) {
     url: "/api/windows/" + evidence_id + "/cachedump/",
     dataType: "json",
     success: function (data) {
-      if(data.artefacts.length > 0){
+      if (data.artefacts.length > 0) {
         $.each(data, function (_, value) {
           build_credential_card("Cachedump", value);
         });
@@ -627,10 +622,10 @@ function display_credentials(evidence_id) {
     url: "/api/windows/" + evidence_id + "/lsadump/",
     dataType: "json",
     success: function (data) {
-      if(data.artefacts.length > 0){
+      if (data.artefacts.length > 0) {
         $.each(data, function (_, value) {
           build_credential_card("Lsadump", value);
-        });       
+        });
       }
 
     },
@@ -657,13 +652,13 @@ function display_malfind(evidence_id) {
       $("#malfind_process_loading").show();
     },
     success: function (data, status, xhr) {
-      if (data.artefacts.length > 0){
+      if (data.artefacts.length > 0) {
         $.each(data.artefacts, function (_, value) {
           build_malfind_process_card(value);
         });
       }
-      else{
-        let div = document.getElementById("malfind_process_list").textContent="Nothing was found by Malfind";
+      else {
+        document.getElementById("malfind_process_list").textContent = "Nothing was found by Malfind";
       }
 
     },
@@ -691,7 +686,7 @@ function display_ldrmodules(evidence_id) {
       $('#ldrmodules_process_loading').show();
     },
     success: function (data, status, xhr) {
-      if (data.artefacts.length > 0){
+      if (data.artefacts.length > 0) {
         try {
           ldrmodules_data.destroy();
         } catch {
@@ -711,7 +706,7 @@ function display_ldrmodules(evidence_id) {
               {
                 mData: "id",
                 mRender: function (id, type, row) {
-                  return generate_tag("ldrmodules", row);
+                  return generate_label(row);
                 },
               },
             ],
@@ -754,36 +749,36 @@ function display_kernel_modules(evidence_id) {
       $('#kernel_modules_loading').show();
     },
     success: function (data, status, xhr) {
-      if (data.artefacts.length > 0){
+      if (data.artefacts.length > 0) {
         try {
           kernel_modules_data.destroy();
         } catch {
           //Nothing to do, the datatable will be created.
         }
 
-          kernel_modules_data = $("#kernel_modules_datatable").DataTable({
-            aaData: data.artefacts,
-            aoColumns: [
-              { data: "Base" },
-              { data: "Name" },
-              { data: "Offset" },
-              { data: "Path" },
-              { data: "Size" },
-              {
-                mData: "id",
-                mRender: function (id, type, row) {
-                  return generate_tag("modules", row);
-                },
+        kernel_modules_data = $("#kernel_modules_datatable").DataTable({
+          aaData: data.artefacts,
+          aoColumns: [
+            { data: "Base" },
+            { data: "Name" },
+            { data: "Offset" },
+            { data: "Path" },
+            { data: "Size" },
+            {
+              mData: "id",
+              mRender: function (id, type, row) {
+                return generate_label(row);
               },
-            ],
-            aLengthMenu: [
-              [25, 50, 75, -1],
-              [25, 50, 75, "All"],
-            ],
-            iDisplayLength: 25,
-            searchBuilder: true,
-          });
-          kernel_modules_data.searchBuilder.container().prependTo(kernel_modules_data.table().container());
+            },
+          ],
+          aLengthMenu: [
+            [25, 50, 75, -1],
+            [25, 50, 75, "All"],
+          ],
+          iDisplayLength: 25,
+          searchBuilder: true,
+        });
+        kernel_modules_data.searchBuilder.container().prependTo(kernel_modules_data.table().container());
       }
     },
     complete: function (data) {
@@ -810,35 +805,35 @@ function display_ssdt(evidence_id) {
       $('#ssdt_loading').show();
     },
     success: function (data, status, xhr) {
-      if (data.artefacts.length > 0){
+      if (data.artefacts.length > 0) {
         try {
           ssdt_data.destroy();
         } catch {
           //Nothing to do, the datatable will be created.
         }
 
-          ssdt_data = $("#ssdt_datatable").DataTable({
-            aaData: data.artefacts,
-            aoColumns: [
-              { data: "Address" },
-              { data: "Index" },
-              { data: "Module" },
-              { data: "Symbol" },
-              {
-                mData: "id",
-                mRender: function (id, type, row) {
-                  return generate_tag("ssdt", row);
-                },
+        ssdt_data = $("#ssdt_datatable").DataTable({
+          aaData: data.artefacts,
+          aoColumns: [
+            { data: "Address" },
+            { data: "Index" },
+            { data: "Module" },
+            { data: "Symbol" },
+            {
+              mData: "id",
+              mRender: function (id, type, row) {
+                return generate_label(row);
               },
-            ],
-            aLengthMenu: [
-              [25, 50, 75, -1],
-              [25, 50, 75, "All"],
-            ],
-            iDisplayLength: 25,
-            searchBuilder: true,
-          });
-          ssdt_data.searchBuilder.container().prependTo(ssdt_data.table().container());
+            },
+          ],
+          aLengthMenu: [
+            [25, 50, 75, -1],
+            [25, 50, 75, "All"],
+          ],
+          iDisplayLength: 25,
+          searchBuilder: true,
+        });
+        ssdt_data.searchBuilder.container().prependTo(ssdt_data.table().container());
       }
     },
     complete: function (data) {
@@ -851,11 +846,18 @@ function display_ssdt(evidence_id) {
   });
 }
 
-function generate_file_download_btn(data){
-  console.log(data);
+function generate_label(row){
+  return "<small class='d-inline-flex px-1 fw-semibold text-primary-emphasis border border-primary-subtle'>OBSERVABLE</small>"
+
+  return "<small class='d-inline-flex fw-semibold text-danger-emphasis border border-danger-subtle'>INDICATOR</small>"
+
+}
+
+
+function generate_file_download_btn(data) {
   btn = document.createElement('a');
-  btn.setAttribute('class','btn btn-sm btn-outline-primary p-1 btn-dump-file')
+  btn.setAttribute('class', 'btn btn-sm btn-outline-primary p-1 btn-dump-file')
   btn.textContent = "Dump";
-  btn.setAttribute('id',data.id);
+  btn.setAttribute('id', data.id);
   return btn.outerHTML;
 }

@@ -1,10 +1,10 @@
 from celery import shared_task
 from evidences.models import Evidence
 from windows_engine.models import *
-from VolWeb.voltools import build_timeline
+from VolWeb.voltools import build_timeline, generate_network_graph
 from celery.result import allow_join_result
 from celery import group
-import os
+import os, time
 
 @shared_task
 def start_analysis(dump_id):
@@ -50,6 +50,14 @@ def start_analysis(dump_id):
             plugin.run.s(evidence_data) for plugin in volweb_plugins
         )
         group_result = task_group.apply_async()
+
+        while not group_result.ready():
+            completed_tasks = len([r for r in group_result.results if r.ready()])
+            total_tasks = len(group_result.results)
+            instance.dump_status = (completed_tasks*100)/total_tasks
+            instance.save()
+            time.sleep(1)
+
         with allow_join_result():
             result = group_result.get()
             for i in range(0, len(result)):
@@ -58,6 +66,7 @@ def start_analysis(dump_id):
 
             # We need to take care of some specific models
             TimeLineChart(evidence=instance, artefacts=build_timeline(result[17])).save()
+            NetGraph(evidence=instance, artefacts=generate_network_graph(result[11]+result[12])).save()
             instance.dump_status = 100
             instance.save() 
 

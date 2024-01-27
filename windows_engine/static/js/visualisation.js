@@ -1,3 +1,100 @@
+
+function generate_network_visualisation(data) {
+
+  var elements = [];
+  var links = [];
+
+
+
+
+  var namespace = joint.shapes;
+                
+  var graph = new joint.dia.Graph({}, { cellNamespace: namespace });
+
+  var paper = new joint.dia.Paper({
+    el: document.getElementById("net_graph"),
+    model: graph,
+    width: "100%",
+    height: "100%",
+    gridSize: 1,
+    drawGrid: true,
+    interactive: { elementMove: false },
+  });
+  data.artefacts.nodes.forEach(item => {
+    if (item.id !== null){
+      node = MakeNetNode(item);
+      MakeNetNode(item).addTo(graph);
+    }
+
+  });
+  data.artefacts.edges.forEach(item => {
+    if (item.from !== null && item.to !== null){
+      makeLink(item.from, item.to).addTo(graph)
+    }
+  });
+  joint.layout.DirectedGraph.layout(graph, {
+    setLinkVertices: false,
+    rankDir: 'LR', // Direction: TB (top to bottom), LR (left to right), etc.
+    nodeSep: 100, // Horizontal separation between nodes
+    edgeSep: 100, // Separation between edges
+    rankSep: 100,  // Vertical separation between nodes+
+    marginX: 5,
+    marginY: 5,
+    rankDir: "LR",
+});
+graph.getCells().forEach(function (cell) {
+  if (cell.isLink()) {
+    // If cell is a link, send it to back
+    cell.toBack();
+  } else {
+    // If cell is an element (node), bring it to front
+    cell.toFront();
+  }
+});
+var bbox = graph.getBBox(graph.getElements());
+$(".netgraph").height(bbox.height + 30);
+}
+
+
+
+function MakeNetNode(item) {
+  maxLineLength = item.id.length;
+  console.log(item.State)
+  var info = item.id + "\nSTATE: " + (item.State.length === 0 ? "Unknown" : item.State) + "\nOwner(s):";
+  if (item.State.length > maxLineLength){
+    maxLineLength = item.State.length
+  }
+  item["Owner(s)"].forEach(owner => {
+    info += "\n" + owner;
+    if (owner.length > maxLineLength){
+      maxLineLength = owner.length
+    }
+  });
+  var letterSize = 10;
+  var width = 1.2 * (letterSize * (0.8 * maxLineLength + 1));
+  var height = 1 * ((info.split("\n").length + 1) * letterSize);
+  rect = new joint.shapes.standard.Rectangle({
+    id: item.id,
+    size: { width: width, height: height },
+  });
+  rect.attr({label: {
+    text: info,
+    fontSize: letterSize,
+    fontFamily: "monospace",
+    fill: "black",
+  },
+  body: {
+    fill: "white",
+    stroke: "#084298",
+    width: width,
+    height: height,
+    rx: 2,
+    ry: 2,
+  },});
+  return rect;
+}
+
+
 function generate_visualisation(process, pstree) {
   var elements = [];
   var links = [];
