@@ -1,9 +1,15 @@
-import datetime, hashlib, io, tempfile, os, vt, json
+import datetime, hashlib, io, tempfile, os, vt, json, logging
 from typing import Dict, Type, Union, Any, List, Tuple
 from volatility3.framework import interfaces
 from volatility3.cli import text_renderer
 from volatility3.framework.renderers import format_hints
 from VolWeb.keyconfig import Secrets
+from volatility3.framework.plugins import construct_plugin
+from volatility3.framework import automagic
+from volatility3.cli import MuteProgress
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class GraphException(Exception):
@@ -368,3 +374,24 @@ def build_timeline(data):
             except:
                 raise GraphException("Could not generate timeline graph")
     return timeline
+
+
+def build_context(evidence_data, context, base_config_path, plugin):
+    """This function is used to buid the context and construct each plugin
+    Return : The contructed plugin.
+    """
+    available_automagics = automagic.available(context)
+    automagics = automagic.choose_automagic(available_automagics, plugin)
+    context.config[
+        "automagic.LayerStacker.stackers"
+    ] = automagic.stacker.choose_os_stackers(plugin)
+    context.config["automagic.LayerStacker.single_location"] = (evidence_data["bucket"])
+    constructed = construct_plugin(
+        context,
+        automagics,
+        plugin,
+        base_config_path,
+        MuteProgress(),
+        file_handler(evidence_data["output_path"]),
+    )
+    return constructed

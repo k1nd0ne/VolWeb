@@ -65,7 +65,8 @@ def start_analysis(dump_id):
                 volweb_plugins[i].save()
 
             # We need to take care of some specific models
-            TimeLineChart(evidence=instance, artefacts=build_timeline(result[17])).save()
+            if result[17]:
+                TimeLineChart(evidence=instance, artefacts=build_timeline(result[17])).save()
             if result[11] and result[12]:
                 NetGraph(evidence=instance, artefacts=generate_network_graph(result[11]+result[12])).save()
             else:

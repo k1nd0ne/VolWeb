@@ -5,37 +5,39 @@ function display_pstree(evidence_id) {
     url: "/api/windows/" + evidence_id + "/pstree/",
     dataType: "json",
     success: function (evidence_data) {
-      var process_list = evidence_data.artefacts
-      var root = new TreeNode("root");
-      $.each(process_list, function (_, node) {
-        build_tree(node, root);
-      });
-      first_process = root.getChildren()[0];
-      first_process.toggleSelected();
-      display_process_info(first_process.getProcessObject(), evidence_id);
-      generate_visualisation(first_process.getProcessObject(), process_list);
-      var view = new TreeView(root, "#container");
-      view.changeOption("leaf_icon", '<i class="fas fa-microchip"></i>');
-      view.changeOption("parent_icon", '<i class="fas fa-microchip"></i>');
-      TreeConfig.open_icon = '<i class="fas fa-angle-down"></i>';
-      TreeConfig.close_icon = '<i class="fas fa-angle-right"></i>';
-      root.changeOption("icon", '<i class="fas fa-code-branch"></i>');
-      view.reload();
-
-      function build_tree(node, root) {
-        // create node and add to elements
-        var newNode = new TreeNode(node.PID + " - " + node.ImageFileName, node);
-        // now create links
-        if (node.__children) {
-          $.each(node.__children, function (_, childNode) {
-            build_tree(childNode, newNode);
-          });
-        }
-        newNode.on("click", function (e, node) {
-          display_process_info(node.getProcessObject(), evidence_id);
-          generate_visualisation(node.getProcessObject(), process_list);
+      if (evidence_data !== null) {
+        var process_list = evidence_data.artefacts
+        var root = new TreeNode("root");
+        $.each(process_list, function (_, node) {
+          build_tree(node, root);
         });
-        root.addChild(newNode);
+        first_process = root.getChildren()[0];
+        first_process.toggleSelected();
+        display_process_info(first_process.getProcessObject(), evidence_id);
+        generate_visualisation(first_process.getProcessObject(), process_list);
+        var view = new TreeView(root, "#container");
+        view.changeOption("leaf_icon", '<i class="fas fa-microchip"></i>');
+        view.changeOption("parent_icon", '<i class="fas fa-microchip"></i>');
+        TreeConfig.open_icon = '<i class="fas fa-angle-down"></i>';
+        TreeConfig.close_icon = '<i class="fas fa-angle-right"></i>';
+        root.changeOption("icon", '<i class="fas fa-code-branch"></i>');
+        view.reload();
+
+        function build_tree(node, root) {
+          // create node and add to elements
+          var newNode = new TreeNode(node.PID + " - " + node.ImageFileName, node);
+          // now create links
+          if (node.__children) {
+            $.each(node.__children, function (_, childNode) {
+              build_tree(childNode, newNode);
+            });
+          }
+          newNode.on("click", function (e, node) {
+            display_process_info(node.getProcessObject(), evidence_id);
+            generate_visualisation(node.getProcessObject(), process_list);
+          });
+          root.addChild(newNode);
+        }
       }
     },
     error: function (xhr, status, error) {
@@ -68,7 +70,6 @@ function display_process_info(process, evidence_id) {
     url: "/tasks/windows/tasks/",
     dataType: "json",
     beforeSend: function () {
-      $('.tool_card').addClass('placeholder');
     },
     success: function (tasks, status, xhr) {
       $(".card_handles").show();
@@ -84,7 +85,7 @@ function display_process_info(process, evidence_id) {
             if (
               result.pid == process.PID &&
               result.evidence_id == evidence_id &&
-              task.status != "SUCCESS" && 
+              task.status != "SUCCESS" &&
               task.status != "FAILURE"
             ) {
               $(".card_handles").hide();
@@ -97,28 +98,28 @@ function display_process_info(process, evidence_id) {
             if (
               result.pid == process.PID &&
               result.evidence_id == evidence_id &&
-              task.status != "SUCCESS" && 
+              task.status != "SUCCESS" &&
               task.status != "FAILURE"
             ) {
               $(".card_process_dump").hide();
               $(".loading_process_dump").show();
             }
             break;
-            
+
           case "windows_engine.tasks.dump_process_pslist":
             test = task.task_kwargs;
             result = JSON.parse(test.substring(1, test.length - 1));
             if (
               result.pid == process.PID &&
               result.evidence_id == evidence_id &&
-              task.status != "SUCCESS" && 
+              task.status != "SUCCESS" &&
               task.status != "FAILURE"
             ) {
               $(".card_process_dump").hide();
               $(".loading_process_dump").show();
             }
-            
-            break;       
+
+            break;
         }
       });
 
@@ -127,7 +128,7 @@ function display_process_info(process, evidence_id) {
       $(".investigate-btn").attr("href", url);
     },
     complete: function (data) {
-      $('.tool_card').removeClass('placeholder');
+
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred while getting the tasks : " + error);

@@ -47,8 +47,6 @@ var bbox = graph.getBBox(graph.getElements());
 $(".netgraph").height(bbox.height + 30);
 }
 
-
-
 function MakeNetNode(item) {
   maxLineLength = item.id.length;
   console.log(item.State)

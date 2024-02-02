@@ -2,7 +2,7 @@ from django.db import models
 from django.db import models
 from evidences.models import Evidence
 import base64
-from .vol_windows import build_context  # TODO: merge to voltools.py
+from VolWeb.voltools import build_context
 from celery import shared_task
 import logging, json
 import volatility3
