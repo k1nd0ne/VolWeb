@@ -1,323 +1,198 @@
-<div class="modal fade" id="sids" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">Security IDs</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <table id="sids_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
-          <thead>
-            <tr>
-              <th>Process</th>
-              <th>Name</th>
-              <th>SID</th>
-              <th>Tag</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+<div class="modal fade" id="artefacts_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="artefacts_source_title"></h1>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body" id="artefacts_body"></div>
+        </div>
     </div>
-  </div>
-</div>
-
-<div class="modal fade" id="handles" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">Handles</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <table id="handles_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
-          <thead>
-            <tr>
-              <th>Process</th>
-              <th>Name</th>
-              <th>HandleValue</th>
-              <th>GrantedAccess</th>
-              <th>Type</th>
-              <th>Tag</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="privs" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">Privileges</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <table id="privs_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
-          <thead>
-            <tr>
-              <th>Process</th>
-              <th>Privilege</th>
-              <th>Description</th>
-              <th>Value</th>
-              <th>Attributes</th>
-              <th>Tag</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="envars" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">Envars</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <table id="envars_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
-          <thead>
-            <tr>
-              <th>Process</th>
-              <th>Block</th>
-              <th>Variable</th>
-              <th>Value</th>
-              <th>Tag</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="dlllist" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">DLL list</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <table id="dlllist_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
-          <thead>
-            <tr>
-              <th>Process</th>
-              <th>Base</th>
-              <th>Name</th>
-              <th>Path</th>
-              <th>LoadTime</th>
-              <th>Size</th>
-              <th>Tag</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="registry" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">Registry</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <table id="hivelist_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
-          <thead>
-            <tr>
-              <th>Offset</th>
-              <th>FileName</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<div class="modal fade" id="svcscan" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">Services Scan</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <table id="svcscan_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
-          <thead>
-            <tr>
-              <th>Offset</th>
-              <th>PID</th>
-              <th>Order</th>
-              <th>Name</th>
-              <th>Display</th>
-              <th>Binary</th>
-              <th>Start</th>
-              <th>State</th>
-              <th>Type</th>
-              <th>Tag</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<div class="modal fade" id="filescan" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">File Scan</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <table id="filescan_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
-          <thead>
-            <tr>
-              <th>Offset</th>
-              <th>Name</th>
-              <th>Size</th>
-              <th>Action</th>
-              <th>Tag</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div class="modal fade" id="network" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">Network</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div id="net_graph" class="netgraph"></div>
-        <hr />
-        <div class="accordion" id="netaccordion">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="flush-headingOne">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#flush-collapseOne" aria-expanded="false">
-                <i class="fa fa-circle-nodes text-gray-600"></i>&nbsp;NetScan
-              </button>
-            </h2>
-            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
-              data-bs-parent="#netaccordion">
-              <div class="accordion-body">
-                <table id="netscan_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
-                  <thead>
-                    <tr>
-                      <th>Proto</th>
-                      <th>LocalAddr</th>
-                      <th>LocalPort</th>
-                      <th>ForeignAddr</th>
-                      <th>ForeignPort</th>
-                      <th>State</th>
-                      <th>Offset</th>
-                      <th>Created</th>
-                      <th>Owner</th>
-                      <th>Tag</th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
-              </div>
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Network</h1>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
             </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="flush-headingTwo">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#flush-collapseTwo" aria-expanded="false">
-                <i class="fa fa-diagram-project text-gray-600"></i>&nbsp;NetStat
-              </button>
-            </h2>
-            <div id="flush-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="flush-headingTwo"
-              data-bs-parent="#netaccordion">
-              <div class="accordion-body">
-                <table id="netstat_datatable" class="table table-sm table-responsive table-hover" style="width: 100%">
-                  <thead>
-                    <tr>
-                      <th>Proto</th>
-                      <th>LocalAddr</th>
-                      <th>LocalPort</th>
-                      <th>ForeignAddr</th>
-                      <th>ForeignPort</th>
-                      <th>State</th>
-                      <th>Offset</th>
-                      <th>Created</th>
-                      <th>Owner</th>
-                      <th>Tag</th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
-              </div>
+            <div class="modal-body">
+                <div id="net_graph" class="netgraph"></div>
+                <hr />
+                <div class="accordion" id="netaccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingOne">
+                            <button
+                                class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#flush-collapseOne"
+                                aria-expanded="false"
+                            >
+                                <i class="fa fa-circle-nodes text-gray-600"></i
+                                >&nbsp;NetScan
+                            </button>
+                        </h2>
+                        <div
+                            id="flush-collapseOne"
+                            class="accordion-collapse collapse"
+                            aria-labelledby="flush-headingOne"
+                            data-bs-parent="#netaccordion"
+                        >
+                            <div class="accordion-body">
+                                <table
+                                    id="netscan_datatable"
+                                    class="table-sm table-responsive table-hover table"
+                                    style="width: 100%"
+                                >
+                                    <thead>
+                                        <tr>
+                                            <th>Proto</th>
+                                            <th>LocalAddr</th>
+                                            <th>LocalPort</th>
+                                            <th>ForeignAddr</th>
+                                            <th>ForeignPort</th>
+                                            <th>State</th>
+                                            <th>Offset</th>
+                                            <th>Created</th>
+                                            <th>Owner</th>
+                                            <th>Tag</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingTwo">
+                            <button
+                                class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#flush-collapseTwo"
+                                aria-expanded="false"
+                            >
+                                <i
+                                    class="fa fa-diagram-project text-gray-600"
+                                ></i
+                                >&nbsp;NetStat
+                            </button>
+                        </h2>
+                        <div
+                            id="flush-collapseTwo"
+                            class="accordion-collapse show collapse"
+                            aria-labelledby="flush-headingTwo"
+                            data-bs-parent="#netaccordion"
+                        >
+                            <div class="accordion-body">
+                                <table
+                                    id="netstat_datatable"
+                                    class="table-sm table-responsive table-hover table"
+                                    style="width: 100%"
+                                >
+                                    <thead>
+                                        <tr>
+                                            <th>Proto</th>
+                                            <th>LocalAddr</th>
+                                            <th>LocalPort</th>
+                                            <th>ForeignAddr</th>
+                                            <th>ForeignPort</th>
+                                            <th>State</th>
+                                            <th>Offset</th>
+                                            <th>Created</th>
+                                            <th>Owner</th>
+                                            <th>Tag</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
 <div class="modal fade" id="credentials" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">Credentials</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div id="credentials_cards_1" class="col-12"></div>
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Credentials</h1>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div id="credentials_cards_1" class="col-12"></div>
 
-          <div id="credentials_cards_2" class="col-12"></div>
+                    <div id="credentials_cards_2" class="col-12"></div>
 
-          <div id="credentials_card_3" class="col-12"></div>
+                    <div id="credentials_card_3" class="col-12"></div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
-
-<div class="modal fade" id="process_dump_modal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-6">Dump <code class="text-uppercase fw-bold process_title"></code></h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        Which dumping method would you like to use ?
-      </div>
-      <div class="modal-footer d-flex justify-content-center align-items-center">
-        <button href="#" id="dump_process_pslist_btn" class="btn btn-sm btn-outline-info">PsList</button>
-        <button href="#" id="dump_process_memmaps_btn" class="btn btn-sm btn-outline-primary">Memmap</button>
-      </div>
+<div
+    class="modal fade"
+    id="process_dump_modal"
+    tabindex="-1"
+    aria-hidden="true"
+>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-6">
+                    Dump
+                    <code class="text-uppercase fw-bold process_title"></code>
+                </h1>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body">
+                Which dumping method would you like to use ?
+            </div>
+            <div
+                class="modal-footer d-flex justify-content-center align-items-center"
+            >
+                <button
+                    href="#"
+                    id="dump_process_pslist_btn"
+                    class="btn btn-sm btn-outline-info"
+                >
+                    PsList
+                </button>
+                <button
+                    href="#"
+                    id="dump_process_memmaps_btn"
+                    class="btn btn-sm btn-outline-primary"
+                >
+                    Memmap
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

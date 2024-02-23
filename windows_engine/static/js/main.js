@@ -1,3 +1,5 @@
+const baseURL = "/api/windows";
+const tasksURL = "/tasks/windows";
 $(document).ready(function () {
   evidence_id = $(".main").attr("id");
   reconnectDelay = 1000; // milliseconds
@@ -11,7 +13,7 @@ $(document).ready(function () {
     pid = $(".process_id").attr("id");
     compute_handles(evidence_id, pid);
   });
-  
+
   $(".card_sids").on("click", function () {
     pid = $(".process_id").attr("id");
     display_sids(evidence_id, pid);
@@ -41,12 +43,10 @@ $(document).ready(function () {
     display_sessions(evidence_id, pid);
   });
 
-
   $(".card_registry").on("click", function () {
     display_registry(evidence_id);
   });
 
-  
   $(".card_svcscan").on("click", function () {
     display_svcscan(evidence_id);
   });
@@ -56,7 +56,7 @@ $(document).ready(function () {
   });
 
   $(".card_filescan").on("click", function () {
-      display_filescan(evidence_id);
+    display_filescan(evidence_id);
   });
 
   $(".card_process_dump").on("click", function () {
@@ -74,7 +74,6 @@ $(document).ready(function () {
     $("#process_dump_modal").modal("hide");
     dump_process_memmap(evidence_id, pid);
   });
-
 
   /* ======================= Injections and Rootkits ======================= */
 
@@ -98,8 +97,6 @@ $(document).ready(function () {
     display_ssdt(evidence_id);
   });
 
-
-
   toastr.options = {
     closeButton: true,
     debug: false,
@@ -119,7 +116,6 @@ $(document).ready(function () {
   };
 });
 
-
 /* ======================= WebSockets Management ======================= */
 
 function reconnectWebSocket(evidence_id) {
@@ -133,7 +129,7 @@ function reconnectWebSocket(evidence_id) {
 
 function connectWebSocket(evidence_id) {
   const socket_volatility_tasks = new WebSocket(
-    "ws://localhost:8001/ws/volatility_tasks/windows/" + evidence_id + "/"
+    "ws://localhost:8001/ws/volatility_tasks/windows/" + evidence_id + "/",
   );
 
   socket_volatility_tasks.onopen = function () {
@@ -144,7 +140,7 @@ function connectWebSocket(evidence_id) {
   socket_volatility_tasks.onmessage = function (e) {
     result = JSON.parse(e.data);
     console.log(result.message.name);
-    switch(result.message.name){
+    switch (result.message.name) {
       case "handles":
         handles_task_result(result.message);
         break;

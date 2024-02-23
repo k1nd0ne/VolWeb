@@ -1,41 +1,48 @@
 function display_sids(evidence_id, process_id) {
-  $("#sids").modal("show");
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/sids/" + process_id + "/",
+    url: `${baseURL}/${evidence_id}/sids/${process_id}/`,
     dataType: "json",
     success: function (data) {
-      try {
-        sids_data.destroy();
-      } catch {
-        //Nothing to do, the datatable will be created.
-      }
-      try {
-        sids_data = $("#sids_datatable").DataTable({
-          aaData: data,
-          aoColumns: [
-            { data: "Process" },
-            { data: "Name" },
-            { data: "SID" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                          <th>Process</th>
+                          <th>Name</th>
+                          <th>SID</th>
+                          <th></th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "Process" },
+          { data: "Name" },
+          { data: "SID" },
+          {
+            mData: "id",
+            mRender: function (_id, _type, row) {
+              return generate_label(row);
             },
-          ],
-          aLengthMenu: [
-            [25, 50, 75, -1],
-            [25, 50, 75, "All"],
-          ],
-          iDisplayLength: 25,
-          searchBuilder: true,
-        });
-        sids_data.searchBuilder.container().prependTo(sids_data.table().container());
-      } catch {
-        toastr.warning("An error occured when loading data for 'sids'.");
-      }
-      $("#sids_datatable").show("fast");
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo($(artefact_datatable.table().container()));
+      $("#artefacts_source_title").text("Security IDs");
+      $("#artefacts_modal").modal("show");
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -44,47 +51,54 @@ function display_sids(evidence_id, process_id) {
 }
 
 function display_privs(evidence_id, process_id) {
-  $("#privs").modal("show");
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/privileges/" + process_id + "/",
+    url: `${baseURL}/${evidence_id}/privileges/${process_id}/`,
     dataType: "json",
     success: function (data) {
-      try {
-        privs_data.destroy();
-      } catch {
-        //Nothing to do, the datatable will be created.
-      }
-
-      try {
-        privs_data = $("#privs_datatable").DataTable({
-          aaData: data,
-          aoColumns: [
-            { data: "Process" },
-            { data: "Privilege" },
-            { data: "Description" },
-            { data: "Value" },
-            { data: "Attributes" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                        <th>Process</th>
+                        <th>Privilege</th>
+                        <th>Description</th>
+                        <th>Value</th>
+                        <th>Attributes</th>
+                        <th></th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "Process" },
+          { data: "Privilege" },
+          { data: "Description" },
+          { data: "Value" },
+          { data: "Attributes" },
+          {
+            mData: "id",
+            mRender: function (id, type, row) {
+              return generate_label(row);
             },
-          ],
-          aLengthMenu: [
-            [25, 50, 75, -1],
-            [25, 50, 75, "All"],
-          ],
-          iDisplayLength: 25,
-          searchBuilder: true,
-        });
-        privs_data.searchBuilder.container().prependTo(privs_data.table().container());
-      } catch {
-        toastr.warning("An error occured when loading data for 'privileges'.");
-      }
-
-      $("#privs_datatable").show("fast");
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo(artefact_datatable.table().container());
+      $("#artefacts_source_title").text("Privileges");
+      $("#artefacts_modal").modal("show");
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -93,136 +107,166 @@ function display_privs(evidence_id, process_id) {
 }
 
 function display_envars(evidence_id, process_id) {
-  $("#envars").modal("show");
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/envars/" + process_id + "/",
+    url: `${baseURL}/${evidence_id}/envars/${process_id}/`,
     dataType: "json",
     success: function (data) {
-      try {
-        envars_data.destroy();
-      } catch {
-        //Nothing to do, the datatable will be created.
-      }
-      try {
-        envars_data = $("#envars_datatable").DataTable({
-          aaData: data,
-          aoColumns: [
-            { data: "Process" },
-            { data: "Block" },
-            { data: "Variable" },
-            { data: "Value" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                        <th>Process</th>
+                        <th>Block</th>
+                        <th>Variable</th>
+                        <th>Value</th>
+                        <th></th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "Process" },
+          { data: "Block" },
+          { data: "Variable" },
+          { data: "Value" },
+          {
+            mData: "id",
+            mRender: function (id, type, row) {
+              return generate_label(row);
             },
-          ],
-          aLengthMenu: [
-            [25, 50, 75, -1],
-            [25, 50, 75, "All"],
-          ],
-          iDisplayLength: 25,
-          searchBuilder: true,
-        });
-        envars_data.searchBuilder.container().prependTo(envars_data.table().container());
-      } catch {
-        toastr.warning("An error occured when loading data for 'envars'.");
-      }
-      $("#envars_datatable").show("fast");
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo(artefact_datatable.table().container());
+      $("#artefacts_source_title").text("Environnement Variables ");
+      $("#artefacts_modal").modal("show");
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
     },
   });
 }
-
 
 function display_registry(evidence_id) {
-  $("#registry").modal("show");
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/registry/hivelist/",
+    url: `${baseURL}/${evidence_id}/registry/hivelist/`,
     dataType: "json",
     success: function (data) {
-      try {
-        hivelist_data.destroy();
-      } catch {
-        // Nothing to do, the datatable will be created.
-      }
-        hivelist_data = $("#hivelist_datatable").DataTable({
-          aaData: data.artefacts,
-          aoColumns: [
-            { data: "Offset" },
-            { data: "FileFullPath" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_hive_download(row, data.evidence);
-              },
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                        <th>Offset</th>
+                        <th>FileFullPath</th>
+                        <th>Action</th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data.artefacts,
+        aoColumns: [
+          { data: "Offset" },
+          { data: "FileFullPath" },
+          {
+            mData: "id",
+            mRender: function (id, type, row) {
+              return generate_hive_download(row, data.evidence);
             },
-          ],
-          aLengthMenu: [
-            [25, 50, 75, -1],
-            [25, 50, 75, "All"],
-          ],
-          iDisplayLength: 25,
-          searchBuilder: true,
-        });
-        hivelist_data.searchBuilder.container().prependTo(hivelist_data.table().container());
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo(artefact_datatable.table().container());
+      $("#artefacts_source_title").text("Registry Hive List");
+      $("#artefacts_modal").modal("show");
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
     },
   });
 }
-
 
 function display_svcscan(evidence_id) {
-  $("#svcscan").modal("show");
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/svcscan/",
+    url: `${baseURL}/${evidence_id}/svcscan/`,
     dataType: "json",
     success: function (data) {
-      try {
-        svcscan_data.destroy();
-      } catch {
-        // Nothing to do, the datatable will be created.
-      }
-      try {
-        svcscan_data = $("#svcscan_datatable").DataTable({
-          aaData: data.artefacts,
-          aoColumns: [
-            { data: "Offset" },
-            { data: "PID" },
-            { data: "Order" },
-            { data: "Name" },
-            { data: "Display" },
-            { data: "Binary" },
-            { data: "Start" },
-            { data: "State" },
-            { data: "Type" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                        <th>Offset</th>
+                        <th>PID</th>
+                        <th>Order</th>
+                        <th>Name</th>
+                        <th>Display</th>
+                        <th>Binary</th>
+                        <th>Start</th>
+                        <th>State</th>
+                        <th>Type</th>
+                        <th></th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data.artefacts,
+        aoColumns: [
+          { data: "Offset" },
+          { data: "PID" },
+          { data: "Order" },
+          { data: "Name" },
+          { data: "Display" },
+          { data: "Binary" },
+          { data: "Start" },
+          { data: "State" },
+          { data: "Type" },
+          {
+            mData: "id",
+            mRender: function (id, type, row) {
+              return generate_label(row);
             },
-          ],
-          aLengthMenu: [
-            [25, 50, 75, -1],
-            [25, 50, 75, "All"],
-          ],
-          iDisplayLength: 25,
-          searchBuilder: true,
-        });
-        svcscan_data.searchBuilder.container().prependTo(svcscan_data.table().container());
-      } catch {
-        toastr.warning("An error occured when loading data for 'svcscan'.");
-      }
-      $("#svcscan_datatable").show("fast");
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo(artefact_datatable.table().container());
+      $("#artefacts_modal").modal("show");
+      $("#artefacts_source_title").text("Service Scan");
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -230,102 +274,116 @@ function display_svcscan(evidence_id) {
   });
 }
 
-
-
-
 function display_dlllist(evidence_id, process_id) {
-  $("#dlllist").modal("show");
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/dlllist/" + process_id + "/",
+    url: `${baseURL}/${evidence_id}/dlllist/${process_id}/`,
     dataType: "json",
     success: function (data) {
-      try {
-        dlllist_data.destroy();
-      } catch {
-        //Nothing to do, the datatable will be created.
-      }
-      try {
-        dlllist_data = $("#dlllist_datatable").DataTable({
-          aaData: data,
-          aoColumns: [
-            { data: "Process" },
-            { data: "Base" },
-            { data: "Name" },
-            { data: "Path" },
-            { data: "LoadTime" },
-            { data: "Size" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                        <th>Process</th>
+                        <th>Base</th>
+                        <th>Name</th>
+                        <th>Path</th>
+                        <th>LoadTime</th>
+                        <th>Size</th>
+                        <th></th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "Process" },
+          { data: "Base" },
+          { data: "Name" },
+          { data: "Path" },
+          { data: "LoadTime" },
+          { data: "Size" },
+          {
+            mData: "id",
+            mRender: function (_id, _type, row) {
+              return generate_label(row);
             },
-          ],
-          aLengthMenu: [
-            [25, 50, 75, -1],
-            [25, 50, 75, "All"],
-          ],
-          iDisplayLength: 25,
-          searchBuilder: true,
-        });
-        dlllist_data.searchBuilder.container().prependTo(dlllist_data.table().container());
-      } catch {
-        toastr.warning("An error occured when loading data for 'dlllist'.");
-      }
-      $("#dlllist_datatable").show("fast");
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo(artefact_datatable.table().container());
+      $("#artefacts_modal").modal("show");
+      $("#artefacts_source_title").text("DllList");
     },
-    error: function (xhr, status, error) {
+    error: function (_xhr, _status, error) {
       toastr.error("An error occurred : " + error);
     },
   });
 }
 
 function display_filescan(evidence_id) {
-  $("#filescan").modal("show");
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/filescan/",
+    url: `${baseURL}/${evidence_id}/filescan/`,
     dataType: "json",
     success: function (data) {
-      try {
-        filescan_data.destroy();
-      } catch {
-        //Nothing to do, the datatable will be created.
-      }
-      try {
-        filescan_data = $("#filescan_datatable").DataTable({
-          aaData: data.artefacts,
-          aoColumns: [
-            { data: "Offset" },
-            { data: "Name" },
-            { data: "Size" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_file_download_btn(row);
-              },
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                        <th>Offset</th>
+                        <th>Name</th>
+                        <th>Size</th>
+                        <th>Action</th>
+                        <th></th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+
+      artefacts_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data.artefacts,
+        aoColumns: [
+          { data: "Offset" },
+          { data: "Name" },
+          { data: "Size" },
+          {
+            mData: "id",
+            mRender: function (id, type, row) {
+              return generate_file_download_btn(row);
             },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
+          },
+          {
+            mData: "id",
+            mRender: function (id, type, row) {
+              return generate_label(row);
             },
-          ],
-          aLengthMenu: [
-            [25, 50, 75, -1],
-            [25, 50, 75, "All"],
-          ],
-          iDisplayLength: 25,
-          searchBuilder: true,
-        });
-        filescan_data.searchBuilder.container().prependTo(filescan_data.table().container());
-      } catch {
-        toastr.warning("An error occured when loading data for 'filescan'.");
-      }
-      $("#filescan_datatable").show("fast");
-      $('.btn-dump-file').off('click');
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefacts_datatable.searchBuilder
+        .container()
+        .prependTo(artefacts_datatable.table().container());
+      $("#artefacts_modal").modal("show");
       $(".btn-dump-file").on("click", function () {
         file_id = $(this).attr("id");
         dump_file(evidence_id, file_id);
@@ -338,18 +396,12 @@ function display_filescan(evidence_id) {
 }
 
 function display_network(evidence_id) {
-  $("#network").modal("show");
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/netstat/",
+    url: `${baseURL}/${evidence_id}/netstat/`,
     dataType: "json",
     success: function (data) {
-      try {
-        netstat_data.destroy();
-      } catch {
-        //Nothing to do, the datatable will be created.
-      }
-
+      $("#netstat_datatable").DataTable().destroy();
       try {
         netstat_data = $("#netstat_datatable").DataTable({
           aaData: data.artefacts,
@@ -377,7 +429,9 @@ function display_network(evidence_id) {
           iDisplayLength: 25,
           searchBuilder: true,
         });
-        netstat_data.searchBuilder.container().prependTo(netstat_data.table().container());
+        netstat_data.searchBuilder
+          .container()
+          .prependTo(netstat_data.table().container());
       } catch {
         toastr.warning("An error occured when loading data for 'netstat'.");
       }
@@ -390,14 +444,10 @@ function display_network(evidence_id) {
 
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/netscan/",
+    url: `${baseURL}/${evidence_id}/netscan/`,
     dataType: "json",
     success: function (data) {
-      try {
-        netscan_data.destroy();
-      } catch {
-        //Nothing to do, the datatable will be created.
-      }
+      $("#netscan_datatable").DataTable().destroy();
       try {
         netscan_data = $("#netscan_datatable").DataTable({
           aaData: data.artefacts,
@@ -425,7 +475,9 @@ function display_network(evidence_id) {
           iDisplayLength: 25,
           searchBuilder: true,
         });
-        netscan_data.searchBuilder.container().prependTo(netscan_data.table().container());
+        netscan_data.searchBuilder
+          .container()
+          .prependTo(netscan_data.table().container());
       } catch {
         toastr.warning("An error occured when loading data for 'netscan'.");
       }
@@ -439,103 +491,111 @@ function display_network(evidence_id) {
 
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/netgraph/",
+    url: `${baseURL}/${evidence_id}/netgraph/`,
     dataType: "json",
     success: function (data) {
-      if(data.artefacts !== null){
+      if (data.artefacts !== null) {
         generate_network_visualisation(data);
       }
-    }
+    },
   });
+  $("#network").modal("show");
 }
 
 function display_timeline(evidence_id) {
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/timeline/",
+    url: `${baseURL}/${evidence_id}/timeline/`,
     dataType: "json",
     success: function (data) {
-
-      theme = document.querySelector('[data-bs-theme]').getAttribute('data-bs-theme');
+      theme = document
+        .querySelector("[data-bs-theme]")
+        .getAttribute("data-bs-theme");
       let seriesData = [];
-      data.artefacts.forEach(item => {
+      data.artefacts.forEach((item) => {
         seriesData.push({ x: item[0], y: item[1] });
       });
       var options = {
         theme: {
           mode: theme,
-          palette: 'palette1',
+          palette: "palette1",
           monochrome: {
             enabled: true,
-            color: '#6f42c1',
-            shadeTo: 'light',
-            shadeIntensity: 0.65
+            color: "#6f42c1",
+            shadeTo: "light",
+            shadeIntensity: 0.65,
           },
         },
-        series: [{
-          data: seriesData
-        }],
+        series: [
+          {
+            data: seriesData,
+          },
+        ],
         chart: {
-          background: (theme === "dark" ? "#212529" : "#fff"),
-          type: 'area',
+          background: theme === "dark" ? "#212529" : "#fff",
+          type: "area",
           stacked: false,
           height: 350,
           zoom: {
-            type: 'x',
+            type: "x",
             enabled: true,
-            autoScaleYaxis: true
+            autoScaleYaxis: true,
           },
           events: {
-            markerClick: function (event, chartContext, { seriesIndex, dataPointIndex, config }) {
-              var timestamp = chartContext.w.config.series[seriesIndex].data[dataPointIndex].x;
+            markerClick: function (
+              event,
+              chartContext,
+              { seriesIndex, dataPointIndex, config },
+            ) {
+              var timestamp =
+                chartContext.w.config.series[seriesIndex].data[dataPointIndex]
+                  .x;
               display_timeliner(evidence_id, timestamp);
             },
             zoomed: function (chartContext, { xaxis, yaxis }) {
               display_timeliner(evidence_id, data.artefacts[xaxis.min - 1][0]);
-            }
-          }
+            },
+          },
         },
         dataLabels: {
-          enabled: false
+          enabled: false,
         },
         markers: {
           size: 0,
         },
         title: {
-          text: 'Timeline of events',
-          align: 'left'
+          text: "Timeline of events",
+          align: "left",
         },
         fill: {
-          type: 'gradient',
+          type: "gradient",
           gradient: {
             shadeIntensity: 1,
             inverseColors: false,
             opacityFrom: 0.5,
             opacityTo: 0,
-            stops: [0, 70, 80, 100]
+            stops: [0, 70, 80, 100],
           },
         },
         yaxis: {
           labels: {
             formatter: function (val) {
-              return (val).toFixed(0);
+              return val.toFixed(0);
             },
           },
           title: {
-            text: 'Event Count'
+            text: "Event Count",
           },
         },
-        xaxis: {
-
-        },
+        xaxis: {},
         tooltip: {
           shared: false,
           y: {
             formatter: function (val) {
-              return (val).toFixed(0)
-            }
-          }
-        }
+              return val.toFixed(0);
+            },
+          },
+        },
       };
 
       var chart = new ApexCharts(document.querySelector("#timeline"), options);
@@ -545,17 +605,15 @@ function display_timeline(evidence_id) {
       toastr.error("An error occurred : " + error);
     },
   });
-
-
 }
 
 function display_sessions(evidence_id, process_id) {
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/sessions/" + process_id + "/",
+    url: `${baseURL}/${evidence_id}/sessions/${process_id}/`,
     dataType: "json",
     success: function (data) {
-      $(".p_session_username").text(data[0]['User Name']);
+      $(".p_session_username").text(data[0]["User Name"]);
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -565,7 +623,7 @@ function display_sessions(evidence_id, process_id) {
 function display_cmdline(evidence_id, process_id) {
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/cmdline/" + process_id + "/",
+    url: `${baseURL}/${evidence_id}/cmdline/${process_id}/`,
     dataType: "json",
     success: function (data) {
       $(".p_cmdline").text(data[0].Args);
@@ -579,43 +637,36 @@ function display_cmdline(evidence_id, process_id) {
 function display_timeliner(evidence_id, timestamp) {
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/timeliner/" + timestamp + "/",
+    url: `${baseURL}/${evidence_id}/timeliner/${timestamp}/`,
     dataType: "json",
     success: function (data) {
-      try {
-        timeline_data.destroy();
-      } catch {
-        //Nothing to do, the datatable will be created.
-      }
-      try {
-        timeline_data = $("#timeline_datatable").DataTable({
-          aaData: data,
-          aoColumns: [
-            { data: "Created Date" },
-            { data: "Accessed Date" },
-            { data: "Changed Date" },
-            { data: "Description" },
-            { data: "Modified Date" },
-            { data: "Plugin" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
+      $("#timeline_datatable").DataTable().destroy();
+      timeline_data = $("#timeline_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "Created Date" },
+          { data: "Accessed Date" },
+          { data: "Changed Date" },
+          { data: "Description" },
+          { data: "Modified Date" },
+          { data: "Plugin" },
+          {
+            mData: "id",
+            mRender: function (id, type, row) {
+              return generate_label(row);
             },
-          ],
-          aLengthMenu: [
-            [25, 50, 75, -1],
-            [25, 50, 75, "All"],
-          ],
-          iDisplayLength: 25,
-          searchBuilder: true,
-        });
-        timeline_data.searchBuilder.container().prependTo(timeline_data.table().container());
-
-      } catch {
-        toastr.error("The timline data could not be displayed.");
-      }
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      timeline_data.searchBuilder
+        .container()
+        .prependTo(timeline_data.table().container());
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -624,13 +675,13 @@ function display_timeliner(evidence_id, timestamp) {
 }
 
 function display_credentials(evidence_id) {
-  /* 
+  /*
     Get the hashdump, lsadump, cachedump data from the API and display them
     using the "build_credential_card" function from visualisation.js
   */
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/hashdump/",
+    url: `${baseURL}/${evidence_id}/hashdump/`,
     dataType: "json",
     success: function (data) {
       if (data.artefacts.length > 0) {
@@ -646,7 +697,7 @@ function display_credentials(evidence_id) {
 
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/cachedump/",
+    url: `${baseURL}/${evidence_id}/cachedump/`,
     dataType: "json",
     success: function (data) {
       if (data.artefacts.length > 0) {
@@ -662,7 +713,7 @@ function display_credentials(evidence_id) {
 
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/lsadump/",
+    url: `${baseURL}/${evidence_id}/lsadump/`,
     dataType: "json",
     success: function (data) {
       if (data.artefacts.length > 0) {
@@ -670,7 +721,6 @@ function display_credentials(evidence_id) {
           build_credential_card("Lsadump", value);
         });
       }
-
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -679,15 +729,14 @@ function display_credentials(evidence_id) {
   $("#credentials").modal("show");
 }
 
-
 function display_malfind(evidence_id) {
-  /* 
-    Get the malfind data from the API and display them using the 
+  /*
+    Get the malfind data from the API and display them using the
     "build_malfind_process_card" function from visualisation.js
   */
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/malfind/",
+    url: `${baseURL}/${evidence_id}/malfind/`,
     dataType: "json",
     beforeSend: function () {
       $("#malfind_process_list").empty();
@@ -699,11 +748,10 @@ function display_malfind(evidence_id) {
         $.each(data.artefacts, function (_, value) {
           build_malfind_process_card(value);
         });
+      } else {
+        document.getElementById("malfind_process_list").textContent =
+          "Nothing was found by Malfind";
       }
-      else {
-        document.getElementById("malfind_process_list").textContent = "Nothing was found by Malfind";
-      }
-
     },
     complete: function (data) {
       $("#malfind_process_loading").hide();
@@ -716,55 +764,48 @@ function display_malfind(evidence_id) {
 }
 
 function display_ldrmodules(evidence_id) {
-  /* 
-    Get the ldrmodules data from the API and display them using datatables  
+  /*
+    Get the ldrmodules data from the API and display them using datatables
   */
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/ldrmodules/",
+    url: `${baseURL}/${evidence_id}/ldrmodules/`,
     dataType: "json",
     beforeSend: function () {
       $("#ldrmodules_datatable").hide();
-      $('#ldrmodule_details').show();
-      $('#ldrmodules_process_loading').show();
+      $("#ldrmodule_details").show();
+      $("#ldrmodules_process_loading").show();
     },
     success: function (data, status, xhr) {
       if (data.artefacts.length > 0) {
-        try {
-          ldrmodules_data.destroy();
-        } catch {
-          //Nothing to do, the datatable will be created.
-        }
-        try {
-          ldrmodules_data = $("#ldrmodules_datatable").DataTable({
-            aaData: data.artefacts,
-            aoColumns: [
-              { data: "Base" },
-              { data: "Process" },
-              { data: "Pid" },
-              { data: "MappedPath" },
-              { data: "InInit" },
-              { data: "InLoad" },
-              { data: "InMem" },
-              {
-                mData: "id",
-                mRender: function (id, type, row) {
-                  return generate_label(row);
-                },
+        $("#ldrmodules_datatable").DataTable().destroy();
+        ldrmodules_data = $("#ldrmodules_datatable").DataTable({
+          aaData: data.artefacts,
+          aoColumns: [
+            { data: "Base" },
+            { data: "Process" },
+            { data: "Pid" },
+            { data: "MappedPath" },
+            { data: "InInit" },
+            { data: "InLoad" },
+            { data: "InMem" },
+            {
+              mData: "id",
+              mRender: function (id, type, row) {
+                return generate_label(row);
               },
-            ],
-            aLengthMenu: [
-              [25, 50, 75, -1],
-              [25, 50, 75, "All"],
-            ],
-            iDisplayLength: 25,
-            searchBuilder: true,
-          });
-          ldrmodules_data.searchBuilder.container().prependTo(ldrmodules_data.table().container());
-
-        } catch {
-          toastr.error("The ldrmodules data could not be displayed.");
-        }
+            },
+          ],
+          aLengthMenu: [
+            [25, 50, 75, -1],
+            [25, 50, 75, "All"],
+          ],
+          iDisplayLength: 25,
+          searchBuilder: true,
+        });
+        ldrmodules_data.searchBuilder
+          .container()
+          .prependTo(ldrmodules_data.table().container());
       }
     },
     complete: function (data) {
@@ -777,28 +818,22 @@ function display_ldrmodules(evidence_id) {
   });
 }
 
-
 function display_kernel_modules(evidence_id) {
-  /* 
-    Get the kernel_modules data from the API and display them using datatables  
+  /*
+    Get the kernel_modules data from the API and display them using datatables
   */
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/modules/",
+    url: `${baseURL}/${evidence_id}/modules/`,
     dataType: "json",
     beforeSend: function () {
       $("#kernel_modules_datatable").hide();
-      $('#kernel_modules_details').show();
-      $('#kernel_modules_loading').show();
+      $("#kernel_modules_details").show();
+      $("#kernel_modules_loading").show();
     },
     success: function (data, status, xhr) {
       if (data.artefacts.length > 0) {
-        try {
-          kernel_modules_data.destroy();
-        } catch {
-          //Nothing to do, the datatable will be created.
-        }
-
+        $("#kernel_modules_datatable").DataTable().destroy();
         kernel_modules_data = $("#kernel_modules_datatable").DataTable({
           aaData: data.artefacts,
           aoColumns: [
@@ -821,7 +856,9 @@ function display_kernel_modules(evidence_id) {
           iDisplayLength: 25,
           searchBuilder: true,
         });
-        kernel_modules_data.searchBuilder.container().prependTo(kernel_modules_data.table().container());
+        kernel_modules_data.searchBuilder
+          .container()
+          .prependTo(kernel_modules_data.table().container());
       }
     },
     complete: function (data) {
@@ -835,26 +872,21 @@ function display_kernel_modules(evidence_id) {
 }
 
 function display_ssdt(evidence_id) {
-  /* 
-    Get the ssdt data from the API and display them using datatables  
+  /*
+    Get the ssdt data from the API and display them using datatables
   */
   $.ajax({
     type: "GET",
-    url: "/api/windows/" + evidence_id + "/ssdt/",
+    url: `${baseURL}/${evidence_id}/ssdt/`,
     dataType: "json",
     beforeSend: function () {
       $("#ssdt_datatable").hide();
-      $('#ssdt_details').show();
-      $('#ssdt_loading').show();
+      $("#ssdt_details").show();
+      $("#ssdt_loading").show();
     },
     success: function (data, status, xhr) {
       if (data.artefacts.length > 0) {
-        try {
-          ssdt_data.destroy();
-        } catch {
-          //Nothing to do, the datatable will be created.
-        }
-
+        $("#kernel_modules_datatable").DataTable().destroy();
         ssdt_data = $("#ssdt_datatable").DataTable({
           aaData: data.artefacts,
           aoColumns: [
@@ -876,7 +908,9 @@ function display_ssdt(evidence_id) {
           iDisplayLength: 25,
           searchBuilder: true,
         });
-        ssdt_data.searchBuilder.container().prependTo(ssdt_data.table().container());
+        ssdt_data.searchBuilder
+          .container()
+          .prependTo(ssdt_data.table().container());
       }
     },
     complete: function (data) {
@@ -889,32 +923,31 @@ function display_ssdt(evidence_id) {
   });
 }
 
-function generate_label(row){
-  return "<small class='d-inline-flex px-1 fw-semibold text-primary-emphasis border border-primary-subtle'>OBSERVABLE</small>"
-
-  return "<small class='d-inline-flex fw-semibold text-danger-emphasis border border-danger-subtle'>INDICATOR</small>"
-
+function generate_label(row) {
+  return "<small class='d-inline-flex px-1 fw-semibold text-primary-emphasis border border-primary-subtle'>OBSERVABLE</small>";
+  // return "<small class='d-inline-flex fw-semibold text-danger-emphasis border border-danger-subtle'>INDICATOR</small>";
 }
 
 function generate_file_download_btn(data) {
-  btn = document.createElement('a');
-  btn.setAttribute('class', 'btn btn-sm btn-outline-primary p-1 btn-dump-file')
+  btn = document.createElement("a");
+  btn.setAttribute("class", "btn btn-sm btn-outline-primary p-1 btn-dump-file");
   btn.textContent = "Dump";
-  btn.setAttribute('id', data.Offset);
+  btn.setAttribute("id", data.Offset);
   return btn.outerHTML;
 }
 
 function generate_hive_download(data, evidence_data) {
   if (data["File output"]) {
-    console.log(data["File output"])
-    link = document.createElement('a');
-    link.setAttribute('href', '/media/' + evidence_data + '/' + data["File output"]);
-    link.setAttribute('target','_blank');
-    link.setAttribute('class','btn btn-sm btn-outline-success p-1')
+    link = document.createElement("a");
+    link.setAttribute(
+      "href",
+      "/media/" + evidence_data + "/" + data["File output"],
+    );
+    link.setAttribute("target", "_blank");
+    link.setAttribute("class", "btn btn-sm btn-outline-success p-1");
     link.textContent = "Download";
     return link.outerHTML;
-  }
-  else{
+  } else {
     return "N/A";
   }
 }
