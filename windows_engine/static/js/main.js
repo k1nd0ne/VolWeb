@@ -9,6 +9,11 @@ $(document).ready(function () {
   display_loot(evidence_id);
 
   /* ======================= Overview ======================= */
+
+  $(".card_process_scan").on("click", function () {
+    display_psscan(evidence_id);
+  });
+
   $(".card_handles").on("click", function () {
     pid = $(".process_id").attr("id");
     compute_handles(evidence_id, pid);
@@ -139,7 +144,6 @@ function connectWebSocket(evidence_id) {
 
   socket_volatility_tasks.onmessage = function (e) {
     result = JSON.parse(e.data);
-    console.log(result.message.name);
     switch (result.message.name) {
       case "handles":
         handles_task_result(result.message);

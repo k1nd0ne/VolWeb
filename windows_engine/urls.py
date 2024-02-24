@@ -49,6 +49,7 @@ urlpatterns = [
         "api/windows/<int:dump_id>/sessions/<int:artifact_id>/<str:tag>/",
         views.SessionsApiView.as_view(),
     ),
+    path("api/windows/<int:dump_id>/psscan/", views.PsScanApiView.as_view()),
     path("api/windows/<int:dump_id>/netstat/", views.NetStatApiView.as_view()),
     path(
         "api/windows/<int:dump_id>/netstat/<int:artifact_id>/<str:tag>/",

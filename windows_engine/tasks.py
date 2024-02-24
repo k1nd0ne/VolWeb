@@ -7,8 +7,6 @@ from asgiref.sync import async_to_sync
 from django.forms.models import model_to_dict
 import json
 
-
-
 @shared_task
 def compute_handles(evidence_id, pid):
     channel_layer = get_channel_layer()
@@ -83,7 +81,7 @@ def dump_process_pslist(evidence_id, pid):
                 },
             },
         )
-    
+
 @shared_task(bind=True)
 def dump_process_memmap(self, evidence_id, pid):
     channel_layer = get_channel_layer()
@@ -125,7 +123,7 @@ def dump_process_memmap(self, evidence_id, pid):
                 },
             },
         )
-    
+
 @shared_task(bind=True)
 def dump_file(self, evidence_id, offset):
     channel_layer = get_channel_layer()

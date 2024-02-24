@@ -6,12 +6,18 @@ function display_pstree(evidence_id) {
     dataType: "json",
     success: function (evidence_data) {
       if (evidence_data !== null) {
-        var process_list = evidence_data.artefacts
+        var process_list = evidence_data.artefacts;
         var root = new TreeNode("root");
         $.each(process_list, function (_, node) {
           build_tree(node, root);
         });
         first_process = root.getChildren()[0];
+        if (!first_process) {
+          $("#container").html(
+            `<i class="text-danger">The PsTree is unavailable, your investigation capablities are downgraded.</i>`,
+          );
+          return;
+        }
         first_process.toggleSelected();
         display_process_info(first_process.getProcessObject(), evidence_id);
         generate_visualisation(first_process.getProcessObject(), process_list);
@@ -25,7 +31,10 @@ function display_pstree(evidence_id) {
 
         function build_tree(node, root) {
           // create node and add to elements
-          var newNode = new TreeNode(node.PID + " - " + node.ImageFileName, node);
+          var newNode = new TreeNode(
+            node.PID + " - " + node.ImageFileName,
+            node,
+          );
           // now create links
           if (node.__children) {
             $.each(node.__children, function (_, childNode) {
@@ -69,8 +78,7 @@ function display_process_info(process, evidence_id) {
     type: "GET",
     url: "/tasks/windows/tasks/",
     dataType: "json",
-    beforeSend: function () {
-    },
+    beforeSend: function () {},
     success: function (tasks, status, xhr) {
       $(".card_handles").show();
       $(".loading_handles").hide();
@@ -123,13 +131,10 @@ function display_process_info(process, evidence_id) {
         }
       });
 
-
       var url = "/review/windows/" + evidence_id + "/" + process.PID + "/";
       $(".investigate-btn").attr("href", url);
     },
-    complete: function (data) {
-
-    },
+    complete: function (data) {},
     error: function (xhr, status, error) {
       toastr.error("An error occurred while getting the tasks : " + error);
     },

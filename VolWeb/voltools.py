@@ -269,56 +269,45 @@ def file_sha256(path):
 
 def generate_network_graph(data):
     graph_data = {"nodes": [], "edges": []}
+    node_id_map = {}
+
     for entry in data:
-        node_data_1 = {
-            "id": entry["LocalAddr"],
-            "Involved_PIDs": [entry["PID"]],
-            "Owner(s)": [entry["Owner"]],
-            "Local_Ports": [entry["LocalPort"]],
-            "State": entry["State"],
-        }
-        node_data_2 = {
-            "id": entry["ForeignAddr"],
-            "Involved_PIDs": [entry["PID"]],
-            "Owner(s)": [entry["Owner"]],
-            "Local_Ports": [entry["ForeignPort"]],
-            "State": entry["State"],
-        }
-        edge_data = {"from": entry["LocalAddr"], "to": entry["ForeignAddr"]}
-        if not graph_data["nodes"]:
-            graph_data["nodes"].append(node_data_1)
+        pid = entry["PID"]
+        local_address = entry["LocalAddr"]
+        local_port = entry["LocalPort"]
+        foreign_address = entry["ForeignAddr"]
+        foreign_port = entry["ForeignPort"]
 
-        is_present = False
-        for item in graph_data["nodes"]:
-            if node_data_1["id"] == item["id"]:
-                is_present = True
-                break
-        if not is_present:
+        # Node data for the process
+        if pid not in node_id_map:
+            node_data_1 = {
+                "id": pid,
+                "Process": entry["Owner"],
+                "LocalAddr": local_address,
+                "LocalPorts": [local_port],
+            }
             graph_data["nodes"].append(node_data_1)
+            node_id_map[pid] = node_data_1
         else:
-            if entry["PID"] not in item["Involved_PIDs"]:
-                item["Involved_PIDs"].append(entry["PID"])
-            if entry["LocalPort"] not in item["Local_Ports"]:
-                item["Local_Ports"].append(entry["LocalPort"])
-            if entry["Owner"] not in item["Owner(s)"]:
-                item["Owner(s)"].append(entry["Owner"])
+            # If the process is already a node, just add the local port if it's not already there
+            if local_port not in node_id_map[pid]["LocalPorts"]:
+                node_id_map[pid]["LocalPorts"].append(local_port)
 
-        is_present = False
-        for item in graph_data["nodes"]:
-            if node_data_2["id"] == item["id"]:
-                is_present = True
-                break
-
-        if not is_present:
+        # Node data for the foreign address
+        if foreign_address not in node_id_map:
+            node_data_2 = {
+                "id": foreign_address,
+                "ForeignPorts": [foreign_port],
+            }
             graph_data["nodes"].append(node_data_2)
+            node_id_map[foreign_address] = node_data_2
         else:
-            if entry["PID"] not in item["Involved_PIDs"]:
-                item["Involved_PIDs"].append(entry["PID"])
-            if entry["ForeignPort"] not in item["Local_Ports"]:
-                item["Local_Ports"].append(entry["ForeignPort"])
-            if entry["Owner"] not in item["Owner(s)"]:
-                item["Owner(s)"].append(entry["Owner"])
+            # If the foreign address is already a node, just add the foreign port if it's not already there
+            if foreign_port not in node_id_map[foreign_address]["ForeignPorts"]:
+                node_id_map[foreign_address]["ForeignPorts"].append(foreign_port)
 
+        # Edge data
+        edge_data = {"from": pid, "to": foreign_address}
         if edge_data not in graph_data["edges"]:
             graph_data["edges"].append(edge_data)
 

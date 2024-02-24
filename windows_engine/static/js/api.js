@@ -1,3 +1,73 @@
+function display_psscan(evidence_id, process_id) {
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/psscan/`,
+    dataType: "json",
+    success: function (data) {
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                          <th>Offset(V)</th>
+                          <th>CreateTime</th>
+                          <th>ExitTime</th>
+                          <th>Handles</th>
+                          <th>PID</th>
+                          <th>PPID</th>
+                          <th>ImageFileName</th>
+                          <th>SessionId</th>
+                          <th>Threads</th>
+                          <th>Wow64</th>
+                          <th></th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "Offset(V)" },
+          { data: "CreateTime" },
+          { data: "ExitTime" },
+          { data: "Handles" },
+          { data: "PID" },
+          { data: "PPID" },
+          { data: "ImageFileName" },
+          { data: "SessionId" },
+          { data: "Threads" },
+          { data: "Wow64" },
+          {
+            mData: "id",
+            mRender: function (_id, _type, row) {
+              return generate_label(row);
+            },
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo($(artefact_datatable.table().container()));
+      $("#artefacts_source_title").text("Process Scan");
+      $("#artefacts_modal").modal("show");
+    },
+    error: function (xhr, status, error) {
+      if (xhr.status === 404) {
+        toastr.warning("Psscan is not available on this image.");
+      } else {
+        toastr.error(xhr.status);
+      }
+    },
+  });
+}
+
 function display_sids(evidence_id, process_id) {
   $.ajax({
     type: "GET",
@@ -45,7 +115,11 @@ function display_sids(evidence_id, process_id) {
       $("#artefacts_modal").modal("show");
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred : " + error);
+      if (xhr.status === 404) {
+        toastr.warning("Security IDs are not available on this memory image.");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
     },
   });
 }
@@ -101,7 +175,11 @@ function display_privs(evidence_id, process_id) {
       $("#artefacts_modal").modal("show");
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred : " + error);
+      if (xhr.status === 404) {
+        toastr.warning("Privileges are not available on this memory image.");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
     },
   });
 }
@@ -155,7 +233,13 @@ function display_envars(evidence_id, process_id) {
       $("#artefacts_modal").modal("show");
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred : " + error);
+      if (xhr.status === 404) {
+        toastr.warning(
+          "Envars for this process are not available on this memory image.",
+        );
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
     },
   });
 }
@@ -205,7 +289,11 @@ function display_registry(evidence_id) {
       $("#artefacts_modal").modal("show");
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred : " + error);
+      if (xhr.status === 404) {
+        toastr.warning("Hivelist is not available on this memory image.");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
     },
   });
 }
@@ -269,7 +357,11 @@ function display_svcscan(evidence_id) {
       $("#artefacts_source_title").text("Service Scan");
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred : " + error);
+      if (xhr.status === 404) {
+        toastr.warning("Services are not available on this memory image.");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
     },
   });
 }
@@ -326,8 +418,12 @@ function display_dlllist(evidence_id, process_id) {
       $("#artefacts_modal").modal("show");
       $("#artefacts_source_title").text("DllList");
     },
-    error: function (_xhr, _status, error) {
-      toastr.error("An error occurred : " + error);
+    error: function (xhr, _status, error) {
+      if (xhr.status === 404) {
+        toastr.warning("Dlllist is not available");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
     },
   });
 }
@@ -390,7 +486,11 @@ function display_filescan(evidence_id) {
       });
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred : " + error);
+      if (xhr.status === 404) {
+        toastr.warning("Filescan is not available for this memory dump");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
     },
   });
 }
@@ -423,10 +523,10 @@ function display_network(evidence_id) {
             },
           ],
           aLengthMenu: [
-            [25, 50, 75, -1],
-            [25, 50, 75, "All"],
+            [5, 10, 50, -1],
+            [5, 10, 50, "All"],
           ],
-          iDisplayLength: 25,
+          iDisplayLength: 5,
           searchBuilder: true,
         });
         netstat_data.searchBuilder
@@ -469,10 +569,10 @@ function display_network(evidence_id) {
             },
           ],
           aLengthMenu: [
-            [25, 50, 75, -1],
-            [25, 50, 75, "All"],
+            [5, 10, 50, -1],
+            [5, 10, 50, "All"],
           ],
-          iDisplayLength: 25,
+          iDisplayLength: 5,
           searchBuilder: true,
         });
         netscan_data.searchBuilder
@@ -512,9 +612,11 @@ function display_timeline(evidence_id) {
         .querySelector("[data-bs-theme]")
         .getAttribute("data-bs-theme");
       let seriesData = [];
-      data.artefacts.forEach((item) => {
-        seriesData.push({ x: item[0], y: item[1] });
-      });
+      if (data.artefacts) {
+        data.artefacts.forEach((item) => {
+          seriesData.push({ x: item[0], y: item[1] });
+        });
+      }
       var options = {
         theme: {
           mode: theme,
@@ -535,7 +637,7 @@ function display_timeline(evidence_id) {
           background: theme === "dark" ? "#212529" : "#fff",
           type: "area",
           stacked: false,
-          height: 350,
+          height: 500,
           zoom: {
             type: "x",
             enabled: true,
@@ -578,6 +680,7 @@ function display_timeline(evidence_id) {
           },
         },
         yaxis: {
+          tickAmount: 4,
           labels: {
             formatter: function (val) {
               return val.toFixed(0);
@@ -629,7 +732,7 @@ function display_cmdline(evidence_id, process_id) {
       $(".p_cmdline").text(data[0].Args);
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred : " + error);
+      $(".p_cmdline").text("Unavailable");
     },
   });
 }
@@ -684,10 +787,14 @@ function display_credentials(evidence_id) {
     url: `${baseURL}/${evidence_id}/hashdump/`,
     dataType: "json",
     success: function (data) {
-      if (data.artefacts.length > 0) {
+      if (data.artefacts && data.artefacts.length > 0) {
         $.each(data.artefacts, function (_, value) {
           build_credential_card("Hashdump", value);
         });
+      } else {
+        $("#credentials_cards_1").html(
+          `<i class="text-info">No Hash found for HashDump<i/>`,
+        );
       }
     },
     error: function (xhr, status, error) {
@@ -700,10 +807,14 @@ function display_credentials(evidence_id) {
     url: `${baseURL}/${evidence_id}/cachedump/`,
     dataType: "json",
     success: function (data) {
-      if (data.artefacts.length > 0) {
+      if (data.artefacts && data.artefacts.length > 0) {
         $.each(data, function (_, value) {
           build_credential_card("Cachedump", value);
         });
+      } else {
+        $("#credentials_cards_2").html(
+          `<i class="text-info">No Hash found for CacheDump<i/>`,
+        );
       }
     },
     error: function (xhr, status, error) {
@@ -716,10 +827,14 @@ function display_credentials(evidence_id) {
     url: `${baseURL}/${evidence_id}/lsadump/`,
     dataType: "json",
     success: function (data) {
-      if (data.artefacts.length > 0) {
+      if (data.artefacts && data.artefacts.length > 0) {
         $.each(data, function (_, value) {
           build_credential_card("Lsadump", value);
         });
+      } else {
+        $("#credentials_card_3").html(
+          `<i class="text-info">No Hash found for LsaDump<i/>`,
+        );
       }
     },
     error: function (xhr, status, error) {
@@ -744,13 +859,14 @@ function display_malfind(evidence_id) {
       $("#malfind_process_loading").show();
     },
     success: function (data, status, xhr) {
-      if (data.artefacts.length > 0) {
+      if (data.artefacts && data.artefacts.length > 0) {
         $.each(data.artefacts, function (_, value) {
           build_malfind_process_card(value);
         });
       } else {
-        document.getElementById("malfind_process_list").textContent =
-          "Nothing was found by Malfind";
+        $("#malfind_process_list").html(
+          `<i class="text-info">Malfind did not return any results.</i>`,
+        );
       }
     },
     complete: function (data) {
@@ -777,7 +893,7 @@ function display_ldrmodules(evidence_id) {
       $("#ldrmodules_process_loading").show();
     },
     success: function (data, status, xhr) {
-      if (data.artefacts.length > 0) {
+      if (data.artefacts && data.artefacts.length > 0) {
         $("#ldrmodules_datatable").DataTable().destroy();
         ldrmodules_data = $("#ldrmodules_datatable").DataTable({
           aaData: data.artefacts,
@@ -832,7 +948,7 @@ function display_kernel_modules(evidence_id) {
       $("#kernel_modules_loading").show();
     },
     success: function (data, status, xhr) {
-      if (data.artefacts.length > 0) {
+      if (data.artefacts && data.artefacts.length > 0) {
         $("#kernel_modules_datatable").DataTable().destroy();
         kernel_modules_data = $("#kernel_modules_datatable").DataTable({
           aaData: data.artefacts,
@@ -885,7 +1001,7 @@ function display_ssdt(evidence_id) {
       $("#ssdt_loading").show();
     },
     success: function (data, status, xhr) {
-      if (data.artefacts.length > 0) {
+      if (data.artefacts && data.artefacts.length > 0) {
         $("#kernel_modules_datatable").DataTable().destroy();
         ssdt_data = $("#ssdt_datatable").DataTable({
           aaData: data.artefacts,

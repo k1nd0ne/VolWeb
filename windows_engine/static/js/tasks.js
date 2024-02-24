@@ -52,15 +52,16 @@ function compute_handles(evidence_id, pid) {
         artefacts_datatable.searchBuilder
           .container()
           .prependTo(artefacts_datatable.table().container());
-
-        $(".card_handles").show();
-        $(".loading_handles").hide();
         $("#artefacts_modal").modal("show");
       }
     },
     complete: function (data) {},
     error: function (xhr, status, error) {
-      toastr.error("An error occurred while computing the handles : " + error);
+      if (xhr.status === 408) {
+        toastr.error("The worker is unavailable, please try again later.");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
     },
   });
 }
@@ -142,7 +143,6 @@ function handles_task_result(result) {
   } else {
     toastr.warning(result.msg);
   }
-  console.log(result);
   if (result.pid == $(".process_id").attr("id")) {
     $(".card_handles").show();
     $(".loading_handles").hide();

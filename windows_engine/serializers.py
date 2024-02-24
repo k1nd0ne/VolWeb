@@ -1,7 +1,13 @@
 from rest_framework import serializers
 from windows_engine.models import *
-from django_celery_results.models import TaskResult 
+from django_celery_results.models import TaskResult
 import json
+
+class PsScanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PsScan
+        fields = "__all__"
+
 
 class PsTreeSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,6 +1,5 @@
-
 function generate_network_visualisation(data) {
-  var namespace = joint.shapes;                
+  var namespace = joint.shapes;
   var graph = new joint.dia.Graph({}, { cellNamespace: namespace });
 
   new joint.dia.Paper({
@@ -10,60 +9,82 @@ function generate_network_visualisation(data) {
     height: "100%",
     gridSize: 1,
     drawGrid: true,
-    interactive: { elementMove: false },
+    interactive: { elementMove: true },
   });
-  data.artefacts.nodes.forEach(item => {
-    if (item.id !== null){
+  data.artefacts.nodes.forEach((item) => {
+    if (item.id !== null) {
       node = MakeNetNode(item);
       MakeNetNode(item).addTo(graph);
     }
-
   });
-  data.artefacts.edges.forEach(item => {
-    if (item.from !== null && item.to !== null){
-      makeLink(item.from, item.to).addTo(graph)
+  data.artefacts.edges.forEach((item) => {
+    if (item.from !== null && item.to !== null) {
+      makeLink(item.from, item.to).addTo(graph);
     }
   });
   joint.layout.DirectedGraph.layout(graph, {
     setLinkVertices: false,
-    rankDir: 'LR', // Direction: TB (top to bottom), LR (left to right), etc.
+    rankDir: "LR", // Direction: TB (top to bottom), LR (left to right), etc.
     nodeSep: 100, // Horizontal separation between nodes
     edgeSep: 100, // Separation between edges
-    rankSep: 100,  // Vertical separation between nodes+
+    rankSep: 100, // Vertical separation between nodes+
     marginX: 5,
     marginY: 5,
-    rankDir: "LR",
-});
-graph.getCells().forEach(function (cell) {
-  if (cell.isLink()) {
-    // If cell is a link, send it to back
-    cell.toBack();
-  } else {
-    // If cell is an element (node), bring it to front
-    cell.toFront();
-  }
-});
-var bbox = graph.getBBox(graph.getElements());
-$(".netgraph").height(bbox.height + 30);
+  });
+  graph.getCells().forEach(function (cell) {
+    if (cell.isLink()) {
+      // If cell is a link, send it to back
+      cell.toBack();
+    } else {
+      // If cell is an element (node), bring it to front
+      cell.toFront();
+    }
+  });
+  var bbox = graph.getBBox(graph.getElements());
+  $(".netgraph").height(bbox.height + 30);
 }
 
 function MakeNetNode(item) {
-  maxLineLength = item.id.length;
-  console.log(item.State)
-  var info = item.id + "\nSTATE: " + (item.State.length === 0 ? "Unknown" : item.State) + "\nOwner(s):";
-  if (item.State.length > maxLineLength){
-    maxLineLength = item.State.length
-  }
+  if (item.Process) {
+    maxLineLength = item.Process.length + 10;
+    var info =
+      item.id +
+      " - " +
+      (item.Process.length === 0 ? "Unknown" : item.Process) +
+      "\n\nLocal Ports:";
+    if (item.id.length > maxLineLength) {
+      maxLineLength = item.Process.length;
+    }
 
-  if (item["Owner(s)"] !== null){
-    item["Owner(s)"].forEach(owner => {
-      if(owner !== null){
-        info += "\n" + owner;
-        if (owner.length > maxLineLength){
-          maxLineLength = owner.length
+    if (item["LocalPorts"] !== null) {
+      item["LocalPorts"].forEach((ports) => {
+        if (ports !== null) {
+          info += "\n" + ports;
+          if (ports.length > maxLineLength) {
+            maxLineLength = ports.length;
+          }
         }
-      }
-    });
+      });
+    }
+  } else {
+    console.log(item);
+    maxLineLength = item.id.length + 10;
+    var info =
+      item.id +
+      " - " +
+      (item.id.length === 0 ? "Unknown" : item.id) +
+      "\nForeign Ports:";
+
+    if (item["ForeignPorts"] !== null) {
+      item["ForeignPorts"].forEach((ports) => {
+        if (ports !== null) {
+          info += "\n" + ports;
+          if (ports.length > maxLineLength) {
+            maxLineLength = ports.length;
+          }
+        }
+      });
+    }
   }
 
   var letterSize = 10;
@@ -73,23 +94,24 @@ function MakeNetNode(item) {
     id: item.id,
     size: { width: width, height: height },
   });
-  rect.attr({label: {
-    text: info,
-    fontSize: letterSize,
-    fontFamily: "monospace",
-    fill: "black",
-  },
-  body: {
-    fill: "white",
-    stroke: "#084298",
-    width: width,
-    height: height,
-    rx: 2,
-    ry: 2,
-  },});
+  rect.attr({
+    label: {
+      text: info,
+      fontSize: letterSize,
+      fontFamily: "monospace",
+      fill: "black",
+    },
+    body: {
+      fill: "white",
+      stroke: "#084298",
+      width: width,
+      height: height,
+      rx: 2,
+      ry: 2,
+    },
+  });
   return rect;
 }
-
 
 function generate_visualisation(process, pstree) {
   var elements = [];
@@ -203,10 +225,9 @@ function MakeNode(node) {
   });
 }
 
-
 function build_credential_card(plugin, data) {
-  /* 
-    Build a credentital card: used in api.js for hashdump, lsadump, cachedump 
+  /*
+    Build a credentital card: used in api.js for hashdump, lsadump, cachedump
   */
   const card_div = document.createElement("div");
   card_div.setAttribute("class", "card shadow border-start-primary py-2 mt-2");
@@ -275,60 +296,65 @@ function build_credential_card(plugin, data) {
   }
 }
 
-
 function build_malfind_process_card(data) {
-  /* 
+  /*
     Build a malfind process card: used in api.js
     Also add event listeners to then fill the info about each process.
   */
 
-  console.log(data)
-  const cardDiv = document.createElement('div');
-  cardDiv.classList.add('card', 'shadow', 'border-start-primary', 'card_clickable', 'm-2');
+  console.log(data);
+  const cardDiv = document.createElement("div");
+  cardDiv.classList.add(
+    "card",
+    "shadow",
+    "border-start-primary",
+    "card_clickable",
+    "m-2",
+  );
   cardDiv.id = "malfind_process_" + data["Start VPN"];
 
-  const cardBodyDiv = document.createElement('div');
-  cardBodyDiv.classList.add('card-body', 'p-2');
+  const cardBodyDiv = document.createElement("div");
+  cardBodyDiv.classList.add("card-body", "p-2");
 
   cardDiv.appendChild(cardBodyDiv);
 
-  const rowDiv = document.createElement('div');
-  rowDiv.classList.add('row', 'align-items-center', 'no-gutters');
+  const rowDiv = document.createElement("div");
+  rowDiv.classList.add("row", "align-items-center", "no-gutters");
 
   cardBodyDiv.appendChild(rowDiv);
 
-  const iconColDiv = document.createElement('div');
-  iconColDiv.classList.add('col-auto');
+  const iconColDiv = document.createElement("div");
+  iconColDiv.classList.add("col-auto");
 
   rowDiv.appendChild(iconColDiv);
 
-  const icon = document.createElement('i');
-  icon.classList.add('fas', 'fa-exclamation', 'text-warning');
+  const icon = document.createElement("i");
+  icon.classList.add("fas", "fa-exclamation", "text-warning");
 
   iconColDiv.appendChild(icon);
 
-  const textColDiv = document.createElement('div');
-  textColDiv.classList.add('col', 'me-2');
+  const textColDiv = document.createElement("div");
+  textColDiv.classList.add("col", "me-2");
 
   rowDiv.appendChild(textColDiv);
 
-  const spanText = document.createElement('span');
-  spanText.classList.add('fw-bold', 'text-xs');
+  const spanText = document.createElement("span");
+  spanText.classList.add("fw-bold", "text-xs");
   spanText.textContent = data.Process + " - " + data.PID;
 
   textColDiv.appendChild(spanText);
   document.getElementById("malfind_process_list").appendChild(cardDiv);
-  $('#' + cardDiv.id).on("click", function () {
+  $("#" + cardDiv.id).on("click", function () {
     display_malfind_details(data);
   });
 }
 
 function display_malfind_details(data) {
   /*
-    Display the detailled info when a malfind process card is clicked. 
+    Display the detailled info when a malfind process card is clicked.
   */
-  $("#malfind_start_vpn").text(data['Start VPN']);
-  $("#malfind_end_vpn").text(data['End VPN']);
+  $("#malfind_start_vpn").text(data["Start VPN"]);
+  $("#malfind_end_vpn").text(data["End VPN"]);
   $("#malfind_tag").text(data.Tag);
   $("#malfind_protection").text(data.Protection);
   $("#malfind_hexdump").text(data.Hexdump);

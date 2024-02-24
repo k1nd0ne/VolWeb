@@ -206,7 +206,6 @@ class Privs(models.Model):
         except:
             return None
 
-
 class Sessions(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="windows_sessions_evidence"
