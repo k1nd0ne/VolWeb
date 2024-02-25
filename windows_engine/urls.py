@@ -7,10 +7,7 @@ urlpatterns = [
     # API
     path("api/windows/<int:dump_id>/pstree/", views.PsTreeApiView.as_view()),
     path("api/windows/<int:dump_id>/timeline/", views.TimelineChartApiView.as_view()),
-    path(
-        "api/windows/<int:dump_id>/timeliner/<str:timestamp>/",
-        views.TimelineDataApiView.as_view(),
-    ),
+    path('api/windows/<int:dump_id>/timeliner/', views.TimelineDataApiView.as_view()),
     path(
         "api/windows/<int:dump_id>/timeliner/<int:artifact_id>/<str:tag>/",
         views.TimelineDataApiView.as_view(),

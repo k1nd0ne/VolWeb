@@ -733,7 +733,13 @@ function display_timeline(evidence_id) {
               display_timeliner(evidence_id, timestamp);
             },
             zoomed: function (chartContext, { xaxis, yaxis }) {
-              display_timeliner(evidence_id, data.artefacts[xaxis.min - 1][0]);
+              console.log(data.artefacts[xaxis.min - 1][0]);
+              console.log(data.artefacts[xaxis.max - 1][0]);
+              display_timeliner(
+                evidence_id,
+                data.artefacts[xaxis.min - 1][0],
+                data.artefacts[xaxis.max - 1][0],
+              );
             },
           },
         },
@@ -783,7 +789,7 @@ function display_timeline(evidence_id) {
       chart.render();
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred : " + error);
+      toastr.error("The timeline failed to load : " + status);
     },
   });
 }
@@ -815,43 +821,38 @@ function display_cmdline(evidence_id, process_id) {
   });
 }
 
-function display_timeliner(evidence_id, timestamp) {
-  $.ajax({
-    type: "GET",
-    url: `${baseURL}/${evidence_id}/timeliner/${timestamp}/`,
-    dataType: "json",
-    success: function (data) {
-      $("#timeline_datatable").DataTable().destroy();
-      timeline_data = $("#timeline_datatable").DataTable({
-        aaData: data,
-        aoColumns: [
-          { data: "Created Date" },
-          { data: "Accessed Date" },
-          { data: "Changed Date" },
-          { data: "Description" },
-          { data: "Modified Date" },
-          { data: "Plugin" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
-        ],
-        aLengthMenu: [
-          [25, 50, 75, -1],
-          [25, 50, 75, "All"],
-        ],
-        iDisplayLength: 25,
-        searchBuilder: true,
-      });
-      timeline_data.searchBuilder
-        .container()
-        .prependTo(timeline_data.table().container());
+function display_timeliner(evidence_id, timestamp_min, timestamp_max) {
+  $("#timeline_datatable").DataTable().destroy();
+  $("#timeline_datatable").DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: `${baseURL}/${evidence_id}/timeliner/?timestamp_min=${timestamp_min}&timestamp_max=${timestamp_max}`,
+      type: "GET",
+      data: function (d) {
+        d.timestamp_min = timestamp_min;
+        d.timestamp_max = timestamp_max;
+      },
     },
-    error: function (xhr, status, error) {
-      toastr.error("An error occurred : " + error);
-    },
+    aoColumns: [
+      { data: "Created Date" },
+      { data: "Accessed Date" },
+      { data: "Changed Date" },
+      { data: "Description" },
+      { data: "Modified Date" },
+      { data: "Plugin" },
+      {
+        data: "id",
+        render: function (data, type, row) {
+          return generate_label(row);
+        },
+      },
+    ],
+    aLengthMenu: [
+      [25, 50, 75, -1],
+      [25, 50, 75, "All"],
+    ],
+    iDisplayLength: 25,
   });
 }
 

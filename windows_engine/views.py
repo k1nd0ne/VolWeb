@@ -14,6 +14,8 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 
 @login_required
@@ -103,18 +105,43 @@ class TimelineDataApiView(APIView):
         except Timeliner.DoesNotExist:
             return None
 
-    def get(self, request, dump_id, timestamp, *args, **kwargs):
+    def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested Timeline Date from the timestamp.
+        Serve the requested timeline data with server-side processing.
         """
         data = self.get_object(dump_id)
-        if data.artefacts:
-            filtered_data = [
-                d for d in data.artefacts if d["Created Date"] == timestamp
-            ]
-            return Response(filtered_data, status=status.HTTP_200_OK)
-        else:
+        if not data:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+        # Server-side parameters
+        draw = int(request.query_params.get('draw', 0))  # Used by DataTables to ensure that the Ajax returns from server-side processing are drawn in sequence
+        start = int(request.query_params.get('start', 0))
+        length = int(request.query_params.get('length', 25))
+        timestamp_min = request.query_params.get('timestamp_min', None)
+        timestamp_max = request.query_params.get('timestamp_max', None)
+
+        # Filtering based on timestamp
+        filtered_data = []
+        if timestamp_min and timestamp_max:
+            for artefact in data.artefacts:
+                created_date = artefact.get("Created Date")
+                if created_date and timestamp_min <= created_date <= timestamp_max:
+                    filtered_data.append(artefact)
+        else:
+            filtered_data = data.artefacts
+
+        # Implement search and order by functionality if necessary
+
+        # Server-side pagination
+        paginator = Paginator(filtered_data, length)
+        page_data = paginator.get_page((start // length) + 1)
+
+        return Response({
+            'draw': draw,
+            'recordsTotal': paginator.count,
+            'recordsFiltered': paginator.count,  # Adjust this value if you implement search
+            'data': page_data.object_list
+        }, status=status.HTTP_200_OK)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
