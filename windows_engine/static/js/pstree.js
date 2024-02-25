@@ -13,6 +13,8 @@ function display_pstree(evidence_id) {
         });
         first_process = root.getChildren()[0];
         if (!first_process) {
+          // The PSTREE is not available, so all of the plugins based on filtering are disabled
+          $(".card_filtering").hide();
           $("#container").html(
             `<i class="text-danger">The PsTree is unavailable, your investigation capablities are downgraded.</i>`,
           );
@@ -56,6 +58,40 @@ function display_pstree(evidence_id) {
 }
 
 function display_process_info(process, evidence_id) {
+  $.ajax({
+    type: "GET",
+    url: `${tasksURL}/tasks/`,
+    dataType: "json",
+    success: function (tasks) {
+      let handles_found = false;
+      let dump_found = false;
+
+      tasks.forEach(({ task_name, task_kwargs }) => {
+        const { pid, evidence_id: taskId } = JSON.parse(
+          task_kwargs.slice(1, -1),
+        );
+
+        if (pid == process.PID && taskId == evidence_id) {
+          if (task_name === "windows_engine.tasks.compute_handles") {
+            handles_found = true;
+          } else if (
+            task_name === "windows_engine.tasks.dump_process_memmap" ||
+            task_name === "windows_engine.tasks.dump_process_pslist"
+          ) {
+            dump_found = true;
+          }
+        }
+      });
+
+      $(".card_process_dump").toggle(!dump_found);
+      $(".loading_process_dump").toggle(dump_found);
+      $(".card_handles").toggle(!handles_found);
+      $(".loading_handles").toggle(handles_found);
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred while getting the tasks : " + error);
+    },
+  });
   $(".process_id").attr("id", process.PID);
   $(".process_title").text(process.ImageFileName);
   $(".p_pid").text(process.PID);
@@ -73,70 +109,4 @@ function display_process_info(process, evidence_id) {
   $(".p_etime").text(process.ExitTime);
   display_sessions(evidence_id, process.PID);
   display_cmdline(evidence_id, process.PID);
-
-  $.ajax({
-    type: "GET",
-    url: "/tasks/windows/tasks/",
-    dataType: "json",
-    beforeSend: function () {},
-    success: function (tasks, status, xhr) {
-      $(".card_handles").show();
-      $(".loading_handles").hide();
-      $(".card_process_dump").show();
-      $(".loading_process_dump").hide();
-
-      tasks.forEach(function (task) {
-        switch (task.task_name) {
-          case "windows_engine.tasks.compute_handles":
-            test = task.task_kwargs;
-            result = JSON.parse(test.substring(1, test.length - 1));
-            if (
-              result.pid == process.PID &&
-              result.evidence_id == evidence_id &&
-              task.status != "SUCCESS" &&
-              task.status != "FAILURE"
-            ) {
-              $(".card_handles").hide();
-              $(".loading_handles").show();
-            }
-            break;
-          case "windows_engine.tasks.dump_process_memmap":
-            test = task.task_kwargs;
-            result = JSON.parse(test.substring(1, test.length - 1));
-            if (
-              result.pid == process.PID &&
-              result.evidence_id == evidence_id &&
-              task.status != "SUCCESS" &&
-              task.status != "FAILURE"
-            ) {
-              $(".card_process_dump").hide();
-              $(".loading_process_dump").show();
-            }
-            break;
-
-          case "windows_engine.tasks.dump_process_pslist":
-            test = task.task_kwargs;
-            result = JSON.parse(test.substring(1, test.length - 1));
-            if (
-              result.pid == process.PID &&
-              result.evidence_id == evidence_id &&
-              task.status != "SUCCESS" &&
-              task.status != "FAILURE"
-            ) {
-              $(".card_process_dump").hide();
-              $(".loading_process_dump").show();
-            }
-
-            break;
-        }
-      });
-
-      var url = "/review/windows/" + evidence_id + "/" + process.PID + "/";
-      $(".investigate-btn").attr("href", url);
-    },
-    complete: function (data) {},
-    error: function (xhr, status, error) {
-      toastr.error("An error occurred while getting the tasks : " + error);
-    },
-  });
 }

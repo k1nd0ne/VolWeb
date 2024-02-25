@@ -1,44 +1,62 @@
-{% extends "main/master.html" %}
-{% load static %}
-
-{% block content%}
+{% extends "main/master.html" %} {% load static %} {% block content%}
 <script src="{% static 'main/js/home.js'%}"></script>
-<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js"></script>
 <div class="container-fluid">
     <div class="row justify-content-center align-items-center mt-3">
         <div class="col-md-6 col-xl-4 mb-4">
-            <div class="card shadow border-start-primary py-2">
+            <div class="card border-start-primary py-2 shadow">
                 <div class="card-body">
                     <div class="row align-items-center no-gutters">
                         <div class="col me-2">
-                            <div class="text-uppercase fw-bold text-xs mb-1"><span>Recent Cases</span></div>
+                            <div class="text-uppercase fw-bold mb-1 text-xs">
+                                <span>Recent Cases</span>
+                            </div>
                         </div>
-                        <div class="col-auto"><i class="fas fa-briefcase fa-2x text-gray-600"></i></div>
+                        <div class="col-auto">
+                            <i class="fas fa-briefcase fa-2x text-gray-600"></i>
+                        </div>
                     </div>
-                    <hr class="horizontal dark mt-0">
-                    <ul id="cases_placeholder" class="list-group list-group-flush placeholder-glow">
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
+                    <hr class="horizontal dark mt-0" />
+                    <ul
+                        id="cases_placeholder"
+                        class="list-group list-group-flush placeholder-glow"
+                    >
+                        <li class="list-group-item">
+                            <span class="placeholder col-12"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="placeholder col-12"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="placeholder col-12"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="placeholder col-12"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="placeholder col-12"></span>
+                        </li>
                     </ul>
-                    <ul id="recent_cases" class="list-group list-group-flush">
-                    </ul>
-                    
+                    <ul
+                        id="recent_cases"
+                        class="list-group list-group-flush"
+                    ></ul>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-xl-4 mb-4">
-            <div class="card shadow border-start-primary py-2">
+            <div class="card border-start-primary py-2 shadow">
                 <div class="card-body">
                     <div class="row align-items-center no-gutters">
                         <div class="col me-2">
-                            <div class="text-uppercase fw-bold text-xs mb-1"><span>Team members</span></div>
+                            <div class="text-uppercase fw-bold mb-1 text-xs">
+                                <span>Team members</span>
+                            </div>
                         </div>
-                        <div class="col-auto"><i class="fab fa-teamspeak fa-2x text-gray-600"></i></div>
+                        <div class="col-auto">
+                            <i class="fab fa-teamspeak fa-2x text-gray-600"></i>
+                        </div>
                     </div>
-                    <hr class="horizontal dark mt-0">
+                    <hr class="horizontal dark mt-0" />
                     <ul class="list-group list-group-flush">
                         {% for user in Users %}
                         <li class="list-group-item">- {{user}}</li>
@@ -48,28 +66,45 @@
             </div>
         </div>
         <div class="col-md-6 col-xl-4 mb-4">
-            <div class="card shadow border-start-primary py-2">
+            <div class="card border-start-primary py-2 shadow">
                 <div class="card-body">
                     <div class="row align-items-center no-gutters">
                         <div class="col me-2">
-                            <div class="text-uppercase fw-bold text-xs mb-1"><span>Recent ISF</span></div>
+                            <div class="text-uppercase fw-bold mb-1 text-xs">
+                                <span>Recent ISF</span>
+                            </div>
                         </div>
-                        <div class="col-auto"><i class="fab fa-connectdevelop fa-2x text-gray-600"></i></div>
+                        <div class="col-auto">
+                            <i
+                                class="fab fa-connectdevelop fa-2x text-gray-600"
+                            ></i>
+                        </div>
                     </div>
-                    <hr class="horizontal dark mt-0">
-                    <ul id="isf_placeholder" class="list-group list-group-flush placeholder-glow">
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
-                        <li class="list-group-item"><span class="placeholder col-12"></span></li>
+                    <hr class="horizontal dark mt-0" />
+                    <ul
+                        id="isf_placeholder"
+                        class="list-group list-group-flush placeholder-glow"
+                    >
+                        <li class="list-group-item">
+                            <span class="placeholder col-12"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="placeholder col-12"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="placeholder col-12"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="placeholder col-12"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="placeholder col-12"></span>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
 
 {% endblock content%}

@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
-from VolWeb.keyconfig import Database, Secrets, Debug
+from VolWeb.keyconfig import Database, Secrets
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-&3@@g(*xlq9nj&aw5vj=*eqic$#=(z_b8+*a7#z!zjx#$2)_0l"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = Debug.DEBUG_MODE
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -86,10 +86,10 @@ ASGI_APPLICATION = "VolWeb.asgi.application"
 
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 }
@@ -166,7 +166,7 @@ MEDIA_ROOT = str(os.path.join(BASE_DIR, "media/"))
 MEDIA_URL = "/media/"
 
 CELERY_BROKER_URL = Secrets.BROKER_URL
-CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = "django-db"
 CELERY_RESULT_EXTENDED = True
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"

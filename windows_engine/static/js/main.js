@@ -10,6 +10,10 @@ $(document).ready(function () {
 
   /* ======================= Overview ======================= */
 
+  $(".card_mftscan").on("click", function () {
+    display_mftscan(evidence_id);
+  });
+
   $(".card_process_scan").on("click", function () {
     display_psscan(evidence_id);
   });
@@ -100,6 +104,11 @@ $(document).ready(function () {
   $(".card_ssdt").on("click", function () {
     injections_rootkits_hide_all();
     display_ssdt(evidence_id);
+  });
+
+  $(".card_ads").on("click", function () {
+    injections_rootkits_hide_all();
+    display_ads(evidence_id);
   });
 
   toastr.options = {

@@ -60,8 +60,8 @@ class PsTree(models.Model):
     def pslist_dump(self, pid):
         """Dump the process requested by the user using the pslist plugin"""
         evidence_data = {
-            'bucket': f"s3://{str(self.evidence.dump_linked_case.case_bucket_id)}/{self.evidence.dump_name}",
-            'output_path': f"media/{self.evidence.dump_id}/",
+            "bucket": f"s3://{str(self.evidence.dump_linked_case.case_bucket_id)}/{self.evidence.dump_name}",
+            "output_path": f"media/{self.evidence.dump_id}/",
         }
         context = contexts.Context()
         context.config["plugins.PsList.pid"] = [
@@ -81,8 +81,8 @@ class PsTree(models.Model):
     def memmap_dump(self, pid):
         """Dump the process requested by the user using the memmap plugin"""
         evidence_data = {
-            'bucket': f"s3://{str(self.evidence.dump_linked_case.case_bucket_id)}/{self.evidence.dump_name}",
-            'output_path': f"media/{self.evidence.dump_id}/",
+            "bucket": f"s3://{str(self.evidence.dump_linked_case.case_bucket_id)}/{self.evidence.dump_name}",
+            "output_path": f"media/{self.evidence.dump_id}/",
         }
         context = contexts.Context()
         context.config["plugins.Memmap.pid"] = int(pid)
@@ -134,6 +134,7 @@ class TimeLineChart(models.Model):
         Evidence, on_delete=models.CASCADE, related_name="windows_timeline_evidence"
     )
     artefacts = models.JSONField(null=True)
+
 
 class PsScan(models.Model):
     evidence = models.ForeignKey(
@@ -205,6 +206,7 @@ class Privs(models.Model):
                 return result
         except:
             return None
+
 
 class Sessions(models.Model):
     evidence = models.ForeignKey(
@@ -442,8 +444,8 @@ class Lsadump(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 for artefact in result:
-                    encode = base64.b64encode(artefact['Secret'], "utf-8")
-                    artefact['Secret'] = encode
+                    encode = base64.b64encode(artefact["Secret"], "utf-8")
+                    artefact["Secret"] = encode
                 return result
         except:
             return None
@@ -599,6 +601,55 @@ class UserAssist(models.Model):
             return None
 
 
+class MFTScan(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="windows_mftscan_evidence"
+    )
+
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="MFTScan.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["windows.mftscan.MFTScan"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except:
+            return None
+
+class ADS(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="windows_ads_evidence"
+    )
+
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="ADS.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["windows.mftscan.ADS"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except:
+            return None
+
+
 class FileScan(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="windows_filescan_evidence"
@@ -625,8 +676,8 @@ class FileScan(models.Model):
 
     def file_dump(self, offset):
         evidence_data = {
-            'bucket': f"s3://{str(self.evidence.dump_linked_case.case_bucket_id)}/{self.evidence.dump_name}",
-            'output_path': f"media/{self.evidence.dump_id}/",
+            "bucket": f"s3://{str(self.evidence.dump_linked_case.case_bucket_id)}/{self.evidence.dump_name}",
+            "output_path": f"media/{self.evidence.dump_id}/",
         }
         """Dump the file requested by the user"""
         context = contexts.Context()
@@ -636,7 +687,7 @@ class FileScan(models.Model):
                 evidence_data,
                 context,
                 base_config_path,
-                PLUGIN_LIST["windows.dumpfiles.DumpFiles"]
+                PLUGIN_LIST["windows.dumpfiles.DumpFiles"],
             )
             result = DictRenderer().render(constructed.run())
             if len(result) == 0:
@@ -646,7 +697,7 @@ class FileScan(models.Model):
                     evidence_data,
                     context,
                     base_config_path,
-                    PLUGIN_LIST["windows.dumpfiles.DumpFiles"]
+                    PLUGIN_LIST["windows.dumpfiles.DumpFiles"],
                 )
             result = DictRenderer().render(constructed.run())
             for artefact in result:
@@ -691,8 +742,8 @@ class Handles(models.Model):
     def run(self, pid):
         """Compute Handles for a specific PID"""
         evidence_data = {
-            'bucket': f"s3://{str(self.evidence.dump_linked_case.case_bucket_id)}/{self.evidence.dump_name}",
-            'output_path': None,
+            "bucket": f"s3://{str(self.evidence.dump_linked_case.case_bucket_id)}/{self.evidence.dump_name}",
+            "output_path": None,
         }
         context = contexts.Context()
         context.config["plugins.Handles.pid"] = [int(pid)]

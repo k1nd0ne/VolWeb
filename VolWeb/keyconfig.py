@@ -2,7 +2,7 @@ import os
 
 
 class Database:
-    NAME = os.getenv("POSTGRES_DB" ,None)
+    NAME = os.getenv("POSTGRES_DB", None)
     USER = os.getenv("POSTGRES_USER", None)
     PASSWORD = os.getenv("POSTGRES_PASSWORD", None)
     HOST = os.getenv("DATABASE_HOST", None)
@@ -16,7 +16,4 @@ class Secrets:
     AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", None)
     AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", None)
     AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL", None)
-
-
-class Debug:
-    DEBUG_MODE = os.getenv("DEBUG_MODE", None)
+    AWS_ENDPOINT_HOST = os.getenv("AWS_ENDPOINT_HOST", None)

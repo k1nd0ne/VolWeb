@@ -6,6 +6,7 @@ from celery.result import allow_join_result
 from celery import group
 import os, time
 
+
 @shared_task
 def start_analysis(dump_id):
     instance = Evidence.objects.get(dump_id=dump_id)
@@ -13,8 +14,8 @@ def start_analysis(dump_id):
     if not os.path.exists(os.path.dirname(output_path)):
         os.makedirs(os.path.dirname(output_path))
     evidence_data = {
-        'bucket': f"s3://{str(instance.dump_linked_case.case_bucket_id)}/{instance.dump_name}",
-        'output_path': output_path,
+        "bucket": f"s3://{str(instance.dump_linked_case.case_bucket_id)}/{instance.dump_name}",
+        "output_path": output_path,
     }
     if instance.dump_os == "Windows":
         volweb_plugins = [
@@ -43,18 +44,18 @@ def start_analysis(dump_id):
             DllList(evidence=instance),
             DriverModule(evidence=instance),
             VadWalk(evidence=instance),
-            SSDT(evidence=instance)
+            SSDT(evidence=instance),
+            MFTScan(evidence=instance),
+            ADS(evidence=instance),
         ]
-        
-        task_group = group(
-            plugin.run.s(evidence_data) for plugin in volweb_plugins
-        )
+
+        task_group = group(plugin.run.s(evidence_data) for plugin in volweb_plugins)
         group_result = task_group.apply_async()
 
         while not group_result.ready():
             completed_tasks = len([r for r in group_result.results if r.ready()])
             total_tasks = len(group_result.results)
-            instance.dump_status = (completed_tasks*100)/total_tasks
+            instance.dump_status = (completed_tasks * 100) / total_tasks
             instance.save()
             time.sleep(1)
 
@@ -66,15 +67,22 @@ def start_analysis(dump_id):
 
             # We need to take care of some specific models
             if result[17]:
-                TimeLineChart(evidence=instance, artefacts=build_timeline(result[17])).save()
+                TimeLineChart(
+                    evidence=instance, artefacts=build_timeline(result[17])
+                ).save()
             if result[11] and result[12]:
-                NetGraph(evidence=instance, artefacts=generate_network_graph(result[11]+result[12])).save()
+                NetGraph(
+                    evidence=instance,
+                    artefacts=generate_network_graph(result[11] + result[12]),
+                ).save()
             else:
                 if result[11]:
-                    NetGraph(evidence=instance, artefacts=generate_network_graph(result[11])).save()
+                    NetGraph(
+                        evidence=instance, artefacts=generate_network_graph(result[11])
+                    ).save()
                 if result[12]:
-                    NetGraph(evidence=instance, artefacts=generate_network_graph(result[12])).save()
+                    NetGraph(
+                        evidence=instance, artefacts=generate_network_graph(result[12])
+                    ).save()
             instance.dump_status = 100
-            instance.save() 
-
-        
+            instance.save()

@@ -7,11 +7,12 @@ from asgiref.sync import async_to_sync
 from django.forms.models import model_to_dict
 import json
 
+
 @shared_task
 def compute_handles(evidence_id, pid):
     channel_layer = get_channel_layer()
     instance = Evidence.objects.get(dump_id=evidence_id)
-    result = Handles(evidence = instance).run(pid)
+    result = Handles(evidence=instance).run(pid)
     if result:
         async_to_sync(channel_layer.group_send)(
             f"volatility_tasks_{evidence_id}",
@@ -49,7 +50,9 @@ def dump_process_pslist(evidence_id, pid):
     loot.evidence = instance.evidence
     if result != "Error outputting file":
         loot.Status = True
-        loot.Name = f"Process with PID {pid} - FileName: {result} - Dumped using PsList."
+        loot.Name = (
+            f"Process with PID {pid} - FileName: {result} - Dumped using PsList."
+        )
         loot.FileName = result
         loot.save()
         async_to_sync(channel_layer.group_send)(
@@ -82,6 +85,7 @@ def dump_process_pslist(evidence_id, pid):
             },
         )
 
+
 @shared_task(bind=True)
 def dump_process_memmap(self, evidence_id, pid):
     channel_layer = get_channel_layer()
@@ -90,7 +94,9 @@ def dump_process_memmap(self, evidence_id, pid):
     loot = Loot()
     loot.evidence = instance.evidence
     if result != "Error outputting file":
-        loot.Name = f"Process with PID {pid} - FileName: {result} - Dumped using Memmap."
+        loot.Name = (
+            f"Process with PID {pid} - FileName: {result} - Dumped using Memmap."
+        )
         loot.Status = True
         loot.FileName = result
         loot.save()
@@ -124,13 +130,14 @@ def dump_process_memmap(self, evidence_id, pid):
             },
         )
 
+
 @shared_task(bind=True)
 def dump_file(self, evidence_id, offset):
     channel_layer = get_channel_layer()
     instance = Evidence.objects.get(dump_id=evidence_id)
     try:
         file_obj = FileScan.objects.get(evidence_id=evidence_id)
-        filename = [d for d in file_obj.artefacts if d['Offset'] == offset][0]['Name']
+        filename = [d for d in file_obj.artefacts if d["Offset"] == offset][0]["Name"]
         result = file_obj.file_dump(offset)
         if result:
             for file in result:
@@ -138,7 +145,7 @@ def dump_file(self, evidence_id, offset):
                 loot.evidence = instance
                 loot.Name = f"File {filename} - found in {file['Cache']} and dumped as {file['FileName']}."
                 loot.Status = True
-                loot.FileName = file['Result']
+                loot.FileName = file["Result"]
                 loot.save()
                 async_to_sync(channel_layer.group_send)(
                     f"volatility_tasks_{evidence_id}",

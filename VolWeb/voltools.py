@@ -374,7 +374,7 @@ def build_context(evidence_data, context, base_config_path, plugin):
     context.config[
         "automagic.LayerStacker.stackers"
     ] = automagic.stacker.choose_os_stackers(plugin)
-    context.config["automagic.LayerStacker.single_location"] = (evidence_data["bucket"])
+    context.config["automagic.LayerStacker.single_location"] = evidence_data["bucket"]
     constructed = construct_plugin(
         context,
         automagics,

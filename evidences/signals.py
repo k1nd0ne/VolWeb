@@ -4,6 +4,7 @@ from evidences.models import Evidence
 from evidences.tasks import start_analysis
 import os
 
+
 # When an evidence is uploaded, the analysis starts automatically.
 @receiver(post_save, sender=Evidence)
 def trigger_celery_task(sender, instance, created, **kwargs):

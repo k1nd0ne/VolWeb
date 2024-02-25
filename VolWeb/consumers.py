@@ -40,6 +40,7 @@ class VolatilityTaskConsumer(AsyncJsonWebsocketConsumer):
             )
         )
 
+
 class CasesTaskConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.room_group_name = "cases"
@@ -79,6 +80,7 @@ class CasesTaskConsumer(AsyncJsonWebsocketConsumer):
                 }
             )
         )
+
 
 class EvidenceTaskConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):

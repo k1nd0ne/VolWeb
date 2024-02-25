@@ -12,4 +12,3 @@ class Case(models.Model):
 
     def __str__(self):
         return self.case_name
-    

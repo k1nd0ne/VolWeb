@@ -8,9 +8,9 @@ from evidences.models import Evidence
 from rest_framework.response import Response
 from evidences.serializers import EvidenceSerializer
 from minio import Minio
+from VolWeb.keyconfig import Secrets
 
 
-# Create your views here.
 @login_required
 def evidences(request):
     """Load evidence page
@@ -56,9 +56,16 @@ class EvidenceAPIView(APIView):
         """
         Create an evidence
         """
+        dump_etag = request.data.get("dump_etag")
+        if Evidence.objects.filter(dump_etag=dump_etag).exists():
+            return Response(
+                {"error": "Evidence with this ETag already exists."},
+                status=status.HTTP_409_CONFLICT,
+            )
+
         data = {
             "dump_name": request.data.get("dump_name"),
-            "dump_etag": request.data.get("dump_etag"),
+            "dump_etag": dump_etag,
             "dump_os": request.data.get("dump_os"),
             "dump_linked_case": request.data.get("dump_linked_case"),
         }
@@ -115,7 +122,12 @@ class EvidenceDetailApiView(APIView):
         object = evidence_instance.dump_name
         try:
             # TODO: Env variables!
-            client = Minio("localhost:9000", "user", "password", secure=False)
+            client = Minio(
+                Secrets.AWS_ENDPOINT_HOST,
+                Secrets.AWS_ACCESS_KEY_ID,
+                Secrets.AWS_SECRET_ACCESS_KEY,
+                secure=False,
+            )
             client.remove_object(str(bucket), object)
         except:
             return Response(

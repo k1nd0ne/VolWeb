@@ -3,6 +3,7 @@ from windows_engine.models import *
 from django_celery_results.models import TaskResult
 import json
 
+
 class PsScanSerializer(serializers.ModelSerializer):
     class Meta:
         model = PsScan
@@ -122,33 +123,50 @@ class HandlesSerializer(serializers.ModelSerializer):
         model = Handles
         fields = "__all__"
 
+
 class MalfindSerializer(serializers.ModelSerializer):
     class Meta:
         model = Malfind
         fields = "__all__"
+
 
 class LdrModulesSerializer(serializers.ModelSerializer):
     class Meta:
         model = LdrModules
         fields = "__all__"
 
+
 class ModulesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Modules
         fields = "__all__"
+
 
 class SSDTSerializer(serializers.ModelSerializer):
     class Meta:
         model = SSDT
         fields = "__all__"
 
+
 class FileScanSerializer(serializers.ModelSerializer):
     class Meta:
         model = FileScan
         fields = "__all__"
 
+
+class MFTScanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MFTScan
+        fields = "__all__"
+
+class ADSSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ADS
+        fields = "__all__"
+
 class TasksSerializer(serializers.ModelSerializer):
     task_kwargs = serializers.JSONField
+
     class Meta:
         model = TaskResult
         fields = "__all__"
@@ -156,8 +174,9 @@ class TasksSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         # We have to do this because the json is not respecting the rfc.
-        ret['task_kwargs'] = ret['task_kwargs'].replace("'",'"')
+        ret["task_kwargs"] = ret["task_kwargs"].replace("'", '"')
         return ret
+
 
 class LootSerializer(serializers.ModelSerializer):
     class Meta:

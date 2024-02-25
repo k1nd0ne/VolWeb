@@ -1,8 +1,8 @@
-.completed:hover{
+.completed:hover {
     cursor: pointer;
 }
 
-.page-item.active .page-link{
+.page-item.active .page-link {
     z-index: 3;
     color: #000;
     background-color: #fff;
@@ -14,10 +14,9 @@
     padding: 0.5rem 1rem;
     font-weight: 400;
     font-size: 0.875rem;
-  }
+}
 
-
-.not-completed{
+.not-completed {
     -webkit-animation: glowing 1s ease-in-out infinite alternate;
     -moz-animation: glowing 1s ease-in-out infinite alternate;
     animation: glowing 1s ease-in-out infinite alternate;
@@ -25,9 +24,9 @@
 
 @-webkit-keyframes glowing {
     from {
-      text-shadow: 0 0 20px #ffffff;
+        text-shadow: 0 0 20px #ffffff;
     }
     to {
-      text-shadow: 0 0 30px #767676;
+        text-shadow: 0 0 30px #767676;
     }
-  }
+}

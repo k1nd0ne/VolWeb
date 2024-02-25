@@ -56,7 +56,7 @@ function MakeNetNode(item) {
       maxLineLength = item.Process.length;
     }
 
-    if (item["LocalPorts"] !== null) {
+    if (item["LocalPorts"]) {
       item["LocalPorts"].forEach((ports) => {
         if (ports !== null) {
           info += "\n" + ports;
@@ -67,7 +67,6 @@ function MakeNetNode(item) {
       });
     }
   } else {
-    console.log(item);
     maxLineLength = item.id.length + 10;
     var info =
       item.id +
@@ -75,7 +74,7 @@ function MakeNetNode(item) {
       (item.id.length === 0 ? "Unknown" : item.id) +
       "\nForeign Ports:";
 
-    if (item["ForeignPorts"] !== null) {
+    if (item["ForeignPorts"]) {
       item["ForeignPorts"].forEach((ports) => {
         if (ports !== null) {
           info += "\n" + ports;
@@ -363,9 +362,7 @@ function display_malfind_details(data) {
 }
 
 function injections_rootkits_hide_all() {
-  $("#ldrmodule_details").hide();
-  $("#kernel_modules_details").hide();
-  $("#ssdt_details").hide();
-  $("#malfind_process_menu").hide();
+  $("#ir_details").hide();
   $("#malfind_details").hide();
+  $("#malfind_process_menu").hide();
 }

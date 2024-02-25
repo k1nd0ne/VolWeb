@@ -44,7 +44,7 @@ class CaseApiView(APIView):
             "linked_users[]"
         )  # Get the raw list of linked_users
         if len(linked_users) < 1:
-            return Response({'error':'message'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "message"}, status=status.HTTP_400_BAD_REQUEST)
         linked_users_data = [{"username": user} for user in linked_users]
         data = {
             "case_bucket_id": bucket_uuid,

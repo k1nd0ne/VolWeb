@@ -1,38 +1,70 @@
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-bs-theme="dark">
     <head>
         <title>VolWeb</title>
-        <link rel="icon" type="image/x-icon" href="{% static 'main/images/volico.svg' %}">
+        <link
+            rel="icon"
+            type="image/x-icon"
+            href="{% static 'main/images/volweb-v.svg' %}"
+        />
         <script src="{% static 'main/js/core.js' %}"></script>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+        />
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"
+        ></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="{% static 'main/js/toastr.min.js' %}"></script>
-        <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
-        <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
-        <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
-        <link rel="stylesheet" href="{% static 'main/css/sidebar.css'%}">
-        <link rel="stylesheet" href="{% static 'main/css/toastr.min.css'%}">
+        <link
+            href="{% static 'fontawesomefree/css/fontawesome.css' %}"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="{% static 'fontawesomefree/css/brands.css' %}"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="{% static 'fontawesomefree/css/solid.css' %}"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <link rel="stylesheet" href="{% static 'main/css/sidebar.css'%}" />
+        <link rel="stylesheet" href="{% static 'main/css/toastr.min.css'%}" />
     </head>
     <body>
-
         <nav class="navbar navbar-expand-lg border-bottom">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">
-                    <img width="30" height="24" src="{% static 'main/images/volweb-v.svg'%}">
+                    <img
+                        width="40"
+                        height="40"
+                        src="{% static 'main/images/volweb-v.svg'%}"
+                    />
                     VolWeb
-                  </a>
-                  <ul class="navbar-nav">
+                </a>
+                <ul class="navbar-nav">
                     <li class="nav-item">
                         {% if request.get_full_path == '/'%}
                         <a class="nav-link active" href="{% url 'home' %}">
-                            <i class="fas fa-home active icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
+                            <i
+                                class="fas fa-home active icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 bg-white text-center shadow"
+                            ></i>
                             <span class="nav-link-text ms-1">Home</span>
                         </a>
                         {% else %}
-                        <a class="nav-link " href="{% url 'home' %}">
-                            <i class="fas fa-home icon icon-shape icon-sm shadow border-radius-md  bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i
+                                class="fas fa-home icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 bg-white text-center shadow"
+                            ></i>
                             <span class="nav-link-text ms-1">Home</span>
                         </a>
                         {% endif %}
@@ -40,12 +72,16 @@
                     <li class="nav-item">
                         {% if request.get_full_path == '/cases/'%}
                         <a class="nav-link active" href="{% url 'cases' %}">
-                            <i class="fas fa-briefcase active icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
+                            <i
+                                class="fas fa-briefcase active icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 bg-white text-center shadow"
+                            ></i>
                             <span class="nav-link-text ms-1">Cases</span>
                         </a>
                         {% else %}
-                        <a class="nav-link " href="{% url 'cases' %}">
-                            <i class="fas fa-briefcase icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
+                        <a class="nav-link" href="{% url 'cases' %}">
+                            <i
+                                class="fas fa-briefcase icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 bg-white text-center shadow"
+                            ></i>
                             <span class="nav-link-text ms-1">Cases</span>
                         </a>
                         {% endif %}
@@ -53,40 +89,57 @@
                     <li class="nav-item">
                         {% if request.get_full_path == '/evidences/'%}
                         <a class="nav-link active" href="{% url 'evidences' %}">
-                            <i class="fas fa-memory active icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
+                            <i
+                                class="fas fa-memory active icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 bg-white text-center shadow"
+                            ></i>
                             <span class="nav-link-text ms-1">Evidences</span>
                         </a>
                         {% else %}
-                        <a class="nav-link " href="{% url 'evidences' %}">
-                            <i class="fas fa-memory icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
+                        <a class="nav-link" href="{% url 'evidences' %}">
+                            <i
+                                class="fas fa-memory icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 bg-white text-center shadow"
+                            ></i>
                             <span class="nav-link-text ms-1">Evidences</span>
                         </a>
                         {% endif %}
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="">
-                            <i class="fas fa-table icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
-                            <span class="nav-link-text ms-1">Symbol Tables</span>
+                            <i
+                                class="fas fa-table icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 bg-white text-center shadow"
+                            ></i>
+                            <span class="nav-link-text ms-1"
+                                >Symbol Tables</span
+                            >
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'logout' %}">
-                            <i class="fa fa-sign-out icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"></i>
+                        <a class="nav-link" href="{% url 'logout' %}">
+                            <i
+                                class="fa fa-sign-out icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 bg-white text-center shadow"
+                            ></i>
                             <span class="nav-link-text ms-1">Sign out</span>
                         </a>
                     </li>
-                </ul>      
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarNavDropdown">
-
-              </div>
+                </ul>
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div
+                    class="navbar-collapse collapse"
+                    id="navbarNavDropdown"
+                ></div>
             </div>
-          </nav>
-          {% block content %}
-
-          {% endblock %}
+        </nav>
+        {% block content %} {% endblock %}
 
         <!-- <div id="wrapper">
             <div id="sidebar" class="flex-shrink-0 p-3" style="width: 250px;">
@@ -104,6 +157,5 @@
                 </div>
             </div>
         </div> -->
-
     </body>
 </html>

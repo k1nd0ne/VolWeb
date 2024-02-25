@@ -6,6 +6,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.db.models.signals import post_save, post_delete
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -47,13 +48,12 @@ class CaseSerializer(serializers.ModelSerializer):
             for user_data in linked_users_data:
                 username = user_data["username"]
                 user = User.objects.get(pk=username)
-                instance.linked_users.add(
-                    user
-                )
+                instance.linked_users.add(user)
 
         instance.save()  # Save the updated instance
 
         return instance
+
 
 @receiver(post_save, sender=Case)
 def send_case_created(sender, instance, created, **kwargs):
@@ -61,23 +61,19 @@ def send_case_created(sender, instance, created, **kwargs):
     serializer = CaseSerializer(instance)
     async_to_sync(channel_layer.group_send)(
         "cases",
-        {
-            "type": "send_notification",
-            "status": "created",
-            "message": serializer.data
-        }
+        {"type": "send_notification", "status": "created", "message": serializer.data},
     )
 
-@receiver(post_delete, sender=Case,)
+
+@receiver(
+    post_delete,
+    sender=Case,
+)
 def send_case_created(sender, instance, **kwargs):
     channel_layer = get_channel_layer()
     serializer = CaseSerializer(instance)
     print(serializer)
     async_to_sync(channel_layer.group_send)(
         "cases",
-        {
-            "type": "send_notification",
-            "status": "deleted",
-            "message": serializer.data
-        }
+        {"type": "send_notification", "status": "deleted", "message": serializer.data},
     )

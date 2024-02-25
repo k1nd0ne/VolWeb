@@ -124,6 +124,87 @@ function display_sids(evidence_id, process_id) {
   });
 }
 
+function display_mftscan(evidence_id) {
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/mftscan/`,
+    dataType: "json",
+    success: function (data) {
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%">
+          <thead>
+            <tr>
+              <th>Record Number</th>
+              <th>Record Type</th>
+              <th>MFT Type</th>
+              <th>Filename</th>
+              <th>Created</th>
+              <th>Modified</th>
+              <th>Accessed</th>
+              <th>Updated</th>
+              <th>Permissions</th>
+              <th>Link Count</th>
+              <th>Attribute Type</th>
+              <th>Offset</th>
+              <th></th>
+            </tr>
+          </thead>
+        </table>`,
+      );
+      let flattenedData = data.artefacts.flatMap((item) =>
+        [item].concat(
+          item.__children.map((child) => ({
+            ...child,
+            ParentRecord: item["Record Number"],
+          })),
+        ),
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: flattenedData,
+        aoColumns: [
+          { data: "Record Number" },
+          { data: "Record Type" },
+          { data: "MFT Type" },
+          { data: "Filename" },
+          { data: "Created" },
+          { data: "Modified" },
+          { data: "Accessed" },
+          { data: "Updated" },
+          { data: "Permissions" },
+          { data: "Link Count" },
+          { data: "Attribute Type" },
+          { data: "Offset" },
+          {
+            mData: "id",
+            mRender: function (_id, _type, row) {
+              return generate_label(row);
+            },
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo($(artefact_datatable.table().container()));
+      $("#artefacts_source_title").text("Master File Table Scan");
+      $("#artefacts_modal").modal("show");
+    },
+    error: function (xhr, status, error) {
+      if (xhr.status === 404) {
+        toastr.warning("MFT scan is not available for this memory image.");
+      } else {
+        toastr.error(`An error occurred : ${xhr.status}`);
+      }
+    },
+  });
+}
+
 function display_privs(evidence_id, process_id) {
   $.ajax({
     type: "GET",
@@ -280,11 +361,8 @@ function display_registry(evidence_id) {
           [25, 50, 75, "All"],
         ],
         iDisplayLength: 25,
-        searchBuilder: true,
+        searchBuilder: false,
       });
-      artefact_datatable.searchBuilder
-        .container()
-        .prependTo(artefact_datatable.table().container());
       $("#artefacts_source_title").text("Registry Hive List");
       $("#artefacts_modal").modal("show");
     },
@@ -623,7 +701,7 @@ function display_timeline(evidence_id) {
           palette: "palette1",
           monochrome: {
             enabled: true,
-            color: "#6f42c1",
+            color: "#9a0000",
             shadeTo: "light",
             shadeIntensity: 0.65,
           },
@@ -888,14 +966,32 @@ function display_ldrmodules(evidence_id) {
     url: `${baseURL}/${evidence_id}/ldrmodules/`,
     dataType: "json",
     beforeSend: function () {
-      $("#ldrmodules_datatable").hide();
-      $("#ldrmodule_details").show();
-      $("#ldrmodules_process_loading").show();
+      $("#ir_artefacts_body").hide();
+      $("#ir_details").show();
+      $("#ir_artefacts_loading").show();
+      $("#ir_artefacts_title").text("Process Modules");
     },
     success: function (data, status, xhr) {
       if (data.artefacts && data.artefacts.length > 0) {
-        $("#ldrmodules_datatable").DataTable().destroy();
-        ldrmodules_data = $("#ldrmodules_datatable").DataTable({
+        $("#ir_artefacts_datatable").DataTable().destroy();
+        $("#ir_artefacts_body").html(
+          `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+            >
+                    <thead>
+                        <tr>
+                            <th>Base</th>
+                            <th>Process</th>
+                            <th>Pid</th>
+                            <th>MappedPath</th>
+                            <th>InInit</th>
+                            <th>InLoad</th>
+                            <th>InMem</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>`,
+        );
+        ir_artefacts_datatable = $("#ir_artefacts_datatable").DataTable({
           aaData: data.artefacts,
           aoColumns: [
             { data: "Base" },
@@ -919,14 +1015,14 @@ function display_ldrmodules(evidence_id) {
           iDisplayLength: 25,
           searchBuilder: true,
         });
-        ldrmodules_data.searchBuilder
+        ir_artefacts_datatable.searchBuilder
           .container()
-          .prependTo(ldrmodules_data.table().container());
+          .prependTo(ir_artefacts_datatable.table().container());
       }
     },
     complete: function (data) {
-      $("#ldrmodules_process_loading").hide();
-      $("#ldrmodules_datatable").show();
+      $("#ir_artefacts_loading").hide();
+      $("#ir_artefacts_body").show();
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred while fetching the modules : " + error);
@@ -943,14 +1039,30 @@ function display_kernel_modules(evidence_id) {
     url: `${baseURL}/${evidence_id}/modules/`,
     dataType: "json",
     beforeSend: function () {
-      $("#kernel_modules_datatable").hide();
-      $("#kernel_modules_details").show();
-      $("#kernel_modules_loading").show();
+      $("#ir_artefacts_body").hide();
+      $("#ir_details").show();
+      $("#ir_artefacts_loading").show();
+      $("#ir_artefacts_title").text("Kernel Modules");
     },
     success: function (data, status, xhr) {
       if (data.artefacts && data.artefacts.length > 0) {
-        $("#kernel_modules_datatable").DataTable().destroy();
-        kernel_modules_data = $("#kernel_modules_datatable").DataTable({
+        $("#ir_artefacts_datatable").DataTable().destroy();
+        $("#ir_artefacts_body").html(
+          `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+            >
+                    <thead>
+                        <tr>
+                            <th>Base</th>
+                            <th>Name</th>
+                            <th>Offset</th>
+                            <th>Path</th>
+                            <th>Size</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>`,
+        );
+        ir_artefacts_datatable = $("#ir_artefacts_datatable").DataTable({
           aaData: data.artefacts,
           aoColumns: [
             { data: "Base" },
@@ -972,14 +1084,14 @@ function display_kernel_modules(evidence_id) {
           iDisplayLength: 25,
           searchBuilder: true,
         });
-        kernel_modules_data.searchBuilder
+        ir_artefacts_datatable.searchBuilder
           .container()
-          .prependTo(kernel_modules_data.table().container());
+          .prependTo(ir_artefacts_datatable.table().container());
       }
     },
     complete: function (data) {
-      $("#kernel_modules_loading").hide();
-      $("#kernel_modules_datatable").show();
+      $("#ir_artefacts_loading").hide();
+      $("#ir_artefacts_body").show();
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred while fetching the modules : " + error);
@@ -996,14 +1108,29 @@ function display_ssdt(evidence_id) {
     url: `${baseURL}/${evidence_id}/ssdt/`,
     dataType: "json",
     beforeSend: function () {
-      $("#ssdt_datatable").hide();
-      $("#ssdt_details").show();
-      $("#ssdt_loading").show();
+      $("#ir_artefacts_body").hide();
+      $("#ir_details").show();
+      $("#ir_artefacts_loading").show();
+      $("#ir_artefacts_title").text("Directory Table");
     },
     success: function (data, status, xhr) {
       if (data.artefacts && data.artefacts.length > 0) {
-        $("#kernel_modules_datatable").DataTable().destroy();
-        ssdt_data = $("#ssdt_datatable").DataTable({
+        $("#ir_artefacts_datatable").DataTable().destroy();
+        $("#ir_artefacts_body").html(
+          `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+            >
+                    <thead>
+                        <tr>
+                            <th>Address</th>
+                            <th>Index</th>
+                            <th>Module</th>
+                            <th>Symbol</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>`,
+        );
+        ir_artefacts_datatable = $("#ir_artefacts_datatable").DataTable({
           aaData: data.artefacts,
           aoColumns: [
             { data: "Address" },
@@ -1024,14 +1151,100 @@ function display_ssdt(evidence_id) {
           iDisplayLength: 25,
           searchBuilder: true,
         });
-        ssdt_data.searchBuilder
+        ir_artefacts_datatable.searchBuilder
           .container()
-          .prependTo(ssdt_data.table().container());
+          .prependTo(ir_artefacts_datatable.table().container());
       }
     },
     complete: function (data) {
-      $("#ssdt_loading").hide();
-      $("#ssdt_datatable").show();
+      $("#ir_artefacts_loading").hide();
+      $("#ir_artefacts_body").show();
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred while fetching the ssdt : " + error);
+    },
+  });
+}
+
+function display_ads(evidence_id) {
+  /*
+    Get the ads data from the API and display them using datatables
+  */
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/ads/`,
+    dataType: "json",
+    beforeSend: function () {
+      $("#ir_artefacts_body").hide();
+      $("#ir_details").show();
+      $("#ir_artefacts_loading").show();
+      $("#ir_artefacts_title").text("Alternate Data Streams");
+    },
+    success: function (data, status, xhr) {
+      if (data.artefacts && data.artefacts.length > 0) {
+        $("#ir_artefacts_datatable").DataTable().destroy();
+        $("#ir_artefacts_body").html(
+          `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+            >
+                    <thead>
+                        <tr>
+                            <th>Offset</th>
+                            <th>Record Number</th>
+                            <th>Record Type</th>
+                            <th>ADS Filename</th>
+                            <th>Filename</th>
+                            <th>MFT Type</th>
+                            <th>Hexdump</th>
+                            <th>Disasm</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>`,
+        );
+        ir_artefacts_datatable = $("#ir_artefacts_datatable").DataTable({
+          aaData: data.artefacts,
+          aoColumns: [
+            { data: "Offset" },
+            { data: "Record Number" },
+            { data: "Record Type" },
+            { data: "ADS Filename" },
+            { data: "Filename" },
+            { data: "MFT Type" },
+            {
+              mData: "Hexdump",
+              mRender: function (hexdump, type, row) {
+                return ` <code><pre>${hexdump}</pre></code>`;
+              },
+            },
+            {
+              mData: "Disasm",
+              mRender: function (disasm, type, row) {
+                return ` <code><pre>${disasm}</pre></code>`;
+              },
+            },
+
+            {
+              mData: "id",
+              mRender: function (id, type, row) {
+                return generate_label(row);
+              },
+            },
+          ],
+          aLengthMenu: [
+            [25, 50, 75, -1],
+            [25, 50, 75, "All"],
+          ],
+          iDisplayLength: 25,
+          searchBuilder: true,
+        });
+        ir_artefacts_datatable.searchBuilder
+          .container()
+          .prependTo(ir_artefacts_datatable.table().container());
+      }
+    },
+    complete: function (data) {
+      $("#ir_artefacts_loading").hide();
+      $("#ir_artefacts_body").show();
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred while fetching the ssdt : " + error);
@@ -1045,9 +1258,8 @@ function generate_label(row) {
 }
 
 function generate_file_download_btn(data) {
-  btn = document.createElement("a");
-  btn.setAttribute("class", "btn btn-sm btn-outline-primary p-1 btn-dump-file");
-  btn.textContent = "Dump";
+  btn = document.createElement("i");
+  btn.setAttribute("class", "fas fa-download btn-dump-file");
   btn.setAttribute("id", data.Offset);
   return btn.outerHTML;
 }
@@ -1060,8 +1272,7 @@ function generate_hive_download(data, evidence_data) {
       "/media/" + evidence_data + "/" + data["File output"],
     );
     link.setAttribute("target", "_blank");
-    link.setAttribute("class", "btn btn-sm btn-outline-success p-1");
-    link.textContent = "Download";
+    link.setAttribute("class", "fas fa-download");
     return link.outerHTML;
   } else {
     return "N/A";
