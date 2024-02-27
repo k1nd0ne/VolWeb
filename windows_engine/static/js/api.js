@@ -1266,7 +1266,130 @@ function display_ads(evidence_id) {
 }
 
 function display_mbrscan(evidence_id) {
-  console.log("TODO");
+  function formatChildRows(data) {
+    const children = data.__children || [];
+    let html = `<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">
+      <thead>
+      <tr>
+        <th>Bootable</th>
+        <th>Bootcode MD5</th>
+        <th>Disk Signature</th>
+        <th>Full MBR MD5</th>
+        <th>PartitionIndex</th>
+        <th>PartitionType</th>
+        <th>Potential MBR at Physical Offset</th>
+        <th>SectorInSize</th>
+      </tr>
+      </thead>`;
+    // Add headers or skip headers to jump straight into the data
+
+    // Iterate over child objects to create table rows
+    children.forEach((child) => {
+      html += `<tr>
+          <td>${child.Bootable}</td>
+          <td>${child["Bootcode MD5"]}</td>
+          <td>${child["Disk Signature"]}</td>
+          <td>${child["Full MBR MD5"]}</td>
+          <td>${child.PartitionIndex}</td>
+          <td>${child.PartitionType}</td>
+          <td>${child["Potential MBR at Physical Offset"]}</td>
+          <td>${child.SectorInSize}</td>
+        </tr>
+        `;
+    });
+    html += "</table>";
+    return html;
+  }
+
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/mbrscan/`,
+    dataType: "json",
+    beforeSend: function () {
+      $("#ir_artefacts_datatable").DataTable().destroy();
+      $("#ir_artefacts_body").hide();
+      $("#ir_details").show();
+      $("#ir_artefacts_loading").show();
+      $("#ir_artefacts_title").text("Master Boot Record Scan");
+    },
+
+    success: function (data, status, xhr) {
+      console.log(data.artefacts);
+      if (data.artefacts && data.artefacts.length > 0) {
+        $("#ir_artefacts_body").html(
+          `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+            >
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Bootable</th>
+                            <th>Bootcode MD5</th>
+                            <th>Disasm</th>
+                            <th>Disk Signature</th>
+                            <th>Full MBR MD5</th>
+                            <th>Physical Offset</th>
+                        </tr>
+                    </thead>
+                </table>`,
+        );
+        ir_artefacts_datatable = $("#ir_artefacts_datatable").DataTable({
+          aaData: data.artefacts, // your API data (array of objects)
+          aoColumns: [
+            {
+              className: "dt-control",
+              orderable: false,
+              data: null,
+              defaultContent: "",
+            },
+            { data: "Bootable" },
+            { data: "Bootcode MD5" },
+            {
+              mData: "Disasm",
+              mRender: function (disasm, type, row) {
+                return ` <code><pre>${disasm}</pre></code>`;
+              },
+            },
+            { data: "Disk Signature" },
+            { data: "Full MBR MD5" },
+            { data: "Potential MBR at Physical Offset" },
+            // ... other fields to match your objects
+          ],
+          order: [[1, "asc"]],
+          aLengthMenu: [
+            [25, 50, 75, -1],
+            [25, 50, 75, "All"],
+          ],
+          iDisplayLength: 25,
+          searchBuilder: true,
+        });
+        ir_artefacts_datatable.searchBuilder
+          .container()
+          .prependTo(ir_artefacts_datatable.table().container());
+        $("#ir_artefacts_datatable tbody").on(
+          "click",
+          "td.dt-control",
+          function () {
+            var tr = $(this).closest("tr");
+            var row = ir_artefacts_datatable.row(tr);
+
+            if (row.child.isShown()) {
+              // This row is already open - close it
+              row.child.hide();
+              tr.removeClass("shown");
+            } else {
+              // Open this row
+              row.child(formatChildRows(row.data())).show();
+              tr.addClass("shown");
+            }
+          },
+        );
+      }
+    },
+    complete: function (data) {
+      $("#ir_artefacts_loading").hide();
+      $("#ir_artefacts_body").show();
+    },
+  });
 }
 
 function generate_label(row) {
