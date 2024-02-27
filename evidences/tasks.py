@@ -47,6 +47,7 @@ def start_analysis(dump_id):
             SSDT(evidence=instance),
             MFTScan(evidence=instance),
             ADS(evidence=instance),
+            MBRScan(evidence=instance),
         ]
 
         task_group = group(plugin.run.s(evidence_data) for plugin in volweb_plugins)
@@ -55,8 +56,10 @@ def start_analysis(dump_id):
         while not group_result.ready():
             completed_tasks = len([r for r in group_result.results if r.ready()])
             total_tasks = len(group_result.results)
-            instance.dump_status = (completed_tasks * 100) / total_tasks
-            instance.save()
+            status = (completed_tasks * 100) / total_tasks
+            if instance.dump_status != status:
+                instance.dump_status = (completed_tasks * 100) / total_tasks
+                instance.save()
             time.sleep(1)
 
         with allow_join_result():

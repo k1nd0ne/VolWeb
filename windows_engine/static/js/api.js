@@ -807,6 +807,7 @@ function display_sessions(evidence_id, process_id) {
     },
   });
 }
+
 function display_cmdline(evidence_id, process_id) {
   $.ajax({
     type: "GET",
@@ -853,6 +854,7 @@ function display_timeliner(evidence_id, timestamp_min, timestamp_max) {
       [25, 50, 75, "All"],
     ],
     iDisplayLength: 25,
+    searchBuilder: true,
   });
 }
 
@@ -967,6 +969,7 @@ function display_ldrmodules(evidence_id) {
     url: `${baseURL}/${evidence_id}/ldrmodules/`,
     dataType: "json",
     beforeSend: function () {
+      $("#ir_artefacts_datatable").DataTable().destroy();
       $("#ir_artefacts_body").hide();
       $("#ir_details").show();
       $("#ir_artefacts_loading").show();
@@ -974,7 +977,6 @@ function display_ldrmodules(evidence_id) {
     },
     success: function (data, status, xhr) {
       if (data.artefacts && data.artefacts.length > 0) {
-        $("#ir_artefacts_datatable").DataTable().destroy();
         $("#ir_artefacts_body").html(
           `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
             >
@@ -1019,6 +1021,10 @@ function display_ldrmodules(evidence_id) {
         ir_artefacts_datatable.searchBuilder
           .container()
           .prependTo(ir_artefacts_datatable.table().container());
+      } else {
+        $("#ir_artefacts_body").html(
+          "<i>Process modules data are not available</i>",
+        );
       }
     },
     complete: function (data) {
@@ -1040,6 +1046,7 @@ function display_kernel_modules(evidence_id) {
     url: `${baseURL}/${evidence_id}/modules/`,
     dataType: "json",
     beforeSend: function () {
+      $("#ir_artefacts_datatable").DataTable().destroy();
       $("#ir_artefacts_body").hide();
       $("#ir_details").show();
       $("#ir_artefacts_loading").show();
@@ -1047,7 +1054,6 @@ function display_kernel_modules(evidence_id) {
     },
     success: function (data, status, xhr) {
       if (data.artefacts && data.artefacts.length > 0) {
-        $("#ir_artefacts_datatable").DataTable().destroy();
         $("#ir_artefacts_body").html(
           `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
             >
@@ -1088,6 +1094,8 @@ function display_kernel_modules(evidence_id) {
         ir_artefacts_datatable.searchBuilder
           .container()
           .prependTo(ir_artefacts_datatable.table().container());
+      } else {
+        $("#ir_artefacts_body").html("<i>Modules data are not available</i>");
       }
     },
     complete: function (data) {
@@ -1109,6 +1117,7 @@ function display_ssdt(evidence_id) {
     url: `${baseURL}/${evidence_id}/ssdt/`,
     dataType: "json",
     beforeSend: function () {
+      $("#ir_artefacts_datatable").DataTable().destroy();
       $("#ir_artefacts_body").hide();
       $("#ir_details").show();
       $("#ir_artefacts_loading").show();
@@ -1116,7 +1125,6 @@ function display_ssdt(evidence_id) {
     },
     success: function (data, status, xhr) {
       if (data.artefacts && data.artefacts.length > 0) {
-        $("#ir_artefacts_datatable").DataTable().destroy();
         $("#ir_artefacts_body").html(
           `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
             >
@@ -1155,6 +1163,8 @@ function display_ssdt(evidence_id) {
         ir_artefacts_datatable.searchBuilder
           .container()
           .prependTo(ir_artefacts_datatable.table().container());
+      } else {
+        $("#ir_artefacts_body").html("<i>SSDT data are not available</i>");
       }
     },
     complete: function (data) {
@@ -1176,6 +1186,7 @@ function display_ads(evidence_id) {
     url: `${baseURL}/${evidence_id}/ads/`,
     dataType: "json",
     beforeSend: function () {
+      $("#ir_artefacts_datatable").DataTable().destroy();
       $("#ir_artefacts_body").hide();
       $("#ir_details").show();
       $("#ir_artefacts_loading").show();
@@ -1183,7 +1194,6 @@ function display_ads(evidence_id) {
     },
     success: function (data, status, xhr) {
       if (data.artefacts && data.artefacts.length > 0) {
-        $("#ir_artefacts_datatable").DataTable().destroy();
         $("#ir_artefacts_body").html(
           `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
             >
@@ -1241,6 +1251,8 @@ function display_ads(evidence_id) {
         ir_artefacts_datatable.searchBuilder
           .container()
           .prependTo(ir_artefacts_datatable.table().container());
+      } else {
+        $("#ir_artefacts_body").html("<i>ADS data are not available</i>");
       }
     },
     complete: function (data) {
@@ -1248,9 +1260,13 @@ function display_ads(evidence_id) {
       $("#ir_artefacts_body").show();
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred while fetching the ssdt : " + error);
+      toastr.error("An error occurred while fetching the ads : " + error);
     },
   });
+}
+
+function display_mbrscan(evidence_id) {
+  console.log("TODO");
 }
 
 function generate_label(row) {

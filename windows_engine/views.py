@@ -61,6 +61,24 @@ class MFTScanApiView(APIView):
         serializer = MFTScanSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class MBRScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, dump_id):
+        try:
+            return MBRScan.objects.get(evidence_id=dump_id)
+        except MBRScan.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested MBRScan data.
+        """
+        data = self.get_object(dump_id)
+        serializer = MBRScanSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class ADSApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 

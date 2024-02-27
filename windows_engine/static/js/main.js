@@ -111,6 +111,11 @@ $(document).ready(function () {
     display_ads(evidence_id);
   });
 
+  $(".card_mbrscan").on("click", function () {
+    injections_rootkits_hide_all();
+    display_mbrscan(evidence_id);
+  });
+
   toastr.options = {
     closeButton: true,
     debug: false,
@@ -142,42 +147,51 @@ function reconnectWebSocket(evidence_id) {
 }
 
 function connectWebSocket(evidence_id) {
-  const socket_volatility_tasks = new WebSocket(
-    "ws://localhost:8001/ws/volatility_tasks/windows/" + evidence_id + "/",
-  );
+  $.ajax({
+    url: "/websocket-url/", // Adjust this if your URL is different
+    type: "GET",
+    dataType: "json",
+    success: function (data) {
+      // Retrieve the WebSocket URL from the response
+      var websockurl = `${data.websocket_url}/ws/volatility_tasks/windows/${evidence_id}/`;
+      const socket_volatility_tasks = new WebSocket(websockurl);
+      socket_volatility_tasks.onopen = function () {
+        toastr.success("Engine Synchronized.");
+        reconnectDelay = 1000;
+      };
+      socket_volatility_tasks.onmessage = function (e) {
+        result = JSON.parse(e.data);
+        switch (result.message.name) {
+          case "handles":
+            handles_task_result(result.message);
+            break;
+          case "pslist_dump":
+            process_dump_task_result(result.message);
+            break;
+          case "memmap_dump":
+            process_dump_task_result(result.message);
+            break;
+          case "file_dump":
+            filedump_task_result(result.message);
+            break;
+          default:
+            break;
+        }
+      };
 
-  socket_volatility_tasks.onopen = function () {
-    toastr.success("Engine Synchronized.");
-    reconnectDelay = 1000;
-  };
+      socket_volatility_tasks.onclose = function () {
+        toastr.warning("Engine synchronization lost.");
+        reconnectWebSocket(evidence_id); // Call the function to reconnect after connection is closed
+      };
 
-  socket_volatility_tasks.onmessage = function (e) {
-    result = JSON.parse(e.data);
-    switch (result.message.name) {
-      case "handles":
-        handles_task_result(result.message);
-        break;
-      case "pslist_dump":
-        process_dump_task_result(result.message);
-        break;
-      case "memmap_dump":
-        process_dump_task_result(result.message);
-        break;
-      case "file_dump":
-        filedump_task_result(result.message);
-        break;
-      default:
-        break;
-    }
-  };
-
-  socket_volatility_tasks.onclose = function () {
-    toastr.warning("Engine synchronization lost.");
-    reconnectWebSocket(evidence_id); // Call the function to reconnect after connection is closed
-  };
-
-  socket_volatility_tasks.onerror = function (error) {
-    toastr.warning("Engine synchronization error", error);
-    socket_volatility_tasks.close(); // Close the WebSocket connection if an error occurs
-  };
+      socket_volatility_tasks.onerror = function (error) {
+        toastr.warning("Engine synchronization error", error);
+        socket_volatility_tasks.close(); // Close the WebSocket connection if an error occurs
+      };
+    },
+    error: function (xhr, status, error) {
+      // Handle any errors here
+      console.error("Error fetching WebSocket URL:", xhr.responseText);
+    },
+  });
 }

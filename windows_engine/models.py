@@ -649,6 +649,30 @@ class ADS(models.Model):
         except:
             return None
 
+class MBRScan(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="windows_mbrscan_evidence"
+    )
+
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="MBRScan.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["windows.mbrscan.MBRScan"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except:
+            return None
+
 
 class FileScan(models.Model):
     evidence = models.ForeignKey(

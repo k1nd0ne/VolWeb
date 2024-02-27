@@ -1,15 +1,43 @@
+const highlightStyles = {
+  node: { "border-color": "red", "border-width": 3 },
+  edge: { "stroke-width": 3, stroke: "red" },
+};
+
+const defaultStyles = {
+  node: { "border-color": "black", "border-width": 1 },
+  edge: { "stroke-width": 1, stroke: "black" },
+};
+
+function applyStyles(cell, styles) {
+  if (cell.isLink()) {
+    cell.attr({
+      line: {
+        stroke: styles.edge.stroke,
+        "stroke-width": styles.edge["stroke-width"],
+      },
+    });
+  } else {
+    cell.attr({
+      body: {
+        stroke: styles.node["border-color"],
+        "stroke-width": styles.node["border-width"],
+      },
+    });
+  }
+}
+
 function generate_network_visualisation(data) {
   var namespace = joint.shapes;
   var graph = new joint.dia.Graph({}, { cellNamespace: namespace });
 
-  new joint.dia.Paper({
+  var paper = new joint.dia.Paper({
     el: document.getElementById("net_graph"),
     model: graph,
     width: "100%",
     height: "100%",
     gridSize: 1,
     drawGrid: true,
-    interactive: { elementMove: true },
+    interactive: { vertexAdd: false },
   });
   data.artefacts.nodes.forEach((item) => {
     if (item.id !== null) {
@@ -40,8 +68,46 @@ function generate_network_visualisation(data) {
       cell.toFront();
     }
   });
+
+  graph.on("add", function (cell) {
+    // Reset styles whenever a new cell is added
+    applyStyles(cell, defaultStyles);
+  });
+
+  paper.on("cell:pointerclick", function (cellView, evt, x, y) {
+    resetStyles();
+    highlightLinked(cellView.model); // Highlight connected nodes and edges
+  });
   var bbox = graph.getBBox(graph.getElements());
   $(".netgraph").height(bbox.height + 30);
+  function resetStyles() {
+    graph.getCells().forEach(function (cell) {
+      applyStyles(cell, defaultStyles);
+    });
+  }
+
+  // Define the function to highlight connected nodes and edges
+  function highlightLinked(node) {
+    // Helper function to highlight the linked nodes and edges
+    var connectedLinks = graph.getConnectedLinks(node);
+    var linkedElements = [];
+
+    connectedLinks.forEach(function (link) {
+      var sourceElement = link.getSourceElement();
+      var targetElement = link.getTargetElement();
+      linkedElements.push(sourceElement, targetElement);
+      applyStyles(link, highlightStyles);
+    });
+
+    linkedElements.forEach(function (element) {
+      if (element && element.id !== node.id) {
+        applyStyles(element, highlightStyles);
+      }
+    });
+
+    // Also highlight the clicked node itself
+    applyStyles(node, highlightStyles);
+  }
 }
 
 function MakeNetNode(item) {
@@ -69,10 +135,7 @@ function MakeNetNode(item) {
   } else {
     maxLineLength = item.id.length + 10;
     var info =
-      item.id +
-      " - " +
-      (item.id.length === 0 ? "Unknown" : item.id) +
-      "\nForeign Ports:";
+      (item.id.length === 0 ? "Unknown" : item.id) + "\nForeign Ports:";
 
     if (item["ForeignPorts"]) {
       item["ForeignPorts"].forEach((ports) => {
@@ -300,8 +363,6 @@ function build_malfind_process_card(data) {
     Build a malfind process card: used in api.js
     Also add event listeners to then fill the info about each process.
   */
-
-  console.log(data);
   const cardDiv = document.createElement("div");
   cardDiv.classList.add(
     "card",

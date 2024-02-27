@@ -94,8 +94,13 @@ function get_evidences() {
             div.appendChild(code);
 
             if (row.dump_status != "100") {
+              div.setAttribute(
+                "class",
+                "px-1 py-1 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
+              );
               $(code).addClass("text-muted");
             }
+
             return div.outerHTML;
           },
         },
@@ -111,6 +116,10 @@ function get_evidences() {
             span.textContent = dump_etag;
             div.appendChild(span);
             if (row.dump_status != "100") {
+              div.setAttribute(
+                "class",
+                "d-flex px-1 py-1 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
+              );
               span.setAttribute("class", "text-muted");
             }
             return div.outerHTML;
@@ -138,6 +147,10 @@ function get_evidences() {
             div.appendChild(span);
 
             if (row.dump_status != "100") {
+              div.setAttribute(
+                "class",
+                "px-1 py-1 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
+              );
               span.setAttribute("class", "text-muted");
             }
             return div.outerHTML;
@@ -159,6 +172,10 @@ function get_evidences() {
             div.appendChild(logo);
             div.appendChild(span);
             if (row.dump_status != "100") {
+              div.setAttribute(
+                "class",
+                "px-1 py-1 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
+              );
               span.setAttribute("class", "text-muted");
             }
             return div.outerHTML;
@@ -190,7 +207,11 @@ function get_evidences() {
         [25, 50, 75, "All"],
       ],
       iDisplayLength: 25,
+      searchBuilder: true,
     });
+    evidences.searchBuilder
+      .container()
+      .prependTo(evidences.table().container());
   });
 }
 
@@ -287,55 +308,67 @@ function reconnectWebSocket() {
 }
 
 function connectWebSocket() {
-  const socket_evidences = new WebSocket("ws://localhost:8001/ws/evidences/");
-  // TODO: fetch URL Via API Call
+  $.ajax({
+    url: "/websocket-url/", // Adjust this if your URL is different
+    type: "GET",
+    dataType: "json",
+    success: function (data) {
+      // Retrieve the WebSocket URL from the response
+      var websocketUrl = `${data.websocket_url}/ws/evidences/`;
+      const socket_evidences = new WebSocket(websocketUrl);
 
-  socket_evidences.onopen = function () {
-    reconnectDelay = 1000;
-    get_evidences();
-  };
+      socket_evidences.onopen = function () {
+        reconnectDelay = 1000;
+        get_evidences();
+      };
 
-  socket_evidences.onmessage = function (e) {
-    result = JSON.parse(e.data);
-    if (result.status == "created") {
-      try {
-        evidences.row("#" + result.message.dump_id).data(result.message);
-      } catch {
-        evidences.row.add(result.message).draw().node();
-      }
-      if (result.message.dump_status === 100) {
-        $("#" + result.message.dump_id).removeClass("not-completed");
-        $("#" + result.message.dump_id).addClass("completed");
-      } else {
-        $("#" + result.message.dump_id).removeClass("completed");
-        $("#" + result.message.dump_id).addClass("not-completed");
-      }
-    }
+      socket_evidences.onmessage = function (e) {
+        result = JSON.parse(e.data);
+        if (result.status == "created") {
+          try {
+            evidences.row("#" + result.message.dump_id).data(result.message);
+          } catch {
+            evidences.row.add(result.message).draw().node();
+          }
+          if (result.message.dump_status === 100) {
+            $("#" + result.message.dump_id).removeClass("not-completed");
+            $("#" + result.message.dump_id).addClass("completed");
+          } else {
+            $("#" + result.message.dump_id).removeClass("completed");
+            $("#" + result.message.dump_id).addClass("not-completed");
+          }
+        }
 
-    if (result.status == "deleted") {
-      try {
-        evidences
-          .row("#" + result.message.dump_id)
-          .remove()
-          .draw();
-      } catch {
-        toastr.error("Could not delete the case, please try again.");
-      }
-    }
-  };
+        if (result.status == "deleted") {
+          try {
+            evidences
+              .row("#" + result.message.dump_id)
+              .remove()
+              .draw();
+          } catch {
+            toastr.error("Could not delete the case, please try again.");
+          }
+        }
+      };
 
-  socket_evidences.onclose = function () {
-    toastr.warning("Synchronization lost.");
-    try {
-      evidences.rows().remove().draw();
-    } catch {}
-    reconnectWebSocket(); // Call the function to reconnect after connection is closed
-  };
+      socket_evidences.onclose = function () {
+        toastr.warning("Synchronization lost.");
+        try {
+          evidences.rows().remove().draw();
+        } catch {}
+        reconnectWebSocket(); // Call the function to reconnect after connection is closed
+      };
 
-  socket_evidences.onerror = function (error) {
-    toastr.error("Can't connect to the server.", error);
-    socket_evidences.close(); // Close the WebSocket connection if an error occurs
-  };
+      socket_evidences.onerror = function (error) {
+        toastr.error("Can't connect to the server.", error);
+        socket_evidences.close(); // Close the WebSocket connection if an error occurs
+      };
+    },
+    error: function (xhr, status, error) {
+      // Handle any errors here
+      console.error("Error fetching WebSocket URL:", xhr.responseText);
+    },
+  });
 }
 
 $(document).ready(function () {
