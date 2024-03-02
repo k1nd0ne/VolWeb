@@ -11,7 +11,7 @@ from minio import Minio
 import uuid
 
 
-class CaseApiView(APIView):
+class CasesApiView(APIView):
     # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
 
@@ -74,7 +74,7 @@ def cases(request):
     return render(request, "cases/cases.html", {"case_form": case_form})
 
 
-class CaseDetailApiView(APIView):
+class CaseApiView(APIView):
     # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
 

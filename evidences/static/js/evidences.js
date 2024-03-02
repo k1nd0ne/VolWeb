@@ -33,7 +33,7 @@ function upload_and_create_evidence(bucket_id) {
       $("#upload-button").hide();
 
       document.getElementById("upload-progress").innerHTML =
-        "Uploaded :: " + parseInt((evt.loaded * 100) / evt.total) + "%";
+        parseInt((evt.loaded * 100) / evt.total) + "%";
     });
 
     uploader.send(function (err, data) {
@@ -137,7 +137,7 @@ function get_evidences() {
             span = document.createElement("span");
             if (dump_os == "Windows") {
               logo.setAttribute("class", "fab fa-windows m-2");
-              span.setAttribute("class", "text-primary");
+              span.setAttribute("class", "text-info");
             } else {
               logo.setAttribute("class", "fab fa-linux m-2");
               span.setAttribute("class", "text-info");
@@ -413,7 +413,6 @@ $(document).ready(function () {
   });
 
   $("#delete_evidence").on("click", function () {
-    // Display "are you sure modal"
     $(".modal_evidence_review").modal("hide");
     $(".modal_evidence_delete").modal("show");
   });
@@ -427,8 +426,7 @@ $(document).ready(function () {
 
   $("#review_evidence").on("click", function () {
     const evidence_id = $(".modal_evidence_review").attr("id");
-    var url = "/review/windows/" + evidence_id + "/";
-    window.location.href = url; // This line will redirect the user to the constructed url
+    window.location.href = `/review/windows/${evidence_id}/`;
   });
 
   $(".evidence_create").on("click", function () {

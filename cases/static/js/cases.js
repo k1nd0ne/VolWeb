@@ -6,11 +6,7 @@ function get_cases() {
     method: "GET",
     contentType: "application/json",
   }).done(function (data) {
-    try {
-      cases.destroy();
-    } catch {
-      // Nothing to do.
-    }
+    $("#cases").DataTable().destroy();
     cases = $("#cases").DataTable({
       rowCallback: function (row, data, index) {
         $(row).attr("value", data.case_id);
@@ -49,14 +45,16 @@ function get_cases() {
         },
         {
           mData: "case_description",
+          width: "40%",
           mRender: function (case_description, type) {
             div = document.createElement("div");
             div.setAttribute("class", "align-items-center");
             logo = document.createElement("i");
             span = document.createElement("span");
-            span.setAttribute("class", "text-muted");
+            span.setAttribute("class", "text-muted text-truncate-multiline");
             logo.setAttribute("class", "fas fa-circle-info m-2");
             span.textContent = case_description;
+            span.style.maxWidth = "100%";
             div.appendChild(logo);
             div.appendChild(span);
             return div.outerHTML;
@@ -138,7 +136,7 @@ function save_case(case_id) {
   });
   $.ajax({
     type: "PUT",
-    url: "/api/cases/" + case_id + "/",
+    url: `/api/cases/${case_id}/`,
     data: formData,
     dataType: "json",
     success: function (response) {
@@ -160,12 +158,12 @@ function display_case(case_id) {
   $(".modal_case_review").modal("show");
   $.ajax({
     type: "GET",
-    url: "/api/cases/" + case_id + "/",
+    url: `/api/cases/${case_id}/`,
     dataType: "json",
     success: function (case_data) {
       $.ajax({
         type: "GET",
-        url: "/api/evidences/case/" + case_id + "/",
+        url: `/api/evidences/case/${case_id}/`,
         dataType: "json",
         success: function (evidence_data) {
           var usernames = case_data.linked_users
@@ -176,7 +174,7 @@ function display_case(case_id) {
           case_data.linked_users = usernames;
           $(".modal_case_review").attr("id", case_data.case_id);
           $(".case_number").text(
-            "Case #" + case_data.case_id + " : " + case_data.case_name,
+            `Case # ${case_data.case_id}: ${case_data.case_name}`,
           );
           $(".case_description").text(case_data.case_description);
           $(".case_users").text(case_data.linked_users);
@@ -231,27 +229,21 @@ function delete_case(case_id) {
 }
 
 function edit_case(case_id) {
-  // Make an AJAX GET request to retrieve the case details
   $.ajax({
-    url: "/api/cases/" + case_id + "/",
+    url: `/api/cases/${case_id}/`,
     type: "GET",
     success: function (data) {
-      // Populating the form fields with the received case details
       $("#id_case_name").val(data.case_name);
       $("#id_case_description").val(data.case_description);
       $("#id_linked_users").val(data.linked_users);
-      // Handle linked_users field which is a multiple select
       var linkedUsersSelect = $("#id_linked_users");
-      // Select the values received for linked_users
       var selectedValues = data.linked_users;
       selectedValues.forEach(function (value) {
         linkedUsersSelect
           .find("option[value='" + value.id + "']")
           .prop("selected", true);
       });
-      // Hide the current modal
       $(".modal_case_review").modal("toggle");
-      // Show the form
       $("#modal_case_create").modal("show");
     },
     error: function (xhr, textStatus, errorThrown) {
@@ -261,29 +253,23 @@ function edit_case(case_id) {
 }
 
 function clear_form() {
-  $(":input", "#case_form")
-    .not(":button, :submit, :reset, :hidden")
-    .val("")
-    .prop("checked", false)
-    .prop("selected", false);
+  $("#case_form")[0].reset();
 }
 
 function reconnectWebSocket() {
   toastr.info("Trying to reconnect in " + reconnectDelay / 1000 + "seconds");
   setTimeout(function () {
-    connectWebSocket(); // Call the function to connect WebSocket again
-    // Increase the reconnect delay exponentially
+    connectWebSocket();
     reconnectDelay *= 2;
   }, reconnectDelay);
 }
 
 function connectWebSocket() {
   $.ajax({
-    url: "/websocket-url/", // Adjust this if your URL is different
+    url: "/websocket-url/",
     type: "GET",
     dataType: "json",
     success: function (data) {
-      // Retrieve the WebSocket URL from the response
       var websocketUrl = `${data.websocket_url}/ws/cases/`;
       const socket_cases = new WebSocket(websocketUrl);
 
@@ -319,16 +305,15 @@ function connectWebSocket() {
         try {
           cases.rows().remove().draw();
         } catch {}
-        reconnectWebSocket(); // Call the function to reconnect after connection is closed
+        reconnectWebSocket();
       };
 
       socket_cases.onerror = function (error) {
         toastr.error("Can't connect to the server.", error);
-        socket_cases.close(); // Close the WebSocket connection if an error occurs
+        socket_cases.close();
       };
     },
     error: function (xhr, status, error) {
-      // Handle any errors here
       console.error("Error fetching WebSocket URL:", xhr.responseText);
     },
   });

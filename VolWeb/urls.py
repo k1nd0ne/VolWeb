@@ -25,6 +25,7 @@ urlpatterns = [
     path("", include("main.urls")),
     path("", include("cases.urls")),
     path("", include("evidences.urls")),
+    path("", include("symbols.urls")),
     path("", include("windows_engine.urls")),
     path(
         "login/",

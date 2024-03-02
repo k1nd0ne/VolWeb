@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-&3@@g(*xlq9nj&aw5vj=*eqic$#=(z_b8+*a7#z!zjx#$2)_0l"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "main",
     "cases",
     "evidences",
+    "symbols",
     "windows_engine",
     "rest_framework",
     "bootstrap5",
@@ -153,6 +154,7 @@ STATICFILES_DIRS = [
     ("main", "main/static"),
     ("cases", "cases/static"),
     ("evidences", "evidences/static"),
+    ("symbols", "symbols/static"),
     ("windows_engine", "windows_engine/static"),
     # Add more static directories as needed
 ]

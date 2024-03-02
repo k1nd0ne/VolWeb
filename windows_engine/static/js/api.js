@@ -836,12 +836,12 @@ function display_timeliner(evidence_id, timestamp_min, timestamp_max) {
       },
     },
     aoColumns: [
+      { data: "Plugin" },
+      { data: "Description", width: "40%" },
       { data: "Created Date" },
       { data: "Accessed Date" },
       { data: "Changed Date" },
-      { data: "Description" },
       { data: "Modified Date" },
-      { data: "Plugin" },
       {
         data: "id",
         render: function (data, type, row) {

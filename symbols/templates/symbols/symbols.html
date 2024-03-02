@@ -1,0 +1,198 @@
+{% extends "main/master.html" %} {% load static %} {% block content%}
+<link rel="stylesheet" href="{% static 'symbols/css/symbols.css'%}" />
+<script src="{% static '/js/symbols.js'%}"></script>
+<div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <div
+            class="col-6 d-flex align-items-center highlight-toolbar border py-1 pe-2 ps-3"
+        >
+            <small class="font-monospace text-muted text-uppercase"
+                >ACTIONS</small
+            >
+            <div class="d-flex ms-auto">
+                <a class="nav-link symbol_import" href="#">
+                    <div class="align-items-center d-flex">
+                        <i
+                            class="fas fa-plus icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center shadow"
+                        ></i>
+                        <span class="ms-1">Add an ISF</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <table
+        id="symbols"
+        class="table-sm table-responsive table-hover table"
+        style="width: 100%"
+    >
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>OS</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<!-- Symbol creation Modal -->
+<div
+    class="modal fade"
+    id="modal_symbol_import"
+    tabindex="-1"
+    aria-hidden="true"
+>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="align-items-center d-flex">
+                    <i
+                        class="fas fa-upload fa-2x icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center"
+                    ></i>
+                    <h1 class="modal-title fs-5 p-2" id="modal_symbol_number">
+                        Import a new ISF
+                    </h1>
+                </div>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div
+                    class="spinner-grow text-light"
+                    id="symbol_import_loading"
+                    role="status"
+                ></div>
+            </div>
+
+            <form id="symbol_form">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Name*</label>
+                        {{symbol_form.name}}
+                    </div>
+                    <hr class="horizontal dark mt-0" />
+
+                    <div class="mb-3">
+                        <label class="form-label">OS*</label>
+                        {{symbol_form.os}}
+                    </div>
+                    <hr class="horizontal dark mt-0" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        {{symbol_form.description}}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"
+                            ><strong>ISF *</strong><br
+                        /></label>
+                        {{symbol_form.symbols_file}}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Close
+                    </button>
+                    <input
+                        type="submit"
+                        class="btn btn-sm btn-outline-info"
+                        id="submit"
+                    />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Symbol detele "are you sure" Modal -->
+<div
+    class="modal placeholder-glow fade modal_symbol_delete"
+    tabindex="-1"
+    aria-hidden="true"
+>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1
+                    class="modal-title symbol_info fs-5 placeholder symbol_name"
+                ></h1>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body">
+                You are about to delete this ISF. Are you sure ?
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    id="delete_symbol_confirmed"
+                    class="evidence_info btn btn-sm btn-outline-danger placeholder"
+                >
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Symbol Review Modal -->
+<div
+    class="modal fade"
+    id="modal_symbol_review"
+    tabindex="-1"
+    aria-hidden="true"
+>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title symbol_info fs-5" id="symbol_name"></h1>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <span>Target OS: </span>
+                    <small id="symbol_review_os"></small>
+                </div>
+                <div>
+                    <span>Description: </span>
+
+                    <small id="symbol_review_description"></small>
+                </div>
+                <div>
+                    <span>Saved as: </span>
+                    <small class="text-muted" id="symbol_review_file"></small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div
+                    class="btn delete_symbol_confirmed btn-sm btn-outline-danger"
+                >
+                    Delete
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

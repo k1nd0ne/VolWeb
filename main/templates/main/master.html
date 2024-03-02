@@ -123,7 +123,17 @@
                         {% endif %}
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="">
+                        {% if request.get_full_path == '/symbols/'%}
+                        <a class="nav-link active" href="{% url 'symbols' %}">
+                            <i
+                                class="fas fa-table active icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 bg-white text-center shadow"
+                            ></i>
+                            <span class="nav-link-text ms-1"
+                                >Symbol Tables</span
+                            >
+                        </a>
+                        {% else %}
+                        <a class="nav-link" href="{% url 'symbols' %}">
                             <i
                                 class="fas fa-table icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 bg-white text-center shadow"
                             ></i>
@@ -131,6 +141,7 @@
                                 >Symbol Tables</span
                             >
                         </a>
+                        {% endif %}
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">
