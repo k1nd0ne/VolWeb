@@ -27,6 +27,7 @@ urlpatterns = [
     path("", include("evidences.urls")),
     path("", include("symbols.urls")),
     path("", include("windows_engine.urls")),
+    path("", include("linux_engine.urls")),
     path(
         "login/",
         auth_views.LoginView.as_view(template_name="main/login.html"),

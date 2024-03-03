@@ -5,8 +5,11 @@ from volatility3.cli import text_renderer
 from volatility3.framework.renderers import format_hints
 from VolWeb.keyconfig import Secrets
 from volatility3.framework.plugins import construct_plugin
-from volatility3.framework import automagic
+from volatility3.framework import automagic, constants
 from volatility3.cli import MuteProgress
+import volatility3
+from symbols.models import UPLOAD_PATH
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -217,36 +220,6 @@ class DictRenderer(text_renderer.CLIRenderer):
         return final_output[1]
 
 
-def memory_image_hash(dump_path):
-    """Compute memory image signature.
-    Args:
-        dump_path: A string indicating the image file path
-
-    Returns:
-        A dict of different types of hash computed
-    """
-    blocksize = 65536  # Read the file in 64kb chunks.
-    md5 = hashlib.md5()
-    sha1 = hashlib.sha1()
-    sha256 = hashlib.sha256()
-    try:
-        with open(dump_path, "rb") as afile:
-            buf = afile.read(blocksize)
-            while len(buf) > 0:
-                md5.update(buf)
-                sha1.update(buf)
-                sha256.update(buf)
-                buf = afile.read(blocksize)
-        signatures = {
-            "md5": format(md5.hexdigest()),
-            "sha1": format(sha1.hexdigest()),
-            "sha256": format(sha256.hexdigest()),
-        }
-    except:
-        signatures = {"md5": "Error", "sha1": "Error", "sha256": "Error"}
-    return signatures
-
-
 def file_sha256(path):
     """Compute memory image signature.
     Args:
@@ -267,7 +240,7 @@ def file_sha256(path):
         return "error"
 
 
-def generate_network_graph(data):
+def generate_windows_network_graph(data):
     graph_data = {"nodes": [], "edges": []}
     node_id_map = {}
 
@@ -313,6 +286,53 @@ def generate_network_graph(data):
 
     return graph_data
 
+
+
+def generate_linux_network_graph(data):
+    graph_data = {"nodes": [], "edges": []}
+    node_id_map = {}
+    for entry in data:
+        if "AF_INET" in entry["Family"]:
+            pid = entry["Pid"]
+            local_address = entry["Source Addr"]
+            local_port = entry["Source Port"]
+            foreign_address = entry["Destination Addr"]
+            foreign_port = entry["Destination Port"]
+
+            # Node data for the process
+            if pid not in node_id_map:
+                node_data_1 = {
+                    "id": pid,
+                    "Process": pid,
+                    "LocalAddr": local_address,
+                    "LocalPorts": [local_port],
+                }
+                graph_data["nodes"].append(node_data_1)
+                node_id_map[pid] = node_data_1
+            else:
+                # If the process is already a node, just add the local port if it's not already there
+                if local_port not in node_id_map[pid]["LocalPorts"]:
+                    node_id_map[pid]["LocalPorts"].append(local_port)
+
+            # Node data for the foreign address
+            if foreign_address not in node_id_map:
+                node_data_2 = {
+                    "id": foreign_address,
+                    "ForeignPorts": [foreign_port],
+                }
+                graph_data["nodes"].append(node_data_2)
+                node_id_map[foreign_address] = node_data_2
+            else:
+                # If the foreign address is already a node, just add the foreign port if it's not already there
+                if foreign_port not in node_id_map[foreign_address]["ForeignPorts"]:
+                    node_id_map[foreign_address]["ForeignPorts"].append(foreign_port)
+
+            # Edge data
+            edge_data = {"from": pid, "to": foreign_address}
+            if edge_data not in graph_data["edges"]:
+                graph_data["edges"].append(edge_data)
+
+    return graph_data
 
 def vt_check_file_hash(hash):
     client = vt.Client(Secrets.VT_API_KEY)
@@ -369,6 +389,9 @@ def build_context(evidence_data, context, base_config_path, plugin):
     """This function is used to buid the context and construct each plugin
     Return : The contructed plugin.
     """
+    volatility3.symbols.__path__ = [
+        os.path.abspath(f"media/{UPLOAD_PATH}")
+    ] + constants.SYMBOL_BASEPATHS
     available_automagics = automagic.available(context)
     automagics = automagic.choose_automagic(available_automagics, plugin)
     context.config[

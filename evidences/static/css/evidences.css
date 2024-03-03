@@ -26,7 +26,25 @@
     from {
         text-shadow: 0 0 20px #ffffff;
     }
+
     to {
         text-shadow: 0 0 30px #767676;
     }
+}
+
+.border-purple-subtle {
+    border-color: #90086e !important;
+}
+
+.text-purple-emphasis {
+    color: #f66ee1 !important;
+}
+
+.bg-purple-subtle {
+    background-color: #300329 !important;
+}
+
+.text-purple {
+    --bs-text-opacity: 1;
+    color: #f66ee1 !important;
 }

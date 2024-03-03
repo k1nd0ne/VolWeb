@@ -1,11 +1,12 @@
 {% extends "main/master.html" %} {% load static %} {% block content%}
-<script src="{% static 'windows_engine/js/main.js'%}"></script>
-<script src="{% static 'windows_engine/js/pstree.js'%}"></script>
-<script src="{% static 'windows_engine/js/visualisation.js'%}"></script>
-<script src="{% static 'windows_engine/js/api.js'%}"></script>
-<script src="{% static 'windows_engine/js/tree.js'%}"></script>
+<script src="{% static 'linux_engine/js/main.js'%}"></script>
+<script src="{% static 'linux_engine/js/pstree.js'%}"></script>
+<script src="{% static 'linux_engine/js/api.js'%}"></script>
+<script src="{% static 'linux_engine/js/tree.js'%}"></script>
 <script src="{% static 'windows_engine/js/tasks.js'%}"></script>
 <script src="{% static 'windows_engine/js/loot.js'%}"></script>
+<script src="{% static 'linux_engine/js/visualisation.js'%}"></script>
+
 <link
     rel="stylesheet"
     href="{% static 'main/css/treejs.min.css'%}"
@@ -14,7 +15,7 @@
 <link
     rel="stylesheet"
     type="text/css"
-    href="{% static 'windows_engine/css/windows_engine.css'%}"
+    href="{% static 'linux_engine/css/linux_engine.css'%}"
 />
 
 <link
@@ -107,7 +108,7 @@
             aria-labelledby="overview-tab"
             tabindex="0"
         >
-            {% include "windows_engine/overview.html" %}
+            {% include "linux_engine/overview.html" %}
         </div>
         <div
             class="tab-pane fade"

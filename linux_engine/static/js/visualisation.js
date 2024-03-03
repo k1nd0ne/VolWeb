@@ -112,15 +112,8 @@ function generate_network_visualisation(data) {
 
 function MakeNetNode(item) {
   if (item.Process) {
-    maxLineLength = item.Process.length + 10;
-    var info =
-      item.id +
-      " - " +
-      (item.Process.length === 0 ? "Unknown" : item.Process) +
-      "\n\nLocal Ports:";
-    if (item.id.length > maxLineLength) {
-      maxLineLength = item.Process.length;
-    }
+    var info = item.Process + "\n\nLocal Ports:";
+    maxLineLength = info.length + 10;
 
     if (item["LocalPorts"]) {
       item["LocalPorts"].forEach((ports) => {
@@ -194,7 +187,6 @@ function generate_visualisation(process, pstree) {
   });
 
   function find_childs(pid, node, elements, links) {
-    // Check if there is not too much elements
     if (node.PID == pid) {
       if (node.__children) {
         $.each(node.__children, function (_, childNode) {
@@ -253,10 +245,9 @@ function makeLink(parentElementLabel, childElementLabel) {
 }
 
 function MakeNode(node) {
-  var info = node.ImageFileName + "\n\nPID : " + node.PID + "\n";
-  var maxLineLength = _.max(info.split("\n"), function (l) {
-    return l.length;
-  }).length;
+  var pid_info = `PID : ${node.PID}`;
+  var info = `${node.COMM}\n\n${pid_info}\n`;
+  var maxLineLength = _.max([pid_info.length, node.COMM.length]);
   var letterSize = 10;
   var width = 1.8 * (letterSize * (0.8 * maxLineLength + 1));
   var height = 1 * ((info.split("\n").length + 1) * letterSize);
@@ -285,77 +276,6 @@ function MakeNode(node) {
       },
     },
   });
-}
-
-function build_credential_card(plugin, data) {
-  /*
-    Build a credentital card: used in api.js for hashdump, lsadump, cachedump
-  */
-  const card_div = document.createElement("div");
-  card_div.setAttribute("class", "card shadow border-start-primary py-2 mt-2");
-
-  const card_body = document.createElement("div");
-  card_body.setAttribute("class", "card-body");
-
-  const card_row = document.createElement("div");
-  card_row.setAttribute("class", "row align-items-center d-flex no-gutters");
-
-  const card_col1 = document.createElement("div");
-  card_col1.setAttribute("class", "col-auto align-items-center d-flex");
-
-  const card_icon = document.createElement("i");
-  card_icon.setAttribute("class", "fas fa-user fa-2x text-gray-600");
-
-  card_col1.appendChild(card_icon);
-
-  const card_col2 = document.createElement("div");
-  card_col2.setAttribute("class", "col me-2");
-
-  const card_title = document.createElement("span");
-  card_title.setAttribute("class", "text-uppercase fw-bold text-xs mb-1");
-  const card_elements = document.createElement("div");
-  card_elements.setAttribute("class", "list-group-item");
-
-  card_row.appendChild(card_col1);
-  card_col1.appendChild(card_title);
-  card_col2.appendChild(card_elements);
-  card_row.appendChild(card_col2);
-  card_body.appendChild(card_row);
-  card_div.appendChild(card_body);
-
-  const li_1 = document.createElement("li");
-  const li_2 = document.createElement("li");
-  const li_3 = document.createElement("li");
-
-  if (plugin == "Hashdump") {
-    card_title.textContent = data.User;
-    li_1.textContent = "rid : " + data.rid;
-    li_2.textContent = "lmhash : " + data.lmhash;
-    li_3.textContent = "nthash : " + data.nthash;
-    card_elements.appendChild(li_1);
-    card_elements.appendChild(li_2);
-    card_elements.appendChild(li_3);
-    document.getElementById("credentials_cards_1").appendChild(card_div);
-  }
-  if (plugin == "Cachedump") {
-    card_title.textContent = data.UserName;
-    li_1.textContent = "Domain : " + data.Domain;
-    li_2.textContent = "Domain Name : " + data.Domainname;
-    li_3.textContent = "Hash : " + data.Hash;
-    card_elements.appendChild(li_1);
-    card_elements.appendChild(li_2);
-    card_elements.appendChild(li_3);
-    document.getElementById("credentials_cards_2").appendChild(card_div);
-  }
-
-  if (plugin == "Lsadump") {
-    card_title.textContent = data.Key;
-    li_1.textContent = "Secret (base64) : " + data.Secret;
-    li_2.textContent = "Hex : " + data.Hex;
-    card_elements.appendChild(li_1);
-    card_elements.appendChild(li_2);
-    document.getElementById("credentials_card_3").appendChild(card_div);
-  }
 }
 
 function build_malfind_process_card(data) {

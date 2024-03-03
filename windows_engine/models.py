@@ -2,18 +2,14 @@ from django.db import models
 from django.db import models
 from evidences.models import Evidence
 import base64
-from VolWeb.voltools import build_context
 from celery import shared_task
 import logging, json
 import volatility3
 from volatility3.framework import contexts
-from evidences.models import Evidence
-from windows_engine.models import *
 from volatility3 import plugins
 from django.apps import apps
 from VolWeb.voltools import *
 from volatility3.framework.exceptions import *
-
 volatility3.framework.require_interface_version(2, 0, 0)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -41,7 +37,7 @@ class PsTree(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="PsTree.run")
+    @shared_task(name="Windows.PsTree.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -105,7 +101,7 @@ class DeviceTree(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="DeviceTree.run")
+    @shared_task(name="Windows.DeviceTree.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -143,7 +139,7 @@ class PsScan(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="PsScan.run")
+    @shared_task(name="Windows.PsScan.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -167,7 +163,7 @@ class CmdLine(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="CmdLine.run")
+    @shared_task(name="Windows.CmdLine.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -191,7 +187,7 @@ class Privs(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="Privs.run")
+    @shared_task(name="Windows.Privs.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -215,7 +211,7 @@ class Sessions(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="Sessions.run")
+    @shared_task(name="Windows.Sessions.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -239,7 +235,7 @@ class GetSIDs(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="GetSIDs.run")
+    @shared_task(name="Windows.GetSIDs.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -263,7 +259,7 @@ class LdrModules(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="LdrModules.run")
+    @shared_task(name="Windows.LdrModules.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -287,7 +283,7 @@ class Modules(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="Modules.run")
+    @shared_task(name="Windows.Modules.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -311,7 +307,7 @@ class SvcScan(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="SvcScan.run")
+    @shared_task(name="Windows.SvcScan.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -335,7 +331,7 @@ class Envars(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="Envars.run")
+    @shared_task(name="Windows.Envars.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -359,7 +355,7 @@ class NetScan(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="NetScan.run")
+    @shared_task(name="Windows.NetScan.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -383,7 +379,7 @@ class NetStat(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="NetStat.run")
+    @shared_task(name="Windows.NetStat.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -407,7 +403,7 @@ class Hashdump(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="Hashdump.run")
+    @shared_task(name="Windows.Hashdump.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -431,7 +427,7 @@ class Lsadump(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="Lsadump.run")
+    @shared_task(name="Windows.Lsadump.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -459,7 +455,7 @@ class Cachedump(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="Cachedump.run")
+    @shared_task(name="Windows.Cachedump.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -483,7 +479,7 @@ class HiveList(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="HiveList.run")
+    @shared_task(name="Windows.HiveList.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -509,7 +505,7 @@ class Timeliner(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="Timeliner.run")
+    @shared_task(name="Windows.Timeliner.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -534,7 +530,7 @@ class SkeletonKeyCheck(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="SkeletonKeyCheck.run")
+    @shared_task(name="Windows.SkeletonKeyCheck.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -559,7 +555,7 @@ class Malfind(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="Malfind.run")
+    @shared_task(name="Windows.Malfind.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -584,7 +580,7 @@ class UserAssist(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="UserAssist.run")
+    @shared_task(name="Windows.UserAssist.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -609,7 +605,7 @@ class MFTScan(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="MFTScan.run")
+    @shared_task(name="Windows.MFTScan.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -633,7 +629,7 @@ class ADS(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="ADS.run")
+    @shared_task(name="Windows.ADS.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -657,7 +653,7 @@ class MBRScan(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="MBRScan.run")
+    @shared_task(name="Windows.MBRScan.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -682,7 +678,7 @@ class FileScan(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="FileScan.run")
+    @shared_task(name="Windows.FileScan.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -739,7 +735,7 @@ class DllList(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="DllList.run")
+    @shared_task(name="Windows.DllList.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -795,7 +791,7 @@ class DriverModule(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="DriverModule.run")
+    @shared_task(name="Windows.DriverModule.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -820,7 +816,7 @@ class VadWalk(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="VadWalk.run")
+    @shared_task(name="Windows.VadWalk.run")
     def run(evidence_data):
         try:
             context = contexts.Context()
@@ -845,7 +841,7 @@ class SSDT(models.Model):
     artefacts = models.JSONField(null=True)
 
     @staticmethod
-    @shared_task(name="SSDT.run")
+    @shared_task(name="Windows.SSDT.run")
     def run(evidence_data):
         try:
             context = contexts.Context()

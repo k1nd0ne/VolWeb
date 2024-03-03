@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "evidences",
     "symbols",
     "windows_engine",
+    "linux_engine",
     "rest_framework",
     "bootstrap5",
     "crispy_forms",
@@ -156,7 +157,7 @@ STATICFILES_DIRS = [
     ("evidences", "evidences/static"),
     ("symbols", "symbols/static"),
     ("windows_engine", "windows_engine/static"),
-    # Add more static directories as needed
+    ("linux_engine", "linux_engine/static"),
 ]
 
 # Default primary key field type

@@ -129,18 +129,22 @@ function get_evidences() {
           mData: "dump_os",
           mRender: function (dump_os, type, row) {
             div = document.createElement("small");
-            div.setAttribute(
-              "class",
-              "px-1 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2 align-items-center",
-            );
             logo = document.createElement("i");
             span = document.createElement("span");
             if (dump_os == "Windows") {
+              div.setAttribute(
+                "class",
+                "px-1 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2 align-items-center",
+              );
               logo.setAttribute("class", "fab fa-windows m-2");
               span.setAttribute("class", "text-info");
             } else {
+              div.setAttribute(
+                "class",
+                "px-1 py-1 fw-semibold text-purple-emphasis bg-purple-subtle border border-purple-subtle rounded-2 align-items-center",
+              );
               logo.setAttribute("class", "fab fa-linux m-2");
-              span.setAttribute("class", "text-info");
+              span.setAttribute("class", "text-purple");
             }
             span.textContent = dump_os;
             div.appendChild(logo);
@@ -223,6 +227,7 @@ function display_evidence(evidence_id) {
     dataType: "json",
     success: function (evidence_data) {
       $(".modal_evidence_review").attr("id", evidence_data.dump_id);
+      $(".modal_evidence_review").attr("value", evidence_data.dump_os);
       $(".evidence_etag").text(evidence_data.dump_etag);
       $(".evidence_name").text(evidence_data.dump_name);
       $(".evidence_os").text(evidence_data.dump_os);
@@ -283,6 +288,7 @@ function delete_evidence(dump_id) {
     dataType: "json",
     success: function (data) {
       $(".modal_evidence_review").attr("id", NaN);
+      $(".modal_evidence_review").attr("value", NaN);
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
@@ -426,7 +432,8 @@ $(document).ready(function () {
 
   $("#review_evidence").on("click", function () {
     const evidence_id = $(".modal_evidence_review").attr("id");
-    window.location.href = `/review/windows/${evidence_id}/`;
+    const os = $(".modal_evidence_review").attr("value").toLowerCase();
+    window.location.href = `/review/${os}/${evidence_id}/`;
   });
 
   $(".evidence_create").on("click", function () {
