@@ -17,9 +17,24 @@ class LsofSerializer(serializers.ModelSerializer):
         model = Lsof
         fields = "__all__"
 
+class EnvarsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Envars
+        fields = "__all__"
+
 class PsScanSerializer(serializers.ModelSerializer):
     class Meta:
         model = PsScan
+        fields = "__all__"
+
+class MountInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MountInfo
+        fields = "__all__"
+
+class tty_checkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = tty_check
         fields = "__all__"
 
 class BashSerializer(serializers.ModelSerializer):
@@ -32,6 +47,25 @@ class ElfsSerializer(serializers.ModelSerializer):
         model = Elfs
         fields = "__all__"
 
+class MalfindSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Malfind
+        fields = "__all__"
+
+class LsmodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lsmod
+        fields = "__all__"
+
+class CapabilitiesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Capabilities
+        fields = "__all__"
+
+class KmsgSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Kmsg
+        fields = "__all__"
 
 class NetGraphSerializer(serializers.ModelSerializer):
     class Meta:

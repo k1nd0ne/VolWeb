@@ -130,6 +130,136 @@ function display_elfs(evidence_id, process_id) {
   });
 }
 
+function display_envars(evidence_id, process_id) {
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/envars/${process_id}/`,
+    dataType: "json",
+    success: function (data) {
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                        <th>PID</th>
+                        <th>PPID</th>
+                        <th>Process</th>
+                        <th>Key</th>
+                        <th>Value</th>
+                        <th></th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "PID" },
+          { data: "PPID" },
+          { data: "COMM" },
+          { data: "KEY" },
+          { data: "VALUE" },
+          {
+            mData: "id",
+            mRender: function (id, type, row) {
+              return generate_label(row);
+            },
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo(artefact_datatable.table().container());
+      $("#artefacts_source_title").text("Envars");
+      $("#artefacts_modal").modal("show");
+    },
+    error: function (xhr, status, error) {
+      if (xhr.status === 404) {
+        toastr.warning("Envars are not available for this memory image.");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
+    },
+  });
+}
+
+function display_capabilities(evidence_id, process_id) {
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/capabilities/${process_id}/`,
+    dataType: "json",
+    success: function (data) {
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                        <th>Pid</th>
+                        <th>PPid</th>
+                        <th>Tid</th>
+                        <th>EUID</th>
+                        <th>Name</th>
+                        <th>cap_ambient</th>
+                        <th>cap_bounding</th>
+                        <th>cap_effective</th>
+                        <th>cap_inheritable</th>
+                        <th>cap_permitted</th>
+                        <th></th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "Pid" },
+          { data: "PPid" },
+          { data: "Tid" },
+          { data: "EUID" },
+          { data: "Name" },
+          { data: "cap_ambient" },
+          { data: "cap_bounding" },
+          { data: "cap_effective" },
+          { data: "cap_inheritable" },
+          { data: "cap_permitted" },
+          {
+            mData: "id",
+            mRender: function (id, type, row) {
+              return generate_label(row);
+            },
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo(artefact_datatable.table().container());
+      $("#artefacts_source_title").text("Capabilities");
+      $("#artefacts_modal").modal("show");
+    },
+    error: function (xhr, status, error) {
+      if (xhr.status === 404) {
+        toastr.warning("Open files are not available for this memory image.");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
+    },
+  });
+}
+
 function display_psscan(evidence_id) {
   $.ajax({
     type: "GET",
@@ -192,6 +322,66 @@ function display_psscan(evidence_id) {
   });
 }
 
+function display_kmsg(evidence_id) {
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/kmsg/`,
+    dataType: "json",
+    success: function (data) {
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                        <th>Caller</th>
+                        <th>Facility</th>
+                        <th>Level</th>
+                        <th>Message</th>
+                        <th>timestamp</th>
+                        <th></th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "caller" },
+          { data: "facility" },
+          { data: "level" },
+          { data: "line" },
+          { data: "timestamp" },
+          {
+            mData: "id",
+            mRender: function (id, type, row) {
+              return generate_label(row);
+            },
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo(artefact_datatable.table().container());
+      $("#artefacts_source_title").text("Kernel Messages");
+      $("#artefacts_modal").modal("show");
+    },
+    error: function (xhr, status, error) {
+      if (xhr.status === 404) {
+        toastr.warning("Open files are not available for this memory image.");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
+    },
+  });
+}
+
 function display_bash(evidence_id) {
   $.ajax({
     type: "GET",
@@ -238,6 +428,136 @@ function display_bash(evidence_id) {
         .container()
         .prependTo(artefact_datatable.table().container());
       $("#artefacts_source_title").text("Bash");
+      $("#artefacts_modal").modal("show");
+    },
+    error: function (xhr, status, error) {
+      if (xhr.status === 404) {
+        toastr.warning("Open files are not available for this memory image.");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
+    },
+  });
+}
+
+function display_tty_check(evidence_id) {
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/tty_check/`,
+    dataType: "json",
+    success: function (data) {
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                        <th>Address</th>
+                        <th>Module</th>
+                        <th>Name</th>
+                        <th>Symbol</th>
+                        <th></th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "Address" },
+          { data: "Module" },
+          { data: "Name" },
+          { data: "Symbol" },
+          {
+            mData: "id",
+            mRender: function (id, type, row) {
+              return generate_label(row);
+            },
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo(artefact_datatable.table().container());
+      $("#artefacts_source_title").text("Bash");
+      $("#artefacts_modal").modal("show");
+    },
+    error: function (xhr, status, error) {
+      if (xhr.status === 404) {
+        toastr.warning("Open files are not available for this memory image.");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
+    },
+  });
+}
+
+function display_mount_info(evidence_id) {
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/mountinfo/`,
+    dataType: "json",
+    success: function (data) {
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                        <th>FIELDS</th>
+                        <th>FSTYPE</th>
+                        <th>MAJOR:MINOR</th>
+                        <th>MNT_NS_ID</th>
+                        <th>MOUNT ID</th>
+                        <th>MOUNT_OPTIONS</th>
+                        <th>MOUNT_POINT</th>
+                        <th>MOUNT_SRC</th>
+                        <th>PARENT_ID</th>
+                        <th>ROOT</th>
+                        <th>SB_OPTIONS</th>
+                        <th></th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "FIELDS" },
+          { data: "FSTYPE" },
+          { data: "MAJOR:MINOR" },
+          { data: "MNT_NS_ID" },
+          { data: "MOUNT ID" },
+          { data: "MOUNT_OPTIONS" },
+          { data: "MOUNT_POINT" },
+          { data: "MOUNT_SRC" },
+          { data: "PARENT_ID" },
+          { data: "ROOT" },
+          { data: "SB_OPTIONS" },
+          {
+            mData: "id",
+            mRender: function (id, type, row) {
+              return generate_label(row);
+            },
+          },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo(artefact_datatable.table().container());
+      $("#artefacts_source_title").text("Mount Information");
       $("#artefacts_modal").modal("show");
     },
     error: function (xhr, status, error) {
@@ -463,5 +783,109 @@ function display_timeliner(evidence_id, timestamp_min, timestamp_max) {
     ],
     iDisplayLength: 25,
     searchBuilder: true,
+  });
+}
+
+function display_malfind(evidence_id) {
+  /*
+    Get the malfind data from the API and display them using the
+    "build_malfind_process_card" function from visualisation.js
+  */
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/malfind/`,
+    dataType: "json",
+    beforeSend: function () {
+      $("#malfind_process_list").empty();
+      $("#malfind_process_menu").show();
+      $("#malfind_process_loading").show();
+    },
+    success: function (data, status, xhr) {
+      if (data.artefacts && data.artefacts.length > 0) {
+        $.each(data.artefacts, function (_, value) {
+          build_malfind_process_card(value);
+        });
+      } else {
+        $("#malfind_process_list").html(
+          `<i class="text-info">Malfind did not return any results.</i>`,
+        );
+      }
+    },
+    complete: function (data) {
+      $("#malfind_process_loading").hide();
+      $("#malfind_process_list").show();
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred while fetching result : " + error);
+    },
+  });
+}
+
+function display_lsmod(evidence_id) {
+  /*
+    Get the kernel_modules data from the API and display them using datatables
+  */
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/lsmod/`,
+    dataType: "json",
+    beforeSend: function () {
+      $("#ir_artefacts_datatable").DataTable().destroy();
+      $("#ir_artefacts_body").hide();
+      $("#ir_details").show();
+      $("#ir_artefacts_loading").show();
+      $("#ir_artefacts_title").text("Kernel Modules");
+    },
+    success: function (data, status, xhr) {
+      if (data.artefacts && data.artefacts.length > 0) {
+        $("#ir_artefacts_body").html(
+          `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+            >
+                    <thead>
+                        <tr>
+                            <th>Offset</th>
+                            <th>Name</th>
+                            <th>Size</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>`,
+        );
+        ir_artefacts_datatable = $("#ir_artefacts_datatable").DataTable({
+          aaData: data.artefacts,
+          aoColumns: [
+            { data: "Offset" },
+            { data: "Name" },
+            { data: "Size" },
+            {
+              mData: "id",
+              mRender: function (id, type, row) {
+                return generate_label(row);
+              },
+            },
+          ],
+          aLengthMenu: [
+            [25, 50, 75, -1],
+            [25, 50, 75, "All"],
+          ],
+          iDisplayLength: 25,
+          searchBuilder: true,
+        });
+        ir_artefacts_datatable.searchBuilder
+          .container()
+          .prependTo(ir_artefacts_datatable.table().container());
+      } else {
+        $("#ir_artefacts_body").html(
+          "<i>Kernel Modules data are not available</i>",
+        );
+      }
+    },
+    complete: function (data) {
+      $("#ir_artefacts_loading").hide();
+      $("#ir_artefacts_body").show();
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred while fetching the modules : " + error);
+    },
   });
 }

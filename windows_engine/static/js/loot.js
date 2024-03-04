@@ -4,11 +4,7 @@ function display_loot(evidence_id) {
     url: "/api/windows/" + evidence_id + "/loot/",
     dataType: "json",
     success: function (data) {
-      try {
-        loot_datatable.destroy();
-      } catch {
-        //Nothing to do, the datatable will be created.
-      }
+      $("#loot_datatable").DataTable().destroy();
       try {
         loot_datatable = $("#loot_datatable").DataTable({
           aaData: data,
@@ -34,7 +30,9 @@ function display_loot(evidence_id) {
           iDisplayLength: 25,
           searchBuilder: true,
         });
-        loot_datatable.searchBuilder.container().prependTo(loot_datatable.table().container());
+        loot_datatable.searchBuilder
+          .container()
+          .prependTo(loot_datatable.table().container());
       } catch {
         toastr.error("The loot table cannot be displayed");
       }
@@ -46,28 +44,27 @@ function display_loot(evidence_id) {
 }
 
 function generate_loot_status(status) {
-  message = document.createElement('code');
+  message = document.createElement("code");
   if (status) {
-    message.setAttribute('class', 'text-success');
+    message.setAttribute("class", "text-success");
     message.textContent = "The task was completed with success.";
-  }
-  else {
-    message.setAttribute('class', 'text-danger');
-    message.textContent = "The task did not complete. The data you are trying to recover are probably freed.";
+  } else {
+    message.setAttribute("class", "text-danger");
+    message.textContent =
+      "The task did not complete. The data you are trying to recover are probably freed.";
   }
   return message.outerHTML;
 }
 
 function generate_loot_download(data) {
   if (data.Status) {
-    link = document.createElement('a');
-    link.setAttribute('href', '/media/' + data.evidence + '/' + data.FileName);
-    link.setAttribute('target','_blank');
-    link.setAttribute('class','btn btn-sm btn-outline-success p-1')
+    link = document.createElement("a");
+    link.setAttribute("href", "/media/" + data.evidence + "/" + data.FileName);
+    link.setAttribute("target", "_blank");
+    link.setAttribute("class", "btn btn-sm btn-outline-success p-1");
     link.textContent = "Download";
     return link.outerHTML;
-  }
-  else{
+  } else {
     return "N/A";
   }
 }

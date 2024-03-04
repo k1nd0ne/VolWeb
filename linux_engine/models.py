@@ -91,6 +91,52 @@ class Lsof(models.Model):
         except:
             return None
 
+class MountInfo(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_mountinfo_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.MountInfo.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.mountinfo.MountInfo"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except:
+            return None
+
+class Envars(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_envars_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Envars.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.envars.Envars"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except:
+            return None
+
 class PsScan(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="linux_psscan_evidence"
@@ -113,6 +159,32 @@ class PsScan(models.Model):
                 return result
         except:
             return None
+
+
+class tty_check(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_tty_check_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.tty_check.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.tty_check.tty_check"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except:
+            return None
+
+
 
 class Bash(models.Model):
     evidence = models.ForeignKey(
@@ -176,6 +248,100 @@ class Sockstat(models.Model):
                 context,
                 base_config_path,
                 PLUGIN_LIST["linux.sockstat.Sockstat"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except:
+            return None
+
+class Capabilities(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_capabilities_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Capabilities.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.capabilities.Capabilities"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except:
+            return None
+
+class Kmsg(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_kmsg_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Kmsg.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.kmsg.Kmsg"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except:
+            return None
+
+class Malfind(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_malfind_evidence"
+    )
+
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Malfind.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.malfind.Malfind"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except:
+            return None
+
+class Lsmod(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_lsmod_evidence"
+    )
+
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Lsmod.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.lsmod.Lsmod"],
             )
             if constructed:
                 result = DictRenderer().render(constructed.run())

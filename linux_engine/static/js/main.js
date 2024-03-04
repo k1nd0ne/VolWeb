@@ -17,6 +17,14 @@ $(document).ready(function () {
     display_bash(evidence_id);
   });
 
+  $(".card_kmsg").on("click", function () {
+    display_kmsg(evidence_id);
+  });
+
+  $(".card_mount_info").on("click", function () {
+    display_mount_info(evidence_id);
+  });
+
   $(".card_lsof").on("click", function () {
     pid = $(".process_id").attr("id");
     display_lsof(evidence_id, pid);
@@ -27,11 +35,35 @@ $(document).ready(function () {
     display_elfs(evidence_id, pid);
   });
 
+  $(".card_envars").on("click", function () {
+    pid = $(".process_id").attr("id");
+    display_envars(evidence_id, pid);
+  });
+
+  $(".card_capabilities").on("click", function () {
+    pid = $(".process_id").attr("id");
+    display_capabilities(evidence_id, pid);
+  });
+
   $(".card_network").on("click", function () {
     display_network(evidence_id);
   });
 
+  $(".card_tty_check").on("click", function () {
+    display_tty_check(evidence_id);
+  });
+
   /* ======================= Injections and Rootkits ======================= */
+
+  $(".card_malfind").on("click", function () {
+    injections_rootkits_hide_all();
+    display_malfind(evidence_id);
+  });
+
+  $(".card_lsmod").on("click", function () {
+    injections_rootkits_hide_all();
+    display_lsmod(evidence_id);
+  });
 
   toastr.options = {
     closeButton: true,

@@ -748,8 +748,8 @@ class HandlesApiView(APIView):
         instance = self.get_object(dump_id, pid)
         if instance:
             filtered_data = [d for d in instance.artefacts if d["PID"] == pid]
-            if len(filtered_data) > 0:
-                return Response(filtered_data, status=status.HTTP_200_OK)
+            return Response(filtered_data, status=status.HTTP_200_OK)
+
         else:
             compute_handles.delay(evidence_id=dump_id, pid=pid)
             return Response({}, status=status.HTTP_201_CREATED)

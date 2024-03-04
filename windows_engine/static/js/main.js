@@ -190,8 +190,8 @@ function connectWebSocket(evidence_id) {
       };
     },
     error: function (xhr, status, error) {
-      // Handle any errors here
-      console.error("Error fetching WebSocket URL:", xhr.responseText);
+      toastr.error("Error fetching WebSocket URL:", xhr.responseText);
+      reconnectWebSocket(evidence_id);
     },
   });
 }

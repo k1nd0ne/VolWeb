@@ -96,6 +96,45 @@ class ElfsApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
+class EnvarsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, dump_id):
+        try:
+            return Envars.objects.get(evidence_id=dump_id)
+        except Envars.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Give the requested psaux from the pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["PID"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+class CapabilitiesApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, dump_id):
+        try:
+            return Capabilities.objects.get(evidence_id=dump_id)
+        except Capabilities.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Give the requested psaux from the pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["Pid"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
 
 class PsScanApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -115,6 +154,100 @@ class PsScanApiView(APIView):
             return Response(data.artefacts, status=status.HTTP_200_OK)
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+class tty_checkApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, dump_id):
+        try:
+            return tty_check.objects.get(evidence_id=dump_id)
+        except tty_check.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested mount_info data.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            return Response(data.artefacts, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class MountInfoApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, dump_id):
+        try:
+            return MountInfo.objects.get(evidence_id=dump_id)
+        except MountInfo.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested mount_info data.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            return Response(data.artefacts, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class KmsgApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, dump_id):
+        try:
+            return Kmsg.objects.get(evidence_id=dump_id)
+        except Kmsg.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested kmsg data.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            return Response(data.artefacts, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+class MalfindApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, dump_id):
+        try:
+            return Malfind.objects.get(evidence_id=dump_id)
+        except Malfind.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested malfind data
+        """
+        data = self.get_object(dump_id)
+        serializer = MalfindSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class LsmodApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, dump_id):
+        try:
+            return Lsmod.objects.get(evidence_id=dump_id)
+        except Lsmod.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested kernel modules
+        """
+        data = self.get_object(dump_id)
+        serializer = LsmodSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class SockstatApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]

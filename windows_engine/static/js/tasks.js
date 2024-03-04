@@ -159,35 +159,30 @@ function filedump_task_result(result) {
     } else {
       toastr.error(loot.Name);
     }
-
-    try {
-      loot_datatable.row("#" + loot.id).data(loot);
-    } catch {
-      loot_datatable.row.add(loot).draw().node();
-    }
+    loot_datatable.row.add(loot).draw().node();
   } else {
-    toastr.warning(result.msg);
+    toastr.error("The task failed for unknown reason.");
   }
 }
 
 function process_dump_task_result(result) {
-  if (result.status === "success") {
-    loot = JSON.parse(result.msg);
-    toastr.success(
-      "Process dump for pid " +
-        result.pid +
-        " is available in the Loot section.",
-    );
-  } else {
-    toastr.warning("Process dump for pid " + result.pid + " failed.");
-  }
-  try {
-    loot_datatable.row("#" + loot.id).data(loot);
-  } catch {
+  if (result) {
+    if (result.status === "success") {
+      loot = JSON.parse(result.msg);
+      toastr.success(
+        "Process dump for pid " +
+          result.pid +
+          " is available in the Loot section.",
+      );
+    }
+    if (result.status === "error") {
+      loot = JSON.parse(result.msg);
+      toastr.warning("Process dump for pid " + result.pid + " failed.");
+    }
+    if (result.pid == $(".process_id").attr("id")) {
+      $(".card_process_dump").show();
+      $(".loading_process_dump").hide();
+    }
     loot_datatable.row.add(loot).draw().node();
-  }
-  if (result.pid == $(".process_id").attr("id")) {
-    $(".card_process_dump").show();
-    $(".loading_process_dump").hide();
   }
 }

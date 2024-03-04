@@ -48,7 +48,7 @@ def dump_process_pslist(evidence_id, pid):
     result = instance.pslist_dump(pid)
     loot = Loot()
     loot.evidence = instance.evidence
-    if result != "Error outputting file":
+    if result and result != "Error outputting file":
         loot.Status = True
         loot.Name = (
             f"Process with PID {pid} - FileName: {result} - Dumped using PsList."
@@ -68,9 +68,10 @@ def dump_process_pslist(evidence_id, pid):
             },
         )
     else:
+        print("JE PASSE LA")
         loot.Status = False
         loot.Name = f"Process with PID {pid} - Result: {result} - Dumped using PsList."
-        loot.FileName = result
+        loot.FileName = "No Result"
         loot.save()
         async_to_sync(channel_layer.group_send)(
             f"volatility_tasks_{evidence_id}",

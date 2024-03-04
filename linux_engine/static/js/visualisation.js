@@ -291,7 +291,7 @@ function build_malfind_process_card(data) {
     "card_clickable",
     "m-2",
   );
-  cardDiv.id = "malfind_process_" + data["Start VPN"];
+  cardDiv.id = "malfind_process_" + data["Start"];
 
   const cardBodyDiv = document.createElement("div");
   cardBodyDiv.classList.add("card-body", "p-2");
@@ -333,9 +333,8 @@ function display_malfind_details(data) {
   /*
     Display the detailled info when a malfind process card is clicked.
   */
-  $("#malfind_start_vpn").text(data["Start VPN"]);
-  $("#malfind_end_vpn").text(data["End VPN"]);
-  $("#malfind_tag").text(data.Tag);
+  $("#malfind_start_vpn").text(data["Start"]);
+  $("#malfind_end_vpn").text(data["End"]);
   $("#malfind_protection").text(data.Protection);
   $("#malfind_hexdump").text(data.Hexdump);
   $("#malfind_disasm").text(data.Disasm);

@@ -100,6 +100,13 @@ def start_analysis(dump_id):
             linux.Elfs(evidence=instance),
             linux.Sockstat(evidence=instance),
             linux.Timeliner(evidence=instance),
+            linux.Capabilities(evidence=instance),
+            linux.Kmsg(evidence=instance),
+            linux.Malfind(evidence=instance),
+            linux.Lsmod(evidence=instance),
+            linux.Envars(evidence=instance),
+            linux.MountInfo(evidence=instance),
+            linux.tty_check(evidence=instance),
         ]
 
         task_group = group(plugin.run.s(evidence_data) for plugin in volweb_plugins)
