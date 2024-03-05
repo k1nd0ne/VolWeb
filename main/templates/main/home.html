@@ -1,7 +1,67 @@
 {% extends "main/master.html" %} {% load static %} {% block content%}
 <script src="{% static 'main/js/home.js'%}"></script>
 <div class="container-fluid">
-    <div class="row justify-content-center align-items-center mt-3">
+    <div class="row justify-content-center sparkboxes mt-4">
+        <div class="col-2">
+            <div class="box box1">
+                <div class="details">
+                    <h3 id="evidence_count"></h3>
+                    <h4>EVIDENCE(S)</h4>
+                </div>
+                <div id="spark1"></div>
+            </div>
+        </div>
+
+        <div class="col-2">
+            <div class="box box2">
+                <div class="details">
+                    <h3 id="case_count"></h3>
+                    <h4>CASE(S)</h4>
+                </div>
+                <div id="spark1"></div>
+            </div>
+        </div>
+
+        <div class="col-2">
+            <div class="box box3">
+                <div class="details">
+                    <h3 id="users_count"></h3>
+                    <h4>INVESTIGATOR(S)</h4>
+                </div>
+                <div id="spark1"></div>
+            </div>
+        </div>
+
+        <div class="col-2">
+            <div class="box box4">
+                <div class="details">
+                    <h3 id="symbols_count"></h3>
+                    <h4>ISF</h4>
+                </div>
+                <div id="spark1"></div>
+            </div>
+        </div>
+
+        <div class="col-2">
+            <div class="box box5">
+                <div class="details">
+                    <h3 id="total_evidences_progress"></h3>
+                    <h4>PROCESSING</h4>
+                </div>
+                <div id="spark1"></div>
+            </div>
+        </div>
+    </div>
+    <hr class="horizontal dark mt-3" />
+    <div class="row align-items-center mt-3">
+        <div class="col-8">
+            <div id="evidences_chart"></div>
+        </div>
+        <div class="col-4">
+            <div id="os_stats"></div>
+        </div>
+    </div>
+    <div class="row justify-content-center  mt-3">
         <div class="col-md-6 col-xl-4 mb-4">
             <div class="card border-start-primary py-2 shadow">
                 <div class="card-body">
@@ -16,10 +76,7 @@
                         </div>
                     </div>
                     <hr class="horizontal dark mt-0" />
-                    <ul
-                        id="cases_placeholder"
-                        class="list-group list-group-flush placeholder-glow"
-                    >
+                    <ul id="cases_placeholder" class="list-group list-group-flush placeholder-glow">
                         <li class="list-group-item">
                             <span class="placeholder col-12"></span>
                         </li>
@@ -36,10 +93,7 @@
                             <span class="placeholder col-12"></span>
                         </li>
                     </ul>
-                    <ul
-                        id="recent_cases"
-                        class="list-group list-group-flush"
-                    ></ul>
+                    <ul id="recent_cases" class="list-group list-group-flush"></ul>
                 </div>
             </div>
         </div>
@@ -75,16 +129,11 @@
                             </div>
                         </div>
                         <div class="col-auto">
-                            <i
-                                class="fab fa-connectdevelop fa-2x text-gray-600"
-                            ></i>
+                            <i class="fab fa-connectdevelop fa-2x text-gray-600"></i>
                         </div>
                     </div>
                     <hr class="horizontal dark mt-0" />
-                    <ul
-                        id="isf_placeholder"
-                        class="list-group list-group-flush placeholder-glow"
-                    >
+                    <ul id="isf_placeholder" class="list-group list-group-flush placeholder-glow">
                         <li class="list-group-item">
                             <span class="placeholder col-12"></span>
                         </li>
@@ -101,6 +150,7 @@
                             <span class="placeholder col-12"></span>
                         </li>
                     </ul>
+                    <ul id="recent_isf" class="list-group list-group-flush"></ul>
                 </div>
             </div>
         </div>
@@ -108,3 +158,4 @@
 </div>
 
 {% endblock content%}
+</div>

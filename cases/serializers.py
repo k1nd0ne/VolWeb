@@ -69,7 +69,7 @@ def send_case_created(sender, instance, created, **kwargs):
     post_delete,
     sender=Case,
 )
-def send_case_created(sender, instance, **kwargs):
+def send_case_deleted(sender, instance, **kwargs):
     channel_layer = get_channel_layer()
     serializer = CaseSerializer(instance)
     print(serializer)

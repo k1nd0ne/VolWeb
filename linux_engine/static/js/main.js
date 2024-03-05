@@ -6,7 +6,8 @@ $(document).ready(function () {
   connectWebSocket(evidence_id);
   display_pstree(evidence_id);
   display_timeline(evidence_id);
-
+  $("#loading-content").addClass("d-none");
+  $("#main-content").removeClass("d-none");
   /* ======================= Overview ======================= */
 
   $(".card_psscan").on("click", function () {

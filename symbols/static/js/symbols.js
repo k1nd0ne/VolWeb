@@ -40,6 +40,8 @@ function get_symbols() {
       display_symbol($(this).attr("value"));
     });
     symbols.searchBuilder.container().prependTo(symbols.table().container());
+    $("#loading-content").addClass("d-none");
+    $("#main-content").removeClass("d-none");
   });
 }
 

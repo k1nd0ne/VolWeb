@@ -2,59 +2,66 @@ var evidences;
 var reconnectDelay = 10000;
 
 function upload_and_create_evidence(bucket_id) {
-  // configuration for Minio/AWS
-  AWS.config.update({
-    accessKeyId: "user",
-    secretAccessKey: "password",
-    region: "us-west-2", // (We don't care with Minio but it's important for AWS : TODO fetch information from backend)
-  });
+  $.ajax({
+    url: "/minio_secrets/",
+    type: "GET",
+    dataType: "json",
+    success: function (data) {
+      AWS.config.update({
+        accessKeyId: data.endpoint.key_id,
+        secretAccessKey: data.endpoint.key_password,
+        region: "us-west-2", // TODO, to get when testing AWS
+      });
 
-  // create an S3 instance
-  const s3 = new AWS.S3({
-    endpoint: "http://127.0.0.1:9000", // Minio server TODO : fetch info with API
-    s3ForcePathStyle: true,
-    signatureVersion: "v4",
-  });
+      const s3 = new AWS.S3({
+        endpoint: data.endpoint.url,
+        s3ForcePathStyle: true,
+        signatureVersion: "v4",
+      });
 
-  const fileChooser = document.getElementById("file-chooser");
-  const file = fileChooser.files[0];
+      const fileChooser = document.getElementById("file-chooser");
+      const file = fileChooser.files[0];
+      if (file) {
+        const uploader = s3.upload({
+          Bucket: bucket_id,
+          Key: file.name,
+          Body: file,
+          ACL: "public-read",
+        });
 
-  if (file) {
-    const uploader = s3.upload({
-      Bucket: bucket_id,
-      Key: file.name,
-      Body: file,
-      ACL: "public-read",
-    });
+        uploader.on("httpUploadProgress", function (evt) {
+          $(".upload-progress").removeClass("d-none");
+          $("#evidence_form").hide();
+          $("#upload-button").hide();
 
-    uploader.on("httpUploadProgress", function (evt) {
-      $(".upload-progress").removeClass("d-none");
-      $("#evidence_form").hide();
-      $("#upload-button").hide();
+          document.getElementById("upload-progress").innerHTML =
+            parseInt((evt.loaded * 100) / evt.total) + "%";
+        });
 
-      document.getElementById("upload-progress").innerHTML =
-        parseInt((evt.loaded * 100) / evt.total) + "%";
-    });
-
-    uploader.send(function (err, data) {
-      fileChooser.value = "";
-      document.getElementById("upload-progress").innerHTML = "";
-      if (err) {
-        toastr.error("Error : " + err);
+        uploader.send(function (err, data) {
+          fileChooser.value = "";
+          document.getElementById("upload-progress").innerHTML = "";
+          if (err) {
+            toastr.error("Error : " + err);
+          }
+          if (data) {
+            toastr.success("Upload Success");
+            create_evidence(file.name, data.ETag);
+            $("#modal_evidence_create").modal("toggle");
+            $(".upload-progress").addClass("d-none");
+            $("#evidence_form").show();
+            $("#upload-button").show();
+            clear_form();
+          }
+        });
+      } else {
+        toastr.warrning("Nothing to upload");
       }
-      if (data) {
-        toastr.success("Upload Success");
-        create_evidence(file.name, data.ETag);
-        $("#modal_evidence_create").modal("toggle");
-        $(".upload-progress").addClass("d-none");
-        $("#evidence_form").show();
-        $("#upload-button").show();
-        clear_form();
-      }
-    });
-  } else {
-    toastr.warrning("Nothing to upload");
-  }
+    },
+    error: function (xhr, status, error) {
+      toastr.error("The bucket S3 appliance can't be reached: " + error);
+    },
+  });
 }
 
 function get_evidences() {
@@ -161,8 +168,8 @@ function get_evidences() {
           },
         },
         {
-          mData: "dump_linked_case",
-          mRender: function (dump_linked_case, type, row) {
+          mData: "dump_linked_case_name",
+          mRender: function (dump_linked_case_name, type, row) {
             div = document.createElement("small");
 
             div.setAttribute(
@@ -172,7 +179,7 @@ function get_evidences() {
             logo = document.createElement("i");
             span = document.createElement("span");
             logo.setAttribute("class", "fas fa-suitcase m-2");
-            span.textContent = dump_linked_case;
+            span.textContent = dump_linked_case_name;
             div.appendChild(logo);
             div.appendChild(span);
             if (row.dump_status != "100") {
@@ -315,7 +322,7 @@ function reconnectWebSocket() {
 
 function connectWebSocket() {
   $.ajax({
-    url: "/websocket-url/", // Adjust this if your URL is different
+    url: "/websocket-url/",
     type: "GET",
     dataType: "json",
     success: function (data) {
@@ -324,12 +331,15 @@ function connectWebSocket() {
       const socket_evidences = new WebSocket(websocketUrl);
 
       socket_evidences.onopen = function () {
-        reconnectDelay = 1000;
+        reconnectDelay = 5000;
         get_evidences();
       };
 
       socket_evidences.onmessage = function (e) {
         result = JSON.parse(e.data);
+        console.log(result.status);
+        console.log(result.message);
+
         if (result.status == "created") {
           try {
             evidences.row("#" + result.message.dump_id).data(result.message);
@@ -352,7 +362,8 @@ function connectWebSocket() {
               .remove()
               .draw();
           } catch {
-            toastr.error("Could not delete the case, please try again.");
+            toastr.error("Could not delete the case, retrying...");
+            reconnectWebSocket();
           }
         }
       };
@@ -369,6 +380,8 @@ function connectWebSocket() {
         toastr.error("Can't connect to the server.", error);
         socket_evidences.close(); // Close the WebSocket connection if an error occurs
       };
+      $("#loading-content").addClass("d-none");
+      $("#main-content").removeClass("d-none");
     },
     error: function (xhr, status, error) {
       // Handle any errors here
@@ -379,7 +392,6 @@ function connectWebSocket() {
 
 $(document).ready(function () {
   connectWebSocket();
-
   document.getElementById("upload-button").addEventListener("click", () => {
     // First we go an fetch the uuid of the bucket associated with the case selected by the user.
     const evidence_name = $("#id_dump_name").val();

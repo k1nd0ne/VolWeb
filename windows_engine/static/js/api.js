@@ -733,8 +733,6 @@ function display_timeline(evidence_id) {
               display_timeliner(evidence_id, timestamp);
             },
             zoomed: function (chartContext, { xaxis, yaxis }) {
-              console.log(data.artefacts[xaxis.min - 1][0]);
-              console.log(data.artefacts[xaxis.max - 1][0]);
               display_timeliner(
                 evidence_id,
                 data.artefacts[xaxis.min - 1][0],

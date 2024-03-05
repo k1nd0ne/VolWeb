@@ -312,6 +312,8 @@ function connectWebSocket() {
         toastr.error("Can't connect to the server.", error);
         socket_cases.close();
       };
+      $("#loading-content").addClass("d-none");
+      $("#main-content").removeClass("d-none");
     },
     error: function (xhr, status, error) {
       console.error("Error fetching WebSocket URL:", xhr.responseText);

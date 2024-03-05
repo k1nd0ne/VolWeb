@@ -7,7 +7,8 @@ $(document).ready(function () {
   display_pstree(evidence_id);
   display_timeline(evidence_id);
   display_loot(evidence_id);
-
+  $("#loading-content").addClass("d-none");
+  $("#main-content").removeClass("d-none");
   /* ======================= Overview ======================= */
 
   $(".card_mftscan").on("click", function () {
