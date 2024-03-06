@@ -2,6 +2,10 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework import permissions
 from VolWeb.keyconfig import Secrets
 from cases.models import Case
 from evidences.models import Evidence
@@ -10,6 +14,9 @@ from django_celery_results.models import TaskResult
 from windows_engine.serializers import TasksSerializer
 from cases.serializers import CaseSerializer
 from symbols.serializers import SymbolSerializer
+from main.models import Indicator
+from main.serializers import IndicatorSerializer
+from main.forms import IndicatorForm
 
 
 @login_required
@@ -72,3 +79,30 @@ def statistics(request):
     'last_5_cases': cases_serializer.data,
     'last_5_isf': symbols_serializer.data,
     })
+
+class IndicatorApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+        """
+        Get all the symbols
+        """
+        indicators = Indicator.objects.all()
+        serializer = IndicatorSerializer(indicators, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        serializer = IndicatorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class IndicatorCaseApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, case_id, *args, **kwargs):
+        """
+        Get all the symbols
+        """
+        indicators = Indicator.objects.filter(evidence__dump_linked_case=case_id)
+        serializer = IndicatorSerializer(indicators, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

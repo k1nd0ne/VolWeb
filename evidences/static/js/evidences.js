@@ -64,9 +64,13 @@ function upload_and_create_evidence(bucket_id) {
   });
 }
 
-function get_evidences() {
+function get_evidences(case_id) {
+  var url = "/api/evidences/";
+  if (case_id) {
+    url = `/api/evidences/case/${case_id}`;
+  }
   $.ajax({
-    url: "/api/evidences/",
+    url: url,
     method: "GET",
     contentType: "application/json",
   }).done(function (data) {
@@ -141,14 +145,14 @@ function get_evidences() {
             if (dump_os == "Windows") {
               div.setAttribute(
                 "class",
-                "px-1 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2 align-items-center",
+                "d-flex px-0 py-0 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2 align-items-center",
               );
               logo.setAttribute("class", "fab fa-windows m-2");
               span.setAttribute("class", "text-info");
             } else {
               div.setAttribute(
                 "class",
-                "px-1 py-1 fw-semibold text-purple-emphasis bg-purple-subtle border border-purple-subtle rounded-2 align-items-center",
+                "d-flex px-0 py-0 fw-semibold text-purple-emphasis bg-purple-subtle border border-purple-subtle rounded-2 align-items-center",
               );
               logo.setAttribute("class", "fab fa-linux m-2");
               span.setAttribute("class", "text-purple");
@@ -160,7 +164,7 @@ function get_evidences() {
             if (row.dump_status != "100") {
               div.setAttribute(
                 "class",
-                "px-1 py-1 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
+                "d-flex px-0 py-0 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
               );
               span.setAttribute("class", "text-muted");
             }
@@ -195,17 +199,33 @@ function get_evidences() {
         {
           mData: "dump_status",
           mRender: function (dump_status, type) {
-            div = document.createElement("div");
-            div.setAttribute("class", "d-flex align-items-center");
-            span = document.createElement("span");
+            div = document.createElement("small");
+
+            div.setAttribute(
+              "class",
+              "px-1 py-1 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
+            );
             logo = document.createElement("i");
+            span = document.createElement("span");
+            span.textContent = dump_status;
+            div.appendChild(logo);
+            div.appendChild(span);
+
             if (dump_status == "100") {
+              div.setAttribute(
+                "class",
+                "px-1 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 align-items-center",
+              );
               logo.setAttribute("class", "fas fa-check m-2");
               span.setAttribute("class", "text-success");
               span.textContent = "Completed";
             } else {
+              div.setAttribute(
+                "class",
+                "px-1 py-1 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
+              );
+              span.setAttribute("class", "text-muted");
               logo.setAttribute("class", "fas fa-percentage m-2");
-              span.textContent = dump_status;
             }
             div.appendChild(span);
             div.appendChild(logo);
@@ -222,7 +242,7 @@ function get_evidences() {
     });
     evidences.searchBuilder
       .container()
-      .prependTo(evidences.table().container());
+      .prependTo($(evidences.table().container()));
   });
 }
 
@@ -320,7 +340,7 @@ function reconnectWebSocket() {
   }, reconnectDelay);
 }
 
-function connectWebSocket() {
+function connectWebSocket(case_id) {
   $.ajax({
     url: "/websocket-url/",
     type: "GET",
@@ -332,13 +352,11 @@ function connectWebSocket() {
 
       socket_evidences.onopen = function () {
         reconnectDelay = 5000;
-        get_evidences();
+        get_evidences(case_id);
       };
 
       socket_evidences.onmessage = function (e) {
         result = JSON.parse(e.data);
-        console.log(result.status);
-        console.log(result.message);
 
         if (result.status == "created") {
           try {
@@ -389,76 +407,3 @@ function connectWebSocket() {
     },
   });
 }
-
-$(document).ready(function () {
-  connectWebSocket();
-  document.getElementById("upload-button").addEventListener("click", () => {
-    // First we go an fetch the uuid of the bucket associated with the case selected by the user.
-    const evidence_name = $("#id_dump_name").val();
-    const evidence_os = $("#id_dump_os").val();
-    const linked_case_id = $("#id_dump_linked_case").val();
-
-    //Check if the user selected a case.
-    if (evidence_name === "") {
-      $("#form-error").text("Please enter a name for the evidence.");
-      return;
-    }
-
-    if (evidence_os === "") {
-      $("#form-error").text("Please select an os for this evidence");
-      return;
-    }
-
-    if (linked_case_id === "") {
-      $("#form-error").text("Please select a linked case.");
-      return;
-    }
-    $("#form-error").text("");
-
-    $.ajax({
-      type: "GET",
-      url: "/api/cases/" + linked_case_id + "/",
-      dataType: "json",
-      success: function (data) {
-        const bucket_name = data.case_bucket_id;
-        //Ok we have the bucket uuid we can try to upload the file to the bucket.
-        upload_and_create_evidence(bucket_name);
-      },
-      error: function (xhr, status, error) {
-        toastr.error("An error occurred : " + error);
-      },
-    });
-  });
-
-  $("#delete_evidence").on("click", function () {
-    $(".modal_evidence_review").modal("hide");
-    $(".modal_evidence_delete").modal("show");
-  });
-
-  $("#delete_evidence_confirmed").on("click", function () {
-    clear_form();
-    const evidence_id = $(".modal_evidence_review").attr("id");
-    delete_evidence(evidence_id);
-    $(".modal_evidence_delete").modal("hide");
-  });
-
-  $("#review_evidence").on("click", function () {
-    const evidence_id = $(".modal_evidence_review").attr("id");
-    const os = $(".modal_evidence_review").attr("value").toLowerCase();
-    window.location.href = `/review/${os}/${evidence_id}/`;
-  });
-
-  $(".evidence_create").on("click", function () {
-    $("#modal_evidence_create").modal("show");
-  });
-
-  $("#modal_evidence_create").on("hide.bs.modal", function () {
-    clear_form();
-  });
-
-  $("#evidences").on("click", "tbody tr", function () {
-    if (!$(this).hasClass("not-completed")) {
-      display_evidence($(this).attr("value"));
-    }
-  });
-});

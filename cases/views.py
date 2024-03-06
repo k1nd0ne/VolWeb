@@ -10,6 +10,13 @@ from cases.models import Case
 from minio import Minio
 import uuid
 
+@login_required
+def case(request, case_id):
+    case = Case.objects.get(case_id=case_id)
+    return render(
+        request, "cases/case.html", {"case": case}
+    )
+
 
 class CasesApiView(APIView):
     # add permission to check if user is authenticated

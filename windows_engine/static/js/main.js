@@ -7,6 +7,7 @@ $(document).ready(function () {
   display_pstree(evidence_id);
   display_timeline(evidence_id);
   display_loot(evidence_id);
+  init_stix();
   $("#loading-content").addClass("d-none");
   $("#main-content").removeClass("d-none");
   /* ======================= Overview ======================= */

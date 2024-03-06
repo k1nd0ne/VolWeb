@@ -45,10 +45,10 @@ function get_cases() {
         },
         {
           mData: "case_description",
-          width: "40%",
           mRender: function (case_description, type) {
             div = document.createElement("div");
-            div.setAttribute("class", "align-items-center");
+            div.setAttribute("class", "text-truncate");
+            div.setAttribute("style", "max-width: 500px");
             logo = document.createElement("i");
             span = document.createElement("span");
             span.setAttribute("class", "text-muted text-truncate-multiline");
@@ -329,6 +329,11 @@ $(document).ready(function () {
     $("#modal_case_create").modal("show");
     $(".save_case").hide();
     $("#new_case").show();
+  });
+
+  $("#view_case").on("click", function () {
+    const case_id = $(".modal_case_review").attr("id");
+    window.location.href = `/case/${case_id}/`;
   });
 
   $("#modal_case_create").on("hide.bs.modal", function () {

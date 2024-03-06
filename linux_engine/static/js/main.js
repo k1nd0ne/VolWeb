@@ -6,6 +6,7 @@ $(document).ready(function () {
   connectWebSocket(evidence_id);
   display_pstree(evidence_id);
   display_timeline(evidence_id);
+  init_stix();
   $("#loading-content").addClass("d-none");
   $("#main-content").removeClass("d-none");
   /* ======================= Overview ======================= */

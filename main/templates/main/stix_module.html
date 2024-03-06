@@ -1,0 +1,83 @@
+<span
+    class="floating-button"
+    tabindex="0"
+    data-bs-toggle="popover"
+    data-bs-trigger="hover focus"
+    data-bs-content="Create a new STIX Object"
+>
+    <button
+        class="btn btn-danger"
+        data-bs-toggle="modal"
+        data-bs-target="#stix_modal"
+    >
+        +
+    </button>
+</span>
+
+<div class="modal fade" id="stix_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Create a STIX Object</h1>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <select class="form-select indicator-form-select">
+                        <option selected>Type</option>
+                        <option value="indicator">Indicator</option>
+                        <option value="observed_data">ObservedData</option>
+                    </select>
+                </div>
+
+                <form id="indicator_form">
+                    <div class="mb-3">
+                        <label class="form-label">Indicator Type*</label>
+                        {{stix_indicator_form.type}}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description*</label>
+                        {{stix_indicator_form.description}}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Value*</label>
+                        {{stix_indicator_form.value}}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">TLP*</label>
+                        {{stix_indicator_form.tlp}}
+                    </div>
+                    <input
+                        type="hidden"
+                        name="evidence"
+                        value="{{evidence.dump_id}}"
+                    />
+                    <div class="mb-3">
+                        <button
+                            type="submit"
+                            class="btn btn-outline-danger"
+                            id="submit"
+                        >
+                            Create
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

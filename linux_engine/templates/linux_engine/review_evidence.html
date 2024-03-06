@@ -3,9 +3,8 @@
 <script src="{% static 'linux_engine/js/pstree.js'%}"></script>
 <script src="{% static 'linux_engine/js/api.js'%}"></script>
 <script src="{% static 'linux_engine/js/tree.js'%}"></script>
-<script src="{% static 'windows_engine/js/tasks.js'%}"></script>
-<script src="{% static 'windows_engine/js/loot.js'%}"></script>
 <script src="{% static 'linux_engine/js/visualisation.js'%}"></script>
+<script src="{% static 'main/js/stix_module.js'%}"></script>
 
 <link
     rel="stylesheet"
@@ -80,19 +79,6 @@
                         Rootkits
                     </button>
                 </li>
-                <li class="nav-item">
-                    <button
-                        class="nav-link"
-                        id="loot-tab"
-                        data-bs-toggle="pill"
-                        data-bs-target="#loot"
-                        type="button"
-                        role="tab"
-                        aria-selected="false"
-                    >
-                        <i class="fas fa-download"></i>&nbsp;Loot
-                    </button>
-                </li>
             </ul>
         </div>
     </div>
@@ -146,28 +132,6 @@
         >
             {% include "linux_engine/advanced.html" %}
         </div>
-        <div
-            class="tab-pane fade"
-            id="loot"
-            role="tabpanel"
-            aria-labelledby="loot-tab"
-            tabindex="0"
-        >
-            <table
-                id="loot_datatable"
-                class="table-sm table-responsive table-hover table"
-                style="width: 100%"
-            >
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Result</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
     </div>
 </div>
 
@@ -176,4 +140,4 @@
 <script>
     var cpu = "{% static 'windows_engine/images/cpu.svg' %}";
 </script>
-{% endblock content%}
+{% include "main/stix_module.html" %} {% endblock content%}

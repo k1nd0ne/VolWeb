@@ -16,22 +16,6 @@
     font-size: 0.875rem;
 }
 
-.not-completed {
-    -webkit-animation: glowing 1s ease-in-out infinite alternate;
-    -moz-animation: glowing 1s ease-in-out infinite alternate;
-    animation: glowing 1s ease-in-out infinite alternate;
-}
-
-@-webkit-keyframes glowing {
-    from {
-        text-shadow: 0 0 20px #ffffff;
-    }
-
-    to {
-        text-shadow: 0 0 30px #767676;
-    }
-}
-
 .border-purple-subtle {
     border-color: #90086e !important;
 }

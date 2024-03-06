@@ -31,7 +31,7 @@ class CaseEvidenceApiView(APIView):
 
     def get(self, request, case_id, *args, **kwargs):
         """
-        List all the evidence for given requested user
+        List all the evidences for given requested user
         """
         evidences = Evidence.objects.filter(dump_linked_case=case_id)
         serializer = EvidenceSerializer(evidences, many=True)
@@ -117,9 +117,11 @@ class EvidenceDetailApiView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Now, we get the bucket associated to this evidence.
         bucket = evidence_instance.dump_linked_case.case_bucket_id
         object = evidence_instance.dump_name
         try:
+            # TODO: Env variables!
             client = Minio(
                 Secrets.AWS_ENDPOINT_HOST,
                 Secrets.AWS_ACCESS_KEY_ID,

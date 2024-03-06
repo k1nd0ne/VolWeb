@@ -173,7 +173,9 @@ function get_statistics() {
       let tasks_stats = countTasksByDate(data.tasks);
       tasks_stats.dates;
       tasks_stats.counts;
-
+      if (data.total_evidences_progress > 0) {
+        $(".box-processing").addClass("not-completed");
+      }
       $("#cases_placeholder").hide();
 
       $.each(data.last_5_cases, function (_i, caseItem) {

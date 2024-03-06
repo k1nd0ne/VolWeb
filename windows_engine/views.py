@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from main.forms import IndicatorForm
+
 from windows_engine.tasks import (
     compute_handles,
     dump_process_pslist,
@@ -21,8 +23,9 @@ from django.db.models import Q
 @login_required
 def review(request, dump_id):
     evidence = Evidence.objects.get(dump_id=dump_id)
+    stix_indicator = IndicatorForm()
     return render(
-        request, "windows_engine/review_evidence.html", {"evidence": evidence}
+        request, "windows_engine/review_evidence.html", {"evidence": evidence, "stix_indicator_form":stix_indicator}
     )
 
 

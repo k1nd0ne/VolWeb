@@ -6,6 +6,7 @@
 <script src="{% static 'windows_engine/js/tree.js'%}"></script>
 <script src="{% static 'windows_engine/js/tasks.js'%}"></script>
 <script src="{% static 'windows_engine/js/loot.js'%}"></script>
+<script src="{% static 'main/js/stix_module.js'%}"></script>
 <link
     rel="stylesheet"
     href="{% static 'main/css/treejs.min.css'%}"
@@ -175,4 +176,5 @@
 <script>
     var cpu = "{% static 'windows_engine/images/cpu.svg' %}";
 </script>
-{% endblock content%}
+
+{% include "main/stix_module.html" %} {% endblock content%}
