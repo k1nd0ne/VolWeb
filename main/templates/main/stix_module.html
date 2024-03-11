@@ -3,81 +3,120 @@
     tabindex="0"
     data-bs-toggle="popover"
     data-bs-trigger="hover focus"
-    data-bs-content="Create a new STIX Object"
+    data-bs-content="New Indicator"
 >
     <button
-        class="btn btn-danger"
-        data-bs-toggle="modal"
-        data-bs-target="#stix_modal"
+        class="btn btn-danger rounded-circle"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#stix_creation_canvas"
     >
-        +
+        <i class="fas fa-fingerprint"></i>
     </button>
 </span>
 
-<div class="modal fade" id="stix_modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">Create a STIX Object</h1>
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                ></button>
-            </div>
-            <div class="modal-body">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <select class="form-select indicator-form-select">
-                        <option selected>Type</option>
-                        <option value="indicator">Indicator</option>
-                        <option value="observed_data">ObservedData</option>
-                    </select>
-                </div>
+<span
+    class="floating-button-2"
+    tabindex="0"
+    data-bs-toggle="popover"
+    data-bs-trigger="hover focus"
+    data-bs-content="View Indicators"
+>
+    <button
+        class="btn btn-show-indicators btn-info rounded-circle"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#stix_indicators_canvas"
+    >
+        <i class="fas fa-eye"></i>
+    </button>
+</span>
 
-                <form id="indicator_form">
-                    <div class="mb-3">
-                        <label class="form-label">Indicator Type*</label>
-                        {{stix_indicator_form.type}}
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description*</label>
-                        {{stix_indicator_form.description}}
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Value*</label>
-                        {{stix_indicator_form.value}}
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">TLP*</label>
-                        {{stix_indicator_form.tlp}}
-                    </div>
-                    <input
-                        type="hidden"
-                        name="evidence"
-                        value="{{evidence.dump_id}}"
-                    />
-                    <div class="mb-3">
-                        <button
-                            type="submit"
-                            class="btn btn-outline-danger"
-                            id="submit"
-                        >
-                            Create
-                        </button>
-                    </div>
-                </form>
+<div
+    class="offcanvas offcanvas-end"
+    tabindex="-1"
+    id="stix_creation_canvas"
+    data-bs-backdrop="true"
+    data-bs-scroll="true"
+>
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasRightLabel">
+            Create a new Indicator
+        </h5>
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+        ></button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="indicator_form">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Indicator Type*</label>
+                {{stix_indicator_form.type}}
             </div>
-            <div class="modal-footer">
+            <div class="mb-3">
+                <label class="form-label">Name*</label>
+                {{stix_indicator_form.name}}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description*</label>
+                {{stix_indicator_form.description}}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Value*</label>
+                {{stix_indicator_form.value}}
+            </div>
+            <input type="hidden" name="evidence" value="{{evidence.dump_id}}" />
+            <div class="mb-3">
                 <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
+                    type="submit"
+                    class="btn btn-outline-danger"
+                    id="submit"
                 >
-                    Close
+                    Create
                 </button>
             </div>
-        </div>
+        </form>
+    </div>
+</div>
+
+<div
+    class="offcanvas offcanvas-end"
+    tabindex="-1"
+    id="stix_indicators_canvas"
+    data-bs-backdrop="true"
+    data-bs-scroll="true"
+    style="width: 60%"
+>
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title text-warning" id="offcanvasRightLabel">
+            Indicators
+        </h5>
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+        ></button>
+    </div>
+    <div class="offcanvas-body">
+        <table
+            id="indicators"
+            class="table-sm table-responsive table-hover table"
+            style="width: 100%"
+        >
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Value</th>
+                    <th>Source</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 </div>

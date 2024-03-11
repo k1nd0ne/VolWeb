@@ -51,10 +51,9 @@ function get_cases() {
             div.setAttribute("style", "max-width: 500px");
             logo = document.createElement("i");
             span = document.createElement("span");
-            span.setAttribute("class", "text-muted text-truncate-multiline");
+            span.setAttribute("class", "text-muted");
             logo.setAttribute("class", "fas fa-circle-info m-2");
             span.textContent = case_description;
-            span.style.maxWidth = "100%";
             div.appendChild(logo);
             div.appendChild(span);
             return div.outerHTML;

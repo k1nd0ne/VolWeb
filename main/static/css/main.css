@@ -1,7 +1,10 @@
-body {
-    font-family: Montserrat, Arial, sans-serif;
-    /* background-image: url("data:image/svg+xml,<svg id='patternId' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><defs><pattern id='a' patternUnits='userSpaceOnUse' width='20' height='20' patternTransform='scale(0.4) rotate(0)'><rect x='0' y='0' width='100%' height='100%' fill='hsla(210, 11%, 15%, 1)'/><path d='M0 0h10v10H0z'  stroke-width='1' stroke='none' fill='hsla(210, 11%, 15%, 0.72)'/><path d='M10 10h10v10H10z'  stroke-width='1' stroke='none' fill='hsla(210, 11%, 15%, 0.72)'/></pattern></defs><rect width='800%' height='800%' transform='translate(0,0)' fill='url(%23a)'/></svg>") */
-    background-image: url("data:image/svg+xml,<svg id='patternId' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><defs><pattern id='a' patternUnits='userSpaceOnUse' width='20' height='20' patternTransform='scale(0.4) rotate(0)'><rect x='0' y='0' width='100%' height='100%' fill='hsla(210, 11%, 15%, 1)'/><path d='M0 0h10v10H0z'  stroke-width='1' stroke='none' fill='hsla(358, 100%, 32%, 0.05)'/><path d='M10 10h10v10H10z'  stroke-width='1' stroke='none' fill='hsla(210, 11%, 15%, 1)'/></pattern></defs><rect width='800%' height='800%' transform='translate(0,0)' fill='url(%23a)'/></svg>")
+[data-bs-theme="dark"] {
+    --bs-volweb: #101418;
+    --bs-body-color: var(--bs-white);
+    --bs-body-color-rgb: #{to-rgb($white)};
+    --bs-body-bg: var(--bs-volweb);
+    --bs-body-bg-rgb: #{to-rgb($blue)};
+    --bs-tertiary-bg: #{$blue-600};
 }
 
 
@@ -47,6 +50,17 @@ body {
 [data-bs-theme=dark] .fas.fa-suitcase.icon.icon-shape.icon-sm.border-radius-md {
     color: var(--bs-light);
 }
+
+[data-bs-theme=light] .fas.fa-file-export.icon.icon-shape.icon-sm.border-radius-md {
+    color: var(--bs-dark);
+}
+
+[data-bs-theme=dark] .fas.fa-file-export.icon.icon-shape.icon-sm.border-radius-md {
+    color: var(--bs-light);
+}
+
+
+
 
 .icon {
     display: inline-block;
@@ -152,7 +166,7 @@ html * {
 }
 
 .nav-item {
-    width: 200px;
+    width: 150px;
 }
 
 .nav-link {
@@ -367,14 +381,20 @@ html * {
 
 .floating-button {
     position: fixed;
+    bottom: 80px;
+    right: 30px;
+    z-index: 1100;
+}
+
+.floating-button-2 {
+    position: fixed;
     bottom: 30px;
     right: 30px;
     z-index: 1100;
 }
 
-#indicator_form,
-#observed_data_form {
-    display: none;
+.offcanvas {
+    z-index: 1100;
 }
 
 .dtsb-titleRow {

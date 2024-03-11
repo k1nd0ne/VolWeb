@@ -54,40 +54,6 @@ function display_pstree(evidence_id) {
 }
 
 function display_process_info(process, evidence_id) {
-  // $.ajax({
-  //   type: "GET",
-  //   url: `${tasksURL}/tasks/`,
-  //   dataType: "json",
-  //   success: function (tasks) {
-  //     let handles_found = false;
-  //     let dump_found = false;
-
-  //     tasks.forEach(({ task_name, task_kwargs }) => {
-  //       const { pid, evidence_id: taskId } = JSON.parse(
-  //         task_kwargs.slice(1, -1),
-  //       );
-
-  //       if (pid == process.PID && taskId == evidence_id) {
-  //         if (task_name === "windows_engine.tasks.compute_handles") {
-  //           handles_found = true;
-  //         } else if (
-  //           task_name === "windows_engine.tasks.dump_process_memmap" ||
-  //           task_name === "windows_engine.tasks.dump_process_pslist"
-  //         ) {
-  //           dump_found = true;
-  //         }
-  //       }
-  //     });
-
-  //     $(".card_process_dump").toggle(!dump_found);
-  //     $(".loading_process_dump").toggle(dump_found);
-  //     $(".card_handles").toggle(!handles_found);
-  //     $(".loading_handles").toggle(handles_found);
-  //   },
-  //   error: function (xhr, status, error) {
-  //     toastr.error("An error occurred while getting the tasks : " + error);
-  //   },
-  // });
   $(".process_id").attr("id", process.PID);
   $(".process_title").text(process.COMM);
   $(".p_pid").text(process.PID);

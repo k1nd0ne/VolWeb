@@ -88,7 +88,7 @@
 }
 
 [data-bs-theme="dark"] #overview_graph {
-    background-color: #212529;
+    background-color: var(--bs-volweb);
 }
 
 [data-bs-theme="light"] #overview_graph {

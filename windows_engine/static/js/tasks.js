@@ -22,7 +22,6 @@ function compute_handles(evidence_id, pid) {
                           <th>HandleValue</th>
                           <th>GrantedAccess</th>
                           <th>Type</th>
-                          <th></th>
                         </tr>
                     </thead>
                 </table>`,
@@ -35,12 +34,6 @@ function compute_handles(evidence_id, pid) {
             { data: "HandleValue" },
             { data: "GrantedAccess" },
             { data: "Type" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
-            },
           ],
           aLengthMenu: [
             [25, 50, 75, -1],
@@ -119,7 +112,6 @@ function dump_process_memmap(evidence_id, pid) {
 }
 
 function dump_file(evidence_id, file_id) {
-  console.log(file_id);
   $.ajax({
     type: "GET",
     url: "/tasks/windows/" + evidence_id + "/dump/" + file_id + "/filescan/",

@@ -4,17 +4,20 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
+from VolWeb.keyconfig import Secrets
 from cases.serializers import CaseSerializer
 from cases.forms import CaseForm
 from cases.models import Case
+from evidences.forms import EvidenceForm
 from minio import Minio
 import uuid
 
 @login_required
 def case(request, case_id):
     case = Case.objects.get(case_id=case_id)
+    evidence_form = EvidenceForm()
     return render(
-        request, "cases/case.html", {"case": case}
+        request, "cases/case.html", {"case": case, "evidence_form": evidence_form}
     )
 
 
@@ -39,7 +42,7 @@ class CasesApiView(APIView):
         """
         bucket_uuid = uuid.uuid4()
         try:
-            client = Minio("localhost:9000", "user", "password", secure=False)
+            client = Minio(Secrets.AWS_ENDPOINT_HOST, Secrets.AWS_ACCESS_KEY_ID, Secrets.AWS_SECRET_ACCESS_KEY, secure=False)
             client.make_bucket(str(bucket_uuid))
         except:
             return Response(
@@ -65,6 +68,8 @@ class CasesApiView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 @login_required

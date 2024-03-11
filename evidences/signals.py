@@ -13,13 +13,12 @@ from evidences.serializers import EvidenceSerializer
 def send_evidence_created(sender, instance, created, **kwargs):
     if created:
         start_analysis.delay(instance.dump_id)
-    else:
-        channel_layer = get_channel_layer()
-        serializer = EvidenceSerializer(instance)
-        async_to_sync(channel_layer.group_send)(
-            "evidences",
-            {"type": "send_notification", "status": "created", "message": serializer.data},
-        )
+    channel_layer = get_channel_layer()
+    serializer = EvidenceSerializer(instance)
+    async_to_sync(channel_layer.group_send)(
+        "evidences",
+        {"type": "send_notification", "status": "created", "message": serializer.data},
+    )
 
 
 @receiver(post_delete, sender=Evidence)

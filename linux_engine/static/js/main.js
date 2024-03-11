@@ -7,6 +7,10 @@ $(document).ready(function () {
   display_pstree(evidence_id);
   display_timeline(evidence_id);
   init_stix();
+
+  $(".btn-show-indicators").on("click", function () {
+    get_indicators($("#case").attr("value"), evidence_id);
+  });
   $("#loading-content").addClass("d-none");
   $("#main-content").removeClass("d-none");
   /* ======================= Overview ======================= */

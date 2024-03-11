@@ -1,9 +1,8 @@
 from django.db import models
-from django.db import models
 from evidences.models import Evidence
 import base64
 from celery import shared_task
-import logging, json
+import logging
 import volatility3
 from volatility3.framework import contexts
 from volatility3 import plugins
@@ -11,7 +10,6 @@ from django.apps import apps
 from VolWeb.voltools import *
 from volatility3.framework.exceptions import *
 volatility3.framework.require_interface_version(2, 0, 0)
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 base_config_path = "plugins"

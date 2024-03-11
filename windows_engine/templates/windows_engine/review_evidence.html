@@ -30,10 +30,16 @@
 <script src="{% static 'main/js/lib/graphlib.min.js'%}"></script>
 
 <nav class="navbar navbar-expand-lg border-bottom">
-    <div class="container-fluid">
+    <div
+        class="container-fluid"
+        id="case"
+        value="{{evidence.dump_linked_case.case_id}}"
+    >
         <div class="navbar-brand">
             <i class="fas fa-suitcase"></i>
-            {{evidence.dump_linked_case.case_name}}
+            <a href="/case/{{evidence.dump_linked_case.case_id}}/"
+                >{{evidence.dump_linked_case.case_name}}</a
+            >
             <i class="fas fa-chevron-right"></i>
             {{evidence.dump_name}}
         </div>
@@ -76,8 +82,7 @@
                         role="tab"
                         aria-selected="false"
                     >
-                        <i class="fas fa-syringe"></i>&nbsp;Injections &
-                        Rootkits
+                        <i class="fas fa-syringe"></i>&nbsp;Advanced
                     </button>
                 </li>
                 <li class="nav-item">
@@ -131,7 +136,6 @@
                         <th>Accessed</th>
                         <th>Changed</th>
                         <th>Modified</th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -153,20 +157,22 @@
             aria-labelledby="loot-tab"
             tabindex="0"
         >
-            <table
-                id="loot_datatable"
-                class="table-sm table-responsive table-hover table"
-                style="width: 100%"
-            >
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Result</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div class="row mt-2">
+                <table
+                    id="loot_datatable"
+                    class="table-sm table-responsive table-hover table"
+                    style="width: 100%"
+                >
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Result</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

@@ -28,7 +28,6 @@ function display_lsof(evidence_id, process_id) {
                         <th>PID</th>
                         <th>Process</th>
                         <th>Path</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -40,12 +39,6 @@ function display_lsof(evidence_id, process_id) {
           { data: "PID" },
           { data: "Process" },
           { data: "Path" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -87,7 +80,6 @@ function display_elfs(evidence_id, process_id) {
                         <th>Start</th>
                         <th>End</th>
                         <th>File Path</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -100,12 +92,6 @@ function display_elfs(evidence_id, process_id) {
           { data: "Start" },
           { data: "End" },
           { data: "File Path" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -147,7 +133,6 @@ function display_envars(evidence_id, process_id) {
                         <th>Process</th>
                         <th>Key</th>
                         <th>Value</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -160,12 +145,6 @@ function display_envars(evidence_id, process_id) {
           { data: "COMM" },
           { data: "KEY" },
           { data: "VALUE" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -212,7 +191,6 @@ function display_capabilities(evidence_id, process_id) {
                         <th>cap_effective</th>
                         <th>cap_inheritable</th>
                         <th>cap_permitted</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -230,12 +208,6 @@ function display_capabilities(evidence_id, process_id) {
           { data: "cap_effective" },
           { data: "cap_inheritable" },
           { data: "cap_permitted" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -278,7 +250,6 @@ function display_psscan(evidence_id) {
                         <th>PID</th>
                         <th>PPID</th>
                         <th>TID</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -292,12 +263,6 @@ function display_psscan(evidence_id) {
           { data: "PID" },
           { data: "PPID" },
           { data: "TID" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -339,7 +304,6 @@ function display_kmsg(evidence_id) {
                         <th>Level</th>
                         <th>Message</th>
                         <th>timestamp</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -352,12 +316,6 @@ function display_kmsg(evidence_id) {
           { data: "level" },
           { data: "line" },
           { data: "timestamp" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -398,7 +356,6 @@ function display_bash(evidence_id) {
                         <th>Process</th>
                         <th>CommandTime</th>
                         <th>Command</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -410,12 +367,6 @@ function display_bash(evidence_id) {
           { data: "Process" },
           { data: "CommandTime" },
           { data: "Command" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -456,7 +407,6 @@ function display_tty_check(evidence_id) {
                         <th>Module</th>
                         <th>Name</th>
                         <th>Symbol</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -468,12 +418,6 @@ function display_tty_check(evidence_id) {
           { data: "Module" },
           { data: "Name" },
           { data: "Symbol" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -521,7 +465,6 @@ function display_mount_info(evidence_id) {
                         <th>PARENT_ID</th>
                         <th>ROOT</th>
                         <th>SB_OPTIONS</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -540,12 +483,6 @@ function display_mount_info(evidence_id) {
           { data: "PARENT_ID" },
           { data: "ROOT" },
           { data: "SB_OPTIONS" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -568,11 +505,6 @@ function display_mount_info(evidence_id) {
       }
     },
   });
-}
-
-function generate_label(row) {
-  return "<small class='d-inline-flex px-1 fw-semibold text-primary-emphasis border border-primary-subtle'>OBSERVABLE</small>";
-  // return "<small class='d-inline-flex fw-semibold text-danger-emphasis border border-danger-subtle'>INDICATOR</small>";
 }
 
 function display_network(evidence_id) {
@@ -598,12 +530,6 @@ function display_network(evidence_id) {
           { data: "FD" },
           { data: "Filter" },
           { data: "NetNS" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [5, 10, 50, -1],
@@ -668,7 +594,7 @@ function display_timeline(evidence_id) {
           },
         ],
         chart: {
-          background: theme === "dark" ? "#212529" : "#fff",
+          background: theme === "dark" ? "#101418" : "#fff",
           type: "area",
           stacked: false,
           height: 500,
@@ -689,8 +615,6 @@ function display_timeline(evidence_id) {
               display_timeliner(evidence_id, timestamp);
             },
             zoomed: function (chartContext, { xaxis, yaxis }) {
-              console.log(data.artefacts[xaxis.min - 1][0]);
-              console.log(data.artefacts[xaxis.max - 1][0]);
               display_timeliner(
                 evidence_id,
                 data.artefacts[xaxis.min - 1][0],
@@ -770,12 +694,6 @@ function display_timeliner(evidence_id, timestamp_min, timestamp_max) {
       { data: "Accessed Date" },
       { data: "Changed Date" },
       { data: "Modified Date" },
-      {
-        data: "id",
-        render: function (data, type, row) {
-          return generate_label(row);
-        },
-      },
     ],
     aLengthMenu: [
       [25, 50, 75, -1],

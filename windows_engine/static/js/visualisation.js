@@ -61,22 +61,19 @@ function generate_network_visualisation(data) {
   });
   graph.getCells().forEach(function (cell) {
     if (cell.isLink()) {
-      // If cell is a link, send it to back
       cell.toBack();
     } else {
-      // If cell is an element (node), bring it to front
       cell.toFront();
     }
   });
 
   graph.on("add", function (cell) {
-    // Reset styles whenever a new cell is added
     applyStyles(cell, defaultStyles);
   });
 
   paper.on("cell:pointerclick", function (cellView, evt, x, y) {
     resetStyles();
-    highlightLinked(cellView.model); // Highlight connected nodes and edges
+    highlightLinked(cellView.model);
   });
   var bbox = graph.getBBox(graph.getElements());
   $(".netgraph").height(bbox.height + 30);
@@ -86,9 +83,7 @@ function generate_network_visualisation(data) {
     });
   }
 
-  // Define the function to highlight connected nodes and edges
   function highlightLinked(node) {
-    // Helper function to highlight the linked nodes and edges
     var connectedLinks = graph.getConnectedLinks(node);
     var linkedElements = [];
 
@@ -104,8 +99,6 @@ function generate_network_visualisation(data) {
         applyStyles(element, highlightStyles);
       }
     });
-
-    // Also highlight the clicked node itself
     applyStyles(node, highlightStyles);
   }
 }

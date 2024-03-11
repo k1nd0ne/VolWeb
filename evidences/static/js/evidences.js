@@ -95,7 +95,7 @@ function get_evidences(case_id) {
             div = document.createElement("small");
             div.setAttribute(
               "class",
-              "px-1 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2 align-items-center",
+              "d-flex fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2 align-items-center",
             );
             logo = document.createElement("i");
             code = document.createElement("code");
@@ -107,7 +107,7 @@ function get_evidences(case_id) {
             if (row.dump_status != "100") {
               div.setAttribute(
                 "class",
-                "px-1 py-1 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
+                "d-flex fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
               );
               $(code).addClass("text-muted");
             }
@@ -178,7 +178,7 @@ function get_evidences(case_id) {
 
             div.setAttribute(
               "class",
-              "px-1 py-1 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
+              "d-flex fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
             );
             logo = document.createElement("i");
             span = document.createElement("span");
@@ -189,7 +189,7 @@ function get_evidences(case_id) {
             if (row.dump_status != "100") {
               div.setAttribute(
                 "class",
-                "px-1 py-1 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
+                "d-flex fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
               );
               span.setAttribute("class", "text-muted");
             }
@@ -203,7 +203,7 @@ function get_evidences(case_id) {
 
             div.setAttribute(
               "class",
-              "px-1 py-1 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
+              "d-flex fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
             );
             logo = document.createElement("i");
             span = document.createElement("span");
@@ -214,7 +214,7 @@ function get_evidences(case_id) {
             if (dump_status == "100") {
               div.setAttribute(
                 "class",
-                "px-1 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 align-items-center",
+                "d-flex fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 align-items-center",
               );
               logo.setAttribute("class", "fas fa-check m-2");
               span.setAttribute("class", "text-success");
@@ -222,13 +222,13 @@ function get_evidences(case_id) {
             } else {
               div.setAttribute(
                 "class",
-                "px-1 py-1 fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
+                "d-flex fw-semibold text-white-emphasis bg-white-subtle border border-white-subtle rounded-2 align-items-center",
               );
               span.setAttribute("class", "text-muted");
               logo.setAttribute("class", "fas fa-percentage m-2");
             }
-            div.appendChild(span);
             div.appendChild(logo);
+            div.appendChild(span);
             return div.outerHTML;
           },
         },
@@ -358,30 +358,61 @@ function connectWebSocket(case_id) {
       socket_evidences.onmessage = function (e) {
         result = JSON.parse(e.data);
 
-        if (result.status == "created") {
-          try {
-            evidences.row("#" + result.message.dump_id).data(result.message);
-          } catch {
-            evidences.row.add(result.message).draw().node();
-          }
-          if (result.message.dump_status === 100) {
-            $("#" + result.message.dump_id).removeClass("not-completed");
-            $("#" + result.message.dump_id).addClass("completed");
+        if (result.status === "created") {
+          if (case_id) {
+            if (result.message.dump_linked_case == case_id) {
+              try {
+                evidences
+                  .row("#" + result.message.dump_id)
+                  .data(result.message);
+              } catch {
+                evidences.row.add(result.message).draw().node();
+              }
+              if (result.message.dump_status === 100) {
+                $("#" + result.message.dump_id).removeClass("not-completed");
+                $("#" + result.message.dump_id).addClass("completed");
+              } else {
+                $("#" + result.message.dump_id).removeClass("completed");
+                $("#" + result.message.dump_id).addClass("not-completed");
+              }
+            }
           } else {
-            $("#" + result.message.dump_id).removeClass("completed");
-            $("#" + result.message.dump_id).addClass("not-completed");
+            try {
+              evidences.row("#" + result.message.dump_id).data(result.message);
+            } catch {
+              evidences.row.add(result.message).draw().node();
+            }
+            if (result.message.dump_status === 100) {
+              $("#" + result.message.dump_id).removeClass("not-completed");
+              $("#" + result.message.dump_id).addClass("completed");
+            } else {
+              $("#" + result.message.dump_id).removeClass("completed");
+              $("#" + result.message.dump_id).addClass("not-completed");
+            }
           }
         }
 
-        if (result.status == "deleted") {
-          try {
-            evidences
-              .row("#" + result.message.dump_id)
-              .remove()
-              .draw();
-          } catch {
-            toastr.error("Could not delete the case, retrying...");
-            reconnectWebSocket();
+        if (result.status === "deleted") {
+          if (case_id) {
+            if (result.message.dump_linked_case == case_id) {
+              try {
+                evidences
+                  .row("#" + result.message.dump_id)
+                  .remove()
+                  .draw();
+              } catch {
+                toastr.error("Could not delete the evidence.");
+              }
+            }
+          } else {
+            try {
+              evidences
+                .row("#" + result.message.dump_id)
+                .remove()
+                .draw();
+            } catch {
+              toastr.error("Could not delete the evidence.");
+            }
           }
         }
       };

@@ -20,7 +20,6 @@ function display_psscan(evidence_id, process_id) {
                           <th>SessionId</th>
                           <th>Threads</th>
                           <th>Wow64</th>
-                          <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -38,12 +37,6 @@ function display_psscan(evidence_id, process_id) {
           { data: "SessionId" },
           { data: "Threads" },
           { data: "Wow64" },
-          {
-            mData: "id",
-            mRender: function (_id, _type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -83,24 +76,13 @@ function display_sids(evidence_id, process_id) {
                           <th>Process</th>
                           <th>Name</th>
                           <th>SID</th>
-                          <th></th>
                       </tr>
                   </thead>
               </table>`,
       );
       artefact_datatable = $("#artefacts_datatable").DataTable({
         aaData: data,
-        aoColumns: [
-          { data: "Process" },
-          { data: "Name" },
-          { data: "SID" },
-          {
-            mData: "id",
-            mRender: function (_id, _type, row) {
-              return generate_label(row);
-            },
-          },
-        ],
+        aoColumns: [{ data: "Process" }, { data: "Name" }, { data: "SID" }],
         aLengthMenu: [
           [25, 50, 75, -1],
           [25, 50, 75, "All"],
@@ -147,7 +129,6 @@ function display_mftscan(evidence_id) {
               <th>Link Count</th>
               <th>Attribute Type</th>
               <th>Offset</th>
-              <th></th>
             </tr>
           </thead>
         </table>`,
@@ -175,12 +156,6 @@ function display_mftscan(evidence_id) {
           { data: "Link Count" },
           { data: "Attribute Type" },
           { data: "Offset" },
-          {
-            mData: "id",
-            mRender: function (_id, _type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -222,7 +197,6 @@ function display_privs(evidence_id, process_id) {
                         <th>Description</th>
                         <th>Value</th>
                         <th>Attributes</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -235,12 +209,6 @@ function display_privs(evidence_id, process_id) {
           { data: "Description" },
           { data: "Value" },
           { data: "Attributes" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -281,7 +249,6 @@ function display_envars(evidence_id, process_id) {
                         <th>Block</th>
                         <th>Variable</th>
                         <th>Value</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -293,12 +260,6 @@ function display_envars(evidence_id, process_id) {
           { data: "Block" },
           { data: "Variable" },
           { data: "Value" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -397,7 +358,6 @@ function display_svcscan(evidence_id) {
                         <th>Start</th>
                         <th>State</th>
                         <th>Type</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -414,12 +374,6 @@ function display_svcscan(evidence_id) {
           { data: "Start" },
           { data: "State" },
           { data: "Type" },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -462,7 +416,6 @@ function display_dlllist(evidence_id, process_id) {
                         <th>Path</th>
                         <th>LoadTime</th>
                         <th>Size</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -476,12 +429,6 @@ function display_dlllist(evidence_id, process_id) {
           { data: "Path" },
           { data: "LoadTime" },
           { data: "Size" },
-          {
-            mData: "id",
-            mRender: function (_id, _type, row) {
-              return generate_label(row);
-            },
-          },
         ],
         aLengthMenu: [
           [25, 50, 75, -1],
@@ -522,7 +469,6 @@ function display_filescan(evidence_id) {
                         <th>Name</th>
                         <th>Size</th>
                         <th>Action</th>
-                        <th></th>
                       </tr>
                   </thead>
               </table>`,
@@ -538,12 +484,6 @@ function display_filescan(evidence_id) {
             mData: "id",
             mRender: function (id, type, row) {
               return generate_file_download_btn(row);
-            },
-          },
-          {
-            mData: "id",
-            mRender: function (id, type, row) {
-              return generate_label(row);
             },
           },
         ],
@@ -593,12 +533,6 @@ function display_network(evidence_id) {
             { data: "Offset" },
             { data: "Created" },
             { data: "Owner" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
-            },
           ],
           aLengthMenu: [
             [5, 10, 50, -1],
@@ -639,12 +573,6 @@ function display_network(evidence_id) {
             { data: "Offset" },
             { data: "Created" },
             { data: "Owner" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
-            },
           ],
           aLengthMenu: [
             [5, 10, 50, -1],
@@ -712,7 +640,7 @@ function display_timeline(evidence_id) {
           },
         ],
         chart: {
-          background: theme === "dark" ? "#212529" : "#fff",
+          background: theme === "dark" ? "#101418" : "#fff",
           type: "area",
           stacked: false,
           height: 500,
@@ -840,12 +768,6 @@ function display_timeliner(evidence_id, timestamp_min, timestamp_max) {
       { data: "Accessed Date" },
       { data: "Changed Date" },
       { data: "Modified Date" },
-      {
-        data: "id",
-        render: function (data, type, row) {
-          return generate_label(row);
-        },
-      },
     ],
     aLengthMenu: [
       [25, 50, 75, -1],
@@ -987,7 +909,6 @@ function display_ldrmodules(evidence_id) {
                             <th>InInit</th>
                             <th>InLoad</th>
                             <th>InMem</th>
-                            <th></th>
                         </tr>
                     </thead>
                 </table>`,
@@ -1002,12 +923,6 @@ function display_ldrmodules(evidence_id) {
             { data: "InInit" },
             { data: "InLoad" },
             { data: "InMem" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
-            },
           ],
           aLengthMenu: [
             [25, 50, 75, -1],
@@ -1062,7 +977,6 @@ function display_kernel_modules(evidence_id) {
                             <th>Offset</th>
                             <th>Path</th>
                             <th>Size</th>
-                            <th></th>
                         </tr>
                     </thead>
                 </table>`,
@@ -1075,12 +989,6 @@ function display_kernel_modules(evidence_id) {
             { data: "Offset" },
             { data: "Path" },
             { data: "Size" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
-            },
           ],
           aLengthMenu: [
             [25, 50, 75, -1],
@@ -1132,7 +1040,6 @@ function display_ssdt(evidence_id) {
                             <th>Index</th>
                             <th>Module</th>
                             <th>Symbol</th>
-                            <th></th>
                         </tr>
                     </thead>
                 </table>`,
@@ -1144,12 +1051,6 @@ function display_ssdt(evidence_id) {
             { data: "Index" },
             { data: "Module" },
             { data: "Symbol" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
-            },
           ],
           aLengthMenu: [
             [25, 50, 75, -1],
@@ -1205,7 +1106,6 @@ function display_ads(evidence_id) {
                             <th>MFT Type</th>
                             <th>Hexdump</th>
                             <th>Disasm</th>
-                            <th></th>
                         </tr>
                     </thead>
                 </table>`,
@@ -1229,13 +1129,6 @@ function display_ads(evidence_id) {
               mData: "Disasm",
               mRender: function (disasm, type, row) {
                 return ` <code><pre>${disasm}</pre></code>`;
-              },
-            },
-
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
               },
             },
           ],
@@ -1391,11 +1284,6 @@ function display_mbrscan(evidence_id) {
       $("#ir_artefacts_body").show();
     },
   });
-}
-
-function generate_label(row) {
-  return "<small class='d-inline-flex px-1 fw-semibold text-primary-emphasis border border-primary-subtle'>OBSERVABLE</small>";
-  // return "<small class='d-inline-flex fw-semibold text-danger-emphasis border border-danger-subtle'>INDICATOR</small>";
 }
 
 function generate_file_download_btn(data) {

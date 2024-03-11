@@ -9,14 +9,16 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.core.paginator import Paginator
 from django.db.models import Q
+from main.forms import IndicatorForm
 
 
 
 @login_required
 def review(request, dump_id):
     evidence = Evidence.objects.get(dump_id=dump_id)
+    stix_indicator = IndicatorForm()
     return render(
-        request, "linux_engine/review_evidence.html", {"evidence": evidence}
+        request, "linux_engine/review_evidence.html", {"evidence": evidence, "stix_indicator_form":stix_indicator}
     )
 
 class PsTreeApiView(APIView):

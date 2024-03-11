@@ -6,13 +6,39 @@
 <script src="{% static 'evidences/js/evidences.js'%}"></script>
 <script src="{% static 'evidences/js/lib/aws-sdk-2.1439.0.min.js'%}"></script>
 
-<div class="container-fluid">
+<div class="container-lg">
     <div class="row" id="case" value="{{case.case_id}}">
-        <div class="col-6 mt-3">
+        <div
+            class="col-12 d-flex align-items-center highlight-toolbar mt-3 border py-1 pe-2 ps-3"
+        >
+            <small class="font-monospace text-muted text-uppercase"
+                >ACTIONS</small
+            >
+            <div class="d-flex ms-auto">
+                <a class="nav-link evidence_create m-1 border" href="#">
+                    <div class="align-items-center d-flex">
+                        <i
+                            class="fas fa-upload icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center shadow"
+                        ></i>
+                        <span class="ms-1">Upload a new evidence</span>
+                    </div>
+                </a>
+
+                <a class="nav-link stix_bundle_create m-1 border" href="#">
+                    <div class="align-items-center d-flex">
+                        <i
+                            class="fas fa-file-export icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center shadow"
+                        ></i>
+                        <span class="ms-1">STIX Bundle</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 mt-3">
             <div class="card">
                 <div class="card-body">
                     <h4 class="h4">#{{case.case_id}} - {{case.case_name}}</h4>
-                    <ul class="list-group list-group-flush mt-0">
+                    <ul class="list-wgroup list-group-flush mt-0">
                         <li class="list-group-item">
                             <small>{{case.case_description}}</small>
                         </li>
@@ -39,40 +65,32 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 mt-3">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="h5 mt-3">Indicator(s)</h5>
-                            <hr class="horizontal dark mt-0" />
-                            <table
-                                id="indicators"
-                                class="table-sm table-responsive table-hover table"
-                                style="width: 100%"
-                            >
-                                <thead>
-                                    <tr>
-                                        <th>Type</th>
-                                        <th>Description</th>
-                                        <th>Value</th>
-                                        <th>TLP</th>
-                                        <th>Source</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 mt-3">
-                    <div class="card">
-                        <div class="card-body">Observed Data</div>
-                    </div>
+        <div class="col-12 mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="h5 mt-3">Indicator(s)</h5>
+                    <hr class="horizontal dark mt-0" />
+                    <table
+                        id="indicators"
+                        class="table-sm table-responsive table-hover table"
+                        style="width: 100%"
+                    >
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Value</th>
+                                <th>Source</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{%endblock content%}
+{% include "evidences/modals.html" %} {%endblock content%}

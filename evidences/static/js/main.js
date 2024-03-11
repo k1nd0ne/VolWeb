@@ -1,6 +1,6 @@
 $(document).ready(function () {
   connectWebSocket(null);
-  document.getElementById("upload-button").addEventListener("click", () => {
+  $("#upload-button").on("click", function () {
     // First we go an fetch the uuid of the bucket associated with the case selected by the user.
     const evidence_name = $("#id_dump_name").val();
     const evidence_os = $("#id_dump_os").val();
