@@ -24,8 +24,6 @@ def case(request, case_id):
 
 
 class CasesApiView(APIView):
-    # add permission to check if user is authenticated
-    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     # 1. List all
@@ -96,8 +94,7 @@ def cases(request):
 
 
 class CaseApiView(APIView):
-    # add permission to check if user is authenticated
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, case_id):
         """
