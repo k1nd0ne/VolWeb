@@ -15,48 +15,20 @@ const getPreferredTheme = () => {
 };
 
 const setTheme = (theme) => {
-  if (
-    theme === "auto" &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  ) {
-    document.documentElement.setAttribute("data-bs-theme", "dark");
-  } else {
-    document.documentElement.setAttribute("data-bs-theme", theme);
-  }
+  document.documentElement.setAttribute("data-bs-theme", theme);
 };
 
 setTheme(getPreferredTheme());
 
-const showActiveTheme = (theme, focus = false) => {
-  const themeSwitcher = document.querySelector("#bd-theme");
+const showActiveTheme = (theme) => {
+  const themeToggles = document.querySelectorAll("[data-bs-theme-toggle]");
 
-  if (!themeSwitcher) {
-    return;
-  }
-
-  const themeSwitcherText = document.querySelector("#bd-theme-text");
-  const activeThemeIcon = document.querySelector(".theme-icon-active use");
-  const btnToActive = document.querySelector(
-    `[data-bs-theme-value="${theme}"]`,
-  );
-  const svgOfActiveBtn = btnToActive
-    .querySelector("svg use")
-    .getAttribute("href");
-
-  document.querySelectorAll("[data-bs-theme-value]").forEach((element) => {
-    element.classList.remove("active");
-    element.setAttribute("aria-pressed", "false");
+  themeToggles.forEach((toggle) => {
+    toggle.classList.toggle(
+      "active",
+      toggle.getAttribute("data-bs-theme-toggle") === theme,
+    );
   });
-
-  btnToActive.classList.add("active");
-  btnToActive.setAttribute("aria-pressed", "true");
-  activeThemeIcon.setAttribute("href", svgOfActiveBtn);
-  const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`;
-  themeSwitcher.setAttribute("aria-label", themeSwitcherLabel);
-
-  if (focus) {
-    themeSwitcher.focus();
-  }
 };
 
 window
@@ -65,18 +37,21 @@ window
     const storedTheme = getStoredTheme();
     if (storedTheme !== "light" && storedTheme !== "dark") {
       setTheme(getPreferredTheme());
+      showActiveTheme(getPreferredTheme());
     }
   });
 
 window.addEventListener("DOMContentLoaded", () => {
   showActiveTheme(getPreferredTheme());
 
-  document.querySelectorAll("[data-bs-theme-value]").forEach((toggle) => {
+  const themeToggles = document.querySelectorAll("[data-bs-theme-toggle]");
+  themeToggles.forEach((toggle) => {
     toggle.addEventListener("click", () => {
-      const theme = toggle.getAttribute("data-bs-theme-value");
+      const theme = toggle.getAttribute("data-bs-theme-toggle");
       setStoredTheme(theme);
       setTheme(theme);
-      showActiveTheme(theme, true);
+      showActiveTheme(theme);
+      window.location.reload(); // TODO: Find a way to rerender charts to delete that horrible thing.
     });
   });
 });

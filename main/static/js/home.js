@@ -27,7 +27,7 @@ function build_donut(total_evidences_windows, total_evidences_linux) {
         return val + " - " + opts.w.globals.series[opts.seriesIndex];
       },
       labels: {
-        colors: "#fff",
+        colors: theme !== "dark" ? "#101418" : "#fff",
       },
       markers: {
         fillColors: ["#790909", "#670979"],
@@ -36,7 +36,7 @@ function build_donut(total_evidences_windows, total_evidences_linux) {
     title: {
       text: "Operating system repartition",
       style: {
-        color: "#fff",
+        color: theme !== "dark" ? "#101418" : "#fff",
       },
     },
     responsive: [
@@ -59,9 +59,12 @@ function build_donut(total_evidences_windows, total_evidences_linux) {
 }
 
 function build_graph(dates, counts) {
+  theme = document
+    .querySelector("[data-bs-theme]")
+    .getAttribute("data-bs-theme");
   var options2 = {
     theme: {
-      mode: "dark",
+      mode: theme,
       palette: "palette1",
       monochrome: {
         enabled: true,
@@ -77,13 +80,14 @@ function build_graph(dates, counts) {
       },
     ],
     chart: {
+      background: theme === "dark" ? "#101418" : "#fff",
       type: "area",
       height: 350,
       zoom: {
         enabled: false,
       },
       background: "transparent",
-      foreColor: "#fff",
+      foreColor: theme !== "dark" ? "#101418" : "#fff",
     },
     dataLabels: {
       enabled: false,
@@ -95,14 +99,14 @@ function build_graph(dates, counts) {
       text: "Analysis",
       align: "left",
       style: {
-        color: "#fff",
+        color: theme !== "dark" ? "#101418" : "#fff",
       },
     },
     subtitle: {
       text: "Started analysis in time",
       align: "left",
       style: {
-        color: "#fff",
+        color: theme !== "dark" ? "#101418" : "#fff",
       },
     },
     labels: dates,
@@ -110,21 +114,21 @@ function build_graph(dates, counts) {
       opposite: true,
       labels: {
         style: {
-          colors: "#fff",
+          colors: theme !== "dark" ? "#101418" : "#fff",
         },
       },
     },
     xaxis: {
       labels: {
         style: {
-          colors: "#fff",
+          colors: theme !== "dark" ? "#101418" : "#fff",
         },
       },
     },
     legend: {
       horizontalAlign: "left",
       labels: {
-        colors: "#fff",
+        colors: theme !== "dark" ? "#101418" : "#fff",
       },
     },
   };

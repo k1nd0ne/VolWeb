@@ -275,7 +275,8 @@ def generate_windows_network_graph(data):
             graph_data["nodes"].append(node_data_2)
             node_id_map[foreign_address] = node_data_2
         else:
-            # If the foreign address is already a node, just add the foreign port if it's not already there
+            if "ForeignPorts" not in node_id_map[foreign_address]:
+                node_id_map[foreign_address]["ForeignPorts"] = []
             if foreign_port not in node_id_map[foreign_address]["ForeignPorts"]:
                 node_id_map[foreign_address]["ForeignPorts"].append(foreign_port)
 
@@ -285,7 +286,6 @@ def generate_windows_network_graph(data):
             graph_data["edges"].append(edge_data)
 
     return graph_data
-
 
 
 def generate_linux_network_graph(data):
@@ -323,7 +323,8 @@ def generate_linux_network_graph(data):
                 graph_data["nodes"].append(node_data_2)
                 node_id_map[foreign_address] = node_data_2
             else:
-                # If the foreign address is already a node, just add the foreign port if it's not already there
+                if "ForeignPorts" not in node_id_map[foreign_address]:
+                    node_id_map[foreign_address]["ForeignPorts"] = []
                 if foreign_port not in node_id_map[foreign_address]["ForeignPorts"]:
                     node_id_map[foreign_address]["ForeignPorts"].append(foreign_port)
 
@@ -333,6 +334,7 @@ def generate_linux_network_graph(data):
                 graph_data["edges"].append(edge_data)
 
     return graph_data
+
 
 def vt_check_file_hash(hash):
     client = vt.Client(Secrets.VT_API_KEY)

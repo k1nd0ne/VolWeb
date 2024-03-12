@@ -19,6 +19,8 @@ from main.serializers import IndicatorSerializer
 from main.forms import IndicatorForm
 from main.stix import export_bundle, create_indicator
 from stix2.exceptions import InvalidValueError
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+
 
 @login_required
 def home(request):
@@ -33,21 +35,22 @@ def home(request):
     User = get_user_model()
     return render(request, "main/home.html", {"Users": User.objects.all()})
 
+
 @login_required
 def websocket_url(request):
-    protocol = 'wss' if request.is_secure() else 'ws'
+    protocol = "wss" if request.is_secure() else "ws"
     ws_url = f"{protocol}://{Secrets.WEBSOCKET_HOST}"
-    return JsonResponse({'websocket_url': ws_url})
+    return JsonResponse({"websocket_url": ws_url})
+
 
 @login_required
 def minio_secrets(request):
     endpoint_info = {
-        "url" : Secrets.AWS_ENDPOINT_URL,
-        "key_id" : Secrets.AWS_ACCESS_KEY_ID,
-        "key_password" : Secrets.AWS_SECRET_ACCESS_KEY
+        "url": Secrets.AWS_ENDPOINT_URL,
+        "key_id": Secrets.AWS_ACCESS_KEY_ID,
+        "key_password": Secrets.AWS_SECRET_ACCESS_KEY,
     }
-    return JsonResponse({'endpoint': endpoint_info})
-
+    return JsonResponse({"endpoint": endpoint_info})
 
 
 @login_required
@@ -63,26 +66,30 @@ def statistics(request):
     last_5_cases = Case.objects.all()[:5]
     last_5_isf = Symbol.objects.all()[:5]
 
-    total_tasks = TaskResult.objects.filter(task_name="evidences.tasks.start_analysis");
+    total_tasks = TaskResult.objects.filter(task_name="evidences.tasks.start_analysis")
     tasks_serializer = TasksSerializer(total_tasks, many=True)
     cases_serializer = CaseSerializer(last_5_cases, many=True)
     symbols_serializer = SymbolSerializer(last_5_isf, many=True)
 
-    return JsonResponse({
-    'total_cases': total_cases,
-    'total_evidences': total_evidences,
-    'total_evidences_progress': total_evidences_progress,
-    'total_evidences_windows': total_evidences_windows,
-    'total_evidences_linux': total_evidences_linux,
-    'total_symbols': total_symbols,
-    'total_users': total_users,
-    'tasks': tasks_serializer.data,
-    'last_5_cases': cases_serializer.data,
-    'last_5_isf': symbols_serializer.data,
-    })
+    return JsonResponse(
+        {
+            "total_cases": total_cases,
+            "total_evidences": total_evidences,
+            "total_evidences_progress": total_evidences_progress,
+            "total_evidences_windows": total_evidences_windows,
+            "total_evidences_linux": total_evidences_linux,
+            "total_symbols": total_symbols,
+            "total_users": total_users,
+            "tasks": tasks_serializer.data,
+            "last_5_cases": cases_serializer.data,
+            "last_5_isf": symbols_serializer.data,
+        }
+    )
+
 
 class IndicatorApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         indicators = Indicator.objects.all()
         serializer = IndicatorSerializer(indicators, many=True)
@@ -96,7 +103,7 @@ class IndicatorApiView(APIView):
             try:
                 create_indicator(instance)
             except InvalidValueError as e:
-                return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -107,12 +114,16 @@ class IndicatorApiView(APIView):
             indicator.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Indicator.DoesNotExist:
-            return Response({'message': 'Indicator not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "Indicator not found."}, status=status.HTTP_404_NOT_FOUND
+            )
         except Exception as e:
-            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class IndicatorEvidenceApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
     def get(self, request, dump_id, *args, **kwargs):
         """
         Get all the indicators for an evidence
@@ -121,8 +132,10 @@ class IndicatorEvidenceApiView(APIView):
         serializer = IndicatorSerializer(indicators, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class IndicatorCaseApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
     def get(self, request, case_id, *args, **kwargs):
         """
         Get all the indicators for a case
@@ -131,14 +144,18 @@ class IndicatorCaseApiView(APIView):
         serializer = IndicatorSerializer(indicators, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class IndicatorExportApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
     def get(self, request, case_id, *args, **kwargs):
         """
         Get all the indicators for a case and return as a file blob
         """
         indicators = Indicator.objects.filter(evidence__dump_linked_case=case_id)
         bundle = export_bundle(indicators)
-        response = HttpResponse(bundle, content_type='application/octet-stream')
-        response['Content-Disposition'] = 'attachment; filename="indicators_case_{}.json"'.format(case_id)
+        response = HttpResponse(bundle, content_type="application/octet-stream")
+        response[
+            "Content-Disposition"
+        ] = 'attachment; filename="indicators_case_{}.json"'.format(case_id)
         return response

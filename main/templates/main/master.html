@@ -96,6 +96,18 @@
                 </li>
             </ul>
             <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="#" role="button" id="colorModeDropdown" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i
+                            class="fas fa-palette icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 bg-white text-center shadow"></i>
+                        <span class="nav-link-text ms-1">Color Mode</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="colorModeDropdown">
+                        <li><a class="dropdown-item" href="#" data-bs-theme-toggle="light">Light</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-theme-toggle="dark">Dark</a></li>
+                    </ul>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">
                         <i

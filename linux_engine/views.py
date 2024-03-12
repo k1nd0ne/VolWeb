@@ -9,8 +9,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.core.paginator import Paginator
 from django.db.models import Q
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from main.forms import IndicatorForm
-
 
 
 @login_required
@@ -18,11 +18,14 @@ def review(request, dump_id):
     evidence = Evidence.objects.get(dump_id=dump_id)
     stix_indicator = IndicatorForm()
     return render(
-        request, "linux_engine/review_evidence.html", {"evidence": evidence, "stix_indicator_form":stix_indicator}
+        request,
+        "linux_engine/review_evidence.html",
+        {"evidence": evidence, "stix_indicator_form": stix_indicator},
     )
 
+
 class PsTreeApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -38,8 +41,9 @@ class PsTreeApiView(APIView):
         serializer = PsTreeSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class PsAuxApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -58,8 +62,9 @@ class PsAuxApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
+
 class LsofApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -78,8 +83,9 @@ class LsofApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
+
 class ElfsApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -98,8 +104,9 @@ class ElfsApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
+
 class EnvarsApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -118,8 +125,9 @@ class EnvarsApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
+
 class CapabilitiesApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -138,8 +146,9 @@ class CapabilitiesApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
+
 class PsScanApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -157,8 +166,9 @@ class PsScanApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
+
 class tty_checkApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -178,7 +188,7 @@ class tty_checkApiView(APIView):
 
 
 class MountInfoApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -198,7 +208,7 @@ class MountInfoApiView(APIView):
 
 
 class KmsgApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -216,8 +226,9 @@ class KmsgApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
+
 class MalfindApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -233,8 +244,9 @@ class MalfindApiView(APIView):
         serializer = MalfindSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class LsmodApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -252,7 +264,7 @@ class LsmodApiView(APIView):
 
 
 class SockstatApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -270,8 +282,9 @@ class SockstatApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
+
 class NetGraphApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -287,8 +300,9 @@ class NetGraphApiView(APIView):
         serializer = NetGraphSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class BashApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -307,9 +321,8 @@ class BashApiView(APIView):
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
 
-
 class TimelineChartApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -327,7 +340,7 @@ class TimelineChartApiView(APIView):
 
 
 class TimelineDataApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -344,11 +357,13 @@ class TimelineDataApiView(APIView):
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
         # Server-side parameters
-        draw = int(request.query_params.get('draw', 0))  # Used by DataTables to ensure that the Ajax returns from server-side processing are drawn in sequence
-        start = int(request.query_params.get('start', 0))
-        length = int(request.query_params.get('length', 25))
-        timestamp_min = request.query_params.get('timestamp_min', None)
-        timestamp_max = request.query_params.get('timestamp_max', None)
+        draw = int(
+            request.query_params.get("draw", 0)
+        )  # Used by DataTables to ensure that the Ajax returns from server-side processing are drawn in sequence
+        start = int(request.query_params.get("start", 0))
+        length = int(request.query_params.get("length", 25))
+        timestamp_min = request.query_params.get("timestamp_min", None)
+        timestamp_max = request.query_params.get("timestamp_max", None)
 
         # Filtering based on timestamp
         filtered_data = []
@@ -366,12 +381,15 @@ class TimelineDataApiView(APIView):
         paginator = Paginator(filtered_data, length)
         page_data = paginator.get_page((start // length) + 1)
 
-        return Response({
-            'draw': draw,
-            'recordsTotal': paginator.count,
-            'recordsFiltered': paginator.count,  # Adjust this value if you implement search
-            'data': page_data.object_list
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "draw": draw,
+                "recordsTotal": paginator.count,
+                "recordsFiltered": paginator.count,  # Adjust this value if you implement search
+                "data": page_data.object_list,
+            },
+            status=status.HTTP_200_OK,
+        )
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from main.forms import IndicatorForm
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 
 from windows_engine.tasks import (
     compute_handles,
@@ -25,12 +26,14 @@ def review(request, dump_id):
     evidence = Evidence.objects.get(dump_id=dump_id)
     stix_indicator = IndicatorForm()
     return render(
-        request, "windows_engine/review_evidence.html", {"evidence": evidence, "stix_indicator_form":stix_indicator}
+        request,
+        "windows_engine/review_evidence.html",
+        {"evidence": evidence, "stix_indicator_form": stix_indicator},
     )
 
 
 class PsTreeApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -48,7 +51,7 @@ class PsTreeApiView(APIView):
 
 
 class MFTScanApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -64,8 +67,9 @@ class MFTScanApiView(APIView):
         serializer = MFTScanSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class MBRScanApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -83,7 +87,7 @@ class MBRScanApiView(APIView):
 
 
 class ADSApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -99,8 +103,9 @@ class ADSApiView(APIView):
         serializer = ADSSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class TimelineChartApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -118,7 +123,7 @@ class TimelineChartApiView(APIView):
 
 
 class TimelineDataApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -135,11 +140,13 @@ class TimelineDataApiView(APIView):
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
         # Server-side parameters
-        draw = int(request.query_params.get('draw', 0))  # Used by DataTables to ensure that the Ajax returns from server-side processing are drawn in sequence
-        start = int(request.query_params.get('start', 0))
-        length = int(request.query_params.get('length', 25))
-        timestamp_min = request.query_params.get('timestamp_min', None)
-        timestamp_max = request.query_params.get('timestamp_max', None)
+        draw = int(
+            request.query_params.get("draw", 0)
+        )  # Used by DataTables to ensure that the Ajax returns from server-side processing are drawn in sequence
+        start = int(request.query_params.get("start", 0))
+        length = int(request.query_params.get("length", 25))
+        timestamp_min = request.query_params.get("timestamp_min", None)
+        timestamp_max = request.query_params.get("timestamp_max", None)
 
         # Filtering based on timestamp
         filtered_data = []
@@ -157,12 +164,15 @@ class TimelineDataApiView(APIView):
         paginator = Paginator(filtered_data, length)
         page_data = paginator.get_page((start // length) + 1)
 
-        return Response({
-            'draw': draw,
-            'recordsTotal': paginator.count,
-            'recordsFiltered': paginator.count,  # Adjust this value if you implement search
-            'data': page_data.object_list
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "draw": draw,
+                "recordsTotal": paginator.count,
+                "recordsFiltered": paginator.count,  # Adjust this value if you implement search
+                "data": page_data.object_list,
+            },
+            status=status.HTTP_200_OK,
+        )
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
         try:
@@ -180,7 +190,7 @@ class TimelineDataApiView(APIView):
 
 
 class CmdLineApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -201,7 +211,7 @@ class CmdLineApiView(APIView):
 
 
 class GetSIDsApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -236,7 +246,7 @@ class GetSIDsApiView(APIView):
 
 
 class PrivsApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -271,7 +281,7 @@ class PrivsApiView(APIView):
 
 
 class EnvarsApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -306,7 +316,7 @@ class EnvarsApiView(APIView):
 
 
 class PsScanApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -340,7 +350,7 @@ class PsScanApiView(APIView):
 
 
 class DllListApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -375,7 +385,7 @@ class DllListApiView(APIView):
 
 
 class SessionsApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -410,7 +420,7 @@ class SessionsApiView(APIView):
 
 
 class NetStatApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -442,7 +452,7 @@ class NetStatApiView(APIView):
 
 
 class NetScanApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -474,7 +484,7 @@ class NetScanApiView(APIView):
 
 
 class NetGraphApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -492,7 +502,7 @@ class NetGraphApiView(APIView):
 
 
 class HiveListApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -510,7 +520,7 @@ class HiveListApiView(APIView):
 
 
 class SvcScanApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -541,7 +551,7 @@ class SvcScanApiView(APIView):
 
 
 class HashdumpApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -559,7 +569,7 @@ class HashdumpApiView(APIView):
 
 
 class CachedumpApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -577,7 +587,7 @@ class CachedumpApiView(APIView):
 
 
 class LsadumpApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -595,7 +605,7 @@ class LsadumpApiView(APIView):
 
 
 class MalfindApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -613,7 +623,7 @@ class MalfindApiView(APIView):
 
 
 class LdrModulesApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -644,7 +654,7 @@ class LdrModulesApiView(APIView):
 
 
 class ModulesApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -675,7 +685,7 @@ class ModulesApiView(APIView):
 
 
 class SSDTApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -707,7 +717,7 @@ class SSDTApiView(APIView):
 
 
 class FileScanApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         try:
@@ -739,7 +749,7 @@ class FileScanApiView(APIView):
 
 
 class HandlesApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id, pid):
         try:
@@ -773,7 +783,7 @@ class HandlesApiView(APIView):
 
 
 class PsListDumpApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, _request, dump_id, pid, *args, **kwargs):
         """
@@ -784,7 +794,7 @@ class PsListDumpApiView(APIView):
 
 
 class FileScanDumpApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, _request, dump_id, offset, *args, **kwargs):
         dump_file.delay(evidence_id=dump_id, offset=offset)
@@ -792,7 +802,7 @@ class FileScanDumpApiView(APIView):
 
 
 class MemmapDumpApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, _request, dump_id, pid, *args, **kwargs):
         """
@@ -803,7 +813,7 @@ class MemmapDumpApiView(APIView):
 
 
 class TasksApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, *args, **kwargs):
         """
@@ -815,7 +825,7 @@ class TasksApiView(APIView):
 
 
 class LootApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, dump_id, *args, **kwargs):
         """

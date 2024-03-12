@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from VolWeb.keyconfig import Secrets
 from cases.serializers import CaseSerializer
 from cases.forms import CaseForm
@@ -11,6 +12,7 @@ from cases.models import Case
 from evidences.forms import EvidenceForm
 from minio import Minio
 import uuid
+
 
 @login_required
 def case(request, case_id):
@@ -24,6 +26,7 @@ def case(request, case_id):
 class CasesApiView(APIView):
     # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     # 1. List all
     def get(self, request, *args, **kwargs):
@@ -42,7 +45,12 @@ class CasesApiView(APIView):
         """
         bucket_uuid = uuid.uuid4()
         try:
-            client = Minio(Secrets.AWS_ENDPOINT_HOST, Secrets.AWS_ACCESS_KEY_ID, Secrets.AWS_SECRET_ACCESS_KEY, secure=False)
+            client = Minio(
+                Secrets.AWS_ENDPOINT_HOST,
+                Secrets.AWS_ACCESS_KEY_ID,
+                Secrets.AWS_SECRET_ACCESS_KEY,
+                secure=False,
+            )
             client.make_bucket(str(bucket_uuid))
         except:
             return Response(
@@ -54,7 +62,10 @@ class CasesApiView(APIView):
             "linked_users[]"
         )  # Get the raw list of linked_users
         if len(linked_users) < 1:
-            return Response({"error": "message"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "At least one linked user is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         linked_users_data = [{"username": user} for user in linked_users]
         data = {
             "case_bucket_id": bucket_uuid,
@@ -68,8 +79,6 @@ class CasesApiView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 @login_required

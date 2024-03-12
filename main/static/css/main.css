@@ -141,7 +141,7 @@ html * {
     -moz-osx-font-smoothing: grayscale;
 }
 
-[data-bs-theme=ligth] a {
+[data-bs-theme=light] a {
     letter-spacing: -.025rem;
     color: #000;
 }

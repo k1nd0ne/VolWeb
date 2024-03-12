@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework import status
 from evidences.models import Evidence
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.response import Response
 from evidences.serializers import EvidenceSerializer
 from minio import Minio
@@ -27,7 +28,7 @@ def evidences(request):
 
 class CaseEvidenceApiView(APIView):
     # add permission to check if user is authenticated
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, case_id, *args, **kwargs):
         """
@@ -40,7 +41,7 @@ class CaseEvidenceApiView(APIView):
 
 class EvidenceAPIView(APIView):
     # add permission to check if user is authenticated
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     # 1. List all
     def get(self, request, *args, **kwargs):
@@ -78,8 +79,7 @@ class EvidenceAPIView(APIView):
 
 
 class EvidenceDetailApiView(APIView):
-    # add permission to check if user is authenticated
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
         """

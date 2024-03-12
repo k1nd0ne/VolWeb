@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "windows_engine",
     "linux_engine",
     "rest_framework",
+    "rest_framework.authtoken",
     "bootstrap5",
     "crispy_forms",
     "crispy_bootstrap5",
