@@ -9,6 +9,7 @@ from volatility3 import plugins
 from django.apps import apps
 from VolWeb.voltools import *
 from volatility3.framework.exceptions import *
+
 volatility3.framework.require_interface_version(2, 0, 0)
 logger = logging.getLogger(__name__)
 
@@ -619,6 +620,7 @@ class MFTScan(models.Model):
         except:
             return None
 
+
 class ADS(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="windows_ads_evidence"
@@ -642,6 +644,7 @@ class ADS(models.Model):
                 return result
         except:
             return None
+
 
 class MBRScan(models.Model):
     evidence = models.ForeignKey(

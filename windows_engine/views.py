@@ -764,7 +764,10 @@ class HandlesApiView(APIView):
             return Response(filtered_data, status=status.HTTP_200_OK)
 
         else:
-            compute_handles.delay(evidence_id=dump_id, pid=pid)
+            compute_handles.apply_async(
+                args=[dump_id, pid],
+                priority=1,
+            )
             return Response({}, status=status.HTTP_201_CREATED)
 
     def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
@@ -789,7 +792,10 @@ class PsListDumpApiView(APIView):
         """
         Dump the requested process using the pslist plugin
         """
-        dump_process_pslist.delay(evidence_id=dump_id, pid=pid)
+        dump_process_pslist.apply_async(
+            args=[dump_id, pid],
+            priority=1,
+        )
         return Response({}, status=status.HTTP_201_CREATED)
 
 
@@ -819,7 +825,7 @@ class TasksApiView(APIView):
         """
         Give the requested tasks if existing.
         """
-        tasks = TaskResult.objects.filter(status="STARTED")
+        tasks = TaskResult.objects.filter(Q(status="STARTED") | Q(status="PENDING"))
         serializer = TasksSerializer(tasks, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

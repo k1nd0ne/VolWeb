@@ -117,11 +117,9 @@ class EvidenceDetailApiView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Now, we get the bucket associated to this evidence.
         bucket = evidence_instance.dump_linked_case.case_bucket_id
         object = evidence_instance.dump_name
         try:
-            # TODO: Env variables!
             client = Minio(
                 Secrets.AWS_ENDPOINT_HOST,
                 Secrets.AWS_ACCESS_KEY_ID,

@@ -22,6 +22,8 @@ def create_indicator(indicator):
         "mutex": "[mutex:name = '{}']",
         "network-traffic": "[network-traffic:src_port = {}]",
         "process-cmdline": "[process:command_line = '{}']",
+        "process-name": "[process:name = '{}']",
+        "process-cwd": "[process:cwd = '{}']",
         "software": "[software:name = '{}']",
         "url": "[url:value = '{}']",
         "user-account": "[user-account:user_id = '{}']",
@@ -31,7 +33,13 @@ def create_indicator(indicator):
 
     pattern_template = pattern_mapping.get(indicator.type)
     if pattern_template:
-        value = str(indicator.value).replace('\\', '\\\\') if 'path' in indicator.type or 'cmdline' in indicator.type or 'registry-key' in indicator.type else indicator.value
+        value = (
+            str(indicator.value).replace("\\", "\\\\")
+            if "path" in indicator.type
+            or "cmdline" in indicator.type
+            or "registry-key" in indicator.type
+            else indicator.value
+        )
         pattern = pattern_template.format(value)
         stix_indicator = StixIndicator(
             pattern_type="stix",
@@ -41,7 +49,6 @@ def create_indicator(indicator):
         )
         return stix_indicator
     return None
-
 
 
 def export_bundle(indicators):

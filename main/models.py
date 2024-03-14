@@ -21,23 +21,19 @@ TYPES = (
     ("mutex", "Mutex"),
     ("network-traffic", "Network Traffic"),
     ("process-name", "Process - Name"),
-    ("process-pid", "Process - PID"),
-    ("process-created", "Process - Created date"),
     ("process-cwd", "Process - CWD"),
     ("process-cmdline", "Process - Command Line"),
     ("software", "Software"),
     ("url", "URL"),
     ("user-account", "User Account"),
     ("windows-registry-key", "Windows Registry Key"),
-    ("x509-certificate", "X.509 Certificate"),
+    ("x509-certificate", "X.509 Certificate SHA1"),
 )
 
 
 class Indicator(models.Model):
     id = models.AutoField(primary_key=True)
-    evidence = models.ForeignKey(
-        Evidence, on_delete=models.CASCADE
-    )
+    evidence = models.ForeignKey(Evidence, on_delete=models.CASCADE)
     name = models.TextField()
     type = models.CharField(max_length=100, choices=TYPES)
     description = models.TextField()

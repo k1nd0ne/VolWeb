@@ -65,13 +65,16 @@ function display_process_info(process, evidence_id) {
     success: function (tasks) {
       let handles_found = false;
       let dump_found = false;
-
-      tasks.forEach(({ task_name, task_kwargs }) => {
-        const { pid, evidence_id: taskId } = JSON.parse(
-          task_kwargs.slice(1, -1),
-        );
-
-        if (pid == process.PID && taskId == evidence_id) {
+      tasks.forEach(({ status, task_name, task_args }) => {
+        var args;
+        if (status !== "PENDING") {
+          args = JSON.parse(task_args).slice(1, -1).split(",");
+        } else {
+          args = task_args.slice(1, -1).split(",");
+        }
+        const pid = parseInt(args[1], 10);
+        const id = parseInt(args[0], 10);
+        if (pid == process.PID && id == evidence_id) {
           if (task_name === "windows_engine.tasks.compute_handles") {
             handles_found = true;
           } else if (
