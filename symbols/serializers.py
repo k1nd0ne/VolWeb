@@ -6,10 +6,12 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.db.models.signals import post_save, post_delete
 
+
 class SymbolSerializer(serializers.ModelSerializer):
     class Meta:
         model = Symbol
         fields = "__all__"
+
 
 @receiver(post_save, sender=Symbol)
 def send_symbol_created(sender, instance, created, **kwargs):

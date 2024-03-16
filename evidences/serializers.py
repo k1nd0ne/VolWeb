@@ -9,7 +9,7 @@ class EvidenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Evidence
         fields = "__all__"
-        extra_fields = ['dump_linked_case_name']
+        extra_fields = ["dump_linked_case_name"]
 
     def get_dump_linked_case_name(self, obj):
         # Return the name of the linked case instead of the id

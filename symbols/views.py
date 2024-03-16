@@ -8,21 +8,24 @@ from symbols.models import Symbol
 from symbols.serializers import SymbolSerializer
 from symbols.forms import SymbolForm
 
+
 @login_required
 def symbols(request):
     """Symbols main page
 
-        Arguments:
-        request : http request object
+    Arguments:
+    request : http request object
 
-        Comment: Display all of the ISF file imported;
-        """
+    Comment: Display all of the ISF file imported;
+    """
     symbol_form = SymbolForm()
-    return render(request, 'symbols/symbols.html',{'symbol_form':symbol_form})
+    return render(request, "symbols/symbols.html", {"symbol_form": symbol_form})
+
 
 class SymbolsApiView(APIView):
     # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
+
     # 1. List all
     def get(self, request, *args, **kwargs):
         """
@@ -39,9 +42,11 @@ class SymbolsApiView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class SymbolApiView(APIView):
     # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
+
     def get_object(self, id):
         """
         Helper method to get the object with given case_id
@@ -77,7 +82,4 @@ class SymbolApiView(APIView):
             )
 
         symbol.delete()
-        return Response(
-            {"res": "Object deleted"},
-            status=status.HTTP_204_NO_CONTENT
-        )
+        return Response({"res": "Object deleted"}, status=status.HTTP_204_NO_CONTENT)

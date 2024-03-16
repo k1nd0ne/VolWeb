@@ -3,12 +3,13 @@ import os
 import shutil
 
 CHOICES = (
-    ('Windows', 'Windows'),
-    ('Linux', 'Linux'),
+    ("Windows", "Windows"),
+    ("Linux", "Linux"),
     #        ('MacOs', 'MacOs'), <- not implemented yet
 )
 
 UPLOAD_PATH = "symbols/"
+
 
 class Symbol(models.Model):
     id = models.AutoField(primary_key=True)

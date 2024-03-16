@@ -21,10 +21,8 @@ class CaseSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-        linked_users_data = validated_data.pop(
-            "linked_users"
-        )  # Extract linked_users data
-        case = Case.objects.create(**validated_data)  # Create Case instance
+        linked_users_data = validated_data.pop("linked_users")
+        case = Case.objects.create(**validated_data)
         for user_data in linked_users_data:
             uid = user_data["username"]
             user = User.objects.get(pk=uid)
@@ -32,25 +30,22 @@ class CaseSerializer(serializers.ModelSerializer):
         return case
 
     def update(self, instance, validated_data):
-        linked_users_data = validated_data.pop(
-            "linked_users", None
-        )  # Extract linked_users data
+        linked_users_data = validated_data.pop("linked_users", None)
 
-        # Update the instance fields with the validated data
         instance.case_name = validated_data.get("case_name", instance.case_name)
         instance.case_description = validated_data.get(
             "case_description", instance.case_description
         )
 
         if linked_users_data:
-            instance.linked_users.clear()  # Remove existing linked_users
+            instance.linked_users.clear()
 
             for user_data in linked_users_data:
                 username = user_data["username"]
                 user = User.objects.get(pk=username)
                 instance.linked_users.add(user)
 
-        instance.save()  # Save the updated instance
+        instance.save()
 
         return instance
 

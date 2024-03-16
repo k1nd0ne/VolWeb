@@ -12,7 +12,7 @@ class Database:
 class Secrets:
     SECRET_KEY = os.getenv("DJANGO_SECRET", None)
     BROKER_URL = os.getenv("BROKER_URL", None)
-    WEBSOCKET_HOST = os.getenv("WEBSOCKET_HOST", None)
+    WEBSOCKET_URL = os.getenv("WEBSOCKET_URL", None)
     VT_API_KEY = os.getenv("VT_API_KEY", None)
     AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", None)
     AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", None)

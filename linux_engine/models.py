@@ -9,6 +9,7 @@ from volatility3 import plugins
 from django.apps import apps
 from VolWeb.voltools import *
 from volatility3.framework.exceptions import *
+
 volatility3.framework.require_interface_version(2, 0, 0)
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,7 @@ else:
     logger.info(f"Volatility3 Plugins are loaded without failure")
 
 PLUGIN_LIST = volatility3.framework.list_plugins()
+
 
 class PsTree(models.Model):
     evidence = models.ForeignKey(
@@ -44,6 +46,7 @@ class PsTree(models.Model):
         except:
             return None
 
+
 class PsAux(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="linux_psaux_evidence"
@@ -66,6 +69,7 @@ class PsAux(models.Model):
                 return result
         except:
             return None
+
 
 class Lsof(models.Model):
     evidence = models.ForeignKey(
@@ -90,6 +94,7 @@ class Lsof(models.Model):
         except:
             return None
 
+
 class MountInfo(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="linux_mountinfo_evidence"
@@ -113,6 +118,7 @@ class MountInfo(models.Model):
         except:
             return None
 
+
 class Envars(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="linux_envars_evidence"
@@ -135,6 +141,7 @@ class Envars(models.Model):
                 return result
         except:
             return None
+
 
 class PsScan(models.Model):
     evidence = models.ForeignKey(
@@ -184,7 +191,6 @@ class tty_check(models.Model):
             return None
 
 
-
 class Bash(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="linux_bash_evidence"
@@ -207,6 +213,7 @@ class Bash(models.Model):
                 return result
         except:
             return None
+
 
 class Elfs(models.Model):
     evidence = models.ForeignKey(
@@ -231,6 +238,7 @@ class Elfs(models.Model):
         except:
             return None
 
+
 class Sockstat(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="linux_sockstat_evidence"
@@ -253,6 +261,7 @@ class Sockstat(models.Model):
                 return result
         except:
             return None
+
 
 class Capabilities(models.Model):
     evidence = models.ForeignKey(
@@ -277,6 +286,7 @@ class Capabilities(models.Model):
         except:
             return None
 
+
 class Kmsg(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="linux_kmsg_evidence"
@@ -299,6 +309,7 @@ class Kmsg(models.Model):
                 return result
         except:
             return None
+
 
 class Malfind(models.Model):
     evidence = models.ForeignKey(
@@ -324,6 +335,7 @@ class Malfind(models.Model):
         except:
             return None
 
+
 class Lsmod(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="linux_lsmod_evidence"
@@ -348,17 +360,20 @@ class Lsmod(models.Model):
         except:
             return None
 
+
 class NetGraph(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="linux_netgraph_evidence"
     )
     artefacts = models.JSONField(null=True)
 
+
 class TimeLineChart(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="linux_timeline_evidence"
     )
     artefacts = models.JSONField(null=True)
+
 
 class Timeliner(models.Model):
     evidence = models.ForeignKey(

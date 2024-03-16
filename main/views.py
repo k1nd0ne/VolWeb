@@ -38,9 +38,7 @@ def home(request):
 
 @login_required
 def websocket_url(request):
-    protocol = "wss" if request.is_secure() else "ws"
-    ws_url = f"{protocol}://{Secrets.WEBSOCKET_HOST}"
-    return JsonResponse({"websocket_url": ws_url})
+    return JsonResponse({"websocket_url": Secrets.WEBSOCKET_URL})
 
 
 @login_required

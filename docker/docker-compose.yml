@@ -1,40 +1,121 @@
 version: "3.9"
 services:
-
-  db:
-    container_name: volweb_postgresdb_dev
+  volweb_postgresdb:
+    container_name: volweb_postgresdb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     image: postgres:14.1
     restart: always
-    env_file:
-      - ./secrets/volweb.env
     ports:
       - 5432:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
-  redis:
-    container_name: volweb_redis_dev
-    image: 'redis:latest'
-    command: ['redis-server', '--appendonly', 'yes']
+  volweb_redis:
+    container_name: volweb_redis
+    image: "redis:latest"
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - 'redis-data:/data'
+      - "redis-data:/data"
     ports:
-      - '6379:6379'
-    env_file:
-      - ./secrets/volweb.env
-  
-  minio:
+      - "6379:6379"
+
+  volweb_minio:
+    container_name: volweb_minio
     image: minio/minio
+    restart: always
     ports:
       - "9000:9000"
       - "9001:9001"
     volumes:
       - minio_storage:/data
     environment:
-      -  MINIO_ROOT_USER=user
-      -  MINIO_ROOT_PASSWORD=password
+      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
+      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
     command: server --console-address ":9001" /data
+
+  volweb_platform:
+    container_name: volweb_platform
+    environment:
+      - DATABASE=${DATABASE}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - DJANGO_SECRET=${DJANGO_SECRET}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
+      - AWS_ENDPOINT_HOST=${AWS_ENDPOINT_HOST}
+      - WEBSOCKET_URL=${WEBSOCKET_URL}
+      - BROKER_URL=${BROKER_URL}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    command: daphne -u /tmp/daphne.sock -b 0.0.0.0 -p 8000 VolWeb.asgi:application
+    expose:
+      - 8000
+    depends_on:
+      - volweb_postgresdb
+      - volweb_redis
+      - volweb_minio
+    restart: always
+    volumes:
+      - staticfiles:/home/app/web/staticfiles
+  volweb_worker:
+    container_name: volweb_worker
+    environment:
+      - DATABASE=${DATABASE}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - DJANGO_SECRET=${DJANGO_SECRET}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
+      - AWS_ENDPOINT_HOST=${AWS_ENDPOINT_HOST}
+      - WEBSOCKET_URL=${WEBSOCKET_URL}
+      - BROKER_URL=${BROKER_URL}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    command: celery -A VolWeb worker --loglevel=INFO
+    depends_on:
+      - volweb_redis
+      - volweb_postgresdb
+      - volweb_minio
+    restart: always
+    volumes:
+      - staticfiles:/home/app/web/staticfiles
+
+  nginx:
+    container_name: volweb_nginx
+    image: nginx:mainline-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./nginx/ssl/:/etc/nginx/certs/
+      - staticfiles:/home/app/web/staticfiles
+    depends_on:
+      - volweb_platform
+
 volumes:
   minio_storage: {}
   postgres-data:
   redis-data:
+  staticfiles:

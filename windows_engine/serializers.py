@@ -159,15 +159,18 @@ class MFTScanSerializer(serializers.ModelSerializer):
         model = MFTScan
         fields = "__all__"
 
+
 class MBRScanSerializer(serializers.ModelSerializer):
     class Meta:
         model = MBRScan
         fields = "__all__"
 
+
 class ADSSerializer(serializers.ModelSerializer):
     class Meta:
         model = ADS
         fields = "__all__"
+
 
 class TasksSerializer(serializers.ModelSerializer):
     task_kwargs = serializers.JSONField
