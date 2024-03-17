@@ -38,7 +38,6 @@ def home(request):
 
 @login_required
 def websocket_url(request):
-    print(Secrets.WEBSOCKET_URL)
     return JsonResponse({"websocket_url": Secrets.WEBSOCKET_URL})
 
 
@@ -154,7 +153,7 @@ class IndicatorExportApiView(APIView):
         indicators = Indicator.objects.filter(evidence__dump_linked_case=case_id)
         bundle = export_bundle(indicators)
         response = HttpResponse(bundle, content_type="application/octet-stream")
-        response[
-            "Content-Disposition"
-        ] = 'attachment; filename="indicators_case_{}.json"'.format(case_id)
+        response["Content-Disposition"] = (
+            'attachment; filename="indicators_case_{}.json"'.format(case_id)
+        )
         return response
