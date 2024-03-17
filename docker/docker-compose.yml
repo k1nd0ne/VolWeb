@@ -26,10 +26,8 @@ services:
   volweb-minio:
     container_name: volweb-minio
     image: minio/minio
+    network_mode: "host"
     restart: always
-    ports:
-      - "9000:9000"
-      - "9001:9001"
     volumes:
       - minio_storage:/data
       - ./minio/privkey.pem:/root/.minio/certs/private.key
@@ -74,8 +72,9 @@ services:
     volumes:
       - staticfiles:/home/app/web/staticfiles
       - ./minio/fullchain.pem:/etc/ssl/certs/minio.pem
-  volweb_worker:
-    container_name: volweb_worker
+      - media:/home/app/web/media
+
+  volweb_workers:
     environment:
       - DATABASE=${DATABASE}
       - DATABASE_HOST=${DATABASE_HOST}
@@ -107,6 +106,11 @@ services:
     volumes:
       - staticfiles:/home/app/web/staticfiles
       - ./minio/fullchain.pem:/etc/ssl/certs/minio.pem
+      - media:/home/app/web/media
+    deploy:
+      mode: replicated
+      replicas: 3
+
   nginx:
     container_name: volweb_nginx
     image: nginx:mainline-alpine
@@ -126,3 +130,4 @@ volumes:
   postgres-data:
   redis-data:
   staticfiles:
+  media:
