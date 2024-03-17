@@ -89,24 +89,20 @@ TEMPLATES = [
 WSGI_APPLICATION = "VolWeb.wsgi.application"
 ASGI_APPLICATION = "VolWeb.asgi.application"
 
-if DEBUG:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [("127.0.0.1", 6379)],
-            },
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                (
+                    Secrets.BROKER_HOST,
+                    Secrets.BROKER_PORT,
+                )
+            ],
         },
-    }
-else:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [("volweb_redis", 6379)],
-            },
-        },
-    }
+    },
+}
+
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -180,7 +176,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_ROOT = str(os.path.join(BASE_DIR, "media/"))
 MEDIA_URL = "/media/"
 
-CELERY_BROKER_URL = Secrets.BROKER_URL
+CELERY_BROKER_URL = f"redis://{Secrets.BROKER_HOST}:{Secrets.BROKER_PORT}"
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_RESULT_EXTENDED = True
 CELERY_ACCEPT_CONTENT = ["application/json"]

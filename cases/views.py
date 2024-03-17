@@ -11,7 +11,7 @@ from cases.forms import CaseForm
 from cases.models import Case
 from evidences.forms import EvidenceForm
 from minio import Minio
-import uuid
+import uuid, urllib3, ssl
 
 
 @login_required
