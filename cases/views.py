@@ -47,7 +47,7 @@ class CasesApiView(APIView):
                 Secrets.AWS_ENDPOINT_HOST,
                 Secrets.AWS_ACCESS_KEY_ID,
                 Secrets.AWS_SECRET_ACCESS_KEY,
-                secure=False,
+                secure=True,
             )
             client.make_bucket(str(bucket_uuid))
         except:
