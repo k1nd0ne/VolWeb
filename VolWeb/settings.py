@@ -89,15 +89,24 @@ TEMPLATES = [
 WSGI_APPLICATION = "VolWeb.wsgi.application"
 ASGI_APPLICATION = "VolWeb.asgi.application"
 
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+if DEBUG:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [("127.0.0.1", 6379)],
+            },
         },
-    },
-}
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [("volweb_redis", 6379)],
+            },
+        },
+    }
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 

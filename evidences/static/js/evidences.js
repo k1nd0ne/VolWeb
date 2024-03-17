@@ -17,6 +17,7 @@ function upload_and_create_evidence(bucket_id) {
         endpoint: data.endpoint.url,
         s3ForcePathStyle: true,
         signatureVersion: "v4",
+        s3BucketEndpoint: true,
       });
 
       const fileChooser = document.getElementById("file-chooser");

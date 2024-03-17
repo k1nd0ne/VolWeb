@@ -38,6 +38,7 @@ def home(request):
 
 @login_required
 def websocket_url(request):
+    print(Secrets.WEBSOCKET_URL)
     return JsonResponse({"websocket_url": Secrets.WEBSOCKET_URL})
 
 

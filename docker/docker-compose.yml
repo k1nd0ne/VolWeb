@@ -32,10 +32,12 @@ services:
       - "9001:9001"
     volumes:
       - minio_storage:/data
+      - ./minio/privkey.pem:/root/.minio/certs/private.key
+      - ./minio/fullchain.pem:/root/.minio/certs/public.crt
     environment:
       - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
       - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
-    command: server --console-address ":9001" /data
+    command: server --console-address ":9001" --address ":9000" /data
 
   volweb_platform:
     container_name: volweb_platform
