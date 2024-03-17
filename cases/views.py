@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from VolWeb.keyconfig import Secrets
+from VolWeb.settings import DEBUG
 from cases.serializers import CaseSerializer
 from cases.forms import CaseForm
 from cases.models import Case
@@ -47,7 +48,7 @@ class CasesApiView(APIView):
                 Secrets.AWS_ENDPOINT_HOST,
                 Secrets.AWS_ACCESS_KEY_ID,
                 Secrets.AWS_SECRET_ACCESS_KEY,
-                secure=True,
+                secure=(not DEBUG),
             )
             client.make_bucket(str(bucket_uuid))
         except:

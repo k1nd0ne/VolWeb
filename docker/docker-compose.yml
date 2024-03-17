@@ -35,7 +35,7 @@ services:
     environment:
       - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
       - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
-    command: server --console-address ":9001" --address ":9000" /data
+    command: server --console-address ":9001" /data
 
   volweb_platform:
     container_name: volweb_platform
@@ -109,7 +109,7 @@ services:
       - media:/home/app/web/media
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 2
 
   nginx:
     container_name: volweb_nginx
@@ -122,6 +122,7 @@ services:
       - ./nginx:/etc/nginx/conf.d
       - ./nginx/ssl/:/etc/nginx/certs/
       - staticfiles:/home/app/web/staticfiles
+      - media:/home/app/web/media
     depends_on:
       - volweb_platform
 

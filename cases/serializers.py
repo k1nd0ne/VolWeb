@@ -67,7 +67,6 @@ def send_case_created(sender, instance, created, **kwargs):
 def send_case_deleted(sender, instance, **kwargs):
     channel_layer = get_channel_layer()
     serializer = CaseSerializer(instance)
-    print(serializer)
     async_to_sync(channel_layer.group_send)(
         "cases",
         {"type": "send_notification", "status": "deleted", "message": serializer.data},

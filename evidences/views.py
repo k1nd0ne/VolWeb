@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from evidences.serializers import EvidenceSerializer
 from minio import Minio
 from VolWeb.keyconfig import Secrets
+from VolWeb.settings import DEBUG
 
 
 @login_required
@@ -124,7 +125,7 @@ class EvidenceDetailApiView(APIView):
                 Secrets.AWS_ENDPOINT_HOST,
                 Secrets.AWS_ACCESS_KEY_ID,
                 Secrets.AWS_SECRET_ACCESS_KEY,
-                secure=True,
+                secure=(not DEBUG),
             )
             client.remove_object(str(bucket), object)
         except:

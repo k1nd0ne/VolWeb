@@ -178,7 +178,7 @@ function handleSocketClose() {
   toastr.warning("Synchronization lost.");
   try {
     symbols.clear().draw();
-  } catch {}
+  } catch { }
   reconnectWebSocket();
 }
 
@@ -249,6 +249,7 @@ $(document).ready(function () {
         $("#modal_symbol_import").modal("hide");
         $("#symbol_import_loading").hide();
         toastr.success("Symbol uploaded successfully!");
+        get_symbols();
       },
       error: function () {
         clear_form();

@@ -764,7 +764,6 @@ function display_lsmod(evidence_id) {
                             <th>Offset</th>
                             <th>Name</th>
                             <th>Size</th>
-                            <th></th>
                         </tr>
                     </thead>
                 </table>`,
@@ -775,12 +774,6 @@ function display_lsmod(evidence_id) {
             { data: "Offset" },
             { data: "Name" },
             { data: "Size" },
-            {
-              mData: "id",
-              mRender: function (id, type, row) {
-                return generate_label(row);
-              },
-            },
           ],
           aLengthMenu: [
             [25, 50, 75, -1],

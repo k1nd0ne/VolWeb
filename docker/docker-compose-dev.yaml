@@ -1,32 +1,38 @@
 version: "3.9"
 services:
-  db:
-    container_name: volweb_postgresdb_dev
+  volweb-postgresdb-dev:
+    container_name: volweb-postgresdb-dev
     image: postgres:14.1
     restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     ports:
       - 5432:5432
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data-dev:/var/lib/postgresql/data
 
-  volweb_redis:
-    container_name: volweb_redis
+  volweb-redis:
+    container_name: volweb-redis
     image: "redis:latest"
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - "redis-data:/data"
+      - "redis-data-dev:/data"
     ports:
-      - "6379:6379"
+      - "${BROKER_PORT}:${BROKER_PORT}"
 
-  minio:
+  volweb-minio-dev:
+    container_name: volweb-minio-dev
+    network_mode: "host"
     image: minio/minio
     volumes:
-      - minio_storage:/data
+      - minio-storage-dev:/data
     environment:
-      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY_ID}
-      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_ACCESS_KEY}
+      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
+      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
     command: server --console-address ":9001" /data
 volumes:
-  minio_storage: {}
-  postgres-data:
-  redis-data:
+  minio-storage-dev: {}
+  postgres-data-dev:
+  redis-data-dev:
