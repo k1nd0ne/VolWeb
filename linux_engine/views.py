@@ -25,6 +25,7 @@ def review(request, dump_id):
 
 
 class PsTreeApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -43,6 +44,7 @@ class PsTreeApiView(APIView):
 
 
 class PsAuxApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -64,6 +66,7 @@ class PsAuxApiView(APIView):
 
 
 class LsofApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -85,6 +88,7 @@ class LsofApiView(APIView):
 
 
 class ElfsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -106,6 +110,7 @@ class ElfsApiView(APIView):
 
 
 class EnvarsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -127,6 +132,7 @@ class EnvarsApiView(APIView):
 
 
 class CapabilitiesApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -148,6 +154,7 @@ class CapabilitiesApiView(APIView):
 
 
 class PsScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -168,6 +175,7 @@ class PsScanApiView(APIView):
 
 
 class tty_checkApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -188,6 +196,7 @@ class tty_checkApiView(APIView):
 
 
 class MountInfoApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -208,6 +217,7 @@ class MountInfoApiView(APIView):
 
 
 class KmsgApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -228,6 +238,7 @@ class KmsgApiView(APIView):
 
 
 class MalfindApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -246,6 +257,7 @@ class MalfindApiView(APIView):
 
 
 class LsmodApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -264,6 +276,7 @@ class LsmodApiView(APIView):
 
 
 class SockstatApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -284,6 +297,7 @@ class SockstatApiView(APIView):
 
 
 class NetGraphApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -302,6 +316,7 @@ class NetGraphApiView(APIView):
 
 
 class BashApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -322,6 +337,7 @@ class BashApiView(APIView):
 
 
 class TimelineChartApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -340,6 +356,7 @@ class TimelineChartApiView(APIView):
 
 
 class TimelineDataApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -390,17 +407,3 @@ class TimelineDataApiView(APIView):
             },
             status=status.HTTP_200_OK,
         )
-
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = Timeliner.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except Timeliner.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = TimelineDataSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

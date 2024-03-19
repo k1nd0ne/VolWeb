@@ -29,7 +29,7 @@ def evidences(request):
 
 
 class CaseEvidenceApiView(APIView):
-    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, case_id, *args, **kwargs):
@@ -42,7 +42,7 @@ class CaseEvidenceApiView(APIView):
 
 
 class EvidenceAPIView(APIView):
-    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     # 1. List all
@@ -81,6 +81,7 @@ class EvidenceAPIView(APIView):
 
 
 class EvidenceDetailApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):

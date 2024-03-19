@@ -20,20 +20,21 @@ from main.forms import IndicatorForm
 from main.stix import export_bundle, create_indicator
 from stix2.exceptions import InvalidValueError
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.authtoken.models import Token
 
 
 @login_required
 def home(request):
-    """Load home page
+    """Load home page and display the current user with their token."""
 
-    Arguments:
-    request : http request object
-
-    Comments:
-    Display the home page and pass the users/activities/analysis/
-    """
-    User = get_user_model()
-    return render(request, "main/home.html", {"Users": User.objects.all()})
+    # Accessing the logged-in user directly
+    user = request.user
+    token, _ = Token.objects.get_or_create(user=user)
+    return render(
+        request,
+        "main/home.html",
+        {"user_info": {"username": user.username, "token": token.key}},
+    )
 
 
 @login_required
@@ -120,6 +121,7 @@ class IndicatorApiView(APIView):
 
 
 class IndicatorEvidenceApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, dump_id, *args, **kwargs):
@@ -132,6 +134,7 @@ class IndicatorEvidenceApiView(APIView):
 
 
 class IndicatorCaseApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, case_id, *args, **kwargs):
@@ -144,6 +147,7 @@ class IndicatorCaseApiView(APIView):
 
 
 class IndicatorExportApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, case_id, *args, **kwargs):
@@ -153,7 +157,7 @@ class IndicatorExportApiView(APIView):
         indicators = Indicator.objects.filter(evidence__dump_linked_case=case_id)
         bundle = export_bundle(indicators)
         response = HttpResponse(bundle, content_type="application/octet-stream")
-        response["Content-Disposition"] = (
-            'attachment; filename="indicators_case_{}.json"'.format(case_id)
-        )
+        response[
+            "Content-Disposition"
+        ] = 'attachment; filename="indicators_case_{}.json"'.format(case_id)
         return response

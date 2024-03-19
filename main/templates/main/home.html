@@ -53,6 +53,11 @@
         </div>
     </div>
     <hr class="horizontal dark mt-3" />
+    <span class="btn btn-outline-info ms-1 d-inline-block bg-blur rounded px-2"
+        style="cursor: pointer; position: fixed; bottom: 30px; right: 30px;" title="Click to copy to clipboard"
+        onclick="navigator.clipboard.writeText('{{user_info.token}}')">
+        <i class="fas fa-clipboard m-1"></i>Copy API Token
+    </span>
     <div class="row align-items-center mt-3">
         <div class="col-8">
             <div id="evidences_chart"></div>

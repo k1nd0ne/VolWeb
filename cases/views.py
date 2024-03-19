@@ -25,6 +25,7 @@ def case(request, case_id):
 
 
 class CasesApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     # 1. List all
@@ -96,6 +97,7 @@ def cases(request):
 
 class CaseApiView(APIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self, case_id):
         """

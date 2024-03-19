@@ -23,10 +23,8 @@ def symbols(request):
 
 
 class SymbolsApiView(APIView):
-    # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
 
-    # 1. List all
     def get(self, request, *args, **kwargs):
         """
         Get all the symbols
@@ -44,7 +42,6 @@ class SymbolsApiView(APIView):
 
 
 class SymbolApiView(APIView):
-    # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self, id):

@@ -33,6 +33,7 @@ def review(request, dump_id):
 
 
 class PsTreeApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -51,6 +52,7 @@ class PsTreeApiView(APIView):
 
 
 class MFTScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -69,6 +71,7 @@ class MFTScanApiView(APIView):
 
 
 class MBRScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -87,6 +90,7 @@ class MBRScanApiView(APIView):
 
 
 class ADSApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -105,6 +109,7 @@ class ADSApiView(APIView):
 
 
 class TimelineChartApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -123,6 +128,7 @@ class TimelineChartApiView(APIView):
 
 
 class TimelineDataApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -138,17 +144,12 @@ class TimelineDataApiView(APIView):
         data = self.get_object(dump_id)
         if not data:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
-
-        # Server-side parameters
-        draw = int(
-            request.query_params.get("draw", 0)
-        )  # Used by DataTables to ensure that the Ajax returns from server-side processing are drawn in sequence
+        draw = int(request.query_params.get("draw", 0))
         start = int(request.query_params.get("start", 0))
         length = int(request.query_params.get("length", 25))
         timestamp_min = request.query_params.get("timestamp_min", None)
         timestamp_max = request.query_params.get("timestamp_max", None)
 
-        # Filtering based on timestamp
         filtered_data = []
         if timestamp_min and timestamp_max:
             for artefact in data.artefacts:
@@ -158,9 +159,6 @@ class TimelineDataApiView(APIView):
         else:
             filtered_data = data.artefacts
 
-        # Implement search and order by functionality if necessary
-
-        # Server-side pagination
         paginator = Paginator(filtered_data, length)
         page_data = paginator.get_page((start // length) + 1)
 
@@ -174,22 +172,9 @@ class TimelineDataApiView(APIView):
             status=status.HTTP_200_OK,
         )
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = Timeliner.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except Timeliner.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = TimelineDataSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class CmdLineApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -211,6 +196,7 @@ class CmdLineApiView(APIView):
 
 
 class GetSIDsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -230,22 +216,9 @@ class GetSIDsApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = GetSIDs.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except GetSIDs.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = GetSIDsSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class PrivsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -265,22 +238,9 @@ class PrivsApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = Privs.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except Privs.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = PrivsSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class EnvarsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -300,22 +260,9 @@ class EnvarsApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = Envars.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except Envars.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = EnvarsSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class PsScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -334,22 +281,9 @@ class PsScanApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = PsScan.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except PsScan.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = PsScanSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class DllListApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -369,22 +303,9 @@ class DllListApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = DllList.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except DllList.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = DllListSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class SessionsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -404,22 +325,9 @@ class SessionsApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = Sessions.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except Sessions.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = SessionsSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class NetStatApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -436,22 +344,9 @@ class NetStatApiView(APIView):
         serializer = NetStatSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = NetStat.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except NetStat.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = NetStatSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class NetScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -468,22 +363,9 @@ class NetScanApiView(APIView):
         serializer = NetScanSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = NetScan.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except NetScan.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = NetScanSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class NetGraphApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -502,6 +384,7 @@ class NetGraphApiView(APIView):
 
 
 class HiveListApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -520,6 +403,7 @@ class HiveListApiView(APIView):
 
 
 class SvcScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -536,21 +420,9 @@ class SvcScanApiView(APIView):
         serializer = SvcScanSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = SvcScan.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except SvcScan.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-        serializer = SvcScanSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class HashdumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -569,6 +441,7 @@ class HashdumpApiView(APIView):
 
 
 class CachedumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -587,6 +460,7 @@ class CachedumpApiView(APIView):
 
 
 class LsadumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -605,6 +479,7 @@ class LsadumpApiView(APIView):
 
 
 class MalfindApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -623,6 +498,7 @@ class MalfindApiView(APIView):
 
 
 class LdrModulesApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -639,21 +515,9 @@ class LdrModulesApiView(APIView):
         serializer = LdrModulesSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = LdrModules.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except LdrModules.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-        serializer = LdrModulesSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ModulesApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -670,21 +534,9 @@ class ModulesApiView(APIView):
         serializer = ModulesSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = Modules.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except Modules.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-        serializer = ModulesSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class SSDTApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -701,22 +553,9 @@ class SSDTApiView(APIView):
         serializer = SSDTSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = SSDT.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except SSDT.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = SSDTSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class FileScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id):
@@ -733,22 +572,9 @@ class FileScanApiView(APIView):
         serializer = FileScanSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = FileScan.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except FileScan.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = FileScanSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class HandlesApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get_object(self, dump_id, pid):
@@ -770,22 +596,9 @@ class HandlesApiView(APIView):
             )
             return Response({}, status=status.HTTP_201_CREATED)
 
-    def patch(self, request, dump_id, artifact_id, tag, *args, **kwargs):
-        try:
-            instance = Handles.objects.get(evidence_id=dump_id, pk=artifact_id)
-        except Handles.DoesNotExist:
-            return Response(
-                {"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = HandlesSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class PsListDumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, _request, dump_id, pid, *args, **kwargs):
@@ -800,6 +613,7 @@ class PsListDumpApiView(APIView):
 
 
 class FileScanDumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, _request, dump_id, offset, *args, **kwargs):
@@ -808,6 +622,7 @@ class FileScanDumpApiView(APIView):
 
 
 class MemmapDumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, _request, dump_id, pid, *args, **kwargs):
@@ -819,6 +634,7 @@ class MemmapDumpApiView(APIView):
 
 
 class TasksApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, *args, **kwargs):
@@ -831,6 +647,7 @@ class TasksApiView(APIView):
 
 
 class LootApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, dump_id, *args, **kwargs):

@@ -15,6 +15,9 @@ import os, time
 
 @shared_task
 def start_analysis(dump_id):
+    time.sleep(
+        10
+    )  # Sleeping for 10 seconds to make sure the dump is completely uploaded (dirty, I'll find a better solution in time)
     instance = Evidence.objects.get(dump_id=dump_id)
     output_path = f"media/{instance.dump_id}/"
     if not os.path.exists(os.path.dirname(output_path)):
