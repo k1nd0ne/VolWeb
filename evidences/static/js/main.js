@@ -43,6 +43,12 @@ $(document).ready(function () {
     $(".modal_evidence_delete").modal("show");
   });
 
+  $("#restart_analysis").on("click", function () {
+    const evidence_id = $(".modal_evidence_review").attr("id");
+    start_analysis(evidence_id);
+    $(".modal_evidence_review").modal("hide");
+  });
+
   $("#delete_evidence_confirmed").on("click", function () {
     clear_form();
     const evidence_id = $(".modal_evidence_review").attr("id");

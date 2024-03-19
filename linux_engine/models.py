@@ -67,6 +67,8 @@ class PsAux(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -91,6 +93,8 @@ class Lsof(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -115,6 +119,8 @@ class MountInfo(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -139,6 +145,8 @@ class Envars(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -163,6 +171,8 @@ class PsScan(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -187,6 +197,8 @@ class tty_check(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -211,6 +223,8 @@ class Bash(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -235,6 +249,8 @@ class Elfs(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -259,6 +275,8 @@ class Sockstat(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -283,6 +301,8 @@ class Capabilities(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -307,6 +327,8 @@ class Kmsg(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -332,6 +354,8 @@ class Malfind(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -357,6 +381,8 @@ class Lsmod(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -396,5 +422,7 @@ class Timeliner(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None

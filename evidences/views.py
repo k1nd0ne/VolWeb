@@ -7,8 +7,9 @@ from rest_framework import status
 from evidences.models import Evidence
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.response import Response
-from evidences.serializers import EvidenceSerializer
+from evidences.serializers import AnalysisStartSerializer, EvidenceSerializer
 from minio import Minio
+from evidences.tasks import start_analysis
 from VolWeb.keyconfig import Secrets
 from VolWeb.settings import DEBUG
 
@@ -136,3 +137,28 @@ class EvidenceDetailApiView(APIView):
         evidence_instance.delete()
 
         return Response({"res": "Object deleted!"}, status=status.HTTP_200_OK)
+
+
+class LaunchTaskAPIView(APIView):
+    def get_object(self, dump_id):
+        """
+        Helper method to get the object with given dump_id
+        """
+        try:
+            return Evidence.objects.get(dump_id=dump_id)
+        except Evidence.DoesNotExist:
+            return None
+
+    def post(self, request, *args, **kwargs):
+        serializer = AnalysisStartSerializer(data=request.data)
+        if serializer.is_valid():
+            dump_id = serializer.validated_data.get("dump_id")
+            evidence_instance = self.get_object(dump_id)
+            if evidence_instance:
+                evidence_instance.status = 0
+                evidence_instance.save()
+                start_analysis.delay(evidence_instance.dump_id)
+                return Response(
+                    {"status": "Analysis launched"}, status=status.HTTP_202_ACCEPTED
+                )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -16,6 +16,7 @@ class Evidence(models.Model):
     dump_os = models.CharField(max_length=10, choices=OS)
     dump_linked_case = models.ForeignKey(Case, on_delete=models.CASCADE, null=False)
     dump_status = models.IntegerField(default=0)
+    dump_logs = models.JSONField(null=True)
 
     def __str__(self):
         return str(self.dump_name)

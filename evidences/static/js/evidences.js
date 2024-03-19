@@ -260,6 +260,45 @@ function display_evidence(evidence_id) {
       $(".evidence_name").text(evidence_data.dump_name);
       $(".evidence_os").text(evidence_data.dump_os);
       $(".evidence_status").text(evidence_data.dump_status);
+
+      var logsList = document.createElement("div");
+      logsList.className = "row";
+      var leftColList = document.createElement("ul");
+      leftColList.className = "list-group list-group-flush col-4";
+      var middleColList = document.createElement("ul");
+      middleColList.className = "list-group list-group-flush col-4";
+      var rightColList = document.createElement("ul");
+      rightColList.className = "list-group list-group-flush col-4";
+      var count = 0;
+      for (var key in evidence_data.dump_logs) {
+        var listItem = document.createElement("li");
+        listItem.className = "list-group-item";
+        var small = document.createElement("small");
+        if (evidence_data.dump_logs[key] == "Success") {
+          small.classList.add("text-success");
+        } else {
+          small.classList.add("text-danger");
+        }
+        small.textContent = evidence_data.dump_logs[key];
+        small_key = document.createElement("small");
+        small_key.textContent = key + ": ";
+        small_key.appendChild(small);
+        listItem.appendChild(small_key);
+        if (count % 3 === 0) {
+          leftColList.appendChild(listItem);
+        } else if (count % 3 === 1) {
+          middleColList.appendChild(listItem);
+        } else {
+          rightColList.appendChild(listItem);
+        }
+        count++;
+      }
+      logsList.appendChild(leftColList);
+      logsList.appendChild(middleColList);
+      logsList.appendChild(rightColList);
+      document.querySelector(".evidence_logs").innerHTML = "";
+      document.querySelector(".evidence_logs").appendChild(logsList);
+
       $(".evidence_info").removeClass("placeholder");
     },
     error: function (xhr, status, error) {
@@ -320,6 +359,30 @@ function delete_evidence(dump_id) {
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
+    },
+  });
+}
+
+function start_analysis(dump_id) {
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      xhr.setRequestHeader(
+        "X-CSRFToken",
+        document.querySelector("[name=csrfmiddlewaretoken]").value,
+      );
+    },
+  });
+  $.ajax({
+    type: "POST",
+    url: "/api/evidences/launch_task/",
+    data: JSON.stringify({ dump_id: dump_id }),
+    contentType: "application/json",
+    dataType: "json",
+    success: function (data) {
+      toastr.success("Analysis launched.");
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred while launching the analysis: " + error);
     },
   });
 }
@@ -423,19 +486,19 @@ function connectWebSocket(case_id) {
         try {
           evidences.rows().remove().draw();
         } catch {}
-        reconnectWebSocket(); // Call the function to reconnect after connection is closed
+        reconnectWebSocket();
       };
 
       socket_evidences.onerror = function (error) {
         toastr.error("Can't connect to the server.", error);
-        socket_evidences.close(); // Close the WebSocket connection if an error occurs
+        socket_evidences.close();
       };
       $("#loading-content").addClass("d-none");
       $("#main-content").removeClass("d-none");
     },
     error: function (xhr, status, error) {
-      // Handle any errors here
-      console.error("Error fetching WebSocket URL:", xhr.responseText);
+      reconnectWebSocket();
+      console.log("Error fetching WebSocket URL:", xhr.responseText);
     },
   });
 }

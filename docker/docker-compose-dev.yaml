@@ -33,6 +33,6 @@ services:
       - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
     command: server --console-address ":9001" /data
 volumes:
-  minio-storage-dev: {}
+  minio-storage-dev:
   postgres-data-dev:
   redis-data-dev:

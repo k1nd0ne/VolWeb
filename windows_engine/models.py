@@ -49,6 +49,8 @@ class PsTree(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -113,6 +115,8 @@ class DeviceTree(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -151,6 +155,8 @@ class PsScan(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -175,6 +181,8 @@ class CmdLine(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -199,6 +207,8 @@ class Privs(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -223,6 +233,8 @@ class Sessions(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -247,6 +259,8 @@ class GetSIDs(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -271,6 +285,8 @@ class LdrModules(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -295,6 +311,8 @@ class Modules(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -319,6 +337,8 @@ class SvcScan(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -343,6 +363,8 @@ class Envars(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -367,6 +389,8 @@ class NetScan(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -391,6 +415,8 @@ class NetStat(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -415,6 +441,8 @@ class Hashdump(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -442,6 +470,8 @@ class Lsadump(models.Model):
                     encode = base64.b64encode(artefact["Secret"], "utf-8")
                     artefact["Secret"] = encode
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -467,6 +497,8 @@ class Cachedump(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -492,6 +524,8 @@ class HiveList(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -517,6 +551,8 @@ class Timeliner(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -542,6 +578,8 @@ class SkeletonKeyCheck(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -567,6 +605,8 @@ class Malfind(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -592,6 +632,8 @@ class UserAssist(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -617,6 +659,8 @@ class MFTScan(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -642,6 +686,8 @@ class ADS(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -667,6 +713,8 @@ class MBRScan(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -692,6 +740,8 @@ class FileScan(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -749,6 +799,8 @@ class DllList(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -805,6 +857,8 @@ class DriverModule(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -830,6 +884,8 @@ class VadWalk(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 
@@ -855,6 +911,8 @@ class SSDT(models.Model):
             if constructed:
                 result = DictRenderer().render(constructed.run())
                 return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
         except:
             return None
 

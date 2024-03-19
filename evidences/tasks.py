@@ -69,12 +69,20 @@ def start_analysis(dump_id):
             time.sleep(1)
 
         with allow_join_result():
+            logs = {}
             result = group_result.get()
             for i in range(0, len(result)):
+                plugin_name = volweb_plugins[i].__class__.__name__
+                if result[i] == "Unsatisfied":
+                    logs[plugin_name] = "Unsatisfied"
+                    result[i] = None
+                elif result[i]:
+                    logs[plugin_name] = "Success"
+                else:
+                    logs[plugin_name] = "Failed"
                 volweb_plugins[i].artefacts = result[i]
                 volweb_plugins[i].save()
 
-            # We need to take care of some specific models
             if result[17]:
                 windows.TimeLineChart(
                     evidence=instance, artefacts=build_timeline(result[17])
@@ -95,6 +103,7 @@ def start_analysis(dump_id):
                         evidence=instance,
                         artefacts=generate_windows_network_graph(result[12]),
                     ).save()
+            instance.dump_logs = logs
             instance.dump_status = 100
             instance.save()
     if instance.dump_os == "Linux":
@@ -129,8 +138,17 @@ def start_analysis(dump_id):
             time.sleep(1)
 
         with allow_join_result():
+            logs = {}
             result = group_result.get()
             for i in range(0, len(result)):
+                plugin_name = volweb_plugins[i].__class__.__name__
+                if result[i] == "Unsatisfied":
+                    logs[plugin_name] = "Unsatisfied"
+                    result[i] = None
+                elif result[i]:
+                    logs[plugin_name] = "Success"
+                else:
+                    logs[plugin_name] = "Failed"
                 volweb_plugins[i].artefacts = result[i]
                 volweb_plugins[i].save()
 
@@ -143,5 +161,6 @@ def start_analysis(dump_id):
                 linux.TimeLineChart(
                     evidence=instance, artefacts=build_timeline(result[7])
                 ).save()
+            instance.dump_logs = logs
             instance.dump_status = 100
             instance.save()
