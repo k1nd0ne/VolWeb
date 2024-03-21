@@ -46,6 +46,7 @@ $(document).ready(function () {
   $("#restart_analysis").on("click", function () {
     const evidence_id = $(".modal_evidence_review").attr("id");
     start_analysis(evidence_id);
+    get_evidences();
     $(".modal_evidence_review").modal("hide");
   });
 

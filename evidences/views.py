@@ -16,25 +16,28 @@ from VolWeb.settings import DEBUG
 
 @login_required
 def evidences(request):
-    """Load evidence page
-
-    Arguments:
-    request : http request object
-
-    Comments:
-    Display the evidences page
+    """
+    This view will return the evidence template with a form to add a new evidence.
+    :param request: http request
+    :return: render the evidences.html page with a form.
     """
     evidence_form = EvidenceForm()
     return render(request, "evidences/evidences.html", {"evidence_form": evidence_form})
 
 
 class CaseEvidenceApiView(APIView):
+    """
+    Case/Evidence API View
+    This API view allows an authenticated user to get the evidences associated to a given case
+    """
+
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, case_id, *args, **kwargs):
         """
-        List all the evidences for given requested user
+        get request handler
+        :return: serialized evidences linked to the case.
         """
         evidences = Evidence.objects.filter(dump_linked_case=case_id)
         serializer = EvidenceSerializer(evidences, many=True)
@@ -42,22 +45,27 @@ class CaseEvidenceApiView(APIView):
 
 
 class EvidenceAPIView(APIView):
+    """
+    Evidence API View
+    This API view allows an authenticated user to get all of the evidences and create one.
+    """
+
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
-    # 1. List all
     def get(self, request, *args, **kwargs):
         """
-        List all the evidence for given requested user
+        get request handler
+        :return: serialized evidences.
         """
         evidences = Evidence.objects.all()
         serializer = EvidenceSerializer(evidences, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # 2. Create
     def post(self, request, *args, **kwargs):
         """
-        Create an evidence
+        post request handler
+        :return: the new serialized evidence created
         """
         dump_etag = request.data.get("dump_etag")
         if Evidence.objects.filter(dump_etag=dump_etag).exists():
@@ -81,6 +89,11 @@ class EvidenceAPIView(APIView):
 
 
 class EvidenceDetailApiView(APIView):
+    """
+    EvidenceDetail API View
+    This API view allows an authenticated user to get all of the details for a given evidence/dump id.
+    """
+
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
@@ -93,10 +106,10 @@ class EvidenceDetailApiView(APIView):
         except Evidence.DoesNotExist:
             return None
 
-    # 1. Retrieve
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Retrieves the Evidence with given dump_id
+        get request handler
+        :return: serialized evidence requested if found.
         """
         evidence_instance = self.get_object(dump_id)
         if not evidence_instance:
@@ -108,10 +121,10 @@ class EvidenceDetailApiView(APIView):
         serializer = EvidenceSerializer(evidence_instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # 2. Delete
     def delete(self, request, dump_id, *args, **kwargs):
         """
-        Deletes the evidence item with given dump_id if exists
+        delete request handler
+        :return: result message with the status of the action.
         """
         evidence_instance = self.get_object(dump_id)
         if not evidence_instance:
@@ -137,13 +150,21 @@ class EvidenceDetailApiView(APIView):
             )
         evidence_instance.delete()
 
-        return Response({"res": "Object deleted!"}, status=status.HTTP_200_OK)
+        return Response({"res": "Evidence deleted."}, status=status.HTTP_200_OK)
 
 
 class LaunchTaskAPIView(APIView):
+    """
+    Launch Task API View
+    This API view allows an authenticated user to restart the analysis of a memory image.
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication]
+
     def get_object(self, dump_id):
         """
-        Helper method to get the object with given dump_id
+        Helper method to get the evidence with given dump_id
         """
         try:
             return Evidence.objects.get(dump_id=dump_id)
@@ -151,12 +172,16 @@ class LaunchTaskAPIView(APIView):
             return None
 
     def post(self, request, *args, **kwargs):
+        """
+        post request handler
+        :return: result message with the status of the action and HTTP code.
+        """
         serializer = AnalysisStartSerializer(data=request.data)
         if serializer.is_valid():
             dump_id = serializer.validated_data.get("dump_id")
             evidence_instance = self.get_object(dump_id)
             if evidence_instance:
-                evidence_instance.status = 0
+                evidence_instance.dump_status = 0
                 evidence_instance.save()
                 start_analysis.delay(evidence_instance.dump_id)
                 return Response(

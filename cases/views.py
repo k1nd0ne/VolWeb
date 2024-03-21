@@ -17,6 +17,12 @@ import uuid, urllib3, ssl
 
 @login_required
 def case(request, case_id):
+    """
+    Display all of the information about a case.
+    :param request: http request
+    :param case_id: requested case to review
+    :return: render the cases.html page and bring the form to create an evidence.
+    """
     case = Case.objects.get(case_id=case_id)
     evidence_form = EvidenceForm()
     return render(
@@ -25,10 +31,14 @@ def case(request, case_id):
 
 
 class CasesApiView(APIView):
+    """
+    Cases API View
+    This API is allowing an authenticated user to create a case or get all of the cases.
+    """
+
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
-    # 1. List all
     def get(self, request, *args, **kwargs):
         """
         List all the cases for given requested user
@@ -37,7 +47,6 @@ class CasesApiView(APIView):
         serializer = CaseSerializer(cases, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # 2. Create
     def post(self, request, *args, **kwargs):
         """
         Create Case with given case data and the associated bucket.
@@ -83,13 +92,10 @@ class CasesApiView(APIView):
 
 @login_required
 def cases(request):
-    """Load cases page
-
-    Arguments:
-    request : http request object
-
-    Comments:
+    """
     Display the cases page
+    :param request: http request
+    :return: render the cases.html page with a form.
     """
     case_form = CaseForm()
     return render(request, "cases/cases.html", {"case_form": case_form})
@@ -108,7 +114,6 @@ class CaseApiView(APIView):
         except Case.DoesNotExist:
             return None
 
-    # 3. Retrieve
     def get(self, request, case_id, *args, **kwargs):
         """
         Retrieves the Case with given case_id
@@ -123,7 +128,6 @@ class CaseApiView(APIView):
         serializer = CaseSerializer(case_instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # 4. Update
     def put(self, request, case_id, *args, **kwargs):
         """
         Updates the case item with given case_id if exists
@@ -134,9 +138,7 @@ class CaseApiView(APIView):
                 {"res": "Object with case id does not exists"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        linked_users = request.data.getlist(
-            "linked_users[]"
-        )  # Get the raw list of linked_users
+        linked_users = request.data.getlist("linked_users[]")
         linked_users_data = [{"username": user} for user in linked_users]
         data = {
             "case_name": request.data.get("case_name"),
@@ -149,7 +151,6 @@ class CaseApiView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # 5. Delete
     def delete(self, request, case_id, *args, **kwargs):
         """
         Deletes the case item with given case_id if exists

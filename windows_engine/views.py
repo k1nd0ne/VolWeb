@@ -44,7 +44,7 @@ class PsTreeApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested PSTree.
+        Return the requested PSTree data.
         """
         data = self.get_object(dump_id)
         serializer = PsTreeSerializer(data)
@@ -63,7 +63,7 @@ class MFTScanApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested MFTScan.
+        Return the requested MFTScan.
         """
         data = self.get_object(dump_id)
         serializer = MFTScanSerializer(data)
@@ -82,7 +82,7 @@ class MBRScanApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested MBRScan data.
+        Return the requested MBRScan data.
         """
         data = self.get_object(dump_id)
         serializer = MBRScanSerializer(data)
@@ -101,7 +101,7 @@ class ADSApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested ADS.
+        Return the requested ADS.
         """
         data = self.get_object(dump_id)
         serializer = ADSSerializer(data)
@@ -120,7 +120,7 @@ class TimelineChartApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested TimelineChart.
+        Return the requested TimelineChart.
         """
         data = self.get_object(dump_id)
         serializer = TimelineChartSerializer(data)
@@ -140,6 +140,7 @@ class TimelineDataApiView(APIView):
     def get(self, request, dump_id, *args, **kwargs):
         """
         Serve the requested timeline data with server-side processing.
+        TODO: add support for the SearchBuilder
         """
         data = self.get_object(dump_id)
         if not data:
@@ -185,7 +186,7 @@ class CmdLineApiView(APIView):
 
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
-        Give the requested cmdline from the pid.
+        Return the requested cmdline from the given pid.
         """
         data = self.get_object(dump_id)
         if data.artefacts:
@@ -207,7 +208,7 @@ class GetSIDsApiView(APIView):
 
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
-        Give the requested cmdline from the pid.
+        Return the requested sids from the given pid.
         """
         data = self.get_object(dump_id)
         if data.artefacts:
@@ -229,7 +230,7 @@ class PrivsApiView(APIView):
 
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
-        Give the requested cmdline from the pid.
+        Return the requested Privileges from the given pid.
         """
         data = self.get_object(dump_id)
         if data.artefacts:
@@ -251,7 +252,7 @@ class EnvarsApiView(APIView):
 
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
-        Give the requested envars from the pid.
+        Return the requested envars from the pid.
         """
         data = self.get_object(dump_id)
         if data.artefacts:
@@ -273,7 +274,7 @@ class PsScanApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested psscan data.
+        Return the requested psscan data.
         """
         data = self.get_object(dump_id)
         if data.artefacts:
@@ -294,7 +295,7 @@ class DllListApiView(APIView):
 
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
-        Give the requested dlllist from the pid.
+        Return the requested dlllist from the pid.
         """
         data = self.get_object(dump_id)
         if data.artefacts:
@@ -316,7 +317,7 @@ class SessionsApiView(APIView):
 
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
-        Give the requested session from the pid.
+        Return the requested session from the pid.
         """
         data = self.get_object(dump_id)
         if data.artefacts:
@@ -338,7 +339,7 @@ class NetStatApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested netstat data
+        Return the requested netstat data
         """
         data = self.get_object(dump_id)
         serializer = NetStatSerializer(data)
@@ -357,7 +358,7 @@ class NetScanApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested netscan data
+        Return the requested netscan data
         """
         data = self.get_object(dump_id)
         serializer = NetScanSerializer(data)
@@ -376,7 +377,7 @@ class NetGraphApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested netgraph data
+        Return the requested netgraph data
         """
         data = self.get_object(dump_id)
         serializer = NetGraphSerializer(data)
@@ -395,7 +396,7 @@ class HiveListApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested services data
+        Return the requested Hive data
         """
         data = self.get_object(dump_id)
         serializer = HiveListSerializer(data)
@@ -414,7 +415,7 @@ class SvcScanApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested services data
+        Return the requested services data
         """
         data = self.get_object(dump_id)
         serializer = SvcScanSerializer(data)
@@ -433,7 +434,7 @@ class HashdumpApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested Hashdump data
+        Return the requested Hashdump data
         """
         data = self.get_object(dump_id)
         serializer = HashdumpSerializer(data)
@@ -452,7 +453,7 @@ class CachedumpApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested Cachedump data
+        Return the requested Cachedump data
         """
         data = self.get_object(dump_id)
         serializer = CachedumpSerializer(data)
@@ -471,7 +472,7 @@ class LsadumpApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested Lsadump data
+        Return the requested Lsadump data
         """
         data = self.get_object(dump_id)
         serializer = LsadumpSerializer(data)
@@ -490,7 +491,7 @@ class MalfindApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested malfind data
+        Return the requested malfind data
         """
         data = self.get_object(dump_id)
         serializer = MalfindSerializer(data)
@@ -509,7 +510,7 @@ class LdrModulesApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested ldrmodules data
+        Return the requested ldrmodules data
         """
         data = self.get_object(dump_id)
         serializer = LdrModulesSerializer(data)
@@ -528,7 +529,7 @@ class ModulesApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested modules data
+        Return the requested modules data
         """
         data = self.get_object(dump_id)
         serializer = ModulesSerializer(data)
@@ -547,7 +548,7 @@ class SSDTApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested SSDT data
+        Return the requested SSDT data
         """
         data = self.get_object(dump_id)
         serializer = SSDTSerializer(data)
@@ -566,7 +567,7 @@ class FileScanApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested FileScan data
+        Return the requested FileScan data
         """
         data = self.get_object(dump_id)
         serializer = FileScanSerializer(data)
@@ -584,6 +585,9 @@ class HandlesApiView(APIView):
             return None
 
     def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Try to compute the handles for the requested process and returns the results.
+        """
         instance = self.get_object(dump_id, pid)
         if instance:
             filtered_data = [d for d in instance.artefacts if d["PID"] == pid]
@@ -617,6 +621,9 @@ class FileScanDumpApiView(APIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, _request, dump_id, offset, *args, **kwargs):
+        """
+        Try to dump a file using the Filescan plugin
+        """
         dump_file.delay(evidence_id=dump_id, offset=offset)
         return Response({}, status=status.HTTP_201_CREATED)
 
@@ -627,7 +634,7 @@ class MemmapDumpApiView(APIView):
 
     def get(self, _request, dump_id, pid, *args, **kwargs):
         """
-        Dump the requested process using the pslist plugin
+        Try to dump a process using the Memmap plugin
         """
         dump_process_memmap.delay(evidence_id=dump_id, pid=pid)
         return Response({}, status=status.HTTP_201_CREATED)
@@ -639,7 +646,7 @@ class TasksApiView(APIView):
 
     def get(self, request, *args, **kwargs):
         """
-        Give the requested tasks if existing.
+        Return the requested tasks if existing.
         """
         tasks = TaskResult.objects.filter(Q(status="STARTED") | Q(status="PENDING"))
         serializer = TasksSerializer(tasks, many=True)

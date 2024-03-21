@@ -77,7 +77,7 @@ class LsofApiView(APIView):
 
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
-        Give the requested psaux from the pid.
+        Give the requested lsof data from the given pid.
         """
         data = self.get_object(dump_id)
         if data.artefacts:
@@ -99,7 +99,7 @@ class ElfsApiView(APIView):
 
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
-        Give the requested psaux from the pid.
+        Give the requested ELfs from the given pid.
         """
         data = self.get_object(dump_id)
         if data.artefacts:
@@ -121,7 +121,7 @@ class EnvarsApiView(APIView):
 
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
-        Give the requested psaux from the pid.
+        Give the requested Envars from the given pid.
         """
         data = self.get_object(dump_id)
         if data.artefacts:
@@ -143,7 +143,7 @@ class CapabilitiesApiView(APIView):
 
     def get(self, request, dump_id, pid, *args, **kwargs):
         """
-        Give the requested psaux from the pid.
+        Give the requested Capabilites from the given pid.
         """
         data = self.get_object(dump_id)
         if data.artefacts:
@@ -186,7 +186,7 @@ class tty_checkApiView(APIView):
 
     def get(self, request, dump_id, *args, **kwargs):
         """
-        Give the requested mount_info data.
+        Give the requested ttycheck data.
         """
         data = self.get_object(dump_id)
         if data.artefacts:
@@ -392,9 +392,6 @@ class TimelineDataApiView(APIView):
         else:
             filtered_data = data.artefacts
 
-        # Implement search and order by functionality if necessary
-
-        # Server-side pagination
         paginator = Paginator(filtered_data, length)
         page_data = paginator.get_page((start // length) + 1)
 

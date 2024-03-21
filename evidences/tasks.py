@@ -15,6 +15,9 @@ import os, time
 
 @shared_task
 def start_analysis(dump_id):
+    """
+    The main analysis routine for both Windows and Linux.
+    """
     time.sleep(
         10
     )  # Sleeping for 10 seconds to make sure the dump is completely uploaded (dirty, I'll find a better solution in time)
@@ -83,13 +86,18 @@ def start_analysis(dump_id):
                     logs[plugin_name] = "Success"
                 else:
                     logs[plugin_name] = "Failed"
+
+                volweb_plugins[i].__class__.objects.filter(evidence=instance).delete()
                 volweb_plugins[i].artefacts = result[i]
                 volweb_plugins[i].save()
 
+            windows.TimeLineChart.objects.filter(evidence=instance).delete()
             if result[17]:
                 windows.TimeLineChart(
                     evidence=instance, artefacts=build_timeline(result[17])
                 ).save()
+
+            windows.NetGraph.objects.filter(evidence=instance).delete()
             if result[11] and result[12]:
                 windows.NetGraph(
                     evidence=instance,
@@ -152,14 +160,18 @@ def start_analysis(dump_id):
                     logs[plugin_name] = "Success"
                 else:
                     logs[plugin_name] = "Failed"
+
+                volweb_plugins[i].__class__.objects.filter(evidence=instance).delete()
                 volweb_plugins[i].artefacts = result[i]
                 volweb_plugins[i].save()
 
+            linux.NetGraph.objects.filter(evidence=instance).delete()
             if result[6]:
                 linux.NetGraph(
                     evidence=instance, artefacts=generate_linux_network_graph(result[6])
                 ).save()
 
+            linux.TimeLineChart.objects.filter(evidence=instance).delete()
             if result[7]:
                 linux.TimeLineChart(
                     evidence=instance, artefacts=build_timeline(result[7])

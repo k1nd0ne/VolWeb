@@ -10,6 +10,11 @@ OS = (
 
 
 class Evidence(models.Model):
+    """
+    Evidence Model
+    Holds the important metadata about the memory image.
+    """
+
     dump_id = models.AutoField(primary_key=True)
     dump_name = models.CharField(max_length=250)
     dump_etag = models.CharField(max_length=256)

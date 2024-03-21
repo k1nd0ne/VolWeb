@@ -4,6 +4,11 @@ from cases.models import Case
 
 
 class EvidenceSerializer(serializers.ModelSerializer):
+    """
+    Evidence Serializer
+    Used to send json data to the front end for an evidence.
+    """
+
     dump_linked_case_name = serializers.SerializerMethodField()
 
     class Meta:

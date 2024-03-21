@@ -3,6 +3,11 @@ from django.contrib.auth.models import User
 
 
 class Case(models.Model):
+    """
+    Case Model
+    Holds the metadata about the context of the case and the linked bucket ID.
+    """
+
     case_id = models.AutoField(primary_key=True)
     case_bucket_id = models.UUIDField()
     case_name = models.CharField(max_length=500)
