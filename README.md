@@ -5,8 +5,9 @@
 VolWeb is a digital forensic memory analysis platform exploiting the power of the volatility3 framework.
 
 # Objective
+
 The goal of VolWeb is to improve the efficiency of memory collection and forensics analysis by providing a centralized, visual and enhanced web application for incident responders and digital forensics investigators.
-Once the investigator obtain a memory image of a Linux or Windows system and perform all of the necessay treatments (like conversion to a raw image), the evidence can be uploaded to VolWeb, triggering the the automatic processing and extract of artifacts with the power of the volatility3 framework. By using object storage technologies, VolWeb also enables the incident responder to diretly inject memory images into the VolWeb platform with the use of deditacted scripts interfaced with the tool and maintained by the community.
+Once the investigator obtain a memory image of a Linux or Windows system, the evidence can be uploaded to VolWeb, triggering the the automatic processing and extract of artifacts with the power of the volatility3 framework. By using object storage technologies, VolWeb also enables the incident responder to diretly upload memory images into the VolWeb platform from different locations with the use of deditacted scripts interfaced with the tool and maintained by the community. The goal is also to allow users to capitalize technical information such as Indicators to later be imported on modern CTI platform such as OpenCTI connecting your incident response and CTI team after your investigation.
 
 # Issues
 
