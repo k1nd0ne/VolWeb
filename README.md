@@ -1,5 +1,6 @@
-![volweb-readme](https://github.com/k1nd0ne/VolWeb/assets/27780432/2c4cec14-b73c-4264-9936-215ca23a55d8)
-
+<h1 align="center">
+  <img src="https://github.com/k1nd0ne/VolWeb/assets/27780432/2c4cec14-b73c-4264-9936-215ca23a55d8" alt="VolWeb">
+</h1>
 # Introduction
 
 VolWeb is a digital forensic memory analysis platform exploiting the power of the volatility3 framework.
