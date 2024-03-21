@@ -1,16 +1,14 @@
 ![volweb-readme](https://github.com/k1nd0ne/VolWeb/assets/27780432/2c4cec14-b73c-4264-9936-215ca23a55d8)
 
-# 🧬 About
+# Introduction
 
-VolWeb is a digital forensic memory analysis platform. The goal of VolWeb is to improve the efficiency of memory forensics by providing a centralized, visual and enhanced platform for incident responders and digital forensics investigators.  
+VolWeb is a digital forensic memory analysis platform exploiting the power of the volatility3 framework.
 
-VolWeb is based on volatility3, and this platform will evolve with the framework development.
+# Objective
+The goal of VolWeb is to improve the efficiency of memory collection and forensics analysis by providing a centralized, visual and enhanced web application for incident responders and digital forensics investigators.
+Once the investigator obtain a memory image of a Linux or Windows system and perform all of the necessay treatments (like conversion to a raw image), the evidence can be uploaded to VolWeb, triggering the the automatic processing and extract of artifacts with the power of the volatility3 framework. By using object storage technologies, VolWeb also enables the incident responder to diretly inject memory images into the VolWeb platform with the use of deditacted scripts interfaced with the tool and maintained by the community.
 
-**VolWeb is still in development and will evolve quickly.**  
-
-Update communications will be via twitter or by following this repository.
-
-# ⚠️ Issues 
+# Issues
 
 If you have found a bug, or want to propose a feature please raise it by opening an issue on Github.
 
