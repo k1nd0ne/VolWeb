@@ -25,15 +25,20 @@ from rest_framework.authtoken.models import Token
 
 @login_required
 def home(request):
-    """Load home page and display the current user with their token."""
+    """Load home page and display the current user with their token and all usernames."""
 
     # Accessing the logged-in user directly
     user = request.user
     token, _ = Token.objects.get_or_create(user=user)
+    User = get_user_model()
+    all_usernames = User.objects.values_list("username", flat=True)
     return render(
         request,
         "main/home.html",
-        {"user_info": {"username": user.username, "token": token.key}},
+        {
+            "user_info": {"username": user.username, "token": token.key},
+            "users": list(all_usernames),
+        },
     )
 
 

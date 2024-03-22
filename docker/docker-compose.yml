@@ -37,8 +37,8 @@ services:
       - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
     command: server --console-address ":9001" /data
 
-  volweb_platform:
-    container_name: volweb_platform
+  volweb-platform:
+    container_name: volweb-platform
     environment:
       - DATABASE=${DATABASE}
       - DATABASE_HOST=${DATABASE_HOST}
@@ -72,7 +72,7 @@ services:
       - ./minio/fullchain.pem:/etc/ssl/certs/minio.pem
       - media:/home/app/web/media
 
-  volweb_workers:
+  volweb-workers:
     environment:
       - DATABASE=${DATABASE}
       - DATABASE_HOST=${DATABASE_HOST}
@@ -120,7 +120,7 @@ services:
       - staticfiles:/home/app/web/staticfiles
       - media:/home/app/web/media
     depends_on:
-      - volweb_platform
+      - volweb-platform
 
 volumes:
   minio_storage:

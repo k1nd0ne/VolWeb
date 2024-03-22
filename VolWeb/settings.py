@@ -27,10 +27,12 @@ SECRET_KEY = os.getenv("DJANGO_SECRET", "DEV_SECRET")
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(" ")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+if SECRET_KEY == "DEV_SECRET":
+    DEBUG = True
+else:
+    DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
-
 
 # Application definition
 
