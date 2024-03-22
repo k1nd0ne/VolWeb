@@ -6,6 +6,10 @@
 
 VolWeb is a digital forensic memory analysis platform exploiting the power of the volatility3 framewor. Dedicated to the investigation and incident response.
 
+![image](https://github.com/k1nd0ne/VolWeb/assets/27780432/691f1717-6c37-4147-9cac-e1a52aa2d1d0)
+
+
+
 ## Objective
 
 The goal of VolWeb is to improve the efficiency of memory collection and forensics analysis by providing a centralized, visual and enhanced web application for incident responders and digital forensics investigators.
