@@ -6,7 +6,7 @@ app = Celery("VolWeb")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 app.conf.update(
-    result_expires=3600,
+    result_expires=3600 * 24,
 )
 app.conf.broker_transport_options = {
     "priority_steps": list(range(10)),

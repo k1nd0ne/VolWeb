@@ -86,8 +86,8 @@ def dump_process_pslist(evidence_id, pid):
         )
 
 
-@shared_task(bind=True)
-def dump_process_memmap(self, evidence_id, pid):
+@shared_task
+def dump_process_memmap(evidence_id, pid):
     channel_layer = get_channel_layer()
     instance = PsTree.objects.get(evidence_id=evidence_id)
     result = instance.memmap_dump(pid)
@@ -131,8 +131,8 @@ def dump_process_memmap(self, evidence_id, pid):
         )
 
 
-@shared_task(bind=True)
-def dump_file(self, evidence_id, offset):
+@shared_task
+def dump_file(evidence_id, offset):
     channel_layer = get_channel_layer()
     instance = Evidence.objects.get(dump_id=evidence_id)
     try:

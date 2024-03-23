@@ -27,14 +27,12 @@ function upload_and_create_evidence(bucket_id) {
           Bucket: bucket_id,
           Key: file.name,
           Body: file,
-          ACL: "public-read",
         });
 
         uploader.on("httpUploadProgress", function (evt) {
           $(".upload-progress").removeClass("d-none");
           $("#evidence_form").hide();
           $("#upload-button").hide();
-
           document.getElementById("upload-progress").innerHTML =
             parseInt((evt.loaded * 100) / evt.total) + "%";
         });
@@ -43,12 +41,12 @@ function upload_and_create_evidence(bucket_id) {
           fileChooser.value = "";
           document.getElementById("upload-progress").innerHTML = "";
           if (err) {
-            toastr.error("Error : " + err);
+            toastr.error("Error when uploading : " + err);
           }
           if (data) {
             toastr.success("Upload Success");
             create_evidence(file.name, data.ETag);
-            $("#modal_evidence_create").modal("toggle");
+            $("#modal_evidence_create").modal("hide");
             $(".upload-progress").addClass("d-none");
             $("#evidence_form").show();
             $("#upload-button").show();
@@ -363,7 +361,7 @@ function delete_evidence(dump_id) {
   });
 }
 
-function start_analysis(dump_id) {
+function start_analysis(dump_id, case_id) {
   $.ajaxSetup({
     beforeSend: function (xhr, settings) {
       xhr.setRequestHeader(
@@ -380,6 +378,7 @@ function start_analysis(dump_id) {
     dataType: "json",
     success: function (data) {
       toastr.success("Analysis launched.");
+      get_evidences(case_id);
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred while launching the analysis: " + error);
@@ -398,8 +397,7 @@ function clear_form() {
 function reconnectWebSocket() {
   toastr.info("Trying to reconnect in " + reconnectDelay / 1000 + "seconds");
   setTimeout(function () {
-    connectWebSocket(); // Call the function to connect WebSocket again
-    // Increase the reconnect delay exponentially
+    connectWebSocket();
     reconnectDelay *= 2;
   }, reconnectDelay);
 }
@@ -410,7 +408,6 @@ function connectWebSocket(case_id) {
     type: "GET",
     dataType: "json",
     success: function (data) {
-      // Retrieve the WebSocket URL from the response
       var websocketUrl = `${data.websocket_url}/ws/evidences/`;
       const socket_evidences = new WebSocket(websocketUrl);
 

@@ -6,12 +6,10 @@ $(document).ready(function () {
   get_indicators(case_id, null);
 
   $("#upload-button").on("click", function () {
-    // First we go an fetch the uuid of the bucket associated with the case selected by the user.
     const evidence_name = $("#id_dump_name").val();
     const evidence_os = $("#id_dump_os").val();
     const linked_case_id = $("#id_dump_linked_case").val();
 
-    //Check if the user selected a case.
     if (evidence_name === "") {
       $("#form-error").text("Please enter a name for the evidence.");
       return;
@@ -34,7 +32,6 @@ $(document).ready(function () {
       dataType: "json",
       success: function (data) {
         const bucket_name = data.case_bucket_id;
-        //Ok we have the bucket uuid we can try to upload the file to the bucket.
         upload_and_create_evidence(bucket_name);
       },
       error: function (xhr, status, error) {
@@ -50,8 +47,7 @@ $(document).ready(function () {
 
   $("#restart_analysis").on("click", function () {
     const evidence_id = $(".modal_evidence_review").attr("id");
-    start_analysis(evidence_id);
-    get_evidences(case_id);
+    start_analysis(evidence_id, case_id);
     $(".modal_evidence_review").modal("hide");
   });
 

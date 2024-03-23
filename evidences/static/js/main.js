@@ -29,7 +29,6 @@ $(document).ready(function () {
       dataType: "json",
       success: function (data) {
         const bucket_name = data.case_bucket_id;
-        //Ok we have the bucket uuid we can try to upload the file to the bucket.
         upload_and_create_evidence(bucket_name);
       },
       error: function (xhr, status, error) {
@@ -45,8 +44,7 @@ $(document).ready(function () {
 
   $("#restart_analysis").on("click", function () {
     const evidence_id = $(".modal_evidence_review").attr("id");
-    start_analysis(evidence_id);
-    get_evidences();
+    start_analysis(evidence_id, null);
     $(".modal_evidence_review").modal("hide");
   });
 

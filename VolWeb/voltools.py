@@ -20,15 +20,13 @@ def fix_permissions(output_path):
         for filename in os.listdir(output_path):
             filepath = os.path.join(output_path, filename)
             if os.path.isfile(filepath):
-                # Retrieve the current permissions
                 current_permissions = stat.S_IMODE(os.lstat(filepath).st_mode)
-                # Modify the permissions to add read by everyone
                 os.chmod(filepath, current_permissions | stat.S_IROTH)
-                print(f"Updated permissions for: {filepath}")
+                logger.info(f"Updated permissions for: {filepath}")
             else:
-                print(f"Skipping {filepath}, not a file.")
+                logger.warning(f"Skipping {filepath}, not a file.")
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error when updating permissions: {e}")
 
 
 class GraphException(Exception):
@@ -416,9 +414,9 @@ def build_context(evidence_data, context, base_config_path, plugin):
     ] + constants.SYMBOL_BASEPATHS
     available_automagics = automagic.available(context)
     automagics = automagic.choose_automagic(available_automagics, plugin)
-    context.config["automagic.LayerStacker.stackers"] = (
-        automagic.stacker.choose_os_stackers(plugin)
-    )
+    context.config[
+        "automagic.LayerStacker.stackers"
+    ] = automagic.stacker.choose_os_stackers(plugin)
     context.config["automagic.LayerStacker.single_location"] = evidence_data["bucket"]
     constructed = construct_plugin(
         context,

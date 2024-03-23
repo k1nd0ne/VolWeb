@@ -13,7 +13,6 @@ function display_pstree(evidence_id) {
         });
         first_process = root.getChildren()[0];
         if (!first_process) {
-          // The PSTREE is not available, so all of the plugins based on filtering are disabled
           $(".card_filtering").hide();
           $("#container").html(
             `<i class="text-danger">The PsTree is unavailable, your investigation capablities are downgraded.</i>`,
@@ -65,16 +64,27 @@ function display_process_info(process, evidence_id) {
     success: function (tasks) {
       let handles_found = false;
       let dump_found = false;
-      tasks.forEach(({ status, task_name, task_args }) => {
-        var args;
-        if (status !== "PENDING") {
-          args = JSON.parse(task_args).slice(1, -1).split(",");
+      tasks.forEach(({ status, task_name, task_args, task_kwargs }) => {
+        let pid;
+        let id;
+        if (task_name === "windows_engine.tasks.dump_process_memmap") {
+          task_kwargs = task_kwargs.replace(/^"|"$/g, "");
+          let task_kwargs_obj = JSON.parse(task_kwargs);
+          id = parseInt(task_kwargs_obj.evidence_id, 10);
+          pid = parseInt(task_kwargs_obj.pid, 10);
         } else {
-          args = task_args.slice(1, -1).split(",");
+          if (status !== "PENDING") {
+            args = JSON.parse(task_args).slice(1, -1).split(",");
+          } else {
+            args = task_args.slice(1, -1).split(",");
+          }
+          pid = parseInt(args[1], 10);
+          id = parseInt(args[0], 10);
         }
-        const pid = parseInt(args[1], 10);
-        const id = parseInt(args[0], 10);
-        if (pid == process.PID && id == evidence_id) {
+        if (
+          pid === parseInt(process.PID, 10) &&
+          id === parseInt(evidence_id, 10)
+        ) {
           if (task_name === "windows_engine.tasks.compute_handles") {
             handles_found = true;
           } else if (
@@ -85,7 +95,6 @@ function display_process_info(process, evidence_id) {
           }
         }
       });
-
       $(".card_process_dump").toggle(!dump_found);
       $(".loading_process_dump").toggle(dump_found);
       $(".card_handles").toggle(!handles_found);
