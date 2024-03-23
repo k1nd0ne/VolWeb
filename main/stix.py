@@ -1,4 +1,3 @@
-from main.models import Indicator
 from stix2 import Indicator as StixIndicator, Bundle
 
 

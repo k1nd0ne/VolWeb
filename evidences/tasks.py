@@ -1,5 +1,4 @@
 from celery import shared_task
-import evidences
 from evidences.models import Evidence
 import windows_engine.models as windows
 import linux_engine.models as linux
@@ -8,6 +7,7 @@ from VolWeb.voltools import (
     generate_windows_network_graph,
     generate_linux_network_graph,
 )
+from VolWeb.voltools import fix_permissions
 from celery.result import allow_join_result
 from celery import group
 import os, time
@@ -114,6 +114,7 @@ def start_analysis(dump_id):
                         evidence=instance,
                         artefacts=generate_windows_network_graph(result[12]),
                     ).save()
+            fix_permissions(output_path)
             instance.dump_logs = logs
             instance.dump_status = 100
             instance.save()
@@ -176,6 +177,7 @@ def start_analysis(dump_id):
                 linux.TimeLineChart(
                     evidence=instance, artefacts=build_timeline(result[7])
                 ).save()
+            fix_permissions(output_path)
             instance.dump_logs = logs
             instance.dump_status = 100
             instance.save()

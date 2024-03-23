@@ -1,6 +1,5 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from rest_framework.utils.representation import serializer_repr
 from evidences.models import Evidence
 from evidences.tasks import start_analysis
 from channels.layers import get_channel_layer

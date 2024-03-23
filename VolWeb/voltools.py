@@ -1,5 +1,5 @@
-import datetime, hashlib, io, tempfile, os, vt, json, logging
-from typing import Dict, Type, Union, Any, List, Tuple
+import datetime, hashlib, io, tempfile, os, vt, stat, logging
+from typing import Dict, Any, List, Tuple
 from volatility3.framework import interfaces
 from volatility3.cli import text_renderer
 from volatility3.framework.renderers import format_hints
@@ -13,6 +13,22 @@ from symbols.models import UPLOAD_PATH
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+def fix_permissions(output_path):
+    try:
+        for filename in os.listdir(output_path):
+            filepath = os.path.join(output_path, filename)
+            if os.path.isfile(filepath):
+                # Retrieve the current permissions
+                current_permissions = stat.S_IMODE(os.lstat(filepath).st_mode)
+                # Modify the permissions to add read by everyone
+                os.chmod(filepath, current_permissions | stat.S_IROTH)
+                print(f"Updated permissions for: {filepath}")
+            else:
+                print(f"Skipping {filepath}, not a file.")
+    except Exception as e:
+        print(f"Error: {e}")
 
 
 class GraphException(Exception):
@@ -103,9 +119,11 @@ class DictRendererPsTree(text_renderer.CLIRenderer):
             text_renderer.multitypedata_as_text
         ),
         bytes: text_renderer.optional(lambda x: " ".join([f"{b:02x}" for b in x])),
-        datetime.datetime: lambda x: x.isoformat()
-        if not isinstance(x, interfaces.renderers.BaseAbsentValue)
-        else None,
+        datetime.datetime: lambda x: (
+            x.isoformat()
+            if not isinstance(x, interfaces.renderers.BaseAbsentValue)
+            else None
+        ),
         "default": lambda x: x,
     }
 
@@ -170,9 +188,11 @@ class DictRenderer(text_renderer.CLIRenderer):
             text_renderer.multitypedata_as_text
         ),
         bytes: text_renderer.optional(lambda x: " ".join([f"{b:02x}" for b in x])),
-        datetime.datetime: lambda x: x.isoformat()
-        if not isinstance(x, interfaces.renderers.BaseAbsentValue)
-        else None,
+        datetime.datetime: lambda x: (
+            x.isoformat()
+            if not isinstance(x, interfaces.renderers.BaseAbsentValue)
+            else None
+        ),
         "default": lambda x: x,
     }
 
@@ -396,9 +416,9 @@ def build_context(evidence_data, context, base_config_path, plugin):
     ] + constants.SYMBOL_BASEPATHS
     available_automagics = automagic.available(context)
     automagics = automagic.choose_automagic(available_automagics, plugin)
-    context.config[
-        "automagic.LayerStacker.stackers"
-    ] = automagic.stacker.choose_os_stackers(plugin)
+    context.config["automagic.LayerStacker.stackers"] = (
+        automagic.stacker.choose_os_stackers(plugin)
+    )
     context.config["automagic.LayerStacker.single_location"] = evidence_data["bucket"]
     constructed = construct_plugin(
         context,

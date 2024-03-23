@@ -1,6 +1,6 @@
 from django import forms
 from main.models import Indicator
-from django.forms import ModelForm, TextInput, Textarea, Select, FileInput
+from django.forms import TextInput, Textarea, Select
 
 
 class IndicatorForm(forms.ModelForm):

@@ -715,7 +715,7 @@ function display_timeline(evidence_id) {
       chart.render();
     },
     error: function (xhr, status, error) {
-      toastr.error("The timeline failed to load : " + status);
+      toastr.warning("The Timeline is unavailable");
     },
   });
 }
@@ -729,7 +729,7 @@ function display_sessions(evidence_id, process_id) {
       $(".p_session_username").text(data[0]["User Name"]);
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred : " + error);
+      $(".p_session_username").text("Unavailable");
     },
   });
 }

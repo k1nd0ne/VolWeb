@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from evidences.models import Evidence
-from cases.models import Case
 
 
 class EvidenceSerializer(serializers.ModelSerializer):

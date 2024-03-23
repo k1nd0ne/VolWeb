@@ -68,7 +68,6 @@ def dump_process_pslist(evidence_id, pid):
             },
         )
     else:
-        print("JE PASSE LA")
         loot.Status = False
         loot.Name = f"Process with PID {pid} - Result: {result} - Dumped using PsList."
         loot.FileName = "No Result"

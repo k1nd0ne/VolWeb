@@ -6,7 +6,6 @@ import logging
 import volatility3
 from volatility3.framework import contexts
 from volatility3 import plugins
-from django.apps import apps
 from VolWeb.voltools import *
 from volatility3.framework.exceptions import *
 
@@ -58,7 +57,7 @@ class PsTree(models.Model):
         """Dump the process requested by the user using the pslist plugin"""
         evidence_data = {
             "bucket": f"s3://{str(self.evidence.dump_linked_case.case_bucket_id)}/{self.evidence.dump_name}",
-            "output_path": f"media/{self.evidence.dump_id}/",
+            "output_path": f"media/{self.evidence.dump_id}",
         }
         context = contexts.Context()
         context.config["plugins.PsList.pid"] = [
@@ -73,6 +72,7 @@ class PsTree(models.Model):
         )
         result = DictRenderer().render(constructed.run())
         artefact = {x.translate({32: None}): y for x, y in result[0].items()}
+        fix_permissions(f"media/{self.evidence.dump_id}")
         return artefact["Fileoutput"]
 
     def memmap_dump(self, pid):
@@ -92,6 +92,7 @@ class PsTree(models.Model):
         )
         result = DictRenderer().render(constructed.run())
         artefact = {x.translate({32: None}): y for x, y in result[0].items()}
+        fix_permissions(f"media/{self.evidence.dump_id}")
         return artefact["Fileoutput"]
 
 
@@ -771,6 +772,7 @@ class FileScan(models.Model):
                     PLUGIN_LIST["windows.dumpfiles.DumpFiles"],
                 )
             result = DictRenderer().render(constructed.run())
+            fix_permissions(f"media/{self.evidence.dump_id}")
             for artefact in result:
                 artefact = {x.translate({32: None}): y for x, y in artefact.items()}
             return result
