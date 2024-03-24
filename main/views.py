@@ -53,6 +53,7 @@ def minio_secrets(request):
         "url": Secrets.AWS_ENDPOINT_URL,
         "key_id": Secrets.AWS_ACCESS_KEY_ID,
         "key_password": Secrets.AWS_SECRET_ACCESS_KEY,
+        "region": Secrets.AWS_REGION,
     }
     return JsonResponse({"endpoint": endpoint_info})
 
