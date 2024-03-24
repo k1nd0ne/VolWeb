@@ -21,12 +21,13 @@ By utilizing cloud-native storage technologies, VolWeb also enables incident res
 The project documentation is available on the <a href="https://github.com/k1nd0ne/VolWeb/wiki/VolWeb-Documentation">Wiki</a>. There, you will be able to deploy the tool in your investigation environment or lab.
 
 >[!IMPORTANT]
-> Take time to read the documentation in order to avoid miss configuration issues.
+> Take time to read the documentation in order to avoid common miss-configuration issues.
 
 
 # Interacting with the REST API
 
 VolWeb exposes a REST API to allow analysts to interact with the platform. There is a dedicated repository proposing some scripts maintained by the community: https://github.com/forensicxlab/VolWeb-Scripts
+Check the wiki of the project to learn more about the possible API calls.
 
 # Issues
 
