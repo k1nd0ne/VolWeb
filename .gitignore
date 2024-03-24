@@ -1,11 +1,10 @@
-docker/nginx/log/
 *.pem
 db.sqlite3
-investigations/.DS_Store
-.DS_Store
-docker/cases
-docker/data
+*.DS_Store
+docker/.env
 *.json
 venv/*
 minio_storage
 *__pycache__
+media/*
+/media/symbols/*
