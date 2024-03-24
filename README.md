@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://github.com/k1nd0ne/VolWeb/assets/27780432/2c4cec14-b73c-4264-9936-215ca23a55d8" width="200" height="300" alt="VolWeb">
+  <img src="https://github.com/k1nd0ne/VolWeb/assets/27780432/2c4cec14-b73c-4264-9936-215ca23a55d8" width="400" height="200" alt="VolWeb">
 </h1>
 
 
