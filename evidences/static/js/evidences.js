@@ -10,16 +10,24 @@ function upload_and_create_evidence(bucket_id) {
       AWS.config.update({
         accessKeyId: data.endpoint.key_id,
         secretAccessKey: data.endpoint.key_password,
-        region: "us-west-2", // TODO, to get when testing AWS
+        region: data.endpoint.region,
       });
+      var config;
+      if (data.endpoint.url) {
+        config = new AWS.S3({
+          endpoint: data.endpoint.url,
+          s3ForcePathStyle: true,
+          signatureVersion: "v4",
+          s3BucketEndpoint: true,
+        });
+      } else {
+        config = new AWS.S3({
+          s3ForcePathStyle: true,
+          signatureVersion: "v4",
+        });
+      }
 
-      const s3 = new AWS.S3({
-        endpoint: data.endpoint.url,
-        s3ForcePathStyle: true,
-        signatureVersion: "v4",
-        s3BucketEndpoint: true,
-      });
-
+      const s3 = config;
       const fileChooser = document.getElementById("file-chooser");
       const file = fileChooser.files[0];
       if (file) {
@@ -46,15 +54,15 @@ function upload_and_create_evidence(bucket_id) {
           if (data) {
             toastr.success("Upload Success");
             create_evidence(file.name, data.ETag);
-            $("#modal_evidence_create").modal("hide");
-            $(".upload-progress").addClass("d-none");
-            $("#evidence_form").show();
-            $("#upload-button").show();
-            clear_form();
           }
+          $("#modal_evidence_create").modal("hide");
+          $(".upload-progress").addClass("d-none");
+          $("#evidence_form").show();
+          $("#upload-button").show();
+          clear_form();
         });
       } else {
-        toastr.warrning("Nothing to upload");
+        toastr.warning("Nothing to upload");
       }
     },
     error: function (xhr, status, error) {
@@ -300,7 +308,11 @@ function display_evidence(evidence_id) {
       $(".evidence_info").removeClass("placeholder");
     },
     error: function (xhr, status, error) {
-      toastr.error("An error occurred : " + error);
+      toastr.error(
+        "An error occurred: " +
+          error +
+          ", Make sure you CORS authorizations are correct if you are using AWS.",
+      );
     },
   });
 }
@@ -357,6 +369,9 @@ function delete_evidence(dump_id) {
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred : " + error);
+      if (xhr.responseText) {
+        toastr.error(xhr.responseText);
+      }
     },
   });
 }

@@ -145,8 +145,8 @@ class EvidenceDetailApiView(APIView):
             client.remove_object(str(bucket), object)
         except:
             return Response(
-                "The evidence could not be removed",
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "The evidence could not be removed from the remote bucket",
+                status=status.HTTP_404_NOT_FOUND,
             )
         evidence_instance.delete()
 

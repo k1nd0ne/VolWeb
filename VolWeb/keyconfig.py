@@ -19,4 +19,4 @@ class Secrets:
     AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", None)
     AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL", None)
     AWS_ENDPOINT_HOST = os.getenv("AWS_ENDPOINT_HOST", None)
-    AWS_USE_HTTPS = os.getenv("AWS_USE_HTTPS", None)
+    AWS_REGION = os.getenv("AWS_REGION", None)
