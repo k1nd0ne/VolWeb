@@ -1,4 +1,5 @@
 from celery import shared_task
+import evidences
 from evidences.models import Evidence
 import windows_engine.models as windows
 import linux_engine.models as linux
@@ -7,11 +8,7 @@ from VolWeb.voltools import (
     generate_windows_network_graph,
     generate_linux_network_graph,
 )
-from VolWeb.keyconfig import Secrets
-from VolWeb.settings import DEBUG
 from VolWeb.voltools import fix_permissions
-from minio import Minio
-from minio.error import S3Error
 from celery.result import allow_join_result
 from celery import group
 import os, time
@@ -30,24 +27,12 @@ def start_analysis(dump_id):
         "bucket": f"s3://{str(instance.dump_linked_case.case_bucket_id)}/{instance.dump_name}",
         "output_path": output_path,
     }
-    client = Minio(
-        Secrets.AWS_ENDPOINT_HOST,
-        Secrets.AWS_ACCESS_KEY_ID,
-        Secrets.AWS_SECRET_ACCESS_KEY,
-        secure=(not DEBUG),
-    )
-    bucket_name = str(instance.dump_linked_case.case_bucket_id)
-    object_name = instance.dump_name
-    while True:
-        try:
-            client.stat_object(bucket_name, object_name)
-            break  # Object found, break out of the loop
-        except S3Error as e:
-            if e.code == "NoSuchKey":
-                time.sleep(1)
-            else:
-                raise
     if instance.dump_os == "Windows":
+        # We need to download the pdb in a single thread because volatility3 doesn't like multithreading when fetching ISF.
+        # I'll try to propose a fix to the volatility3 team so this bug is fixed in future releases.
+        # For this I am running the Windows.Info pluging first just so that the pdbfile is downloaded and cached in a single thread.
+        # This method only works with a single celery worker. No problem if the ISF are imported offline.
+        windows.Info(evidence=instance).run(evidence_data)
         volweb_plugins = [
             windows.PsScan(evidence=instance),
             windows.PsTree(evidence=instance),
@@ -136,66 +121,66 @@ def start_analysis(dump_id):
             instance.dump_logs = logs
             instance.dump_status = 100
             instance.save()
-    # if instance.dump_os == "Linux":
-    #     volweb_plugins = [
-    #         linux.PsTree(evidence=instance),
-    #         linux.PsAux(evidence=instance),
-    #         linux.PsScan(evidence=instance),
-    #         linux.Lsof(evidence=instance),
-    #         linux.Bash(evidence=instance),
-    #         linux.Elfs(evidence=instance),
-    #         linux.Sockstat(evidence=instance),
-    #         linux.Timeliner(evidence=instance),
-    #         linux.Capabilities(evidence=instance),
-    #         linux.Kmsg(evidence=instance),
-    #         linux.Malfind(evidence=instance),
-    #         linux.Lsmod(evidence=instance),
-    #         linux.Envars(evidence=instance),
-    #         linux.MountInfo(evidence=instance),
-    #         linux.tty_check(evidence=instance),
-    #     ]
+    if instance.dump_os == "Linux":
+        volweb_plugins = [
+            linux.PsTree(evidence=instance),
+            linux.PsAux(evidence=instance),
+            linux.PsScan(evidence=instance),
+            linux.Lsof(evidence=instance),
+            linux.Bash(evidence=instance),
+            linux.Elfs(evidence=instance),
+            linux.Sockstat(evidence=instance),
+            linux.Timeliner(evidence=instance),
+            linux.Capabilities(evidence=instance),
+            linux.Kmsg(evidence=instance),
+            linux.Malfind(evidence=instance),
+            linux.Lsmod(evidence=instance),
+            linux.Envars(evidence=instance),
+            linux.MountInfo(evidence=instance),
+            linux.tty_check(evidence=instance),
+        ]
 
-    #     task_group = group(plugin.run.s(evidence_data) for plugin in volweb_plugins)
-    #     group_result = task_group.apply_async()
+        task_group = group(plugin.run.s(evidence_data) for plugin in volweb_plugins)
+        group_result = task_group.apply_async()
 
-    #     while not group_result.ready():
-    #         completed_tasks = len([r for r in group_result.results if r.ready()])
-    #         total_tasks = len(group_result.results)
-    #         status = (completed_tasks * 100) / total_tasks
-    #         if instance.dump_status != status:
-    #             instance.dump_status = (completed_tasks * 100) / total_tasks
-    #             instance.save()
-    #         time.sleep(1)
+        while not group_result.ready():
+            completed_tasks = len([r for r in group_result.results if r.ready()])
+            total_tasks = len(group_result.results)
+            status = (completed_tasks * 100) / total_tasks
+            if instance.dump_status != status:
+                instance.dump_status = (completed_tasks * 100) / total_tasks
+                instance.save()
+            time.sleep(1)
 
-    #     with allow_join_result():
-    #         logs = {}
-    #         result = group_result.get()
-    #         for i in range(0, len(result)):
-    #             plugin_name = volweb_plugins[i].__class__.__name__
-    #             if result[i] == "Unsatisfied":
-    #                 logs[plugin_name] = "Unsatisfied"
-    #                 result[i] = None
-    #             elif result[i]:
-    #                 logs[plugin_name] = "Success"
-    #             else:
-    #                 logs[plugin_name] = "Failed"
+        with allow_join_result():
+            logs = {}
+            result = group_result.get()
+            for i in range(0, len(result)):
+                plugin_name = volweb_plugins[i].__class__.__name__
+                if result[i] == "Unsatisfied":
+                    logs[plugin_name] = "Unsatisfied"
+                    result[i] = None
+                elif result[i]:
+                    logs[plugin_name] = "Success"
+                else:
+                    logs[plugin_name] = "Failed"
 
-    #             volweb_plugins[i].__class__.objects.filter(evidence=instance).delete()
-    #             volweb_plugins[i].artefacts = result[i]
-    #             volweb_plugins[i].save()
+                volweb_plugins[i].__class__.objects.filter(evidence=instance).delete()
+                volweb_plugins[i].artefacts = result[i]
+                volweb_plugins[i].save()
 
-    #         linux.NetGraph.objects.filter(evidence=instance).delete()
-    #         if result[6]:
-    #             linux.NetGraph(
-    #                 evidence=instance, artefacts=generate_linux_network_graph(result[6])
-    #             ).save()
+            linux.NetGraph.objects.filter(evidence=instance).delete()
+            if result[6]:
+                linux.NetGraph(
+                    evidence=instance, artefacts=generate_linux_network_graph(result[6])
+                ).save()
 
-    #         linux.TimeLineChart.objects.filter(evidence=instance).delete()
-    #         if result[7]:
-    #             linux.TimeLineChart(
-    #                 evidence=instance, artefacts=build_timeline(result[7])
-    #             ).save()
-    #         fix_permissions(output_path)
-    #         instance.dump_logs = logs
-    #         instance.dump_status = 100
-    #         instance.save()
+            linux.TimeLineChart.objects.filter(evidence=instance).delete()
+            if result[7]:
+                linux.TimeLineChart(
+                    evidence=instance, artefacts=build_timeline(result[7])
+                ).save()
+            fix_permissions(output_path)
+            instance.dump_logs = logs
+            instance.dump_status = 100
+            instance.save()

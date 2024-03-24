@@ -28,6 +28,31 @@ TAGS = (
 )
 
 
+class Info(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="windows_info_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["windows.info.Info"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+
 class PsTree(models.Model):
     evidence = models.ForeignKey(
         Evidence, on_delete=models.CASCADE, related_name="windows_pstree_evidence"

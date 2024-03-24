@@ -88,7 +88,6 @@ services:
       - BROKER_PORT=${BROKER_PORT}
       - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/minio.pem
-      - SSL_CERT_FILE=/etc/ssl/certs/minio.pem
     image: "forensicxlab/volweb:2.0"
     command: celery -A VolWeb worker --loglevel=INFO
     depends_on:
@@ -102,7 +101,7 @@ services:
       - media:/home/app/web/media
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1 # Warning: see the documentation if you want to add more replicas.
 
   nginx:
     container_name: volweb_nginx
