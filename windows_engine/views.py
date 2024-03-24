@@ -1,352 +1,666 @@
 from django.shortcuts import render
-from VolWeb.voltools import file_sha256, vt_check_file_hash
-from .models import *
-from django.core.serializers import json
 from django.contrib.auth.decorators import login_required
-from windows_engine.tasks import dump_memory_pid, app, dump_memory_file, compute_handles
-from django.apps import apps
-from django.http import JsonResponse, HttpResponse
-from .forms import *
-import os, uuid, mimetypes
-from zipfile import ZipFile
-from .report import report
+from main.forms import IndicatorForm
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 
-
-
-@login_required
-def get_handles(request):
-    """Get handles from a PID
-
-    Arguments:
-    request : http request object
-
-    Comment:
-    The user requested to watch the handles linked to a process. 
-    If the handles are already calculated, then the result is fetch
-    Else, volatility3 will calculate them using celery.
-    """
-    if request.method == 'GET':
-
-        form = GetArtifacts(request.GET)
-        if form.is_valid():
-            case = form.cleaned_data['case']
-            id = case.id
-            pid = form.cleaned_data['pid']
-            json_serializer = json.Serializer()
-            # Check if the Handles are not already computed
-            handles = Handles.objects.filter(investigation_id=id, PID=pid)
-            if len(handles)>0: 
-                #Already computed we display the result
-                artifacts = {
-                    'Handles': json_serializer.serialize(handles),
-                }
-            else:
-                #start a task with celery to compute the handles and send the result.
-                task_res = compute_handles.delay(str(id), str(pid))
-                res =  task_res.get()
-                if res != "OK":
-                    return JsonResponse({'message': "error"})
-                else:
-                    artifacts = {
-                        'Handles': json_serializer.serialize(Handles.objects.filter(investigation_id=id, PID=pid)),
-                    }
-            return JsonResponse({'message': "success", 'artifacts': artifacts})
-    
-    return JsonResponse({'message': "error"})
-
+from windows_engine.tasks import (
+    compute_handles,
+    dump_process_pslist,
+    dump_process_memmap,
+    dump_file,
+)
+from windows_engine.models import *
+from evidences.models import Evidence
+from django_celery_results.models import TaskResult
+from windows_engine.serializers import *
+from rest_framework.views import APIView
+from rest_framework import permissions
+from rest_framework import status
+from rest_framework.response import Response
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 
 @login_required
-def get_interval(request):
-    """Get artifacts for a specific timestamp
-
-    Arguments:
-    request : http request object
-
-    Comment:
-    The user requested to watch the artifacts linked to a specific timestamp.
-    """
-    if request.method == 'GET':
-        form = GetInverval(request.GET)
-        if form.is_valid():
-            case = form.cleaned_data['case']
-            date = form.cleaned_data['date']
-            id = case.id
-            json_serializer = json.Serializer()
-            # Request the appropriate artifacts
-            artifacts = {
-                'Timeliner': json_serializer.serialize(Timeliner.objects.filter(investigation_id=id,CreatedDate=date)),
-            }
-            return JsonResponse({'message': "success", 'artifacts': artifacts})
-    return JsonResponse({'message': "error"})
+def review(request, dump_id):
+    evidence = Evidence.objects.get(dump_id=dump_id)
+    stix_indicator = IndicatorForm()
+    return render(
+        request,
+        "windows_engine/review_evidence.html",
+        {"evidence": evidence, "stix_indicator_form": stix_indicator},
+    )
 
 
-@login_required
-def get_w_artifacts(request):
-    """Get artifacts related to all process related volatility3 plugins
+class PsTreeApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
-    Arguments:
-    request : http request object
+    def get_object(self, dump_id):
+        try:
+            return PsTree.objects.get(evidence_id=dump_id)
+        except PsTree.DoesNotExist:
+            return None
 
-    Comment:
-    The user requested to watch the artifacts linked the process.
-    """
-    if request.method == 'GET':
-        form = GetArtifacts(request.GET)
-        if form.is_valid():
-            case = form.cleaned_data['case']
-            pid = form.cleaned_data['pid']
-            id = case.id
-            json_serializer = json.Serializer()
-            # Request the appropriate artifacts
-            artifacts = {
-                'CmdLine': json_serializer.serialize(CmdLine.objects.filter(investigation_id=id, PID=pid)),
-                'DllList': json_serializer.serialize(DllList.objects.filter(investigation_id=id, PID=pid)),
-                'Privs':   json_serializer.serialize(Privs.objects.filter(investigation_id=id, PID=pid)),
-                'Handles':   json_serializer.serialize(Handles.objects.filter(investigation_id=id, PID=pid)),
-                'Envars':  json_serializer.serialize(Envars.objects.filter(investigation_id=id, PID=pid)),
-                'NetScan': json_serializer.serialize(NetScan.objects.filter(investigation_id=id, PID=pid)),
-                'NetStat': json_serializer.serialize(NetStat.objects.filter(investigation_id=id, PID=pid)),
-                'Sessions': json_serializer.serialize(Sessions.objects.filter(investigation_id=id, ProcessID=pid)),
-                'LdrModules': json_serializer.serialize(LdrModules.objects.filter(investigation_id=id, Pid=pid)),
-                'VadWalk': json_serializer.serialize(VadWalk.objects.filter(investigation_id=id, PID=pid)),
-            }
-            return JsonResponse({'message': "success", 'artifacts': artifacts})
-    return JsonResponse({'message': "error"})
-
-@login_required
-def win_report(request):
-    """
-    Generate the windows report
-    """
-    form = ReportForm(request.POST)
-    if form.is_valid():
-        case = form.cleaned_data['case_id']
-        html, text = report(case)
-        return JsonResponse({'message': "success", 'html': html, 'text': text})
-    else:
-        return JsonResponse({'message': "error"})
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested PSTree data.
+        """
+        data = self.get_object(dump_id)
+        serializer = PsTreeSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@login_required
-def win_tag(request):
-    """
-    Tag a Windows artifact
-    """
-    if request.method == 'POST':
-        form = Tag(request.POST)
-        if form.is_valid():
-            item = apps.get_model("windows_engine", form.cleaned_data['plugin_name']).objects.get(
-                id=form.cleaned_data['artifact_id'])
+class MFTScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
-            if form.cleaned_data['status'] == "Evidence":
-                item.Tag = "Evidence"
-            elif form.cleaned_data['status'] == "Suspicious":
-                item.Tag = "Suspicious"
-            else:
-                item.Tag = None
-            item.save()
-            return JsonResponse({'message': "success"})
+    def get_object(self, dump_id):
+        try:
+            return MFTScan.objects.get(evidence_id=dump_id)
+        except MFTScan.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested MFTScan.
+        """
+        data = self.get_object(dump_id)
+        serializer = MFTScanSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class MBRScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return MBRScan.objects.get(evidence_id=dump_id)
+        except MBRScan.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested MBRScan data.
+        """
+        data = self.get_object(dump_id)
+        serializer = MBRScanSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ADSApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return ADS.objects.get(evidence_id=dump_id)
+        except ADS.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested ADS.
+        """
+        data = self.get_object(dump_id)
+        serializer = ADSSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class TimelineChartApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return TimeLineChart.objects.get(evidence_id=dump_id)
+        except TimeLineChart.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested TimelineChart.
+        """
+        data = self.get_object(dump_id)
+        serializer = TimelineChartSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class TimelineDataApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Timeliner.objects.get(evidence_id=dump_id)
+        except Timeliner.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Serve the requested timeline data with server-side processing.
+        TODO: add support for the SearchBuilder
+        """
+        data = self.get_object(dump_id)
+        if not data:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+        draw = int(request.query_params.get("draw", 0))
+        start = int(request.query_params.get("start", 0))
+        length = int(request.query_params.get("length", 25))
+        timestamp_min = request.query_params.get("timestamp_min", None)
+        timestamp_max = request.query_params.get("timestamp_max", None)
+
+        filtered_data = []
+        if timestamp_min and timestamp_max:
+            for artefact in data.artefacts:
+                created_date = artefact.get("Created Date")
+                if created_date and timestamp_min <= created_date <= timestamp_max:
+                    filtered_data.append(artefact)
         else:
-            return JsonResponse({'message': "error"})
+            filtered_data = data.artefacts
+
+        paginator = Paginator(filtered_data, length)
+        page_data = paginator.get_page((start // length) + 1)
+
+        return Response(
+            {
+                "draw": draw,
+                "recordsTotal": paginator.count,
+                "recordsFiltered": paginator.count,  # Adjust this value if you implement search
+                "data": page_data.object_list,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
-@login_required
-def dump_process(request):
-    """Dump a process
+class CmdLineApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
-        Arguments:
-        request : http request object
+    def get_object(self, dump_id):
+        try:
+            return CmdLine.objects.get(evidence_id=dump_id)
+        except CmdLine.DoesNotExist:
+            return None
 
-        Comment:
-        Get the process PID passed by the user.
-        Dump the process via volatility delegated to celery.
-        Send the proper response (failed, success, error).
+    def get(self, request, dump_id, pid, *args, **kwargs):
         """
-    if request.method == 'POST':
-        form = DumpMemory(request.POST)
-        if form.is_valid():
-            case_id = form.cleaned_data['case_id']
-            pid = form.cleaned_data['pid']
-            if len(ProcessDump.objects.filter(pid=pid, case_id=case_id)) > 0:
-                file_path = ProcessDump.objects.get(case_id=case_id, pid=pid)
-                return JsonResponse({'message': "exist", 'id': file_path.process_dump_id})
-            task_res = dump_memory_pid.delay(str(case_id.id), str(pid))
-            file_path = task_res.get()
-            if file_path != "ERROR":
-                # create ProcessDump model :
-                Dump = form.save()
-                Dump.filename = file_path
-                Dump.save()
-                dump_id = Dump.process_dump_id
-                return JsonResponse({'message': "success", 'id': dump_id})
-            else:
-                return JsonResponse({'message': "failed"})
+        Return the requested cmdline from the given pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["PID"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
         else:
-            return JsonResponse({'message': "error"})
-    return JsonResponse({'message': "error"})
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
 
 
-@login_required
-def dump_file(request):
-    """Dump a file
+class GetSIDsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
-        Arguments:
-        request : http request object
+    def get_object(self, dump_id):
+        try:
+            return GetSIDs.objects.get(evidence_id=dump_id)
+        except GetSIDs.DoesNotExist:
+            return None
 
-        Comment:
-        Get the file offset passed by the user.
-        Dump the file via volatility delegated to celery.
-        Send the proper response (failed, success, error).
+    def get(self, request, dump_id, pid, *args, **kwargs):
         """
-    if request.method == 'POST':
-        form = DumpFile(request.POST)
-        if form.is_valid():
-            case_id = form.cleaned_data['case_id']
-            offset = form.cleaned_data['offset']
-            if len(FileDump.objects.filter(offset=offset, case_id=case_id)) > 0:
-                file = FileDump.objects.get(case_id=case_id, offset=offset)
-                return JsonResponse({'message': "exist", 'id': file.file_dump_id})
-            task_res = dump_memory_file.delay(str(case_id.id), offset)
-            files = task_res.get()
-            if files == "ERROR":
-                return JsonResponse({'message': "failed"})
-
-            to_zip = []
-            for file in files:
-                if file['Result'] != "Error dumping file":
-                    to_zip.append(file['Result'])
-            if to_zip:
-                # Creating our zip file
-                zip_file_name = str(uuid.uuid4()) + ".zip"
-                path = 'Cases/Results/file_dump_' + str(case_id.id) + "/"
-                with ZipFile(path + zip_file_name, 'w') as zip:
-                    for file in to_zip:
-                        zip.write(path + file)
-                # create ProcessDump model :
-                Dump = form.save()
-                Dump.filename = zip_file_name
-                Dump.save()
-                file_id = Dump.file_dump_id
-                return JsonResponse({'message': "success", 'id': file_id})
-            else:
-                return JsonResponse({'message': "failed"})
+        Return the requested sids from the given pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["PID"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
         else:
-            return JsonResponse({'message': "error"})
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
 
 
-@login_required
-def vt_hash_check(request):
-    """
-    Check file score on virus total
-    """
-    if request.method == 'POST':
-        form = DumpFile(request.POST)
+class PrivsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
-        if form.is_valid():
-            case_id = form.cleaned_data['case_id']
-            offset = form.cleaned_data['offset']
-            task_res = dump_memory_file.delay(str(case_id.id), offset)
-            files = task_res.get()
-            if files == "ERROR":
-                return JsonResponse({'message': "failed_2"})
-            path = 'Cases/Results/file_dump_' + str(case_id.id) + "/"
-            for file in files:
-                if file['Result'] != "Error dumping file":
-                    sha256 = file_sha256(path + file['Result'])
-                    result, message = vt_check_file_hash(sha256)
-                    if not result:
-                        continue
-                    else:
-                        result.update({'message': "success"})
-                        return JsonResponse(result)
-                else:
-                    return JsonResponse({'message': "failed_2"})
-            return JsonResponse({'message': "failed_1", 'error': message})
+    def get_object(self, dump_id):
+        try:
+            return Privs.objects.get(evidence_id=dump_id)
+        except Privs.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Return the requested Privileges from the given pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["PID"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class EnvarsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Envars.objects.get(evidence_id=dump_id)
+        except Envars.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Return the requested envars from the pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["PID"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class PsScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return PsScan.objects.get(evidence_id=dump_id)
+        except PsScan.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested psscan data.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            return Response(data.artefacts, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class DllListApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return DllList.objects.get(evidence_id=dump_id)
+        except DllList.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Return the requested dlllist from the pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["PID"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class SessionsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Sessions.objects.get(evidence_id=dump_id)
+        except Sessions.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Return the requested session from the pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["Process ID"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class NetStatApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return NetStat.objects.get(evidence_id=dump_id)
+        except NetStat.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested netstat data
+        """
+        data = self.get_object(dump_id)
+        serializer = NetStatSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class NetScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return NetScan.objects.get(evidence_id=dump_id)
+        except NetScan.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested netscan data
+        """
+        data = self.get_object(dump_id)
+        serializer = NetScanSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class NetGraphApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return NetGraph.objects.get(evidence_id=dump_id)
+        except NetGraph.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested netgraph data
+        """
+        data = self.get_object(dump_id)
+        serializer = NetGraphSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class HiveListApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return HiveList.objects.get(evidence_id=dump_id)
+        except HiveList.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested Hive data
+        """
+        data = self.get_object(dump_id)
+        serializer = HiveListSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SvcScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return SvcScan.objects.get(evidence_id=dump_id)
+        except SvcScan.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested services data
+        """
+        data = self.get_object(dump_id)
+        serializer = SvcScanSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class HashdumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Hashdump.objects.get(evidence_id=dump_id)
+        except Hashdump.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested Hashdump data
+        """
+        data = self.get_object(dump_id)
+        serializer = HashdumpSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CachedumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Cachedump.objects.get(evidence_id=dump_id)
+        except Cachedump.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested Cachedump data
+        """
+        data = self.get_object(dump_id)
+        serializer = CachedumpSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LsadumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Lsadump.objects.get(evidence_id=dump_id)
+        except Lsadump.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested Lsadump data
+        """
+        data = self.get_object(dump_id)
+        serializer = LsadumpSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class MalfindApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Malfind.objects.get(evidence_id=dump_id)
+        except Malfind.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested malfind data
+        """
+        data = self.get_object(dump_id)
+        serializer = MalfindSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LdrModulesApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return LdrModules.objects.get(evidence_id=dump_id)
+        except LdrModules.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested ldrmodules data
+        """
+        data = self.get_object(dump_id)
+        serializer = LdrModulesSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ModulesApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Modules.objects.get(evidence_id=dump_id)
+        except Modules.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested modules data
+        """
+        data = self.get_object(dump_id)
+        serializer = ModulesSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SSDTApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return SSDT.objects.get(evidence_id=dump_id)
+        except SSDT.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested SSDT data
+        """
+        data = self.get_object(dump_id)
+        serializer = SSDTSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class FileScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return FileScan.objects.get(evidence_id=dump_id)
+        except FileScan.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested FileScan data
+        """
+        data = self.get_object(dump_id)
+        serializer = FileScanSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class HandlesApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id, pid):
+        try:
+            return Handles.objects.get(evidence_id=dump_id, PID=pid)
+        except Handles.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Try to compute the handles for the requested process and returns the results.
+        """
+        instance = self.get_object(dump_id, pid)
+        if instance:
+            filtered_data = [d for d in instance.artefacts if d["PID"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
 
         else:
-            return JsonResponse({'message': "error"})
+            compute_handles.apply_async(
+                args=[dump_id, pid],
+                priority=1,
+            )
+            return Response({}, status=status.HTTP_201_CREATED)
 
 
-@login_required
-def download_hive(request):
-    """Download a dumped hive
+class PsListDumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
-        Arguments:
-        request : http request object
-
-        Comment:
-        The user requested to download a dumped hive.
-        Get the hive and return it.
+    def get(self, _request, dump_id, pid, *args, **kwargs):
         """
-    if request.method == 'POST':
-        form = DownloadHive(request.POST)
-        if form.is_valid():
-            file_path = form.cleaned_data['filename']
-            ext = os.path.basename(file_path).split('.')[-1].lower()
-            if ext in ['hive']:
-                filename = file_path
-                file_path = "Cases/files/" + file_path
-                path = open(file_path, 'rb')
-                mime_type, _ = mimetypes.guess_type(file_path)
-                response = HttpResponse(path, content_type=mime_type)
-                response['Content-Disposition'] = "attachment; filename=%s" % filename
-                return response
-
-
-@login_required
-def download_dump(request):
-    """Download a dumped process
-
-        Arguments:
-        request : http request object
-
-        Comment:
-        The user requested to download a successfull dumped process.
-        Get the file and return it.
+        Dump the requested process using the pslist plugin
         """
-    if request.method == 'POST':
-        form = DownloadDump(request.POST)
-        if form.is_valid():
-            dump_id = form.cleaned_data['id']
-            Dump = ProcessDump.objects.get(process_dump_id=dump_id)
-            file_path = Dump.filename
-            case_path = 'Cases/Results/process_dump_' + str(Dump.case_id.id)
-            ext = os.path.basename(file_path).split('.')[-1].lower()
-            if ext in ['dmp']:
-                filename = file_path
-                file_path = case_path + "/" + file_path
-                path = open(file_path, 'rb')
-                mime_type, _ = mimetypes.guess_type(file_path)
-                response = HttpResponse(path, content_type=mime_type)
-                response['Content-Disposition'] = "attachment; filename=%s" % filename
-                return response
+        dump_process_pslist.apply_async(
+            args=[dump_id, pid],
+            priority=1,
+        )
+        return Response({}, status=status.HTTP_201_CREATED)
 
 
-@login_required
-def download_file(request):
-    """Download a dumped file
+class FileScanDumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
-        Arguments:
-        request : http request object
-
-        Comment:
-        The user requested to download a successfull dumped file.
-        Get the file and return it.
+    def get(self, _request, dump_id, offset, *args, **kwargs):
         """
-    if request.method == 'POST':
-        form = DownloadFile(request.POST)
-        if form.is_valid():
-            file_id = form.cleaned_data['id']
-            Dump = FileDump.objects.get(file_dump_id=file_id)
-            file_path = Dump.filename
-            case_path = 'Cases/Results/file_dump_' + str(Dump.case_id.id)
-            ext = os.path.basename(file_path).split('.')[-1].lower()
-            if ext in ['zip']:
-                filename = file_path
-                file_path = case_path + "/" + file_path
-                path = open(file_path, 'rb')
-                mime_type, _ = mimetypes.guess_type(file_path)
-                response = HttpResponse(path, content_type=mime_type)
-                response['Content-Disposition'] = "attachment; filename=%s" % filename
-                return response
+        Try to dump a file using the Filescan plugin
+        """
+        dump_file.delay(evidence_id=dump_id, offset=offset)
+        return Response({}, status=status.HTTP_201_CREATED)
+
+
+class MemmapDumpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get(self, _request, dump_id, pid, *args, **kwargs):
+        """
+        Try to dump a process using the Memmap plugin
+        """
+        dump_process_memmap.delay(evidence_id=dump_id, pid=pid)
+        return Response({}, status=status.HTTP_201_CREATED)
+
+
+class TasksApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        """
+        Return the requested tasks if existing.
+        """
+        tasks = TaskResult.objects.filter(Q(status="STARTED") | Q(status="PENDING"))
+        serializer = TasksSerializer(tasks, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LootApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Get all the loot items
+        """
+        tasks = Loot.objects.filter(evidence_id=dump_id)
+        serializer = LootSerializer(tasks, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

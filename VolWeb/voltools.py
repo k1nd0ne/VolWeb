@@ -1,12 +1,32 @@
-import volatility3, datetime, hashlib, io, tempfile, json, os, subprocess, vt
-from typing import Dict, Type, Union, Any, List, Tuple
-from volatility3.framework import contexts, interfaces
-from volatility3 import plugins
-from volatility3.framework.plugins import construct_plugin
-from volatility3.framework import automagic, constants
+import datetime, hashlib, io, tempfile, os, vt, stat, logging
+from typing import Dict, Any, List, Tuple
+from volatility3.framework import interfaces
 from volatility3.cli import text_renderer
 from volatility3.framework.renderers import format_hints
-from .keyconfig import Secrets
+from VolWeb.keyconfig import Secrets
+from volatility3.framework.plugins import construct_plugin
+from volatility3.framework import automagic, constants
+from volatility3.cli import MuteProgress
+import volatility3
+from symbols.models import UPLOAD_PATH
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def fix_permissions(output_path):
+    try:
+        for filename in os.listdir(output_path):
+            filepath = os.path.join(output_path, filename)
+            if os.path.isfile(filepath):
+                current_permissions = stat.S_IMODE(os.lstat(filepath).st_mode)
+                os.chmod(filepath, current_permissions | stat.S_IROTH)
+                logger.info(f"Updated permissions for: {filepath}")
+            else:
+                logger.warning(f"Skipping {filepath}, not a file.")
+    except Exception as e:
+        logger.error(f"Error when updating permissions: {e}")
 
 
 class GraphException(Exception):
@@ -23,11 +43,13 @@ def file_handler(output_dir):
                 raise TypeError("Output directory is not a string")
             os.makedirs(output_dir, exist_ok=True)
 
-            pref_name_array = self.preferred_filename.split('.')
-            filename, extension = os.path.join(output_dir, '.'.join(pref_name_array[:-1])), pref_name_array[-1]
+            pref_name_array = self.preferred_filename.split(".")
+            filename, extension = (
+                os.path.join(output_dir, ".".join(pref_name_array[:-1])),
+                pref_name_array[-1],
+            )
             output_filename = f"{filename}.{extension}"
 
-            counter = 1
             if os.path.exists(output_filename):
                 os.remove(output_filename)
             return output_filename
@@ -36,11 +58,18 @@ def file_handler(output_dir):
         """We want to save our files directly to disk"""
 
         def __init__(self, filename: str):
-            fd, self._name = tempfile.mkstemp(suffix='.vol3', prefix='tmp_', dir=output_dir)
-            self._file = io.open(fd, mode='w+b')
+            fd, self._name = tempfile.mkstemp(
+                suffix=".vol3", prefix="tmp_", dir=output_dir
+            )
+            self._file = io.open(fd, mode="w+b")
             CLIFileHandler.__init__(self, filename)
             for item in dir(self._file):
-                if not item.startswith('_') and not item in ['closed', 'close', 'mode', 'name']:
+                if not item.startswith("_") and not item in [
+                    "closed",
+                    "close",
+                    "mode",
+                    "name",
+                ]:
                     setattr(self, item, getattr(self._file, item))
 
         def __getattr__(self, item):
@@ -74,44 +103,62 @@ def file_handler(output_dir):
 # Inspired by the JsonRenderer class.
 class DictRendererPsTree(text_renderer.CLIRenderer):
     """Directly inspired by the JsonRenderer rendered
-        Return : Dict of the plugin result.
+    Return : Dict of the plugin result.
     """
+
     _type_renderers = {
-        format_hints.HexBytes: text_renderer.quoted_optional(text_renderer.hex_bytes_as_text),
-        interfaces.renderers.Disassembly: text_renderer.quoted_optional(text_renderer.display_disassembly),
-        format_hints.MultiTypeData: text_renderer.quoted_optional(text_renderer.multitypedata_as_text),
+        format_hints.HexBytes: text_renderer.quoted_optional(
+            text_renderer.hex_bytes_as_text
+        ),
+        interfaces.renderers.Disassembly: text_renderer.quoted_optional(
+            text_renderer.display_disassembly
+        ),
+        format_hints.MultiTypeData: text_renderer.quoted_optional(
+            text_renderer.multitypedata_as_text
+        ),
         bytes: text_renderer.optional(lambda x: " ".join([f"{b:02x}" for b in x])),
-        datetime.datetime: lambda x: x.isoformat() if not isinstance(x, interfaces.renderers.BaseAbsentValue) else None,
-        'default': lambda x: x
+        datetime.datetime: lambda x: (
+            x.isoformat()
+            if not isinstance(x, interfaces.renderers.BaseAbsentValue)
+            else None
+        ),
+        "default": lambda x: x,
     }
 
-    name = 'JSON'
+    name = "JSON"
     structured_output = True
 
     def get_render_options(self) -> List[interfaces.renderers.RenderOption]:
         pass
 
     def render(self, grid: interfaces.renderers.TreeGrid):
-        final_output: Tuple[Dict[str, List[interfaces.renderers.TreeNode]], List[interfaces.renderers.TreeNode]] = (
-            {}, [])
+        final_output: Tuple[
+            Dict[str, List[interfaces.renderers.TreeNode]],
+            List[interfaces.renderers.TreeNode],
+        ] = ({}, [])
 
         def visitor(
-                node: interfaces.renderers.TreeNode, accumulator: Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]
+            node: interfaces.renderers.TreeNode,
+            accumulator: Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]],
         ) -> Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]:
             # Nodes always have a path value, giving them a path_depth of at least 1, we use max just in case
             acc_map, final_tree = accumulator
-            node_dict: Dict[str, Any] = {'__children': []}
-            depth = "*" * max(0, node.path_depth - 1) + ("" if (node.path_depth <= 1) else " ")
-            node_dict['level'] = depth
+            node_dict: Dict[str, Any] = {"__children": []}
+            depth = "*" * max(0, node.path_depth - 1) + (
+                "" if (node.path_depth <= 1) else " "
+            )
+            node_dict["level"] = depth
             for column_index in range(len(grid.columns)):
                 column = grid.columns[column_index]
-                renderer = self._type_renderers.get(column.type, self._type_renderers['default'])
+                renderer = self._type_renderers.get(
+                    column.type, self._type_renderers["default"]
+                )
                 data = renderer(list(node.values)[column_index])
                 if isinstance(data, interfaces.renderers.BaseAbsentValue):
                     data = None
                 node_dict[column.name] = data
             if node.parent:
-                acc_map[node.parent.path]['__children'].append(node_dict)
+                acc_map[node.parent.path]["__children"].append(node_dict)
             else:
                 final_tree.append(node_dict)
             acc_map[node.path] = node_dict
@@ -129,39 +176,54 @@ class DictRendererPsTree(text_renderer.CLIRenderer):
 # Inspired by the JsonRenderer class.
 class DictRenderer(text_renderer.CLIRenderer):
     _type_renderers = {
-        format_hints.HexBytes: text_renderer.quoted_optional(text_renderer.hex_bytes_as_text),
-        interfaces.renderers.Disassembly: text_renderer.quoted_optional(text_renderer.display_disassembly),
-        format_hints.MultiTypeData: text_renderer.quoted_optional(text_renderer.multitypedata_as_text),
+        format_hints.HexBytes: text_renderer.quoted_optional(
+            text_renderer.hex_bytes_as_text
+        ),
+        interfaces.renderers.Disassembly: text_renderer.quoted_optional(
+            text_renderer.display_disassembly
+        ),
+        format_hints.MultiTypeData: text_renderer.quoted_optional(
+            text_renderer.multitypedata_as_text
+        ),
         bytes: text_renderer.optional(lambda x: " ".join([f"{b:02x}" for b in x])),
-        datetime.datetime: lambda x: x.isoformat() if not isinstance(x, interfaces.renderers.BaseAbsentValue) else None,
-        'default': lambda x: x
+        datetime.datetime: lambda x: (
+            x.isoformat()
+            if not isinstance(x, interfaces.renderers.BaseAbsentValue)
+            else None
+        ),
+        "default": lambda x: x,
     }
 
-    name = 'JSON'
+    name = "JSON"
     structured_output = True
 
     def get_render_options(self) -> List[interfaces.renderers.RenderOption]:
         pass
 
     def render(self, grid: interfaces.renderers.TreeGrid):
-        final_output: Tuple[Dict[str, List[interfaces.renderers.TreeNode]], List[interfaces.renderers.TreeNode]] = (
-            {}, [])
+        final_output: Tuple[
+            Dict[str, List[interfaces.renderers.TreeNode]],
+            List[interfaces.renderers.TreeNode],
+        ] = ({}, [])
 
         def visitor(
-                node: interfaces.renderers.TreeNode, accumulator: Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]
+            node: interfaces.renderers.TreeNode,
+            accumulator: Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]],
         ) -> Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]:
             # Nodes always have a path value, giving them a path_depth of at least 1, we use max just in case
             acc_map, final_tree = accumulator
-            node_dict: Dict[str, Any] = {'__children': []}
+            node_dict: Dict[str, Any] = {"__children": []}
             for column_index in range(len(grid.columns)):
                 column = grid.columns[column_index]
-                renderer = self._type_renderers.get(column.type, self._type_renderers['default'])
+                renderer = self._type_renderers.get(
+                    column.type, self._type_renderers["default"]
+                )
                 data = renderer(list(node.values)[column_index])
                 if isinstance(data, interfaces.renderers.BaseAbsentValue):
                     data = None
                 node_dict[column.name] = data
             if node.parent:
-                acc_map[node.parent.path]['__children'].append(node_dict)
+                acc_map[node.parent.path]["__children"].append(node_dict)
             else:
                 final_tree.append(node_dict)
             acc_map[node.path] = node_dict
@@ -176,33 +238,6 @@ class DictRenderer(text_renderer.CLIRenderer):
         return final_output[1]
 
 
-def memory_image_hash(dump_path):
-    """Compute memory image signature.
-    Args:
-        dump_path: A string indicating the image file path
-
-    Returns:
-        A dict of different types of hash computed
-    """
-    blocksize = 65536  # Read the file in 64kb chunks.
-    md5 = hashlib.md5()
-    sha1 = hashlib.sha1()
-    sha256 = hashlib.sha256()
-    try:
-        with open(dump_path, 'rb') as afile:
-            buf = afile.read(blocksize)
-            while len(buf) > 0:
-                md5.update(buf)
-                sha1.update(buf)
-                sha256.update(buf)
-                buf = afile.read(blocksize)
-        signatures = {'md5': format(md5.hexdigest()), 'sha1': format(sha1.hexdigest()),
-                      'sha256': format(sha256.hexdigest())}
-    except:
-        signatures = {'md5': 'Error', 'sha1': 'Error', 'sha256': 'Error'}
-    return signatures
-
-
 def file_sha256(path):
     """Compute memory image signature.
     Args:
@@ -213,60 +248,108 @@ def file_sha256(path):
     blocksize = 65536  # Read the file in 64kb chunks.
     sha256 = hashlib.sha256()
     try:
-        with open(path, 'rb') as afile:
+        with open(path, "rb") as afile:
             buf = afile.read(blocksize)
             while len(buf) > 0:
                 sha256.update(buf)
                 buf = afile.read(blocksize)
         return format(sha256.hexdigest())
     except:
-        return 'error'
+        return "error"
 
 
-def generate_network_graph(data):
-    graph_data = {'nodes': [], 'edges': []}
+def generate_windows_network_graph(data):
+    graph_data = {"nodes": [], "edges": []}
+    node_id_map = {}
+
     for entry in data:
-        node_data_1 = {'id': entry['LocalAddr'], 'Involved_PIDs': [entry['PID']], 'Owner(s)': [entry['Owner']],
-                       'Local_Ports': [entry['LocalPort']], 'State': entry['State']}
-        node_data_2 = {'id': entry['ForeignAddr'], 'Involved_PIDs': [entry['PID']], 'Owner(s)': [entry['Owner']],
-                       'Local_Ports': [entry['ForeignPort']], 'State': entry['State']}
-        edge_data = {'from': entry['LocalAddr'], 'to': entry['ForeignAddr']}
-        if not graph_data['nodes']:
-            graph_data['nodes'].append(node_data_1)
+        pid = entry["PID"]
+        local_address = entry["LocalAddr"]
+        local_port = entry["LocalPort"]
+        foreign_address = entry["ForeignAddr"]
+        foreign_port = entry["ForeignPort"]
 
-        is_present = False
-        for item in graph_data['nodes']:
-            if node_data_1['id'] == item['id']:
-                is_present = True
-                break
-        if not is_present:
-            graph_data['nodes'].append(node_data_1)
+        # Node data for the process
+        if pid not in node_id_map:
+            node_data_1 = {
+                "id": pid,
+                "Process": entry["Owner"],
+                "LocalAddr": local_address,
+                "LocalPorts": [local_port],
+            }
+            graph_data["nodes"].append(node_data_1)
+            node_id_map[pid] = node_data_1
         else:
-            if entry['PID'] not in item['Involved_PIDs']:
-                item['Involved_PIDs'].append(entry['PID'])
-            if entry['LocalPort'] not in item['Local_Ports']:
-                item['Local_Ports'].append(entry['LocalPort'])
-            if entry['Owner'] not in item['Owner(s)']:
-                item['Owner(s)'].append(entry['Owner'])
+            # If the process is already a node, just add the local port if it's not already there
+            if local_port not in node_id_map[pid]["LocalPorts"]:
+                node_id_map[pid]["LocalPorts"].append(local_port)
 
-        is_present = False
-        for item in graph_data['nodes']:
-            if node_data_2['id'] == item['id']:
-                is_present = True
-                break
-
-        if not is_present:
-            graph_data['nodes'].append(node_data_2)
+        # Node data for the foreign address
+        if foreign_address not in node_id_map:
+            node_data_2 = {
+                "id": foreign_address,
+                "ForeignPorts": [foreign_port],
+            }
+            graph_data["nodes"].append(node_data_2)
+            node_id_map[foreign_address] = node_data_2
         else:
-            if entry['PID'] not in item['Involved_PIDs']:
-                item['Involved_PIDs'].append(entry['PID'])
-            if entry['ForeignPort'] not in item['Local_Ports']:
-                item['Local_Ports'].append(entry['ForeignPort'])
-            if entry['Owner'] not in item['Owner(s)']:
-                item['Owner(s)'].append(entry['Owner'])
+            if "ForeignPorts" not in node_id_map[foreign_address]:
+                node_id_map[foreign_address]["ForeignPorts"] = []
+            if foreign_port not in node_id_map[foreign_address]["ForeignPorts"]:
+                node_id_map[foreign_address]["ForeignPorts"].append(foreign_port)
 
-        if edge_data not in graph_data['edges']:
-            graph_data['edges'].append(edge_data)
+        # Edge data
+        edge_data = {"from": pid, "to": foreign_address}
+        if edge_data not in graph_data["edges"]:
+            graph_data["edges"].append(edge_data)
+
+    return graph_data
+
+
+def generate_linux_network_graph(data):
+    graph_data = {"nodes": [], "edges": []}
+    node_id_map = {}
+    for entry in data:
+        if "AF_INET" in entry["Family"]:
+            pid = entry["Pid"]
+            local_address = entry["Source Addr"]
+            local_port = entry["Source Port"]
+            foreign_address = entry["Destination Addr"]
+            foreign_port = entry["Destination Port"]
+
+            # Node data for the process
+            if pid not in node_id_map:
+                node_data_1 = {
+                    "id": pid,
+                    "Process": pid,
+                    "LocalAddr": local_address,
+                    "LocalPorts": [local_port],
+                }
+                graph_data["nodes"].append(node_data_1)
+                node_id_map[pid] = node_data_1
+            else:
+                # If the process is already a node, just add the local port if it's not already there
+                if local_port not in node_id_map[pid]["LocalPorts"]:
+                    node_id_map[pid]["LocalPorts"].append(local_port)
+
+            # Node data for the foreign address
+            if foreign_address not in node_id_map:
+                node_data_2 = {
+                    "id": foreign_address,
+                    "ForeignPorts": [foreign_port],
+                }
+                graph_data["nodes"].append(node_data_2)
+                node_id_map[foreign_address] = node_data_2
+            else:
+                if "ForeignPorts" not in node_id_map[foreign_address]:
+                    node_id_map[foreign_address]["ForeignPorts"] = []
+                if foreign_port not in node_id_map[foreign_address]["ForeignPorts"]:
+                    node_id_map[foreign_address]["ForeignPorts"].append(foreign_port)
+
+            # Edge data
+            edge_data = {"from": pid, "to": foreign_address}
+            if edge_data not in graph_data["edges"]:
+                graph_data["edges"].append(edge_data)
 
     return graph_data
 
@@ -277,17 +360,17 @@ def vt_check_file_hash(hash):
         file = client.get_object("/files/" + hash)
         client.close()
         result = file.last_analysis_stats
-        result.update({'SHA256': file.sha256})
+        result.update({"SHA256": file.sha256})
         try:
-            result.update({'meaningful_name': file.meaningful_name})
+            result.update({"meaningful_name": file.meaningful_name})
         except:
             pass
         try:
-            result.update({'crowdsourced_yara_results': file.crowdsourced_yara_results})
+            result.update({"crowdsourced_yara_results": file.crowdsourced_yara_results})
         except:
             pass
         try:
-            result.update({'sandbox_verdicts': file.sandbox_verdicts})
+            result.update({"sandbox_verdicts": file.sandbox_verdicts})
         except:
             pass
         return result, "success"
@@ -306,7 +389,7 @@ def build_timeline(data):
     try:
         saved_date = data[0]["Created Date"]
     except:
-        raise GraphException('Could not generate timeline graph')
+        raise GraphException("Could not generate timeline graph")
     for i in data:
         if i["Plugin"] != "MFTScan":
             try:
@@ -318,5 +401,29 @@ def build_timeline(data):
                 else:
                     nb_event += 1
             except:
-                raise GraphException('Could not generate timeline graph')
+                raise GraphException("Could not generate timeline graph")
     return timeline
+
+
+def build_context(evidence_data, context, base_config_path, plugin):
+    """This function is used to buid the context and construct each plugin
+    Return : The contructed plugin.
+    """
+    volatility3.symbols.__path__ = [
+        os.path.abspath(f"media/{UPLOAD_PATH}")
+    ] + constants.SYMBOL_BASEPATHS
+    available_automagics = automagic.available(context)
+    automagics = automagic.choose_automagic(available_automagics, plugin)
+    context.config[
+        "automagic.LayerStacker.stackers"
+    ] = automagic.stacker.choose_os_stackers(plugin)
+    context.config["automagic.LayerStacker.single_location"] = evidence_data["bucket"]
+    constructed = construct_plugin(
+        context,
+        automagics,
+        plugin,
+        base_config_path,
+        MuteProgress(),
+        file_handler(evidence_data["output_path"]),
+    )
+    return constructed

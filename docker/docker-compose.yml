@@ -1,34 +1,107 @@
-version: '3'
-
+version: "3.9"
 services:
-  db:
-    container_name: volweb_postgresdb
+  volweb-postgresdb:
+    container_name: volweb-postgresdb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     image: postgres:14.1
     restart: always
-    env_file:
-      - ./secret/volweb.env
     ports:
       - 5432:5432
     volumes:
-      - data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
 
-  web:
-    container_name: volweb_django
-    build:
-      context: ../
-      dockerfile: docker/Dockerfile
-    command: >
-      gunicorn VolWeb.wsgi:application --bind 0.0.0.0:8000 --workers=4  --timeout 120
-    env_file:
-      - ./secret/volweb.env
+  volweb-redis:
+    container_name: volweb-redis
+    image: "redis:latest"
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - "redis-data:/data"
+    ports:
+      - "6379:6379"
+
+  volweb-minio:
+    container_name: volweb-minio
+    image: minio/minio
+    network_mode: "host"
+    restart: always
+    volumes:
+      - minio_storage:/data
+      - ./minio/privkey.pem:/root/.minio/certs/private.key
+      - ./minio/fullchain.pem:/root/.minio/certs/public.crt
+    environment:
+      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
+      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
+    command: server --console-address ":9001" /data
+
+  volweb-platform:
+    container_name: volweb-platform
+    environment:
+      - DATABASE=${DATABASE}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - DJANGO_SECRET=${DJANGO_SECRET}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
+      - AWS_ENDPOINT_HOST=${AWS_ENDPOINT_HOST}
+      - WEBSOCKET_URL=${WEBSOCKET_URL}
+      - BROKER_HOST=${BROKER_HOST}
+      - BROKER_PORT=${BROKER_PORT}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+      - SSL_CERT_FILE=/etc/ssl/certs/minio.pem
+    image: "forensicxlab/volweb:2.0"
+    command: daphne -u /tmp/daphne.sock -b 0.0.0.0 -p 8000 VolWeb.asgi:application
     expose:
       - 8000
     depends_on:
-      - db
+      - volweb-postgresdb
+      - volweb-redis
+      - volweb-minio
+    restart: always
     volumes:
-      - cases:/home/app/web/Cases/
       - staticfiles:/home/app/web/staticfiles
-      - symbols:/home/app/web/symbols/uploads
+      - ./minio/fullchain.pem:/etc/ssl/certs/minio.pem
+      - media:/home/app/web/media
+
+  volweb-workers:
+    environment:
+      - DATABASE=${DATABASE}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - DJANGO_SECRET=${DJANGO_SECRET}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
+      - AWS_ENDPOINT_HOST=${AWS_ENDPOINT_HOST}
+      - WEBSOCKET_URL=${WEBSOCKET_URL}
+      - BROKER_HOST=${BROKER_HOST}
+      - BROKER_PORT=${BROKER_PORT}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+      - REQUESTS_CA_BUNDLE=/etc/ssl/certs/minio.pem
+    image: "forensicxlab/volweb:2.0"
+    command: celery -A VolWeb worker --loglevel=INFO
+    depends_on:
+      - volweb-redis
+      - volweb-postgresdb
+      - volweb-minio
+    restart: always
+    volumes:
+      - staticfiles:/home/app/web/staticfiles
+      - ./minio/fullchain.pem:/etc/ssl/certs/minio.pem
+      - media:/home/app/web/media
+    deploy:
+      mode: replicated
+      replicas: 1 # Warning: see the documentation if you want to add more replicas.
 
   nginx:
     container_name: volweb_nginx
@@ -41,33 +114,13 @@ services:
       - ./nginx:/etc/nginx/conf.d
       - ./nginx/ssl/:/etc/nginx/certs/
       - staticfiles:/home/app/web/staticfiles
+      - media:/home/app/web/media
     depends_on:
-      - web
+      - volweb-platform
 
-  rabbitmq3:
-    container_name: volweb_rabbitmq
-    image: rabbitmq:3.9.13
-    ports:
-      - "5672:5672"
-    env_file:
-      - ./secret/volweb.env
-  worker:
-    container_name: volweb_worker
-    build:
-      context: ../
-      dockerfile: docker/Dockerfile
-    env_file:
-      - secret/volweb.env
-    command: celery -A investigations worker -l INFO
-    depends_on:
-      - rabbitmq3
-      - db
-    volumes:
-      - cases:/home/app/web/Cases/
-      - staticfiles:/home/app/web/staticfiles
-      - symbols:/home/app/web/symbols/uploads
 volumes:
+  minio_storage:
+  postgres-data:
+  redis-data:
   staticfiles:
-  symbols:
-  cases:
-  data:
+  media:

@@ -1,191 +1,427 @@
 from django.db import models
-from investigations.models import *
+from evidences.models import Evidence
+from celery import shared_task
+import logging
+import volatility3
+from volatility3.framework import contexts
+from volatility3 import plugins
+from VolWeb.voltools import *
+from volatility3.framework.exceptions import *
 
-TAGS = (
-    ('Evidence', 'Evidence'),
-    ('Suspicious', 'Suspicious'),
-)
+
+volatility3.framework.require_interface_version(2, 0, 0)
+logger = logging.getLogger(__name__)
+
+base_config_path = "plugins"
+failures = volatility3.framework.import_files(plugins, True)
+if failures:
+    logger.error(f"Some volatility3 plugin couldn't be loaded : {failures}")
+else:
+    logger.info(f"Volatility3 Plugins are loaded without failure")
+
+PLUGIN_LIST = volatility3.framework.list_plugins()
 
 
 class PsTree(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_pstree_investigation"
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_pstree_evidence"
     )
-    graph = models.JSONField(null=True)
+    artefacts = models.JSONField(null=True)
 
+    @staticmethod
+    @shared_task(name="Linux.PsTree.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.pstree.PsTree"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except:
+            return None
 
-class PsList(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_pslist_investigation"
-    )
-    COMM = models.TextField(null=True)
-    Offset = models.BigIntegerField(null=True)
-    PID = models.BigIntegerField(null=True)
-    PPID = models.BigIntegerField(null=True)
-    TID = models.BigIntegerField(null=True)
 
 class PsAux(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_psaux_investigation"
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_psaux_evidence"
     )
-    ARGS = models.TextField(null=True)
-    COMM = models.TextField(null=True)
-    PID = models.BigIntegerField(null=True)
-    PPID = models.BigIntegerField(null=True)
-    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+    artefacts = models.JSONField(null=True)
 
-
-class Bash(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_bash_investigation"
-    )
-    PID = models.BigIntegerField(null=True)
-    Process = models.TextField(null=True)
-    CommandTime = models.TextField(null=True)
-    Command = models.CharField(max_length=500, null=True)
-    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
-
-
-class ProcMaps(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_procmaps_investigation"
-    )
-    End = models.BigIntegerField(null=True)
-    FilePath = models.TextField(null=True)
-    Flags = models.CharField(max_length=20, null=True)
-    Command = models.CharField(max_length=500, null=True)
-    Inode = models.BigIntegerField(null=True)
-    Major = models.BigIntegerField(null=True)
-    Minor = models.BigIntegerField(null=True)
-    PID = models.BigIntegerField(null=True)
-    PgOff = models.BigIntegerField(null=True)
-    Process = models.TextField(null=True)
-    Start = models.BigIntegerField(null=True)
-    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+    @staticmethod
+    @shared_task(name="Linux.PsAux.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.psaux.PsAux"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
 
 
 class Lsof(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_lsof_investigation"
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_lsof_evidence"
     )
-    FD = models.BigIntegerField(null=True)
-    PID = models.BigIntegerField(null=True)
-    Path = models.TextField(null=True)
-    Process = models.CharField(max_length=500, null=True)
-    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+    artefacts = models.JSONField(null=True)
 
-
-class TtyCheck(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_ttycheck_investigation"
-    )
-    Address = models.BigIntegerField(null=True)
-    Module = models.TextField(null=True)
-    Name = models.TextField(null=True)
-    Symbol = models.TextField(null=True)
-    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
-
-
-class Elfs(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_elfs_investigation"
-    )
-    End = models.BigIntegerField(null=True)
-    FilePath = models.TextField(null=True)
-    PID = models.BigIntegerField(null=True)
-    Process = models.TextField(null=True)
-    Start = models.BigIntegerField(null=True)
-    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+    @staticmethod
+    @shared_task(name="Linux.Lsof.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.lsof.Lsof"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
 
 
 class MountInfo(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_mountinfo_investigation"
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_mountinfo_evidence"
     )
-    FIELDS = models.TextField(null=True)
-    FSTYPE = models.TextField(null=True)
-    MAJOR_MINOR = models.TextField(max_length=20, null=True)
-    MNT_NS_ID = models.TextField(max_length=500, null=True)
-    MOUNTID = models.BigIntegerField(null=True)
-    MOUNT_OPTIONS = models.TextField(null=True)
-    MOUNT_POINT = models.TextField(null=True)
-    MOUNT_SRC = models.TextField(null=True)
-    PARENT_ID = models.BigIntegerField(null=True)
-    ROOT = models.TextField(null=True)
-    SB_OPTIONS = models.TextField(null=True)
-    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+    artefacts = models.JSONField(null=True)
 
-class Sockstat(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_sockstat_investigation"
-    )
-    DestinationAddr = models.TextField(null=True)
-    DestinationPort = models.TextField(null=True)
-    FD = models.BigIntegerField(null=True)
-    Family = models.TextField(null=True)
-    Filter = models.TextField(null=True)
-    NetNS = models.TextField(null=True)
-    Pid = models.BigIntegerField(null=True)
-    Proto = models.TextField(null=True)
-    SockOffset = models.TextField(null=True)
-    SourceAddr = models.TextField(null=True)
-    SourcePort = models.TextField(null=True)
-    State = models.TextField(null=True)
-    Type = models.TextField(null=True)
-    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+    @staticmethod
+    @shared_task(name="Linux.MountInfo.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.mountinfo.MountInfo"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
 
 
 class Envars(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_envars_investigation"
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_envars_evidence"
     )
-    COMM = models.TextField(null=True)
-    KEY = models.TextField(null=True)
-    PID = models.BigIntegerField(null=True)
-    PPID = models.BigIntegerField(null=True)
-    VALUE = models.TextField(null=True)
-    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Envars.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.envars.Envars"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+
+class PsScan(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_psscan_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.PsScan.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.psscan.PsScan"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+
+class tty_check(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_tty_check_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.tty_check.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.tty_check.tty_check"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+
+class Bash(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_bash_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Bash.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.bash.Bash"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+
+class Elfs(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_elfs_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Elfs.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.elfs.Elfs"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+
+class Sockstat(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_sockstat_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Sockstat.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.sockstat.Sockstat"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+
+class Capabilities(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_capabilities_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Capabilities.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.capabilities.Capabilities"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+
+class Kmsg(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_kmsg_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Kmsg.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.kmsg.Kmsg"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+
+class Malfind(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_malfind_evidence"
+    )
+
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Malfind.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.malfind.Malfind"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+
+class Lsmod(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_lsmod_evidence"
+    )
+
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Lsmod.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.lsmod.Lsmod"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+
+class NetGraph(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_netgraph_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
 
 class TimeLineChart(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_timeline_investigation"
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_timeline_evidence"
     )
-    graph = models.JSONField(null=True)
+    artefacts = models.JSONField(null=True)
+
 
 class Timeliner(models.Model):
-    investigation = models.ForeignKey(
-        UploadInvestigation,
-        on_delete=models.CASCADE,
-        related_name="linux_timeliner_investigation"
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_timeliner_evidence"
     )
-    Plugin = models.TextField(null=True)
-    Description = models.TextField(null=True)
-    AccessedDate = models.TextField(null=True)
-    ChangedDate = models.TextField(null=True)
-    CreatedDate = models.TextField(null=True)
-    ModifiedDate = models.TextField(null=True)
-    Tag = models.CharField(null=True, max_length=11, choices=TAGS)
+
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.Timeliner.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["timeliner.Timeliner"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None

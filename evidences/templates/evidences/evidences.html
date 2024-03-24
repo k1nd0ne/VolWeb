@@ -1,0 +1,48 @@
+{% extends "main/master.html" %} {% load static %} {% block content%}
+
+<link rel="stylesheet" href="{% static 'evidences/css/evidences.css'%}" />
+<script src="{% static 'evidences/js/evidences.js'%}"></script>
+<script src="{% static 'evidences/js/main.js'%}"></script>
+<script src="{% static 'evidences/js/lib/aws-sdk-2.1439.0.min.js'%}"></script>
+<div class="container-lg">
+    <div class="row justify-content-center mt-4">
+        <div
+            class="col-6 d-flex align-items-center highlight-toolbar border py-1 pe-2 ps-3"
+        >
+            <small class="font-monospace text-muted text-uppercase"
+                >ACTIONS</small
+            >
+            <div class="d-flex ms-auto">
+                <a class="nav-link evidence_create" href="#">
+                    <div class="align-items-center d-flex">
+                        <i
+                            class="fas fa-upload icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center shadow"
+                        ></i>
+                        <span class="ms-1">Upload a new evidence</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <table
+        id="evidences"
+        class="table-sm table-responsive table-hover table"
+        style="width: 100%"
+    >
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>etag</th>
+                <th>OS</th>
+                <th>Linked case</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    {% include "evidences/modals.html" %}
+</div>
+
+{% endblock content%}

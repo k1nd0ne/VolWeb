@@ -1,0 +1,238 @@
+<div class="row mt-2">
+    <div class="col-md-6 col-xl-3 col-sm-12 p-0">
+        <div class="card shadow border-start-primary py-2">
+            <div class="card-body">
+                <div class="row align-items-center no-gutters">
+                    <div class="col-auto"><i class="fas fa-folder-tree fa-2x "></i></div>
+
+                    <div class="col me-2">
+                        <div class="text-uppercase fw-bold text-xs mb-1"><span>Process Tree</span></div>
+                    </div>
+                </div>
+                <hr class="horizontal dark mt-0">
+                <div class="card-body">
+                    <div id="container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-9 col-sm-12">
+        <div class="row sticky-top">
+            <div class="col-md-6 col-xl-4">
+                <div class="card shadow border-start-primary py-2 process_id">
+                    <div class="card-body">
+                        <div class="row align-items-center no-gutters">
+                            <div class="col-auto"><i class="fas fa-circle-info fa-2x "></i></div>
+                            <div class="col me-2">
+                                <div class="text-uppercase fw-bold text-xs mb-1"><span>METADATA : </span><span
+                                        class="process_title"></span></span></div>
+                            </div>
+                        </div>
+                        <hr class="horizontal dark mt-0">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Process ID : <code class="p_pid"></code></li>
+                            <li class="list-group-item">Offset : <code class="p_offset"></code></li>
+                            <li class="list-group-item">Thread ID : <code class="p_threads"></code></li>
+                            <li class="list-group-item">Arguments : <code class="p_cmdline"></code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-8">
+                <div class="card shadow border-start-primary py-2">
+                    <div class="card-body">
+                        <div class="row align-items-center no-gutters">
+                            <div class="col-auto"><i class="fas fa-toolbox fa-2x "></i></div>
+                            <div class="col me-2">
+                                <div class="text-uppercase fw-bold text-xs mb-1"><span>Investigation Tools</span></div>
+                            </div>
+                        </div>
+                        <hr class="horizontal dark mt-0">
+                        <div class="row">
+
+                            <div class="col-6 col-md-12 col-xl-4 col-sm-6 p-2">
+                                <div
+                                    class="card tool_card card_filtering shadow border-start-primary card_clickable card_lsof">
+                                    <div class="card-body p-2">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-file-import fa-2x "></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs"><span>Open Files for
+                                                    </span><code
+                                                        class=" text-uppercase fw-bold text-xs process_title"></code>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-12 col-xl-4 col-sm-6 p-2">
+                                <div
+                                    class="card tool_card card_filtering shadow border-start-primary card_clickable card_envars">
+                                    <div class="card-body p-2">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fab fa-envira fa-2x "></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs"><span>Envars
+                                                        for
+                                                    </span><code
+                                                        class=" text-uppercase fw-bold text-xs process_title"></code>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-12 col-xl-4 col-sm-6 p-2">
+                                <div
+                                    class="card tool_card card_filtering shadow border-start-primary card_clickable card_elfs">
+                                    <div class="card-body p-2">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-link fa-2x "></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs"><span>ELFs
+                                                        for
+                                                    </span><code
+                                                        class=" text-uppercase fw-bold text-xs process_title"></code>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-12 col-xl-4 col-sm-6 p-2">
+                                <div
+                                    class="card tool_card card_filtering shadow border-start-primary card_clickable card_capabilities">
+                                    <div class="card-body p-2">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-list fa-2x "></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs"><span>Capabilities
+                                                        for
+                                                    </span><code
+                                                        class=" text-uppercase fw-bold text-xs process_title"></code>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="horizontal dark mt-2">
+
+                            <div class="col-6 col-md-12 col-xl-4 col-sm-6 p-2">
+                                <div class="card shadow border-start-primary card_clickable card_psscan">
+                                    <div class="card-body p-2">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-expand fa-2x "></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs">
+                                                    <span>Process Scan</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-12 col-xl-4 col-sm-6 p-2">
+                                <div class="card shadow border-start-primary card_clickable card_bash">
+                                    <div class="card-body p-2">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-terminal fa-2x "></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs">
+                                                    <span>Bash</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-12 col-xl-4 col-sm-6 p-2">
+                                <div class="card shadow border-start-primary card_clickable card_network">
+                                    <div class="card-body p-2">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-network-wired fa-2x "></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs"><span>Network</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-12 col-xl-4 col-sm-6 p-2">
+                                <div class="card shadow border-start-primary card_clickable card_kmsg">
+                                    <div class="card-body p-2">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-message fa-2x "></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs">
+                                                    <span>Kernel Messages</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-12 col-xl-4 col-sm-6 p-2">
+                                <div class="card shadow border-start-primary card_clickable card_mount_info">
+                                    <div class="card-body p-2">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-plug fa-2x "></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs">
+                                                    <span>Mount Information</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-12 col-xl-4 col-sm-6 p-2">
+                                <div class="card shadow border-start-primary card_clickable card_tty_check">
+                                    <div class="card-body p-2">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col-auto"><i class="fas fa-check-double fa-2x "></i></div>
+                                            <div class="col me-2">
+                                                <div class="text-uppercase fw-bold text-xs">
+                                                    <span>TTY CHECK</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-3">
+                <div class="card shadow border-start-primary py-2 process_id ">
+                    <div class="card-body">
+                        <div class="row align-items-center no-gutters">
+                            <div class="col-auto"><i class="fas fa-eye fa-2x "></i></div>
+                            <div class="col me-2">
+                                <div class="text-uppercase fw-bold text-xs mb-1">
+                                    <span>VISUALISATION</span></span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="horizontal dark mt-0">
+                        <div class="col-12 graph">
+                            <div id="overview_graph"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include "linux_engine/modals.html" %}
+    </div>
+</div>

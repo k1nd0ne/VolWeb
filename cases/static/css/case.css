@@ -1,0 +1,5 @@
+.dataTables_filter,
+.dataTables_length,
+.dtsb-searchBuilder {
+    display: none;
+}

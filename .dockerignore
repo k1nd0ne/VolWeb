@@ -1,2 +1,4 @@
 /docker/cases/*
 /docker/data/*
+media/*
+/media/symbols/*

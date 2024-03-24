@@ -1,0 +1,52 @@
+hr {
+  margin: 1rem 0;
+  color: inherit;
+  background-color: currentColor;
+  border: 0;
+  opacity: 0.25;
+}
+
+hr:not([size]) {
+  height: 1px;
+}
+
+hr.horizontal {
+  background-color: transparent;
+}
+
+hr.horizontal.dark {
+  background-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0.4),
+    rgba(0, 0, 0, 0)
+  );
+}
+
+#wrapper {
+  display: flex;
+}
+#wrapper #content-wrapper {
+  height: 95vh;
+  width: 100%;
+}
+#wrapper #content-wrapper #content {
+  flex: 1 0 auto;
+}
+
+.nav-pills .nav-link {
+  background: none;
+  color: #252f40;
+  padding: 0.5rem 1rem;
+  font-weight: 400;
+  font-size: 0.875rem;
+}
+
+.nav-pills .nav-link.active,
+.show > .nav-link {
+  font-weight: 600;
+  box-shadow: 0 20px 27px 0 rgba(0, 0, 0, 0.05);
+  border-radius: 0.5rem;
+  color: #ffffff;
+  background-color: #000000;
+}

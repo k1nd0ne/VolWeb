@@ -1,131 +1,82 @@
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .forms import *
-from .models import Symbols
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework import permissions
+from symbols.models import Symbol
+from symbols.serializers import SymbolSerializer
+from symbols.forms import SymbolForm
 
 
 @login_required
 def symbols(request):
     """Symbols main page
 
-        Arguments:
-        request : http request object
+    Arguments:
+    request : http request object
 
-        Comment: Display all of the ISF file imported;
+    Comment: Display all of the ISF file imported;
+    """
+    symbol_form = SymbolForm()
+    return render(request, "symbols/symbols.html", {"symbol_form": symbol_form})
+
+
+class SymbolsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
         """
-    return render(request, 'symbols/symbols.html',
-                  {'symbols': Symbols.objects.all(), 'bind_form': BindSymbol(), 'unbind_form': UnbindSymbol()})
-
-
-@login_required
-def add_symbols(request):
-    """Symbols creation page
-
-        Arguments:
-        request : http request object
-
-        Comment: Import an ISF;
+        Get all the symbols
         """
-    if request.method == "POST":
-        form = SymbolsForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('/symbols/')
-    form = SymbolsForm()
-    return render(request, 'symbols/add_symbols.html', {'form': form})
+        symbols = Symbol.objects.all()
+        serializer = SymbolSerializer(symbols, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        serializer = SymbolSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@login_required
-def custom_symbols(request, pk):
-    """Modify the description of an ISF file
+class SymbolApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-        Arguments:
-        request : http request object
-
-        Comments:
-        GET : Load the form page with intanced fields.
-        POST : Apply the modifications
+    def get_object(self, id):
         """
-    symbols_record = Symbols.objects.get(pk=pk)
-    if request.method == 'GET':
-        custom_form = SymbolsForm(instance=symbols_record)
-    if request.method == 'POST':
-        form = SymbolsForm(request.POST, request.FILES, instance=symbols_record)
-        if form.is_valid():
-            form.save()
-            # Unbind from all investigation
-            cases = UploadInvestigation.objects.filter(linked_isf=symbols_record)
-            for case in cases:
-                case.linked_isf = None
-                case.save()
-            return redirect('/symbols/')
-        else:
-            print(form.errors)
-    return render(request, 'symbols/custom_symbols.html',
-                  {'form': custom_form, 'symbols_id': id, 'file': symbols_record.symbols_file})
-
-
-@login_required
-def delete_symbols(request):
-    """Delete a ISF file
-
-        Arguments:
-        request : http request object
-
-        Comments:
-        Delete the ISF File selected by the user.
+        Helper method to get the object with given case_id
         """
-    if request.method == "POST":
-        form = ManageSymbols(request.POST)
-        if form.is_valid():
-            isf = form.cleaned_data['symbols']
-            isf.delete()
-            return redirect('/symbols/')
-        else:
-            # Return a error django message (need to setup toast)
-            return redirect('/symbols/')
+        try:
+            return Symbol.objects.get(id=id)
+        except Symbol.DoesNotExist:
+            return None
 
-
-@login_required
-def bind_symbols(request):
-    """Delete a ISF file
-
-        Arguments:
-        request : http request object
-
-        Comments:
-        Delete the ISF File selected by the user.
+    def get(self, request, id, *args, **kwargs):
         """
-    if request.method == "POST":
-        form = BindSymbol(request.POST)
-        if form.is_valid():
-            isf = form.cleaned_data['bind_symbols']
-            case = form.cleaned_data['bind_investigation']
-            case.linked_isf = isf
-            case.save()
-            return JsonResponse({'message': "success"})
-        else:
-            return JsonResponse({'message': "error"})
-
-
-@login_required
-def unbind_symbols(request):
-    """Delete a ISF file
-
-        Arguments:
-        request : http request object
-
-        Comments:
-        Delete the ISF File selected by the user.
+        Retrieves the Case with given case_id
         """
-    if request.method == "POST":
-        form = UnbindSymbol(request.POST)
-        if form.is_valid():
-            isf = form.cleaned_data['unbind_symbols']
-            case = form.cleaned_data['unbind_investigation']
-            case.linked_isf = None
-            case.save()
-            return JsonResponse({'message': "success"})
-        else:
-            return JsonResponse({'message': "error"})
+        symbol = self.get_object(id)
+        if not symbol:
+            return Response(
+                {"res": "Object with symbol id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = SymbolSerializer(symbol)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, id, *args, **kwargs):
+        """
+        Deletes the Symbol with the given id
+        """
+        symbol = self.get_object(id)
+        if not symbol:
+            return Response(
+                {"res": "Object with symbol id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        symbol.delete()
+        return Response({"res": "Object deleted"}, status=status.HTTP_204_NO_CONTENT)

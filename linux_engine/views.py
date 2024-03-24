@@ -1,147 +1,406 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponse
-from django.core.serializers import json
-from django.apps import apps
-from .models import *
-from .tasks import compute_procmaps
-from .forms import *
-from .report import report
-
-
-
-@login_required
-def get_procmaps(request):
-    """Get ProcMaps from a PID
-
-    Arguments:
-    request : http request object
-
-    Comment:
-    The user requested to watch the ProcMaps linked to a process. 
-    If the ProcMaps are already calculated, then the result is fetch
-    Else, volatility3 will calculate them using celery.
-    """
-    if request.method == 'GET':
-
-        form = GetArtifacts(request.GET)
-        if form.is_valid():
-            case = form.cleaned_data['case']
-            id = case.id
-            pid = form.cleaned_data['pid']
-            json_serializer = json.Serializer()
-            # Check if the ProcMaps are not already computed
-            procmaps = ProcMaps.objects.filter(investigation_id=id, PID=pid)
-            if len(procmaps)>0: 
-                #Already computed we display the result
-                artifacts = {
-                    'ProcMaps': json_serializer.serialize(procmaps),
-                }
-            else:
-                #start a task with celery to compute the procmaps and send the result.
-                task_res = compute_procmaps.delay(str(id), str(pid))
-                res =  task_res.get()
-                if res != "OK":
-                    return JsonResponse({'message': "error"})
-                else:
-                    artifacts = {
-                        'ProcMaps': json_serializer.serialize(ProcMaps.objects.filter(investigation_id=id, PID=pid)),
-                    }
-            return JsonResponse({'message': "success", 'artifacts': artifacts})
-    
-    return JsonResponse({'message': "error"})
+from linux_engine.models import *
+from evidences.models import Evidence
+from linux_engine.serializers import *
+from rest_framework.views import APIView
+from rest_framework import permissions
+from rest_framework import status
+from rest_framework.response import Response
+from django.core.paginator import Paginator
+from django.db.models import Q
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from main.forms import IndicatorForm
 
 
 @login_required
-def get_interval(request):
-    """Get artifacts for a specific timestamp
-
-    Arguments:
-    request : http request object
-
-    Comment:
-    The user requested to watch the artifacts linked to a specific timestamp.
-    """
-    if request.method == 'GET':
-        form = GetInverval(request.GET)
-        if form.is_valid():
-            case = form.cleaned_data['case']
-            date = form.cleaned_data['date']
-            id = case.id
-            json_serializer = json.Serializer()
-            # Request the appropriate artifacts
-            artifacts = {
-                'Timeliner': json_serializer.serialize(Timeliner.objects.filter(investigation_id=id,CreatedDate=date)),
-            }
-            return JsonResponse({'message': "success", 'artifacts': artifacts})
-    return JsonResponse({'message': "error"})
+def review(request, dump_id):
+    evidence = Evidence.objects.get(dump_id=dump_id)
+    stix_indicator = IndicatorForm()
+    return render(
+        request,
+        "linux_engine/review_evidence.html",
+        {"evidence": evidence, "stix_indicator_form": stix_indicator},
+    )
 
 
+class PsTreeApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
-@login_required
-def lin_report(request):
-    """
-    Generate the windows report
-    """
-    form = ReportForm(request.POST)
-    if form.is_valid():
-        case = form.cleaned_data['case_id']
-        html, text = report(case)
-        return JsonResponse({'message': "success", 'html': html, 'text': text})
-    else:
-        return JsonResponse({'message': "error"})
+    def get_object(self, dump_id):
+        try:
+            return PsTree.objects.get(evidence_id=dump_id)
+        except PsTree.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested PSTree.
+        """
+        data = self.get_object(dump_id)
+        serializer = PsTreeSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@login_required
-def lin_tag(request):
-    """
-    Tag a Linux artifact
-    """
-    if request.method == 'POST':
-        form = Tag(request.POST)
-        if form.is_valid():
-            item = apps.get_model("linux_engine", form.cleaned_data['plugin_name']).objects.get(
-                id=form.cleaned_data['artifact_id'])
-            if form.cleaned_data['status'] == "Evidence":
-                item.Tag = "Evidence"
-            elif form.cleaned_data['status'] == "Suspicious":
-                item.Tag = "Suspicious"
-            else:
-                item.Tag = None
-            item.save()
-            return JsonResponse({'message': "success"})
+class PsAuxApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return PsAux.objects.get(evidence_id=dump_id)
+        except PsAux.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Give the requested psaux from the pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["PID"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
         else:
-            return JsonResponse({'message': "error"})
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
 
 
-@login_required
-def get_l_artifacts(request):
-    """Get artifacts related to all process related volatility3 plugins
+class LsofApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
-    Arguments:
-    request : http request object
+    def get_object(self, dump_id):
+        try:
+            return Lsof.objects.get(evidence_id=dump_id)
+        except Lsof.DoesNotExist:
+            return None
 
-    Comment:
-    The user requested to watch the artifacts linked the process.
-    """
-    if request.method == 'GET':
-        form = GetArtifacts(request.GET)
-        if form.is_valid():
-            case = form.cleaned_data['case']
-            pid = form.cleaned_data['pid']
-            id = case.id
-            json_serializer = json.Serializer()
-            # Request the appropriate artifacts
-            artifacts = {
-                'Bash': json_serializer.serialize(Bash.objects.filter(investigation_id=id, PID=pid)),
-                'Elfs': json_serializer.serialize(Elfs.objects.filter(investigation_id=id, PID=pid)),
-                'Lsof': json_serializer.serialize(Lsof.objects.filter(investigation_id=id, PID=pid)),
-                'ProcMaps': json_serializer.serialize(ProcMaps.objects.filter(investigation_id=id, PID=pid)),
-                'PsAux': json_serializer.serialize(PsAux.objects.filter(investigation_id=id, PID=pid)),
-                'Sockstat': json_serializer.serialize(Sockstat.objects.filter(investigation_id=id, Pid=pid)),
-                'Envars': json_serializer.serialize(Envars.objects.filter(investigation_id=id, PID=pid)),
-            }
-            return JsonResponse({'message': "success", 'artifacts': artifacts})
-    return JsonResponse({'message': "error"})
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Give the requested lsof data from the given pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["PID"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
 
 
+class ElfsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Elfs.objects.get(evidence_id=dump_id)
+        except Elfs.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Give the requested ELfs from the given pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["PID"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class EnvarsApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Envars.objects.get(evidence_id=dump_id)
+        except Envars.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Give the requested Envars from the given pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["PID"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class CapabilitiesApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Capabilities.objects.get(evidence_id=dump_id)
+        except Capabilities.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, pid, *args, **kwargs):
+        """
+        Give the requested Capabilites from the given pid.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            filtered_data = [d for d in data.artefacts if d["Pid"] == pid]
+            return Response(filtered_data, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class PsScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return PsScan.objects.get(evidence_id=dump_id)
+        except PsScan.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested psscan data.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            return Response(data.artefacts, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class tty_checkApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return tty_check.objects.get(evidence_id=dump_id)
+        except tty_check.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested ttycheck data.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            return Response(data.artefacts, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class MountInfoApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return MountInfo.objects.get(evidence_id=dump_id)
+        except MountInfo.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested mount_info data.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            return Response(data.artefacts, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class KmsgApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Kmsg.objects.get(evidence_id=dump_id)
+        except Kmsg.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested kmsg data.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            return Response(data.artefacts, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class MalfindApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Malfind.objects.get(evidence_id=dump_id)
+        except Malfind.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested malfind data
+        """
+        data = self.get_object(dump_id)
+        serializer = MalfindSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LsmodApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Lsmod.objects.get(evidence_id=dump_id)
+        except Lsmod.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested kernel modules
+        """
+        data = self.get_object(dump_id)
+        serializer = LsmodSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SockstatApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Sockstat.objects.get(evidence_id=dump_id)
+        except Sockstat.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested sockstat data.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            return Response(data.artefacts, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class NetGraphApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return NetGraph.objects.get(evidence_id=dump_id)
+        except NetGraph.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested netgraph data
+        """
+        data = self.get_object(dump_id)
+        serializer = NetGraphSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class BashApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Bash.objects.get(evidence_id=dump_id)
+        except Bash.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested bash data.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            return Response(data.artefacts, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+
+class TimelineChartApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return TimeLineChart.objects.get(evidence_id=dump_id)
+        except TimeLineChart.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested TimelineChart.
+        """
+        data = self.get_object(dump_id)
+        serializer = TimelineChartSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class TimelineDataApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return Timeliner.objects.get(evidence_id=dump_id)
+        except Timeliner.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Serve the requested timeline data with server-side processing.
+        """
+        data = self.get_object(dump_id)
+        if not data:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+        # Server-side parameters
+        draw = int(
+            request.query_params.get("draw", 0)
+        )  # Used by DataTables to ensure that the Ajax returns from server-side processing are drawn in sequence
+        start = int(request.query_params.get("start", 0))
+        length = int(request.query_params.get("length", 25))
+        timestamp_min = request.query_params.get("timestamp_min", None)
+        timestamp_max = request.query_params.get("timestamp_max", None)
+
+        # Filtering based on timestamp
+        filtered_data = []
+        if timestamp_min and timestamp_max:
+            for artefact in data.artefacts:
+                created_date = artefact.get("Created Date")
+                if created_date and timestamp_min <= created_date <= timestamp_max:
+                    filtered_data.append(artefact)
+        else:
+            filtered_data = data.artefacts
+
+        paginator = Paginator(filtered_data, length)
+        page_data = paginator.get_page((start // length) + 1)
+
+        return Response(
+            {
+                "draw": draw,
+                "recordsTotal": paginator.count,
+                "recordsFiltered": paginator.count,  # Adjust this value if you implement search
+                "data": page_data.object_list,
+            },
+            status=status.HTTP_200_OK,
+        )

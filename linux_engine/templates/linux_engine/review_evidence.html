@@ -1,0 +1,147 @@
+{% extends "main/master.html" %} {% load static %} {% block content%}
+<script src="{% static 'linux_engine/js/main.js'%}"></script>
+<script src="{% static 'linux_engine/js/pstree.js'%}"></script>
+<script src="{% static 'linux_engine/js/api.js'%}"></script>
+<script src="{% static 'linux_engine/js/tree.js'%}"></script>
+<script src="{% static 'linux_engine/js/visualisation.js'%}"></script>
+<script src="{% static 'main/js/stix_module.js'%}"></script>
+
+<link
+    rel="stylesheet"
+    href="{% static 'main/css/treejs.min.css'%}"
+    id="treejs_styles"
+/>
+<link
+    rel="stylesheet"
+    type="text/css"
+    href="{% static 'linux_engine/css/linux_engine.css'%}"
+/>
+
+<link
+    rel="stylesheet"
+    type="text/css"
+    href="{% static 'main/css/lib/joint.css'%}"
+/>
+<script src="{% static 'main/js/lib/lodash.js'%}"></script>
+<script src="{% static 'main/js/lib/backbone.js'%}"></script>
+<script src="{% static 'main/js/lib/joint.js'%}"></script>
+<script src="{% static 'main/js/lib/dagre.min.js'%}"></script>
+<script src="{% static 'main/js/lib/graphlib.min.js'%}"></script>
+
+<nav class="navbar navbar-expand-lg border-bottom">
+    <div
+        class="container-fluid"
+        id="case"
+        value="{{evidence.dump_linked_case.case_id}}"
+    >
+        <div class="navbar-brand">
+            <i class="fas fa-suitcase"></i>
+            <a href="/case/{{evidence.dump_linked_case.case_id}}/"
+                >{{evidence.dump_linked_case.case_name}}</a
+            >
+            <i class="fas fa-chevron-right"></i>
+            {{evidence.dump_name}}
+        </div>
+        {% csrf_token %}
+        <div class="navbar-collapse collapse" id="navbarNav">
+            <ul class="nav navbar-nav nav-pills" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                    <button
+                        class="nav-link active"
+                        id="overview-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#overview"
+                        type="button"
+                        role="tab"
+                        aria-selected="true"
+                    >
+                        <i class="fas fa-chart-bar"></i>&nbsp;Overview
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button
+                        class="nav-link"
+                        id="timeliner-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#timeliner"
+                        type="button"
+                        role="tab"
+                        aria-selected="false"
+                    >
+                        <i class="fas fa-timeline"></i>&nbsp;Timeline
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button
+                        class="nav-link"
+                        id="malware-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#malware"
+                        type="button"
+                        role="tab"
+                        aria-selected="false"
+                    >
+                        <i class="fas fa-syringe"></i>&nbsp; Advanced
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="tab-content" id="pills-tabContent">
+        <div
+            class="tab-pane fade show active"
+            style="height: 100vh"
+            id="overview"
+            role="tabpanel"
+            aria-labelledby="overview-tab"
+            tabindex="0"
+        >
+            {% include "linux_engine/overview.html" %}
+        </div>
+        <div
+            class="tab-pane fade"
+            id="timeliner"
+            role="tabpanel"
+            aria-labelledby="timeliner-tab"
+            tabindex="0"
+        >
+            <div style="height: 20rem" id="timeline"></div>
+            <table
+                id="timeline_datatable"
+                class="table-sm table-responsive table-hover table"
+                style="width: 100%"
+            >
+                <thead>
+                    <tr>
+                        <th>Plugin</th>
+                        <th>Description</th>
+                        <th>Created</th>
+                        <th>Accessed</th>
+                        <th>Changed</th>
+                        <th>Modified</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div
+            class="tab-pane fade"
+            id="malware"
+            role="tabpanel"
+            aria-labelledby="malware-tab"
+            tabindex="0"
+        >
+            {% include "linux_engine/advanced.html" %}
+        </div>
+    </div>
+</div>
+
+<div class="main" id="{{evidence.dump_id}}"></div>
+
+<script>
+    var cpu = "{% static 'windows_engine/images/cpu.svg' %}";
+</script>
+{% include "main/stix_module.html" %} {% endblock content%}
