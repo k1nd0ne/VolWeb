@@ -493,15 +493,17 @@ function display_filescan(evidence_id) {
         ],
         iDisplayLength: 25,
         searchBuilder: true,
+        drawCallback: function () {
+          $(".btn-dump-file").on("click", function () {
+            file_id = $(this).attr("id");
+            dump_file(evidence_id, file_id);
+          });
+        },
       });
       artefacts_datatable.searchBuilder
         .container()
         .prependTo(artefacts_datatable.table().container());
       $("#artefacts_modal").modal("show");
-      $(".btn-dump-file").on("click", function () {
-        file_id = $(this).attr("id");
-        dump_file(evidence_id, file_id);
-      });
     },
     error: function (xhr, status, error) {
       if (xhr.status === 404) {
@@ -1298,7 +1300,7 @@ function generate_hive_download(data, evidence_data) {
     link = document.createElement("a");
     link.setAttribute(
       "href",
-      "/media/" + evidence_data + "/" + data["File output"],
+      `/media/${evidence_data}/${encodeURIComponent(data["File output"])}`,
     );
     link.setAttribute("target", "_blank");
     link.setAttribute("class", "fas fa-download");

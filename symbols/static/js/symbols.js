@@ -18,14 +18,17 @@ function get_symbols() {
           {
             mData: "name",
             mRender: createNameColumn,
+            sClass: "align-middle",
           },
           {
             mData: "os",
             mRender: createOsColumn,
+            sClass: "align-middle",
           },
           {
             mData: "description",
             mRender: createDescriptionColumn,
+            sClass: "align-middle",
           },
         ],
         aLengthMenu: [
@@ -178,7 +181,7 @@ function handleSocketClose() {
   toastr.warning("Synchronization lost.");
   try {
     symbols.clear().draw();
-  } catch { }
+  } catch {}
   reconnectWebSocket();
 }
 

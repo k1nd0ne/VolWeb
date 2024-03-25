@@ -59,7 +59,10 @@ function generate_loot_status(status) {
 function generate_loot_download(data) {
   if (data.Status) {
     link = document.createElement("a");
-    link.setAttribute("href", "/media/" + data.evidence + "/" + data.FileName);
+    link.setAttribute(
+      "href",
+      "/media/" + data.evidence + "/" + encodeURIComponent(data.FileName),
+    );
     link.setAttribute("target", "_blank");
     link.setAttribute("class", "btn btn-sm btn-outline-success p-1");
     link.textContent = "Download";

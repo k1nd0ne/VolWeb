@@ -16,6 +16,7 @@ function get_cases() {
       aoColumns: [
         {
           mData: "case_id",
+          sClass: "align-middle",
           mRender: function (case_id, type) {
             div = document.createElement("div");
             div.setAttribute("class", "align-items-center");
@@ -30,6 +31,7 @@ function get_cases() {
         },
         {
           mData: "case_name",
+          sClass: "align-middle",
           mRender: function (case_name, type) {
             div = document.createElement("div");
             div.setAttribute("class", "align-items-center");
@@ -45,6 +47,7 @@ function get_cases() {
         },
         {
           mData: "case_description",
+          sClass: "align-middle",
           mRender: function (case_description, type) {
             div = document.createElement("div");
             div.setAttribute("class", "text-truncate");
@@ -61,6 +64,7 @@ function get_cases() {
         },
         {
           mData: "case_last_update",
+          sClass: "align-middle",
           mRender: function (case_last_update, type) {
             div = document.createElement("div");
             div.setAttribute("class", "align-items-center");

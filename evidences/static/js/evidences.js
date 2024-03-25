@@ -98,6 +98,7 @@ function get_evidences(case_id) {
       aoColumns: [
         {
           mData: "dump_name",
+          sClass: "align-middle",
           mRender: function (dump_name, type, row) {
             div = document.createElement("small");
             div.setAttribute(
@@ -124,6 +125,7 @@ function get_evidences(case_id) {
         },
         {
           mData: "dump_etag",
+          sClass: "align-middle",
           mRender: function (dump_etag, type, row) {
             div = document.createElement("small");
             div.setAttribute(
@@ -145,6 +147,7 @@ function get_evidences(case_id) {
         },
         {
           mData: "dump_os",
+          sClass: "align-middle",
           mRender: function (dump_os, type, row) {
             div = document.createElement("small");
             logo = document.createElement("i");
@@ -180,6 +183,7 @@ function get_evidences(case_id) {
         },
         {
           mData: "dump_linked_case_name",
+          sClass: "align-middle",
           mRender: function (dump_linked_case_name, type, row) {
             div = document.createElement("small");
 
@@ -205,6 +209,7 @@ function get_evidences(case_id) {
         },
         {
           mData: "dump_status",
+          sClass: "align-middle",
           mRender: function (dump_status, type) {
             div = document.createElement("small");
 

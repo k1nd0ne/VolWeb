@@ -21,8 +21,9 @@ def fix_permissions(output_path):
             filepath = os.path.join(output_path, filename)
             if os.path.isfile(filepath):
                 current_permissions = stat.S_IMODE(os.lstat(filepath).st_mode)
-                os.chmod(filepath, current_permissions | stat.S_IROTH)
-                logger.info(f"Updated permissions for: {filepath}")
+                if not current_permissions & stat.S_IROTH:
+                    os.chmod(filepath, current_permissions | stat.S_IROTH)
+                    logger.info(f"Updated permissions for: {filepath}")
             else:
                 logger.warning(f"Skipping {filepath}, not a file.")
     except Exception as e:
