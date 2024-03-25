@@ -24,6 +24,7 @@ def fix_permissions(output_path):
                 if not current_permissions & stat.S_IROTH:
                     os.chmod(filepath, current_permissions | stat.S_IROTH)
                     logger.info(f"Updated permissions for: {filepath}")
+
             else:
                 logger.warning(f"Skipping {filepath}, not a file.")
     except Exception as e:
