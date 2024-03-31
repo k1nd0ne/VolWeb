@@ -141,23 +141,42 @@ def dump_file(evidence_id, offset):
         result = file_obj.file_dump(offset)
         if result:
             for file in result:
-                loot = Loot()
-                loot.evidence = instance
-                loot.Name = f"File {filename} - found in {file['Cache']} and dumped as {file['FileName']}."
-                loot.Status = True
-                loot.FileName = file["Result"]
-                loot.save()
-                async_to_sync(channel_layer.group_send)(
-                    f"volatility_tasks_{evidence_id}",
-                    {
-                        "type": "send_notification",
-                        "message": {
-                            "name": "file_dump",
-                            "status": "success",
-                            "msg": json.dumps(model_to_dict(loot)),
+                if file["Result"] != "Error dumping file":
+                    loot = Loot()
+                    loot.evidence = instance
+                    loot.Name = f"File {filename} - found in {file['Cache']} and dumped as {file['FileName']}."
+                    loot.Status = True
+                    loot.FileName = file["Result"]
+                    loot.save()
+                    async_to_sync(channel_layer.group_send)(
+                        f"volatility_tasks_{evidence_id}",
+                        {
+                            "type": "send_notification",
+                            "message": {
+                                "name": "file_dump",
+                                "status": "success",
+                                "msg": json.dumps(model_to_dict(loot)),
+                            },
                         },
-                    },
-                )
+                    )
+                else:
+                    loot = Loot()
+                    loot.evidence = instance
+                    loot.Name = f"File {filename} - not found in {file['Cache']}."
+                    loot.Status = False
+                    loot.FileName = file["Result"]
+                    loot.save()
+                    async_to_sync(channel_layer.group_send)(
+                        f"volatility_tasks_{evidence_id}",
+                        {
+                            "type": "send_notification",
+                            "message": {
+                                "name": "file_dump",
+                                "status": "failed",
+                                "msg": json.dumps(model_to_dict(loot)),
+                            },
+                        },
+                    )
         else:
             loot = Loot()
             loot.Status = False

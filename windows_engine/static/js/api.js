@@ -488,16 +488,18 @@ function display_filescan(evidence_id) {
           },
         ],
         aLengthMenu: [
-          [25, 50, 75, -1],
-          [25, 50, 75, "All"],
+          [25, 50, 75],
+          [25, 50, 75],
         ],
         iDisplayLength: 25,
         searchBuilder: true,
         drawCallback: function () {
-          $(".btn-dump-file").on("click", function () {
-            file_id = $(this).attr("id");
-            dump_file(evidence_id, file_id);
-          });
+          $(".btn-dump-file")
+            .off("click")
+            .on("click", function () {
+              file_id = $(this).attr("id");
+              dump_file(evidence_id, file_id);
+            });
         },
       });
       artefacts_datatable.searchBuilder
@@ -772,8 +774,8 @@ function display_timeliner(evidence_id, timestamp_min, timestamp_max) {
       { data: "Modified Date" },
     ],
     aLengthMenu: [
-      [25, 50, 75, -1],
-      [25, 50, 75, "All"],
+      [25, 50, 75],
+      [25, 50, 75],
     ],
     iDisplayLength: 25,
     searchBuilder: true,
