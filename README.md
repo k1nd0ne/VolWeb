@@ -26,8 +26,8 @@ The project documentation is available on the <a href="https://github.com/k1nd0n
 
 # Interacting with the REST API
 
-VolWeb exposes a REST API to allow analysts to interact with the platform. There is a dedicated repository proposing some scripts maintained by the community: https://github.com/forensicxlab/VolWeb-Scripts
-Check the wiki of the project to learn more about the possible API calls.
+VolWeb exposes a REST API to allow analysts to interact with the platform. There is a dedicated repository proposing some scripts maintained by the community: https://github.com/forensicxlab/VolWeb-Scripts .
+Check the [wiki](https://github.com/k1nd0ne/VolWeb/wiki/VolWeb-%E2%80%90-REST-API) of the project to learn more about the possible API calls.
 
 # Issues
 
