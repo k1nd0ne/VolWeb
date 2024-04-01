@@ -9,6 +9,7 @@ function display_loot(evidence_id) {
         loot_datatable = $("#loot_datatable").DataTable({
           aaData: data,
           aoColumns: [
+            { data: "Date" },
             { data: "Name" },
             {
               mData: "Status",

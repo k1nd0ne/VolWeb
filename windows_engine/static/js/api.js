@@ -754,7 +754,7 @@ function display_cmdline(evidence_id, process_id) {
 
 function display_timeliner(evidence_id, timestamp_min, timestamp_max) {
   $("#timeline_datatable").DataTable().destroy();
-  $("#timeline_datatable").DataTable({
+  timeline_datatable = $("#timeline_datatable").DataTable({
     processing: true,
     serverSide: true,
     ajax: {
@@ -780,6 +780,9 @@ function display_timeliner(evidence_id, timestamp_min, timestamp_max) {
     iDisplayLength: 25,
     searchBuilder: true,
   });
+  timeline_datatable.searchBuilder
+    .container()
+    .prependTo(timeline_datatable.table().container());
 }
 
 function display_credentials(evidence_id) {

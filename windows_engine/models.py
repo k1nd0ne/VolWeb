@@ -796,10 +796,8 @@ class FileScan(models.Model):
                     base_config_path,
                     PLUGIN_LIST["windows.dumpfiles.DumpFiles"],
                 )
-            result = DictRenderer().render(constructed.run())
+                result = DictRenderer().render(constructed.run())
             fix_permissions(f"media/{self.evidence.dump_id}")
-            for artefact in result:
-                artefact = {x.translate({32: None}): y for x, y in artefact.items()}
             return result
         except:
             return None
@@ -951,3 +949,4 @@ class Loot(models.Model):
     FileName = models.TextField(null=True)
     Name = models.TextField()
     Status = models.BooleanField()
+    Date = models.DateTimeField(auto_now=True)

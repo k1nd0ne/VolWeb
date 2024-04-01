@@ -143,7 +143,7 @@ function handles_task_result(result) {
 
 function filedump_task_result(result) {
   if (result.status === "success" || result.status === "failed") {
-    loot = JSON.parse(result.msg);
+    loot = result.msg;
     if (loot.Status) {
       toastr.success(
         "File " + loot.FileName + " is available in the Loot section.",
@@ -160,7 +160,7 @@ function filedump_task_result(result) {
 function process_dump_task_result(result) {
   if (result) {
     if (result.status === "success") {
-      loot = JSON.parse(result.msg);
+      loot = result.msg;
       toastr.success(
         "Process dump for pid " +
           result.pid +
@@ -168,7 +168,7 @@ function process_dump_task_result(result) {
       );
     }
     if (result.status === "error") {
-      loot = JSON.parse(result.msg);
+      loot = result.msg;
       toastr.warning("Process dump for pid " + result.pid + " failed.");
     }
     if (result.pid == $(".process_id").attr("id")) {

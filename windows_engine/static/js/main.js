@@ -144,7 +144,7 @@ $(document).ready(function () {
 /* ======================= WebSockets Management ======================= */
 
 function reconnectWebSocket(evidence_id) {
-  toastr.info("Trying to reconnect in " + reconnectDelay / 1000 + "seconds");
+  toastr.info("Trying to reconnect in " + reconnectDelay / 1000 + " seconds");
   setTimeout(function () {
     connectWebSocket(evidence_id); // Call the function to connect WebSocket again
     // Increase the reconnect delay exponentially
