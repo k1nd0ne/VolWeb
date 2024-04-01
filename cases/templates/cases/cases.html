@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="{% static 'cases/css/cases.css'%}" />
 <script src="{% static '/js/cases.js'%}"></script>
 
-<div class="container-lg">
+<div class="container-fluid">
     <div class="row justify-content-center mt-4">
         <div
             class="col-6 d-flex align-items-center highlight-toolbar border py-1 pe-2 ps-3"
@@ -23,15 +23,12 @@
         </div>
     </div>
 
-    <table
-        id="cases"
-        class="table-sm table-responsive table-hover table"
-        style="width: 100%"
-    >
+    <table id="cases" class="table-sm table-hover table" style="width: 100%">
         <thead>
             <tr>
                 <th>Case No</th>
                 <th>Name</th>
+                <th>Bucket</th>
                 <th>Description</th>
                 <th>Last Modified</th>
             </tr>

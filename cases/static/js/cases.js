@@ -46,6 +46,15 @@ function get_cases() {
           },
         },
         {
+          mData: "case_bucket_id",
+          sClass: "align-middle",
+          mRender: function (case_id, type) {
+            code = document.createElement("code");
+            code.textContent = case_id;
+            return code.outerHTML;
+          },
+        },
+        {
           mData: "case_description",
           sClass: "align-middle",
           mRender: function (case_description, type) {

@@ -8,7 +8,11 @@
 }
 
 
-
+.dtsb-group {
+    padding: 0.5rem;
+    font-weight: 400;
+    font-size: 0.8rem;
+}
 
 .active.fas.fa-home.icon.icon-shape.icon-sm.border-radius-md {
     color: var(--bs-light);
