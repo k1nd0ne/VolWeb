@@ -38,6 +38,14 @@
     color: var(--bs-light);
 }
 
+[data-bs-theme=light] .fas.fa-link.icon.icon-shape.icon-sm.border-radius-md {
+    color: var(--bs-dark);
+}
+
+[data-bs-theme=dark] .fas.fa-link.icon.icon-shape.icon-sm.border-radius-md {
+    color: var(--bs-light);
+}
+
 [data-bs-theme=light] .fas.fa-plus.icon.icon-shape.icon-sm.border-radius-md {
     color: var(--bs-dark);
 }

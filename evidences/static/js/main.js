@@ -25,7 +25,7 @@ $(document).ready(function () {
 
     $.ajax({
       type: "GET",
-      url: "/api/cases/" + linked_case_id + "/",
+      url: `/api/cases/${linked_case_id}/`,
       dataType: "json",
       success: function (data) {
         const bucket_name = data.case_bucket_id;
@@ -35,6 +35,89 @@ $(document).ready(function () {
         toastr.error("An error occurred : " + error);
       },
     });
+  });
+
+  $("#bind-button").on("click", function () {
+    const evidence_name = $("#id_bind_dump_name").val();
+    const evidence_os = $("#id_bind_dump_os").val();
+    const dump_source = $("#id_bind_dump_source").val();
+    const linked_case_id = $("#id_bind_dump_linked_case").val();
+    const dump_access_key_id = $("#id_bind_dump_access_key_id").val();
+    const dump_access_key = $("#id_bind_dump_access_key").val();
+    const dump_region = $("#id_bind_dump_region").val();
+    const dump_url = $("#id_bind_dump_url").val();
+    const dump_endpoint = $("#id_bind_dump_endpoint").val();
+
+    var formData = {
+      dump_name: evidence_name,
+      dump_os: evidence_os,
+      dump_name: evidence_name,
+      dump_access_key_id: dump_access_key_id,
+      dump_access_key: dump_access_key,
+      dump_endpoint: dump_endpoint,
+      dump_source: dump_source,
+      dump_linked_case: linked_case_id,
+      dump_url: dump_url,
+      dump_region: dump_region,
+    };
+
+    if (evidence_name === "") {
+      $("#form-bind-error").text("Please enter a name for the evidence.");
+      return;
+    }
+
+    if (evidence_os === "") {
+      $("#form-bind-error").text("Please select an os for this evidence");
+      return;
+    }
+
+    if (linked_case_id === "") {
+      $("#form-bind-error").text("Please select a linked case.");
+      return;
+    }
+
+    if (dump_source === "") {
+      $("#form-bind-error").text("Please select a data source.");
+      return;
+    }
+
+    if (dump_access_key_id === "") {
+      $("#form-bind-error").text("Please enter the access key id");
+      return;
+    }
+
+    if (dump_access_key === "") {
+      $("#form-bind-error").text("Please enter the access key.");
+      return;
+    }
+
+    if (dump_endpoint === "" && dump_source === "MINIO") {
+      $("#form-bind-error").text("Please enter the endpoint of MinIO.");
+      return;
+    }
+
+    if (dump_region === "" && dump_source === "AWS") {
+      $("#form-bind-error").text("Please enter the AWS region.");
+      return;
+    }
+
+    if (dump_url === "") {
+      $("#form-bind-error").text("Please enter the url of your evidence.");
+      return;
+    }
+    $("#form-bind-error").text("");
+    bind_and_create_evidence(formData);
+  });
+
+  $("#id_bind_dump_source").on("change", function () {
+    if (this.value === "AWS") {
+      $("#aws-region-form").attr("class", "mb-3");
+      $("#minio-endpoint-form").attr("class", "d-none");
+    }
+    if (this.value === "MINIO") {
+      $("#aws-region-form").attr("class", "d-none");
+      $("#minio-endpoint-form").attr("class", "mb-3");
+    }
   });
 
   $("#delete_evidence").on("click", function () {
@@ -63,6 +146,10 @@ $(document).ready(function () {
 
   $(".evidence_create").on("click", function () {
     $("#modal_evidence_create").modal("show");
+  });
+
+  $(".evidence_bind").on("click", function () {
+    $("#modal_evidence_bind").modal("show");
   });
 
   $("#modal_evidence_create").on("hide.bs.modal", function () {

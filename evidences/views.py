@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from evidences.forms import EvidenceForm
+from evidences.forms import EvidenceForm, BindEvidenceForm
 from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework import status
@@ -22,8 +22,8 @@ def evidences(request):
     :return: render the evidences.html page with a form.
     """
     evidence_form = EvidenceForm()
-    return render(request, "evidences/evidences.html", {"evidence_form": evidence_form})
-
+    bind_evidence_form = BindEvidenceForm()
+    return render(request, "evidences/evidences.html", {"evidence_form": evidence_form, "bind_evidence_form":bind_evidence_form})
 
 class CaseEvidenceApiView(APIView):
     """
@@ -49,7 +49,6 @@ class EvidenceAPIView(APIView):
     Evidence API View
     This API view allows an authenticated user to get all of the evidences and create one.
     """
-
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
@@ -86,6 +85,49 @@ class EvidenceAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class BindEvidence(APIView):
+    """
+    Bind Evidence API View
+    This API view allows an authenticated user to bind an existing evidence.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def post(self, request, *args, **kwargs):
+        """
+        post request handler
+        :return: the new serialized evidence created
+        """
+        dump_etag = request.data.get("dump_etag")
+        if Evidence.objects.filter(dump_etag=dump_etag).exists():
+            return Response(
+                {"error": "Evidence with this ETag already exists."},
+                status=status.HTTP_409_CONFLICT,
+            )
+        print(request.data)
+        source = request.data.get('dump_source')
+        # if source == "AWS":
+        #     # Try to fetch the evidence etag
+        # elif source == "MINIO":
+        #     # Try to fetch the evidence etag
+        # else:
+        #     return Response(status=status.HTTP_404_NOT_FOUND)
+        data = {
+            "dump_name": request.data.get("dump_name"),
+            "dump_etag": dump_etag,
+            "dump_os": request.data.get("dump_os"),
+            "dump_linked_case": request.data.get("dump_linked_case"),
+        }
+        serializer = EvidenceSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class EvidenceDetailApiView(APIView):

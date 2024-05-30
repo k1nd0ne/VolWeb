@@ -796,6 +796,9 @@ function display_credentials(evidence_id) {
     dataType: "json",
     success: function (data) {
       if (data.artefacts && data.artefacts.length > 0) {
+        $("#credentials_cards_1").empty();
+        $("#credentials_cards_2").empty();
+        $("#credentials_cards_3").empty();
         $.each(data.artefacts, function (_, value) {
           build_credential_card("Hashdump", value);
         });

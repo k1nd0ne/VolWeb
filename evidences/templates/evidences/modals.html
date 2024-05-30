@@ -50,6 +50,75 @@
     </div>
 </div>
 
+<!-- Evidence creation Modal -->
+<div class="modal fade" id="modal_evidence_bind" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="align-items-center d-flex">
+                    <i
+                        class="fas fa-2x fa-upload icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center me-2 text-center"></i>
+                    <h1 class="modal-title fs-5 p-2" id="modal_case_number">
+                        Bind an existing evidence
+                    </h1>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="evidence_form">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">OS*</label>
+                        {{bind_evidence_form.dump_os}}
+                    </div>
+                    {% if request.get_full_path == '/evidences/'%}
+                    <div class="mb-3">
+                        <label class="form-label">Linked case*</label>
+                        {{bind_evidence_form.dump_linked_case}}
+                    </div>
+                    {% else %}
+                    <input type="hidden" name="dump_linked_case" value="{{case.case_id}}" id="id_dump_linked_case" />
+                    {% endif %}
+                    <div class="mb-3">
+                        <label class="form-label">Source*</label>
+                        {{bind_evidence_form.dump_source}}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bucket access key id*</label>
+                        {{bind_evidence_form.dump_access_key_id}}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bucket access key*</label>
+                        {{bind_evidence_form.dump_access_key}}
+                    </div>
+
+                    <div class="mb-3 d-none" id="aws-region-form">
+                        <label class="form-label">AWS Region*</label>
+                        {{bind_evidence_form.dump_region}}
+                    </div>
+
+                    <div class="mb-3 d-none" id="minio-endpoint-form">
+                        <label class="form-label">MinIO Endpoint*</label>
+                        {{bind_evidence_form.dump_endpoint}}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Evidence url path*</label>
+                        {{bind_evidence_form.dump_url}}
+                    </div>
+                    <div id="form-bind-error" class="text-danger"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm btn-outline-success" id="bind-button">
+                    Bind
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Evidence Metadata review Modal -->
 <div class="modal modal-lg placeholder-glow fade modal_evidence_review" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">

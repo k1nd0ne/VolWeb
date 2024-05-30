@@ -1,6 +1,81 @@
 var evidences;
 var reconnectDelay = 10000;
 
+function fetch_bucket_metadata(formData, params, callback) {
+  AWS.config.update({
+    accessKeyId: formData.dump_access_key_id,
+    secretAccessKey: formData.dump_access_key,
+    region: formData.dump_region,
+  });
+
+  var s3;
+  if (formData.dump_source !== "AWS") {
+    s3 = new AWS.S3({
+      endpoint: formData.dump_endpoint,
+      s3BucketEndpoint: true,
+    });
+  } else {
+    s3 = new AWS.S3();
+  }
+
+  s3.getObject(params, function (err, data) {
+    if (err) {
+      toastr.error("Can't fetch the evidence: ", err);
+      callback(true);
+    } else {
+      formData.dump_etag = data.ETag;
+      formData.dump_name = params.Key;
+      toastr.success("Successfully fetched object from S3");
+      callback(false);
+    }
+  });
+}
+
+function bind_and_create_evidence(formData) {
+  const url = new URL(formData.dump_url);
+  if (url.protocol !== "s3:") {
+    toastr.warning("The bucket s3 url is malformed.");
+    return;
+  } else {
+    const match = formData.dump_url.match(/^s3:\/\/([^\/]+)\/(.+)$/);
+    const params = {
+      Bucket: match[1],
+      Key: match[2],
+    };
+    // Loading time ON
+    fetch_bucket_metadata(formData, params, function (error) {
+      if (error) {
+        console.error("Error occurred");
+        // Handle the error accordingly
+      } else {
+        console.log("Operation successful");
+        $.ajaxSetup({
+          beforeSend: function (xhr, settings) {
+            xhr.setRequestHeader(
+              "X-CSRFToken",
+              document.querySelector("[name=csrfmiddlewaretoken]").value,
+            );
+          },
+        });
+        $.ajax({
+          type: "POST",
+          url: `/api/evidences/bind/`,
+          data: formData,
+          dataType: "json",
+          success: function (data) {
+            console.log(
+              "Bind is a success. The evidence was found and accessible.",
+            );
+          },
+          error: function (xhr, status, error) {
+            toastr.error(error);
+          },
+        });
+      }
+    });
+  }
+}
+
 function upload_and_create_evidence(bucket_id) {
   $.ajax({
     url: "/minio_secrets/",
