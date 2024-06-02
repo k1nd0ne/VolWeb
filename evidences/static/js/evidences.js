@@ -12,20 +12,27 @@ function fetch_bucket_metadata(formData, params, callback) {
   if (formData.dump_source !== "AWS") {
     s3 = new AWS.S3({
       endpoint: formData.dump_endpoint,
+      s3ForcePathStyle: true,
+      signatureVersion: "v4",
       s3BucketEndpoint: true,
     });
   } else {
     s3 = new AWS.S3();
   }
 
-  s3.getObject(params, function (err, data) {
+  s3.headObject(params, function (err, data) {
     if (err) {
-      toastr.error("Can't fetch the evidence: ", err);
+      toastr.error(
+        "Can't fetch the metadata, make sure the provided credentials and authorizations are correct.",
+      );
+      $(".bind-progress").addClass("d-none");
+      $("#bind_evidence_form").show();
+      $("#bind-button").show();
       callback(true);
     } else {
       formData.dump_etag = data.ETag;
       formData.dump_name = params.Key;
-      toastr.success("Successfully fetched object from S3");
+      toastr.success("The evidence was found and accessible.");
       callback(false);
     }
   });
@@ -42,13 +49,16 @@ function bind_and_create_evidence(formData) {
       Bucket: match[1],
       Key: match[2],
     };
-    // Loading time ON
+    $(".bind-progress").removeClass("d-none");
+    $("#bind_evidence_form").hide();
+    $("#bind-button").hide();
     fetch_bucket_metadata(formData, params, function (error) {
       if (error) {
-        console.error("Error occurred");
-        // Handle the error accordingly
+        console.error("An error occurred: ", error);
+        $(".bind-progress").addClass("d-none");
+        $("#bind_evidence_form").show();
+        $("#bind-button").show();
       } else {
-        console.log("Operation successful");
         $.ajaxSetup({
           beforeSend: function (xhr, settings) {
             xhr.setRequestHeader(
@@ -63,15 +73,17 @@ function bind_and_create_evidence(formData) {
           data: formData,
           dataType: "json",
           success: function (data) {
-            console.log(
-              "Bind is a success. The evidence was found and accessible.",
-            );
+            toastr.success("Bind is a success.");
           },
           error: function (xhr, status, error) {
             toastr.error(error);
           },
         });
       }
+      $("#modal_evidence_bind").modal("hide");
+      $(".bind-progress").addClass("d-none");
+      $("#bind_evidence_form").show();
+      $("#bind-button").show();
     });
   }
 }
@@ -116,8 +128,9 @@ function upload_and_create_evidence(bucket_id) {
           $(".upload-progress").removeClass("d-none");
           $("#evidence_form").hide();
           $("#upload-button").hide();
-          document.getElementById("upload-progress").innerHTML =
-            parseInt((evt.loaded * 100) / evt.total) + "%";
+          $("#upload-progress").text(
+            parseInt((evt.loaded * 100) / evt.total) + "%",
+          );
         });
 
         uploader.send(function (err, data) {

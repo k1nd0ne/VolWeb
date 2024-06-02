@@ -22,7 +22,7 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 @receiver(post_save, sender=Evidence)
 def send_evidence_created(sender, instance, created, **kwargs):
     if created:
-        start_analysis.delay(instance.dump_id)
+        start_analysis.apply_async(args=[instance.dump_id])
     channel_layer = get_channel_layer()
     serializer = EvidenceSerializer(instance)
     async_to_sync(channel_layer.group_send)(

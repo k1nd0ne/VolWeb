@@ -107,25 +107,10 @@ class BindEvidence(APIView):
                 {"error": "Evidence with this ETag already exists."},
                 status=status.HTTP_409_CONFLICT,
             )
-        print(request.data)
-        source = request.data.get('dump_source')
-        # if source == "AWS":
-        #     # Try to fetch the evidence etag
-        # elif source == "MINIO":
-        #     # Try to fetch the evidence etag
-        # else:
-        #     return Response(status=status.HTTP_404_NOT_FOUND)
-        data = {
-            "dump_name": request.data.get("dump_name"),
-            "dump_etag": dump_etag,
-            "dump_os": request.data.get("dump_os"),
-            "dump_linked_case": request.data.get("dump_linked_case"),
-        }
-        serializer = EvidenceSerializer(data=data)
+        serializer = EvidenceSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -225,7 +210,7 @@ class LaunchTaskAPIView(APIView):
             if evidence_instance:
                 evidence_instance.dump_status = 0
                 evidence_instance.save()
-                start_analysis.delay(evidence_instance.dump_id)
+                start_analysis.apply_async(args=[evidence_instance.dump_id])
                 return Response(
                     {"status": "Analysis launched"}, status=status.HTTP_202_ACCEPTED
                 )

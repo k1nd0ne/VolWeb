@@ -1,13 +1,15 @@
-import datetime, hashlib, io, tempfile, os, vt, stat, logging
+import datetime, hashlib, io, tempfile, os, vt, stat, logging, volatility3, urllib.parse, s3fs
 from typing import Dict, Any, List, Tuple
 from volatility3.framework import interfaces
 from volatility3.cli import text_renderer
 from volatility3.framework.renderers import format_hints
 from VolWeb.keyconfig import Secrets
+from evidences.models import Evidence
 from volatility3.framework.plugins import construct_plugin
 from volatility3.framework import automagic, constants
 from volatility3.cli import MuteProgress
-import volatility3
+from volatility3.framework.layers.cloudstorage import S3FileSystemHandler
+from typing import Optional
 from symbols.models import UPLOAD_PATH
 
 
@@ -411,6 +413,7 @@ def build_context(evidence_data, context, base_config_path, plugin):
     """This function is used to buid the context and construct each plugin
     Return : The contructed plugin.
     """
+    S3FileSystemHandler.default_open = volweb_open
     volatility3.symbols.__path__ = [
         os.path.abspath(f"media/{UPLOAD_PATH}")
     ] + constants.SYMBOL_BASEPATHS
@@ -429,3 +432,22 @@ def build_context(evidence_data, context, base_config_path, plugin):
         file_handler(evidence_data["output_path"]),
     )
     return constructed
+
+@staticmethod
+def volweb_open(req: urllib.request.Request) -> Optional[Any]:
+    if req.type == "s3":
+        object_uri = "://".join(req.full_url.split("://")[1:])
+        try:
+            instance = Evidence.objects.get(dump_url=req.full_url)
+            if instance.dump_source == "AWS":
+                endpoint_url = f"https://s3.dualstack.{instance.dump_region}.amazonaws.com"
+            else:
+                endpoint_url = instance.dump_endpoint
+            return s3fs.S3FileSystem(
+                key=instance.dump_access_key_id,
+                secret=instance.dump_access_key,
+                client_kwargs={'region_name': instance.dump_region, 'endpoint_url': endpoint_url},
+            ).open(object_uri)
+        except Evidence.DoesNotExist:
+            return s3fs.S3FileSystem().open(object_uri)
+    return None

@@ -23,10 +23,17 @@ def start_analysis(dump_id):
     output_path = f"media/{instance.dump_id}/"
     if not os.path.exists(os.path.dirname(output_path)):
         os.makedirs(os.path.dirname(output_path))
-    evidence_data = {
-        "bucket": f"s3://{str(instance.dump_linked_case.case_bucket_id)}/{instance.dump_name}",
-        "output_path": output_path,
-    }
+    if instance.dump_url:
+        evidence_data = {
+            "bucket": instance.dump_url,
+            "output_path": output_path,
+        }
+    else:
+        evidence_data = {
+            "bucket": f"s3://{str(instance.dump_linked_case.case_bucket_id)}/{instance.dump_name}",
+            "output_path": output_path,
+        }
+
     if instance.dump_os == "Windows":
         # We need to download the pdb in a single thread because volatility3 doesn't like multithreading when fetching ISF.
         # I'll try to propose a fix to the volatility3 team so this bug is fixed in future releases.

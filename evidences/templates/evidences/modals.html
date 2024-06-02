@@ -50,7 +50,7 @@
     </div>
 </div>
 
-<!-- Evidence creation Modal -->
+<!-- Evidence binding Modal -->
 <div class="modal fade" id="modal_evidence_bind" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog">
@@ -66,7 +66,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="evidence_form">
+                <form id="bind_evidence_form">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label class="form-label">OS*</label>
@@ -109,6 +109,12 @@
                     </div>
                     <div id="form-bind-error" class="text-danger"></div>
                 </form>
+                <div class="d-flex flex-column align-items-center justify-content-center bind-progress d-none">
+                    <span class="upload-loader"></span>
+                    <div class="row">
+                        <code id="bind-progress">Fetching your evidence...</code>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-sm btn-outline-success" id="bind-button">
