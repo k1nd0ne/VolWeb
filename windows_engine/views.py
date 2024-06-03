@@ -127,6 +127,49 @@ class TimelineChartApiView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+def build_search_query(field, condition, value1, value2):
+    condition_mapping = {
+        "=": lambda x: x == value1,
+        "!=": lambda x: x != value1,
+        "starts": lambda x: x.startswith(value1),
+        "ends": lambda x: x.endswith(value1),
+        ">": lambda x: x > value1,
+        "<": lambda x: x < value1,
+        "contains": lambda x: value1 in x,
+        "!contains": lambda x: value1 not in x,
+        "!ends": lambda x: not x.endswith(value1),
+        "!starts": lambda x: not x.startswith(value1),
+        "null": lambda x: x is None,
+        "!null": lambda x: x is not None,
+    }
+    if condition == "between" or condition == "!between":
+        if condition == "between":
+            return lambda x: value1 <= x <= value2
+        else:
+            return lambda x: not (value1 <= x <= value2)
+    if condition in condition_mapping:
+        return condition_mapping[condition]
+    else:
+        return None
+
+
+def get_fields_maps(field):
+    if field == "Plugin":
+        return "Plugin"
+    if field == "Description":
+        return "Description"
+    if field == "Changed Date":
+        return "Changed Date"
+    if field == "Created Date":
+        return "Created Date"
+    if field == "Accessed Date":
+        return "Accessed Date"
+    if field == "Modified Date":
+        return "Modified Date"
+    return None
+
+
+
 class TimelineDataApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
@@ -140,7 +183,6 @@ class TimelineDataApiView(APIView):
     def get(self, request, dump_id, *args, **kwargs):
         """
         Serve the requested timeline data with server-side processing.
-        TODO: add support for the SearchBuilder
         """
         data = self.get_object(dump_id)
         if not data:
@@ -148,30 +190,113 @@ class TimelineDataApiView(APIView):
         draw = int(request.query_params.get("draw", 0))
         start = int(request.query_params.get("start", 0))
         length = int(request.query_params.get("length", 25))
+        search_value = request.GET.get("search[value]", "")
         timestamp_min = request.query_params.get("timestamp_min", None)
         timestamp_max = request.query_params.get("timestamp_max", None)
 
+        timeliner_qset = data.artefacts
+        search_criterias = request.GET.dict()
+        queries = []
+
+        if search_criterias.get("searchBuilder[logic]", None):
+            logic = search_criterias["searchBuilder[logic]"]
+            for n in range(0, 10):
+                condition = search_criterias.get(
+                    f"searchBuilder[criteria][{n}][condition]", None
+                )
+                if condition:
+                    if "null" not in condition:
+                        value1 = search_criterias[
+                            f"searchBuilder[criteria][{n}][value1]"
+                        ]
+                    else:
+                        value1 = None
+                    if condition == "between" or condition == "!between":
+                        value2 = search_criterias[
+                            f"searchBuilder[criteria][{n}][value2]"
+                        ]
+                    else:
+                        value2 = None
+                    field = search_criterias[f"searchBuilder[criteria][{n}][data]"]
+                    field = get_fields_maps(field)
+                    if field and value1 is not None:
+                        queries.append(
+                            (field, build_search_query(field, condition, value1, value2))
+                        )
+            if queries:
+                if logic == "OR":
+                    timeliner_qset = [
+                        item
+                        for item in timeliner_qset
+                        if any(query(item[field]) for field, query in queries)
+                    ]
+                else:
+                    timeliner_qset = [
+                        item
+                        for item in timeliner_qset
+                        if all(query(item[field]) for field, query in queries)
+                    ]
+        total_records = len(timeliner_qset)
+
+        if search_value:
+            timeliner_qset = [
+                item
+                for item in timeliner_qset
+                if search_value.lower() in item["Plugin"].lower()
+                or search_value.lower() in item["Description"].lower()
+                or search_value.lower() in item["Changed Date"].lower()
+                or search_value.lower() in item["Created Date"].lower()
+                or search_value.lower() in item["Accessed Date"].lower()
+                or search_value.lower() in item["Modified Date"].lower()
+            ]
+
+        columns_map = [
+            "Plugin",
+            "Description",
+            "Changed Date",
+            "Created Date",
+            "Accessed Date",
+            "Modified Date",
+        ]
+        order_column_index = request.GET.get(
+            "order[0][column]", ""
+        )  # Index of the column to sort
+        order_dir = request.GET.get("order[0][dir]", "")  # Sorting direction
+
+        try:
+            order_column = columns_map[int(order_column_index)]
+        except (IndexError, ValueError):
+            order_column = None  # Fallback column or default sorting
+
+        if order_column:
+            # Applying sorting
+            timeliner_qset.sort(
+                key=lambda x: x[order_column],
+                reverse=True if order_dir == "desc" else False,
+            )
+
         filtered_data = []
+
         if timestamp_min and timestamp_max:
-            for artefact in data.artefacts:
+            for artefact in timeliner_qset:
                 created_date = artefact.get("Created Date")
                 if created_date and timestamp_min <= created_date <= timestamp_max:
                     filtered_data.append(artefact)
         else:
-            filtered_data = data.artefacts
+            filtered_data = timeliner_qset
 
         paginator = Paginator(filtered_data, length)
         page_data = paginator.get_page((start // length) + 1)
 
-        return Response(
-            {
-                "draw": draw,
-                "recordsTotal": paginator.count,
-                "recordsFiltered": paginator.count,  # Adjust this value if you implement search
-                "data": page_data.object_list,
-            },
-            status=status.HTTP_200_OK,
-        )
+        total_records_filtered = len(timeliner_qset)
+        response = {
+            "draw": draw,
+            "recordsTotal": total_records,
+            "recordsFiltered": total_records_filtered,
+            "data": page_data.object_list,
+        }
+
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class CmdLineApiView(APIView):
