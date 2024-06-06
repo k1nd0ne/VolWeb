@@ -57,7 +57,7 @@ services:
       - BROKER_PORT=${BROKER_PORT}
       - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
       - SSL_CERT_FILE=/etc/ssl/certs/minio.pem
-    image: "forensicxlab/volweb:2.0"
+    image: "forensicxlab/volweb:2.1.1"
     command: daphne -u /tmp/daphne.sock -b 0.0.0.0 -p 8000 VolWeb.asgi:application
     expose:
       - 8000
@@ -90,7 +90,7 @@ services:
       - BROKER_PORT=${BROKER_PORT}
       - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/minio.pem
-    image: "forensicxlab/volweb:2.0"
+    image: "forensicxlab/volweb:2.1.1"
     command: celery -A VolWeb worker --loglevel=INFO
     depends_on:
       - volweb-redis
