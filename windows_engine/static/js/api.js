@@ -1,4 +1,4 @@
-function display_psscan(evidence_id, process_id) {
+function display_psscan(evidence_id) {
   $.ajax({
     type: "GET",
     url: `${baseURL}/${evidence_id}/psscan/`,
@@ -54,6 +54,61 @@ function display_psscan(evidence_id, process_id) {
     error: function (xhr, status, error) {
       if (xhr.status === 404) {
         toastr.warning("Psscan is not available on this image.");
+      } else {
+        toastr.error(xhr.status);
+      }
+    },
+  });
+}
+
+function display_thrdscan(evidence_id) {
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/thrdscan/`,
+    dataType: "json",
+    success: function (data) {
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                          <th>Offset</th>
+                          <th>CreateTime</th>
+                          <th>ExitTime</th>
+                          <th>PID</th>
+                          <th>TID</th>
+                          <th>StartAddress</th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "Offset" },
+          { data: "CreateTime" },
+          { data: "ExitTime" },
+          { data: "PID" },
+          { data: "TID" },
+          { data: "StartAddress" },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo($(artefact_datatable.table().container()));
+      $("#artefacts_source_title").text("Thread Scan");
+      $("#artefacts_modal").modal("show");
+    },
+    error: function (xhr, status, error) {
+      if (xhr.status === 404) {
+        toastr.warning("ThreadScan result is not available on this image.");
       } else {
         toastr.error(xhr.status);
       }
@@ -1082,6 +1137,144 @@ function display_ssdt(evidence_id) {
     },
     error: function (xhr, status, error) {
       toastr.error("An error occurred while fetching the ssdt : " + error);
+    },
+  });
+}
+
+function display_driverirp(evidence_id) {
+  /*
+    Get the ssdt data from the API and display them using datatables
+  */
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/driverirp/`,
+    dataType: "json",
+    beforeSend: function () {
+      $("#ir_artefacts_datatable").DataTable().destroy();
+      $("#ir_artefacts_body").hide();
+      $("#ir_details").show();
+      $("#ir_artefacts_loading").show();
+      $("#ir_artefacts_title").text("Driver IRP");
+    },
+    success: function (data, status, xhr) {
+      console.log(data.artefacts);
+      if (data.artefacts && data.artefacts.length > 0) {
+        $("#ir_artefacts_body").html(
+          `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+            >
+                    <thead>
+                        <tr>
+                            <th>Address</th>
+                            <th>Driver Name</th>
+                            <th>IRP</th>
+                            <th>Module</th>
+                            <th>Offset</th>
+                            <th>Symbol</th>
+                        </tr>
+                    </thead>
+                </table>`,
+        );
+        ir_artefacts_datatable = $("#ir_artefacts_datatable").DataTable({
+          aaData: data.artefacts,
+          aoColumns: [
+            { data: "Address" },
+            { data: "Driver Name" },
+            { data: "IRP" },
+            { data: "Module" },
+            { data: "Offset" },
+            { data: "Symbol" },
+          ],
+          aLengthMenu: [
+            [25, 50, 75, -1],
+            [25, 50, 75, "All"],
+          ],
+          iDisplayLength: 25,
+          searchBuilder: true,
+        });
+        ir_artefacts_datatable.searchBuilder
+          .container()
+          .prependTo(ir_artefacts_datatable.table().container());
+      } else {
+        $("#ir_artefacts_body").html(
+          "<i>Driver IRP data are not available</i>",
+        );
+      }
+    },
+    complete: function (data) {
+      $("#ir_artefacts_loading").hide();
+      $("#ir_artefacts_body").show();
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred while fetching the driverirp : " + error);
+    },
+  });
+}
+
+function display_iat(evidence_id) {
+  /*
+    Get the ssdt data from the API and display them using datatables
+  */
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/iat/`,
+    dataType: "json",
+    beforeSend: function () {
+      $("#ir_artefacts_datatable").DataTable().destroy();
+      $("#ir_artefacts_body").hide();
+      $("#ir_details").show();
+      $("#ir_artefacts_loading").show();
+      $("#ir_artefacts_title").text("Driver IRP");
+    },
+    success: function (data, status, xhr) {
+      console.log(data.artefacts);
+      if (data.artefacts && data.artefacts.length > 0) {
+        $("#ir_artefacts_body").html(
+          `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+            >
+                    <thead>
+                        <tr>
+                            <th>Address</th>
+                            <th>Bound</th>
+                            <th>Function</th>
+                            <th>Library</th>
+                            <th>Name</th>
+                            <th>PID</th>
+                        </tr>
+                    </thead>
+                </table>`,
+        );
+        ir_artefacts_datatable = $("#ir_artefacts_datatable").DataTable({
+          aaData: data.artefacts,
+          aoColumns: [
+            { data: "Address" },
+            { data: "Bound" },
+            { data: "Function" },
+            { data: "Library" },
+            { data: "Name" },
+            { data: "PID" },
+          ],
+          aLengthMenu: [
+            [25, 50, 75, -1],
+            [25, 50, 75, "All"],
+          ],
+          iDisplayLength: 25,
+          searchBuilder: true,
+        });
+        ir_artefacts_datatable.searchBuilder
+          .container()
+          .prependTo(ir_artefacts_datatable.table().container());
+      } else {
+        $("#ir_artefacts_body").html(
+          "<i>Driver IRP data are not available</i>",
+        );
+      }
+    },
+    complete: function (data) {
+      $("#ir_artefacts_loading").hide();
+      $("#ir_artefacts_body").show();
+    },
+    error: function (xhr, status, error) {
+      toastr.error("An error occurred while fetching the IAT : " + error);
     },
   });
 }

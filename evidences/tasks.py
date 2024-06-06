@@ -70,6 +70,9 @@ def start_analysis(dump_id):
             windows.MFTScan(evidence=instance),
             windows.ADS(evidence=instance),
             windows.MBRScan(evidence=instance),
+            windows.ThrdScan(evidence=instance),
+            windows.DriverIrp(evidence=instance),
+            windows.IAT(evidence=instance),
         ]
 
         task_group = group(plugin.run.s(evidence_data) for plugin in volweb_plugins)
@@ -145,6 +148,7 @@ def start_analysis(dump_id):
             linux.Envars(evidence=instance),
             linux.MountInfo(evidence=instance),
             linux.tty_check(evidence=instance),
+            linux.LibraryList(evidence=instance),
         ]
 
         task_group = group(plugin.run.s(evidence_data) for plugin in volweb_plugins)

@@ -45,6 +45,28 @@ class PsTree(models.Model):
         except:
             return None
 
+class LibraryList(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="linux_library_list_evidence"
+    )
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Linux.LibraryList.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["linux.library_list.LibraryList"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except:
+            return None
 
 class PsAux(models.Model):
     evidence = models.ForeignKey(

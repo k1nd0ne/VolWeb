@@ -32,6 +32,10 @@ class PsScanSerializer(serializers.ModelSerializer):
         model = PsScan
         fields = "__all__"
 
+class LibraryListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LibraryList
+        fields = "__all__"
 
 class MountInfoSerializer(serializers.ModelSerializer):
     class Meta:

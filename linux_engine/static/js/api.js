@@ -224,7 +224,7 @@ function display_capabilities(evidence_id, process_id) {
     },
     error: function (xhr, status, error) {
       if (xhr.status === 404) {
-        toastr.warning("Open files are not available for this memory image.");
+        toastr.warning("Capabilities are not available for this memory image.");
       } else {
         toastr.error(`An error occured : ${xhr.status}`);
       }
@@ -279,7 +279,58 @@ function display_psscan(evidence_id) {
     },
     error: function (xhr, status, error) {
       if (xhr.status === 404) {
-        toastr.warning("Open files are not available for this memory image.");
+        toastr.warning("Process Scan is not available for this memory image.");
+      } else {
+        toastr.error(`An error occured : ${xhr.status}`);
+      }
+    },
+  });
+}
+
+function display_library_list(evidence_id) {
+  $.ajax({
+    type: "GET",
+    url: `${baseURL}/${evidence_id}/library_list/`,
+    dataType: "json",
+    success: function (data) {
+      $("#artefacts_datatable").DataTable().destroy();
+      $("#artefacts_body").html(
+        `<table id="artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
+          >
+                  <thead>
+                      <tr>
+                        <th>LoadAddress</th>
+                        <th>Pid</th>
+                        <th>Name</th>
+                        <th>Path</th>
+                      </tr>
+                  </thead>
+              </table>`,
+      );
+      artefact_datatable = $("#artefacts_datatable").DataTable({
+        aaData: data,
+        aoColumns: [
+          { data: "LoadAddress" },
+          { data: "Pid" },
+          { data: "Name" },
+          { data: "Path" },
+        ],
+        aLengthMenu: [
+          [25, 50, 75, -1],
+          [25, 50, 75, "All"],
+        ],
+        iDisplayLength: 25,
+        searchBuilder: true,
+      });
+      artefact_datatable.searchBuilder
+        .container()
+        .prependTo(artefact_datatable.table().container());
+      $("#artefacts_source_title").text("Process Scan");
+      $("#artefacts_modal").modal("show");
+    },
+    error: function (xhr, status, error) {
+      if (xhr.status === 404) {
+        toastr.warning("Library list is not available for this memory image.");
       } else {
         toastr.error(`An error occured : ${xhr.status}`);
       }
@@ -770,11 +821,7 @@ function display_lsmod(evidence_id) {
         );
         ir_artefacts_datatable = $("#ir_artefacts_datatable").DataTable({
           aaData: data.artefacts,
-          aoColumns: [
-            { data: "Offset" },
-            { data: "Name" },
-            { data: "Size" },
-          ],
+          aoColumns: [{ data: "Offset" }, { data: "Name" }, { data: "Size" }],
           aLengthMenu: [
             [25, 50, 75, -1],
             [25, 50, 75, "All"],

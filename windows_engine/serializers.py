@@ -146,6 +146,20 @@ class SSDTSerializer(serializers.ModelSerializer):
         model = SSDT
         fields = "__all__"
 
+class ThrdScanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ThrdScan
+        fields = "__all__"
+
+class DriverIrpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DriverIrp
+        fields = "__all__"
+
+class IATSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IAT
+        fields = "__all__"
 
 class FileScanSerializer(serializers.ModelSerializer):
     class Meta:

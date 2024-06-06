@@ -19,6 +19,10 @@ $(document).ready(function () {
     display_psscan(evidence_id);
   });
 
+  $(".card_library_list").on("click", function () {
+    display_library_list(evidence_id);
+  });
+
   $(".card_bash").on("click", function () {
     display_bash(evidence_id);
   });

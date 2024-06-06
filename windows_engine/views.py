@@ -89,6 +89,7 @@ class MBRScanApiView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
 class ADSApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
@@ -679,6 +680,63 @@ class SSDTApiView(APIView):
         serializer = SSDTSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class DriverIrpApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return DriverIrp.objects.get(evidence_id=dump_id)
+        except DriverIrp.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested DriverIrp data
+        """
+        data = self.get_object(dump_id)
+        serializer = DriverIrpSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class IATApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return IAT.objects.get(evidence_id=dump_id)
+        except IAT.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested DriverIrp data
+        """
+        data = self.get_object(dump_id)
+        serializer = IATSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ThrdScanApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return ThrdScan.objects.get(evidence_id=dump_id)
+        except ThrdScan.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Return the requested thrdscan data.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            return Response(data.artefacts, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
 
 class FileScanApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]

@@ -7,6 +7,8 @@ urlpatterns = [
     path("review/linux/<int:dump_id>/", views.review, name="review"),
     path("api/linux/<int:dump_id>/pstree/", views.PsTreeApiView.as_view()),
     path("api/linux/<int:dump_id>/psscan/", views.PsScanApiView.as_view()),
+    path("api/linux/<int:dump_id>/library_list/", views.LibraryListApiView.as_view()),
+
     path("api/linux/<int:dump_id>/kmsg/", views.KmsgApiView.as_view()),
     path("api/linux/<int:dump_id>/bash/", views.BashApiView.as_view()),
     path("api/linux/<int:dump_id>/mountinfo/", views.MountInfoApiView.as_view()),

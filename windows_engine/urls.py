@@ -47,6 +47,7 @@ urlpatterns = [
         views.SessionsApiView.as_view(),
     ),
     path("api/windows/<int:dump_id>/psscan/", views.PsScanApiView.as_view()),
+    path("api/windows/<int:dump_id>/thrdscan/", views.ThrdScanApiView.as_view()),
     path("api/windows/<int:dump_id>/netstat/", views.NetStatApiView.as_view()),
     path(
         "api/windows/<int:dump_id>/netstat/<int:artifact_id>/<str:tag>/",
@@ -64,6 +65,8 @@ urlpatterns = [
     path("api/windows/<int:dump_id>/hashdump/", views.HashdumpApiView.as_view()),
     path("api/windows/<int:dump_id>/lsadump/", views.LsadumpApiView.as_view()),
     path("api/windows/<int:dump_id>/mbrscan/", views.MBRScanApiView.as_view()),
+    path("api/windows/<int:dump_id>/driverirp/", views.DriverIrpApiView.as_view()),
+    path("api/windows/<int:dump_id>/iat/", views.IATApiView.as_view()),
     path(
         "tasks/windows/<int:dump_id>/handles/<int:pid>/",
         views.HandlesApiView.as_view(),

@@ -173,6 +173,25 @@ class PsScanApiView(APIView):
         else:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
 
+class LibraryListApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
+    def get_object(self, dump_id):
+        try:
+            return LibraryList.objects.get(evidence_id=dump_id)
+        except LibraryList.DoesNotExist:
+            return None
+
+    def get(self, request, dump_id, *args, **kwargs):
+        """
+        Give the requested library list data.
+        """
+        data = self.get_object(dump_id)
+        if data.artefacts:
+            return Response(data.artefacts, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
 
 class tty_checkApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]

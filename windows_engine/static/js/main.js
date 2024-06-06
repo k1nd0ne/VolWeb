@@ -24,6 +24,10 @@ $(document).ready(function () {
     display_psscan(evidence_id);
   });
 
+  $(".card_thrd_scan").on("click", function () {
+    display_thrdscan(evidence_id);
+  });
+
   $(".card_handles").on("click", function () {
     pid = $(".process_id").attr("id");
     compute_handles(evidence_id, pid);
@@ -95,6 +99,16 @@ $(document).ready(function () {
   $(".card_malfind").on("click", function () {
     injections_rootkits_hide_all();
     display_malfind(evidence_id);
+  });
+
+  $(".card_driverirp").on("click", function () {
+    injections_rootkits_hide_all();
+    display_driverirp(evidence_id);
+  });
+
+  $(".card_iat").on("click", function () {
+    injections_rootkits_hide_all();
+    display_iat(evidence_id);
   });
 
   $(".card_ldrmodules").on("click", function () {

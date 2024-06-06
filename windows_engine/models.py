@@ -941,6 +941,84 @@ class SSDT(models.Model):
         except:
             return None
 
+class ThrdScan(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="windows_thrdscan_evidence"
+    )
+
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Windows.ThrdScan.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["windows.thrdscan.ThrdScan"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+class DriverIrp(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="windows_driverirp_evidence"
+    )
+
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Windows.DriverIrp.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["windows.driverirp.DriverIrp"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
+class IAT(models.Model):
+    evidence = models.ForeignKey(
+        Evidence, on_delete=models.CASCADE, related_name="windows_iat_evidence"
+    )
+
+    artefacts = models.JSONField(null=True)
+
+    @staticmethod
+    @shared_task(name="Windows.IAT.run")
+    def run(evidence_data):
+        try:
+            context = contexts.Context()
+            constructed = build_context(
+                evidence_data,
+                context,
+                base_config_path,
+                PLUGIN_LIST["windows.iat.IAT"],
+            )
+            if constructed:
+                result = DictRenderer().render(constructed.run())
+                return result
+        except UnsatisfiedException:
+            return "Unsatisfied"
+        except:
+            return None
+
 
 class Loot(models.Model):
     evidence = models.ForeignKey(
