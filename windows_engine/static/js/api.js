@@ -1157,7 +1157,6 @@ function display_driverirp(evidence_id) {
       $("#ir_artefacts_title").text("Driver IRP");
     },
     success: function (data, status, xhr) {
-      console.log(data.artefacts);
       if (data.artefacts && data.artefacts.length > 0) {
         $("#ir_artefacts_body").html(
           `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
@@ -1226,7 +1225,6 @@ function display_iat(evidence_id) {
       $("#ir_artefacts_title").text("Driver IRP");
     },
     success: function (data, status, xhr) {
-      console.log(data.artefacts);
       if (data.artefacts && data.artefacts.length > 0) {
         $("#ir_artefacts_body").html(
           `<table id="ir_artefacts_datatable" class="table-sm table-responsive table-hover table" cellspacing="0" width="100%"
