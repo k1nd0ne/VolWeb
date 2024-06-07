@@ -31,7 +31,7 @@ Check the [wiki](https://github.com/k1nd0ne/VolWeb/wiki/VolWeb-%E2%80%90-REST-AP
 
 # Issues
 
-If you have encountered a bug, or wish to propose a feature, please feel free to open an issue. To enable us to quickly address them, follow the guide in the "Contributing" section of the Wiki associated with the project.
+If you have encountered a bug, or wish to propose a feature, please feel free to create a [discussion](https://github.com/k1nd0ne/VolWeb/discussions) to enable us to quickly address them. Please provide logs to any issues you are facing.
 
 # Contact
 
@@ -39,4 +39,6 @@ Contact me at k1nd0ne@mail.com for any questions regarding this tool.
 
 # Next Release Goals
 
-Check out the roadmap: https://github.com/k1nd0ne/VolWeb/projects/1
+Check out the [roadmap](https://github.com/users/k1nd0ne/projects/2)
+
+Check out the [discussions](https://github.com/k1nd0ne/VolWeb/discussions)
