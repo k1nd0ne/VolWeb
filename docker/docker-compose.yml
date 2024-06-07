@@ -8,10 +8,10 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     image: postgres:14.1
     restart: always
+    ports:
+      - 5432:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    networks:
-      - backend
 
   volweb-redis:
     container_name: volweb-redis
@@ -20,12 +20,13 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - "redis-data:/data"
-    networks:
-      - backend
+    ports:
+      - "6379:6379"
 
   volweb-minio:
     container_name: volweb-minio
     image: minio/minio
+    network_mode: "host"
     restart: always
     volumes:
       - minio_storage:/data
@@ -35,9 +36,6 @@ services:
       - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
       - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
     command: server --console-address ":9001" /data
-    networks:
-      - frontend
-      - backend
 
   volweb-platform:
     container_name: volweb-platform
@@ -72,8 +70,6 @@ services:
       - staticfiles:/home/app/web/staticfiles
       - ./minio/fullchain.pem:/etc/ssl/certs/minio.pem
       - media:/home/app/web/media
-    networks:
-      - backend
 
   volweb-workers:
     environment:
@@ -108,8 +104,6 @@ services:
     deploy:
       mode: replicated
       replicas: 1 # Warning: see the documentation if you want to add more replicas.
-    networks:
-      - backend
 
   nginx:
     container_name: volweb_nginx
@@ -125,9 +119,6 @@ services:
       - media:/home/app/web/media
     depends_on:
       - volweb-platform
-    networks:
-      - frontend
-      - backend
 
 volumes:
   minio_storage:
@@ -135,7 +126,3 @@ volumes:
   redis-data:
   staticfiles:
   media:
-
-networks:
-  frontend:
-  backend:

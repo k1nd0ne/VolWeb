@@ -8,10 +8,10 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     image: postgres:14.1
     restart: always
+    ports:
+      - 5432:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    networks:
-      - backend
 
   volweb-redis:
     container_name: volweb-redis
@@ -20,8 +20,8 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - "redis-data:/data"
-    networks:
-      - backend
+    ports:
+      - "6379:6379"
 
   volweb-platform:
     container_name: volweb-platform
@@ -53,8 +53,6 @@ services:
     volumes:
       - staticfiles:/home/app/web/staticfiles
       - media:/home/app/web/media
-    networks:
-      - backend
 
   volweb-workers:
     environment:
@@ -86,8 +84,6 @@ services:
     deploy:
       mode: replicated
       replicas: 1 # Warning: see the documentation if you want to add more replicas.
-    networks:
-      - backend
 
   nginx:
     container_name: volweb_nginx
@@ -103,9 +99,6 @@ services:
       - media:/home/app/web/media
     depends_on:
       - volweb-platform
-    networks:
-      - frontend
-      - backend
 
 volumes:
   minio_storage:
@@ -113,7 +106,3 @@ volumes:
   redis-data:
   staticfiles:
   media:
-
-networks:
-  frontend:
-  backend:

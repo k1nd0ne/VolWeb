@@ -91,6 +91,9 @@
                     <div class="mb-3">
                         <label class="form-label">Bucket access key*</label>
                         {{bind_evidence_form.dump_access_key}}
+                        <div id="access_key_help" class="form-text">
+                          For AWS, you can find your bucket access key in the 'IAM' (Identity and Access Management) section of the AWS Management Console, while for MinIO, it can be generated and found in the MinIO Console or configuration file.
+                        </div>
                     </div>
 
                     <div class="mb-3 d-none" id="aws-region-form">
@@ -182,8 +185,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                You are about to delete the evidence, the memory image <b>will not
-                be deleted</b> from the bucket. Are you sure ?
+                You are about to delete the evidence. Are you sure ?
             </div>
             <div class="modal-footer">
                 <button type="button" id="delete_evidence_confirmed"

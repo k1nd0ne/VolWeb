@@ -1,7 +1,7 @@
 from evidences.models import Evidence
 from cases.models import Case
 from django import forms
-from django.forms import TextInput, Select
+from django.forms import TextInput, Select, PasswordInput
 
 
 class EvidenceForm(forms.ModelForm):
@@ -65,12 +65,13 @@ class BindEvidenceForm(forms.ModelForm):
                     "id": "id_bind_dump_access_key_id",
                 }
             ),
-            "dump_access_key": TextInput(
+            "dump_access_key": PasswordInput(
                 attrs={
                     "class": "form-control form-control-sm",
-                    "type": "text",
+                    "type": "password",
                     "required": "",
                     "id": "id_bind_dump_access_key",
+                    "aria-describedby":"access_key_help",
                 }
             ),
             "dump_url": TextInput(

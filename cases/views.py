@@ -10,7 +10,7 @@ from VolWeb.settings import DEBUG
 from cases.serializers import CaseSerializer
 from cases.forms import CaseForm
 from cases.models import Case
-from evidences.forms import EvidenceForm
+from evidences.forms import EvidenceForm, BindEvidenceForm
 from minio import Minio
 import uuid, urllib3, ssl
 
@@ -25,8 +25,9 @@ def case(request, case_id):
     """
     case = Case.objects.get(case_id=case_id)
     evidence_form = EvidenceForm()
+    bind_evidence_form = BindEvidenceForm()
     return render(
-        request, "cases/case.html", {"case": case, "evidence_form": evidence_form}
+        request, "cases/case.html", {"case": case, "evidence_form": evidence_form, "bind_evidence_form":bind_evidence_form}
     )
 
 
