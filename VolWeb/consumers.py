@@ -4,12 +4,14 @@ import json
 
 class VolatilityTaskConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
-        self.dump_id = self.scope["url_route"]["kwargs"]["dump_id"]
-        self.room_group_name = f"volatility_tasks_{self.dump_id}"
+        self.user = self.scope['user']
+        if self.user.is_authenticated:
+            self.dump_id = self.scope["url_route"]["kwargs"]["dump_id"]
+            self.room_group_name = f"volatility_tasks_{self.dump_id}"
 
-        # Join room group
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.accept()
+            # Join room group
+            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
@@ -43,10 +45,12 @@ class VolatilityTaskConsumer(AsyncJsonWebsocketConsumer):
 
 class CasesTaskConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
-        self.room_group_name = "cases"
-        # Join room group
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.accept()
+        self.user = self.scope['user']
+        if self.user.is_authenticated:
+            self.room_group_name = "cases"
+            # Join room group
+            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
@@ -84,10 +88,12 @@ class CasesTaskConsumer(AsyncJsonWebsocketConsumer):
 
 class EvidencesTaskConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
-        self.room_group_name = "evidences"
-        # Join room group
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.accept()
+        self.user = self.scope['user']
+        if self.user.is_authenticated:
+            self.room_group_name = "evidences"
+            # Join room group
+            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
@@ -125,10 +131,12 @@ class EvidencesTaskConsumer(AsyncJsonWebsocketConsumer):
 
 class SymbolsTaskConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
-        self.room_group_name = "symbols"
-        # Join room group
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.accept()
+        self.user = self.scope['user']
+        if self.user.is_authenticated:
+            self.room_group_name = "symbols"
+            # Join room group
+            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
