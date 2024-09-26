@@ -50,7 +50,8 @@ function prompt_standard() {
       -e "s|VOLWEB_DB_PASSWORD|$postgres_password|g" \
       docker/.env.prod.example > docker/.env
 
-  docker-compose -f docker/docker-compose.yml up
+  docker-compose -f docker/docker-compose.yml down
+  docker-compose -f docker/docker-compose.yml up -d
 }
 
 function prompt_aws() {
@@ -84,7 +85,9 @@ function prompt_aws() {
       -e "s|VOLWEB_DB_PASSWORD|$postgres_password|g" \
       docker/.env.aws.example > docker/.env.aws
 
-  docker-compose -f docker/docker-compose-aws.yml up
+  docker-compose -f docker/docker-compose-aws.yml down
+  docker-compose -f docker/docker-compose-aws.yml up -d
+
 }
 
 echo "Choose your installation method:"
@@ -97,6 +100,10 @@ case $choice in
   1)
     generate_self_signed_certificate
     prompt_standard
+    echo "--------------VOLWEB IS STARTED----------"
+    echo "Please follow the steps bellow:"
+    echo "1. Navigate to https://$fqdn_or_ip:9000 and https://$fqdn_or_ip:9000"
+    echo "2. Navigate to https://$fqdn_or_ip"
     ;;
   2)
     prompt_aws
