@@ -102,7 +102,7 @@ case $choice in
     prompt_standard
     echo "--------------VOLWEB IS STARTED----------"
     echo "Please follow the steps bellow:"
-    echo "1. Navigate to https://$fqdn_or_ip:9000 and https://$fqdn_or_ip:9000"
+    echo "1. Navigate to https://$fqdn_or_ip:9000 and https://$fqdn_or_ip:9001"
     echo "2. Navigate to https://$fqdn_or_ip"
     ;;
   2)
