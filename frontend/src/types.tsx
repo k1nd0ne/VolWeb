@@ -1,8 +1,16 @@
 export interface Case {
   id: number;
-  bucket_id: string;
   name: string;
   description: string;
-  linked_users: number[];
+  bucket_id: string;
+  linked_users: Array<string>;
   last_update: string;
+}
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
 }

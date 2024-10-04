@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DataTable, { createTheme } from "react-data-table-component";
 import {
   IconButton,
@@ -11,9 +12,13 @@ import {
   DialogTitle,
   Button,
   Alert,
+  Tooltip,
 } from "@mui/material";
 import Biotech from "@mui/icons-material/Biotech";
 import DeleteSweep from "@mui/icons-material/DeleteSweep";
+import Work from "@mui/icons-material/Work";
+import Info from "@mui/icons-material/Info";
+import CalendarToday from "@mui/icons-material/CalendarToday";
 import axiosInstance from "../utils/axiosInstance";
 import AddCaseDialog from "./CaseCreationDialog";
 import { Case } from "../types";
@@ -54,6 +59,7 @@ interface CaseListProps {
 }
 
 function CaseList({ cases, onOpenCase }: CaseListProps) {
+  const navigate = useNavigate();
   const [checked, setChecked] = useState<number[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
@@ -127,17 +133,30 @@ function CaseList({ cases, onOpenCase }: CaseListProps) {
     setOpenDialog(true);
   };
 
-  const handleToggle = (id: number) => onOpenCase(id);
+  const handleToggle = (id: number) => {
+    onOpenCase(id);
+    navigate(`/cases/${id}`);
+  };
 
   const columns = [
     {
       name: "Case Name",
-      selector: (row: Case) => row.name,
+      selector: (row: Case) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Work style={{ marginRight: 8 }} />
+          {row.name}
+        </div>
+      ),
       sortable: true,
     },
     {
       name: "Description",
-      selector: (row: Case) => row.description,
+      selector: (row: Case) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Info style={{ marginRight: 8 }} />
+          {row.description}
+        </div>
+      ),
       sortable: true,
     },
     {
@@ -149,27 +168,36 @@ function CaseList({ cases, onOpenCase }: CaseListProps) {
     },
     {
       name: "Last Update",
-      selector: (row: Case) => row.last_update,
+      selector: (row: Case) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <CalendarToday style={{ marginRight: 8 }} />
+          {row.last_update}
+        </div>
+      ),
       sortable: true,
     },
     {
       name: "Actions",
       cell: (row: Case) => (
         <>
-          <IconButton
-            edge="end"
-            aria-label="open"
-            onClick={() => handleToggle(row.id)}
-          >
-            <Biotech />
-          </IconButton>
-          <IconButton
-            edge="end"
-            aria-label="delete"
-            onClick={() => handleDeleteClick(row)}
-          >
-            <DeleteSweep />
-          </IconButton>
+          <Tooltip title="Review case">
+            <IconButton
+              edge="end"
+              aria-label="open"
+              onClick={() => handleToggle(row.id)}
+            >
+              <Biotech />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete Case">
+            <IconButton
+              edge="end"
+              aria-label="delete"
+              onClick={() => handleDeleteClick(row)}
+            >
+              <DeleteSweep />
+            </IconButton>
+          </Tooltip>
         </>
       ),
       ignoreRowClick: true,
@@ -252,5 +280,4 @@ function CaseList({ cases, onOpenCase }: CaseListProps) {
     </>
   );
 }
-
 export default CaseList;

@@ -12,9 +12,10 @@ import IconButton from "@mui/material/IconButton";
 import FormControl from "@mui/material/FormControl";
 import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
-import InvestigatorSelect from "./InvestigatorSelect";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import { Case, User } from "../types";
+import InvestigatorSelect from "./InvestigatorSelect";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -32,6 +33,7 @@ const AddCaseDialog: React.FC<AddCaseDialogProps> = ({
 }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
@@ -39,12 +41,14 @@ const AddCaseDialog: React.FC<AddCaseDialogProps> = ({
   );
 
   const handleCreate = async () => {
+    const requestData = {
+      name,
+      description,
+      bucket_id: "123e4567-e89b-12d3-a456-426614174000", // Replace with actual bucket_id
+      linked_users: selectedUsers.map((user) => user.id),
+    };
     try {
-      const response = await axiosInstance.post("/api/cases/", {
-        name,
-        description,
-        bucket_id: "123e4567-e89b-12d3-a456-426614174000", // Replace with actual bucket_id
-      });
+      const response = await axiosInstance.post("/api/cases/", requestData);
       onCreateSuccess(response.data);
       setSnackbarMessage("Case created successfully");
       setSnackbarSeverity("success");
@@ -119,7 +123,10 @@ const AddCaseDialog: React.FC<AddCaseDialogProps> = ({
             onChange={(e) => setDescription(e.target.value)}
           />
         </FormControl>
-        <InvestigatorSelect />
+        <InvestigatorSelect
+          selectedUsers={selectedUsers}
+          setSelectedUsers={setSelectedUsers}
+        />
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={handleCreate}>

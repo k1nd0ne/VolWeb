@@ -1,62 +1,67 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
+import { TextField, CircularProgress } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import axiosInstance from "../utils/axiosInstance";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import CircularProgress from "@mui/material/CircularProgress";
+import { User } from "../types";
 
-const InvestigatorSelect = () => {
-  const [investigators, setInvestigators] = React.useState<string[]>([]);
-  const [selectedInvestigators, setSelectedInvestigators] = React.useState<
-    string[]
-  >([]);
-  const [loading, setLoading] = React.useState(true);
+const InvestigatorSelect: React.FC<{
+  selectedUsers: User[];
+  setSelectedUsers: (users: User[]) => void;
+}> = ({ selectedUsers, setSelectedUsers }) => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  React.useEffect(() => {
-    const fetchInvestigators = async () => {
+  useEffect(() => {
+    const fetchUsers = async () => {
       try {
-        const response = await axiosInstance.get("/api/users/");
-        const usernames = response.data.map((user: any) => user.username);
-        setInvestigators(usernames);
+        const response = await axiosInstance.get("/core/users/");
+        setUsers(response.data);
       } catch (error) {
-        console.error("Error fetching investigators", error);
+        console.error("Error fetching users", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchInvestigators();
+    fetchUsers();
   }, []);
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setSelectedInvestigators(event.target.value as string[]);
-  };
-
-  if (loading) {
-    return <CircularProgress />;
-  }
+  const availableUsers = users.filter(
+    (user) =>
+      !selectedUsers.some((selectedUser) => selectedUser.id === user.id),
+  );
 
   return (
-    <div>
-      <FormControl sx={{ width: 1 }}>
-        <InputLabel shrink htmlFor="select-multiple-native">
-          Investigators
-        </InputLabel>
-        <Select
-          multiple
-          value={selectedInvestigators}
-          onChange={handleChange}
-          inputProps={{ id: "select-multiple-native" }}
-        >
-          {investigators.map((name) => (
-            <MenuItem key={name} value={name}>
-              {name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </div>
+    <Autocomplete
+      multiple
+      options={availableUsers}
+      getOptionLabel={(user) =>
+        `${user.first_name} ${user.last_name} (${user.username})`
+      }
+      value={selectedUsers}
+      onChange={(event, newValue) => setSelectedUsers(newValue)}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          variant="outlined"
+          label="Investigators"
+          placeholder="Select investigators"
+          margin="normal"
+          fullWidth
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {loading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
+          }}
+        />
+      )}
+    />
   );
 };
 
