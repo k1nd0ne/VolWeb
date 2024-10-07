@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from rest_framework import generics
 from core.serializers import UserSerializer
 
+
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -17,6 +18,7 @@ class LogoutView(APIView):
             return Response(status=204)
         except Exception as e:
             return Response(status=400)
+
 
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()

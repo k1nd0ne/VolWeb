@@ -1,15 +1,19 @@
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import Case
-from .serializers import CaseSerializer
+from rest_framework.views import APIView
+from datetime import timedelta
 from minio import Minio
+from django.shortcuts import get_object_or_404
 from backend.keyconfig import CloudStorage
 from django.conf import settings
+from .models import Case
+from .serializers import CaseSerializer
 import uuid
 
+
 class CaseViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     queryset = Case.objects.all()
     serializer_class = CaseSerializer
 
@@ -45,3 +49,23 @@ class CaseViewSet(viewsets.ModelViewSet):
             print(serializer.errors)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class GeneratePresignedUrlView(APIView):
+    def get(self, request, case_id):
+        filename = request.query_params.get('filename')
+        case = get_object_or_404(Case, id=case_id)
+        client = Minio(
+            endpoint= CloudStorage.AWS_ENDPOINT_HOST,
+            access_key=CloudStorage.AWS_ACCESS_KEY_ID,
+            secret_key=CloudStorage.AWS_SECRET_ACCESS_KEY,
+            secure=(not settings.DEBUG)
+        )
+        url = client.presigned_put_object(
+            bucket_name=str(case.bucket_id),
+            object_name=filename,
+            expires=timedelta(hours=1)
+        )
+        print(url)
+        return Response({'url': url})

@@ -26,6 +26,12 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
+interface AddCaseDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onCreateSuccess: (newCase: Case) => void;
+}
+
 const AddCaseDialog: React.FC<AddCaseDialogProps> = ({
   open,
   onClose,

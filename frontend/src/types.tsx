@@ -14,3 +14,17 @@ export interface User {
   first_name: string;
   last_name: string;
 }
+
+export interface Evidence {
+  id: number;
+  name: string;
+  os: string;
+  status: number;
+}
+
+export interface CloudStorage {
+  endpoint: string;
+  access_key: string;
+  secret_key: string;
+  region: string;
+}

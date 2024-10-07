@@ -42,12 +42,6 @@ const Cases: React.FC = () => {
     fetchCases();
   }, []);
 
-  const handleCaseOpening = (id: number) => {
-    setSeverity("success");
-    setMessage(String(id));
-    setMessageOpen(true);
-  };
-
   const handleCreateSuccess = (newCase: Case) => {
     setCases((prevCases) => [...prevCases, newCase]);
     setSeverity("success");
@@ -57,8 +51,7 @@ const Cases: React.FC = () => {
 
   return (
     <Box sx={{ height: "80vh", width: "100%", transform: "translateZ(0px)" }}>
-      <h1>Cases</h1>
-      <CaseList cases={cases} onOpenCase={handleCaseOpening}></CaseList>
+      <CaseList cases={cases}></CaseList>
       <AddCaseDialog
         open={isAddDialogOpen}
         onClose={() => setAddDialogOpen(false)}

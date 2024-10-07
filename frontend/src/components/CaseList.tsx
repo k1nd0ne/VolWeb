@@ -55,10 +55,9 @@ createTheme(
 
 interface CaseListProps {
   cases: Case[];
-  onOpenCase: (id: number) => void;
 }
 
-function CaseList({ cases, onOpenCase }: CaseListProps) {
+function CaseList({ cases }: CaseListProps) {
   const navigate = useNavigate();
   const [checked, setChecked] = useState<number[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
@@ -134,7 +133,6 @@ function CaseList({ cases, onOpenCase }: CaseListProps) {
   };
 
   const handleToggle = (id: number) => {
-    onOpenCase(id);
     navigate(`/cases/${id}`);
   };
 
@@ -209,6 +207,7 @@ function CaseList({ cases, onOpenCase }: CaseListProps) {
     <>
       <DataTable
         columns={columns}
+        title="Cases"
         data={caseData}
         theme="mui"
         selectableRows
@@ -229,7 +228,7 @@ function CaseList({ cases, onOpenCase }: CaseListProps) {
         <Fab
           color="secondary"
           aria-label="delete"
-          style={{ position: "fixed", bottom: 80, right: 16 }}
+          style={{ position: "fixed", bottom: 90, right: 16 }}
           onClick={handleOpenDeleteMultipleDialog}
         >
           <DeleteIcon />

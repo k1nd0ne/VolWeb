@@ -1,5 +1,6 @@
 import os
 
+
 class Database:
     NAME = os.getenv("POSTGRES_DB", None)
     USER = os.getenv("POSTGRES_USER", None)
@@ -7,11 +8,13 @@ class Database:
     HOST = os.getenv("DATABASE_HOST", None)
     PORT = os.getenv("DATABASE_PORT", None)
 
+
 class Secrets:
     SECRET_KEY = os.getenv("DJANGO_SECRET", None)
     BROKER_HOST = os.getenv("BROKER_HOST", "127.0.0.1")
     BROKER_PORT = os.getenv("BROKER_PORT", "6379")
     WEBSOCKET_URL = os.getenv("WEBSOCKET_URL", None)
+
 
 class CloudStorage:
     AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", None)
