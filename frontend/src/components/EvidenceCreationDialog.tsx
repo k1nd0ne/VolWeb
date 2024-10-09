@@ -21,7 +21,7 @@ import { Evidence, Case } from "../types";
 interface EvidenceCreationDialogProps {
   open: boolean;
   onClose: () => void;
-  onCreateSuccess: (newEvidence: Evidence) => void; // New prop
+  onCreateSuccess: (newEvidence: Evidence) => void;
 }
 
 const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({

@@ -7,18 +7,17 @@ import AddIcon from "@mui/icons-material/Add";
 import Memory from "@mui/icons-material/Memory";
 import DeviceHub from "@mui/icons-material/DeviceHub";
 import MessageHandler from "./MessageHandler";
-
+import LinearProgressWithLabel from "./LinearProgressBar";
+import Chip from "@mui/material/Chip";
 import {
   IconButton,
   Tooltip,
-  Snackbar,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
   Button,
-  Alert,
 } from "@mui/material";
 import { Biotech } from "@mui/icons-material";
 import DeleteSweep from "@mui/icons-material/DeleteSweep";
@@ -170,10 +169,26 @@ function EvidenceList({ evidences }: EvidenceListProps) {
       sortable: true,
     },
     {
+      name: "Status",
+      selector: (row: Evidence) =>
+        row.status !== 100 ? (
+          <LinearProgressWithLabel value={row.status} />
+        ) : (
+          <Chip
+            label="success"
+            size="small"
+            color="success"
+            variant="outlined"
+          />
+        ),
+      ignoreRowClick: true,
+      allowoverflow: true,
+    },
+    {
       name: "Actions",
       cell: (row: Evidence) => (
         <>
-          <Tooltip title="Review case">
+          <Tooltip title="Review Investigation">
             <IconButton
               edge="end"
               aria-label="open"
