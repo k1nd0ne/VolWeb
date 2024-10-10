@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  volweb-redis:
+    container_name: volweb-redis
+    image: "redis:latest"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - "redis-data-dev:/data"
+    ports:
+      - "${BROKER_PORT}:${BROKER_PORT}"
+
+  volweb-minio-dev:
+    container_name: volweb-minio-dev
+    network_mode: "host"
+    image: minio/minio
+    volumes:
+      - minio-storage-dev:/data
+    environment:
+      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
+      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
+    command: server --console-address ":9001" /data
+volumes:
+  minio-storage-dev:
+  postgres-data-dev:
+  redis-data-dev:
