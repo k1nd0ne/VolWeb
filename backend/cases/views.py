@@ -51,21 +51,20 @@ class CaseViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class GeneratePresignedUrlView(APIView):
     def get(self, request, case_id):
-        filename = request.query_params.get('filename')
+        filename = request.query_params.get("filename")
         case = get_object_or_404(Case, id=case_id)
         client = Minio(
-            endpoint= CloudStorage.AWS_ENDPOINT_HOST,
+            endpoint=CloudStorage.AWS_ENDPOINT_HOST,
             access_key=CloudStorage.AWS_ACCESS_KEY_ID,
             secret_key=CloudStorage.AWS_SECRET_ACCESS_KEY,
-            secure=(not settings.DEBUG)
+            secure=(not settings.DEBUG),
         )
         url = client.presigned_put_object(
             bucket_name=str(case.bucket_id),
             object_name=filename,
-            expires=timedelta(hours=1)
+            expires=timedelta(hours=1),
         )
         print(url)
-        return Response({'url': url})
+        return Response({"url": url})

@@ -48,8 +48,10 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "django_celery_results",
     "corsheaders",
+    "core",
     "cases",
     "evidences",
+    "volatility_engine",
 ]
 
 MIDDLEWARE = [

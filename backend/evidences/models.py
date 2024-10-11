@@ -2,8 +2,8 @@ from django.db import models
 from cases.models import Case
 
 OS = (
-    ("Windows", "Windows"),
-    ("Linux", "Linux"),
+    ("windows", "windows"),
+    ("linux", "linux"),
     #   ('MacOs', 'MacOs'), <- not implemented yet
 )
 

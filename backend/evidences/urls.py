@@ -3,8 +3,8 @@ from rest_framework import routers
 from .views import EvidenceViewSet
 
 router = routers.DefaultRouter()
-router.register(r'evidences', EvidenceViewSet, basename='evidence')
+router.register(r"evidences", EvidenceViewSet, basename="evidence")
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path("", include(router.urls)),
 ]

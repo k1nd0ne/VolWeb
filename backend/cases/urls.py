@@ -6,6 +6,10 @@ router = DefaultRouter()
 router.register(r"cases", CaseViewSet)
 
 urlpatterns = [
-    path('cases/<int:case_id>/generate-presigned-url/', GeneratePresignedUrlView.as_view(), name='generate-presigned-url'),
-    path('', include(router.urls)),
+    path(
+        "cases/<int:case_id>/generate-presigned-url/",
+        GeneratePresignedUrlView.as_view(),
+        name="generate-presigned-url",
+    ),
+    path("", include(router.urls)),
 ]
