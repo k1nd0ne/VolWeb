@@ -13,6 +13,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Evidences from "./pages/evidences/Evidences";
 import Login from "./pages/auth/Login";
 import CaseDetail from "./pages/cases/CaseDetail";
+import EvidenceDetail from "./pages/evidences/EvidenceDetails";
 
 const darkTheme = createTheme({
   palette: {
@@ -43,6 +44,7 @@ const App: React.FC = () => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="cases" element={<Cases />} />
             <Route path="evidences" element={<Evidences />} />
+            <Route path="evidences/:id" element={<EvidenceDetail />} />
             <Route path="cases/:id" element={<CaseDetail />} />
           </Route>
         </Routes>

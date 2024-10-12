@@ -30,11 +30,10 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
   onCreateSuccess,
 }) => {
   const OS_OPTIONS = [
-    { value: "Windows", label: "Windows" },
-    { value: "Linux", label: "Linux" },
+    { value: "windows", label: "Windows" },
+    { value: "linux", label: "Linux" },
   ];
 
-  const [name, setName] = useState<string>("");
   const [os, setOs] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -65,7 +64,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
   };
 
   const handleUpload = async () => {
-    if (!name || !os || !file || !selectedCase) {
+    if (!os || !file || !selectedCase) {
       setError("Please fill in all fields.");
       return;
     }
@@ -104,7 +103,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
         const newEvidenceResp = await axiosInstance.post<Evidence>(
           "/api/evidences/",
           {
-            name,
+            name: file.name,
             os,
             linked_case: selectedCase.id,
             etag,
@@ -124,7 +123,6 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
       // Notify the parent component about the new evidence
 
       // Reset form
-      setName("");
       setOs("");
       setFile(null);
       setUploadProgress(null);
@@ -161,13 +159,6 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
                   required
                 />
               )}
-            />
-            <TextField
-              margin="dense"
-              label="Evidence Name"
-              fullWidth
-              value={name}
-              onChange={(e) => setName(e.target.value)}
             />
             <FormControl fullWidth margin="dense">
               <InputLabel id="os-select-label">Operating System</InputLabel>

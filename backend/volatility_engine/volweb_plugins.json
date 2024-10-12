@@ -1,0 +1,4 @@
+{
+  "windows": ["windows.info.Info", "windows.pstree.PsTree", "windows.iat.IAT"],
+  "linux": ["linux.pstree.PsTree"]
+}

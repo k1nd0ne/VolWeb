@@ -11,3 +11,6 @@ class VolatilityPlugin(models.Model):
     name = models.CharField(max_length=100)
     evidence = models.ForeignKey(Evidence, on_delete=models.CASCADE)
     artefacts = models.JSONField(null=True)
+
+    def __str__(self):
+        return str(self.name)

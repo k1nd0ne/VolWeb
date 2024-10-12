@@ -111,8 +111,8 @@ function EvidenceList({ evidences }: EvidenceListProps) {
         await axiosInstance.delete(`/api/evidences/${selectedEvidence.id}/`);
         setMessageHandlerMessage("Evidence deleted successfully");
         setMessageHandlerSeverity("success");
-        setEvidenceData(
-          evidences.filter((evidence) => evidence.id !== selectedEvidence.id),
+        setEvidenceData((prevData) =>
+          prevData.filter((evidence) => evidence.id !== selectedEvidence.id),
         );
       } catch {
         setMessageHandlerMessage("Error deleting evidence");
@@ -134,8 +134,8 @@ function EvidenceList({ evidences }: EvidenceListProps) {
       );
       setMessageHandlerMessage("Selected evidences deleted successfully");
       setMessageHandlerSeverity("success");
-      setEvidenceData(
-        evidences.filter((evidence) => !checked.includes(evidence.id)),
+      setEvidenceData((prevData) =>
+        prevData.filter((evidence) => !checked.includes(evidence.id)),
       );
       setChecked([]);
     } catch {
