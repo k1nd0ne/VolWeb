@@ -46,7 +46,6 @@ const EvidenceDetail: React.FC = () => {
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={value}
-          centered
           onChange={handleChange}
           aria-label="basic tabs example"
         >

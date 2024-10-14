@@ -1,4 +1,40 @@
 {
-  "windows": ["windows.info.Info", "windows.pstree.PsTree", "windows.iat.IAT"],
+  "windows": [
+    {
+      "name": "windows.info.Info",
+      "icon": "Info",
+      "description": "Displays basic information about the memory image."
+    },
+    {
+      "name": "windows.pstree.PsTree",
+      "icon": "AccountTree",
+      "description": "Shows a hierarchical process list (tree) similar to pstree on UNIX."
+    },
+    {
+      "name": "windows.iat.IAT",
+      "icon": "TableChart",
+      "description": "Lists the Import Address Table for processes."
+    },
+    {
+      "name": "windows.pslist.PsList",
+      "icon": "ListAlt",
+      "description": "Lists active processes using the PsActiveProcessHead method."
+    },
+    {
+      "name": "windows.dlllist.DllList",
+      "icon": "Widgets",
+      "description": "Lists the loaded modules for each process."
+    },
+    {
+      "name": "windows.cmdline.CmdLine",
+      "icon": "Terminal",
+      "description": "Shows command line arguments for each process."
+    },
+    {
+      "name": "windows.malfind.Malfind",
+      "icon": "BugReport",
+      "description": "Detects and highlights potentially malicious code in memory."
+    }
+  ],
   "linux": ["linux.pstree.PsTree"]
 }

@@ -9,6 +9,8 @@ class VolatilityPlugin(models.Model):
     """
 
     name = models.CharField(max_length=100)
+    icon = models.CharField(max_length=30, null=True)
+    description = models.TextField(null=True)
     evidence = models.ForeignKey(Evidence, on_delete=models.CASCADE)
     artefacts = models.JSONField(null=True)
 

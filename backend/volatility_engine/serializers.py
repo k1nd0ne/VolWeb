@@ -5,7 +5,7 @@ from .models import VolatilityPlugin
 class VolatilityPluginNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = VolatilityPlugin
-        fields = ["name"]
+        fields = ["name", "description", "icon"]
 
 
 class VolatilityPluginDetailSerializer(serializers.ModelSerializer):

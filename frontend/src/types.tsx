@@ -28,3 +28,26 @@ export interface CloudStorage {
   secret_key: string;
   region: string;
 }
+
+export interface ProcessInfo {
+  PID: number; // Process ID
+  PPID: number; // Parent Process ID
+  ImageFileName: string | null; // Executable file name
+  OffsetV: number | null; // Memory offset as a virtual address
+  Threads: number | null; // Number of threads
+  Handles: number | null; // Number of handles
+  SessionId: number | null; // Session ID, null if not applicable
+  Wow64: boolean | null; // 32-bit process on 64-bit Windows
+  CreateTime: string | null; // ISO string representing creation time
+  ExitTime: string | null; // ISO string representing exit time, null if not applicable
+}
+
+export interface PluginInfo {
+  pluginName: string;
+  icon: string;
+  description: string;
+}
+
+export interface PluginList {
+  plugins: Array<PluginInfo>;
+}

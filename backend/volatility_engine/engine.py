@@ -68,18 +68,22 @@ class VolatiltiyEngine:
                 self.evidence_data["bucket"]
             )
             # Construct plugins
-            for plugin_name in self.volweb_plugins[self.evidence.os]:
+            for plugin in self.volweb_plugins[self.evidence.os]:
                 try:
                     constructed = construct_plugin(
                         self.context,
                         self.automagics,
-                        self.volatility_plugins[plugin_name],
+                        self.volatility_plugins[plugin["name"]],
                         self.base_config_path,
                         MuteProgress(),
                         file_handler(""),
                     )
                     if constructed:
-                        self.constructed_plugins[plugin_name] = constructed
+                        self.constructed_plugins[plugin["name"]] = {
+                        "constructed": constructed,
+                        "description": plugin["description"],
+                        "icon": plugin["icon"]
+                        }
                 except UnsatisfiedException:
                     continue
         except Exception as e:
@@ -104,10 +108,10 @@ class VolatiltiyEngine:
             # Iterate over each compatible plugins and run them
             for plugin_name, constructed in self.constructed_plugins.items():
                 print(f"running plugin: {plugin_name}")
-                artefacts = self.run_plugin(constructed)
+                artefacts = self.run_plugin(constructed["constructed"])
                 # Create a VolatilityPlugin entry in the database
                 VolatilityPlugin(
-                    name=plugin_name, evidence=self.evidence, artefacts=artefacts
+                    name=plugin_name, description=constructed["description"], icon=constructed["icon"], evidence=self.evidence, artefacts=artefacts
                 ).save()
                 completed_task = completed_task + 1
                 self.evidence.status = (completed_task * 100) / len(
