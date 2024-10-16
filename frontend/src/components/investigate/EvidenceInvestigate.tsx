@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
 import PsTree from "./PsTree";
 import PluginDashboard from "./PluginDashboard";
 import ProcessMetadata from "./ProcessMetadata";
-import axiosInstance from "../../utils/axiosInstance";
 import { ProcessInfo } from "../../types";
+
 const EvidenceInvestigate: React.FC = () => {
-  const [processMetadata, setProcessMetadata] = useState<ProcessInfo | null>(
-    null,
+  const [processMetadata, setProcessMetadata] = useState<ProcessInfo>(
+    {} as ProcessInfo,
   );
 
   return (

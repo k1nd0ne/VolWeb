@@ -47,13 +47,14 @@ const ProcessMetadata: React.FC<ProcessMetadataProps> = ({
           <List dense={true}>
             {processMetadata ? (
               Object.entries(processMetadata).map(([key, value]) => (
-                <ListItem key={key}>
+                <ListItem key={key} sx={{ fontSize: "0.800rem" }}>
                   <ListItemText
                     primary={
                       <>
                         {`${key}: `}
                         <ValueText
                           className={key === "WoW64" && value ? "wow64" : ""}
+                          sx={{ fontSize: "0.800rem" }}
                         >
                           {value?.toString()}
                         </ValueText>

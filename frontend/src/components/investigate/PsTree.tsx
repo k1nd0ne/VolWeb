@@ -20,7 +20,7 @@ interface ProcessNode {
 }
 
 // Styled TreeItem component with dashed border for parent nodes
-const CustomTreeItem = styled(TreeItem)(() => ({
+const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
   [`& .${treeItemClasses.groupTransition}`]: {
     marginLeft: 1,
     paddingLeft: 12,
@@ -30,6 +30,9 @@ const CustomTreeItem = styled(TreeItem)(() => ({
     "& .close": {
       opacity: 0.3,
     },
+  },
+  [`& .MuiTreeItem-label`]: {
+    fontSize: "0.800rem !important",
   },
 }));
 
