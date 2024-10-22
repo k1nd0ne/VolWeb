@@ -1,40 +1,255 @@
 {
-  "windows": [
-    {
-      "name": "windows.info.Info",
-      "icon": "Info",
-      "description": "Displays basic information about the memory image."
+  "plugins": {
+    "windows": {
+      "volatility3.plugins.windows.info.Info": {
+        "icon": "Info",
+        "description": "Show OS & kernel details of the memory sample being analyzed.",
+        "category": "Other",
+        "display": "False"
+      },
+      "volatility3.plugins.windows.pstree.PsTree": {
+        "icon": "AccountTree",
+        "description": "Plugin for listing processes in a tree based on their parent process ID.",
+        "category": "Processes",
+        "display": "False"
+      },
+      "volatility3.plugins.windows.iat.IAT": {
+        "icon": "TableChart",
+        "description": "Extract Import Address Table to list API functions used by a program contained in external libraries.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.pslist.PsList": {
+        "icon": "ListAlt",
+        "description": "Lists the processes present in a particular windows memory image.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.dlllist.DllList": {
+        "icon": "Widgets",
+        "description": "Lists the loaded modules in a particular windows memory image.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.cmdline.CmdLine": {
+        "icon": "Terminal",
+        "description": "Lists process command line arguments.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.malfind.Malfind": {
+        "icon": "BugReport",
+        "description": "Lists process memory ranges that potentially contain injected code.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.cachedump.Cachedump": {
+        "icon": "VpnKey",
+        "description": "Dumps lsa secrets from memory.",
+        "category": "Security",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.callbacks.Callbacks": {
+        "icon": "Call",
+        "description": "Lists kernel callbacks and notification routines.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.devicetree.DeviceTree": {
+        "icon": "DeviceHub",
+        "description": "Listing tree based on drivers and attached devices in a particular windows memory image.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.driverirp.DriverIrp": {
+        "icon": "Usb",
+        "description": "List IRPs for drivers in a particular windows memory image.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.drivermodule.DriverModule": {
+        "icon": "Build",
+        "description": "Determines if any loaded drivers were hidden by a rootkit.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.driverscan.DriverScan": {
+        "icon": "Search",
+        "description": "Scans for drivers present in a particular windows memory image.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.envars.Envars": {
+        "icon": "Eco",
+        "description": "Display process environment variables.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.filescan.FileScan": {
+        "icon": "FolderOpen",
+        "description": "Scans for file objects present in a particular windows memory image.",
+        "category": "Filesystem",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.getservicesids.GetServiceSIDs": {
+        "icon": "AccountCircle",
+        "description": "Lists process token SIDs.",
+        "category": "Security",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.getsids.GetSIDs": {
+        "icon": "Fingerprint",
+        "description": "Print the SIDs owning each process.",
+        "category": "Security",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.hashdump.Hashdump": {
+        "icon": "Security",
+        "description": "Dumps user hashes from memory.",
+        "category": "Security",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.hollowprocesses.HollowProcesses": {
+        "icon": "VisibilityOff",
+        "description": "Lists hollowed processes.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.joblinks.JobLinks": {
+        "icon": "Link",
+        "description": "Print process job link information.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.ldrmodules.LdrModules": {
+        "icon": "Layers",
+        "description": "Lists the loaded modules in a particular windows memory image.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.lsadump.Lsadump": {
+        "icon": "Lock",
+        "description": "Dumps lsa secrets from memory.",
+        "category": "Security",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.mbrscan.MBRScan": {
+        "icon": "DiscFull",
+        "description": "Scans for and parses potential Master Boot Records (MBRs).",
+        "category": "Filesystem",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.modscan.ModScan": {
+        "icon": "FindReplace",
+        "description": "Scans for modules present in a particular windows memory image.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.modules.Modules": {
+        "icon": "Extension",
+        "description": "Lists the loaded kernel modules.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.mutantscan.MutantScan": {
+        "icon": "DoDisturb",
+        "description": "Scans for mutexes present in a particular windows memory image.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.netscan.NetScan": {
+        "icon": "WifiTethering",
+        "description": "Scans for network objects present in a particular windows memory image.",
+        "category": "Network",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.netstat.NetStat": {
+        "icon": "NetworkCheck",
+        "description": "Traverses network tracking structures present in a particular windows memory image.",
+        "category": "Network",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.privileges.Privs": {
+        "icon": "VerifiedUser",
+        "description": "Lists process token privileges.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.processghosting.ProcessGhosting": {
+        "icon": "Ghost",
+        "description": "Lists processes whose DeletePending bit is set or whose FILE_OBJECT is set to 0.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.psscan.PsScan": {
+        "icon": "Pageview",
+        "description": "Scans for processes present in a particular windows memory image.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.psxview.PsXView": {
+        "icon": "Visibility",
+        "description": "Lists all processes found via four methods described in 'The Art of Memory Forensics' to help identify hidden processes.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.skeleton_key_check.Skeleton_Key_Check": {
+        "icon": "Warning",
+        "description": "Looks for signs of Skeleton Key malware.",
+        "category": "Security",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.suspicious_threads.SupsiciousThreads": {
+        "icon": "VisibilityOff",
+        "description": "Lists suspicious userland process threads.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.symlinkscan.SymlinkScan": {
+        "icon": "Link",
+        "description": "Scans for links present in a particular windows memory image.",
+        "category": "Filesystem",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.thrdscan.ThrdScan": {
+        "icon": "LinearScale",
+        "description": "Scans for windows threads.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.threads.Threads": {
+        "icon": "Thread",
+        "description": "Lists process threads.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.timers.Timers": {
+        "icon": "Alarm",
+        "description": "Print kernel timers and associated module DPCs.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.truecrypt.Passphrase": {
+        "icon": "VpnKey",
+        "description": "TrueCrypt Cached Passphrase Finder.",
+        "category": "Security",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.unloadedmodules.UnloadedModules": {
+        "icon": "PowerOff",
+        "description": "Lists the unloaded kernel modules.",
+        "category": "Kernel",
+        "display": "True"
+      }
     },
-    {
-      "name": "windows.pstree.PsTree",
-      "icon": "AccountTree",
-      "description": "Shows a hierarchical process list (tree) similar to pstree on UNIX."
-    },
-    {
-      "name": "windows.iat.IAT",
-      "icon": "TableChart",
-      "description": "Lists the Import Address Table for processes."
-    },
-    {
-      "name": "windows.pslist.PsList",
-      "icon": "ListAlt",
-      "description": "Lists active processes using the PsActiveProcessHead method."
-    },
-    {
-      "name": "windows.dlllist.DllList",
-      "icon": "Widgets",
-      "description": "Lists the loaded modules for each process."
-    },
-    {
-      "name": "windows.cmdline.CmdLine",
-      "icon": "Terminal",
-      "description": "Shows command line arguments for each process."
-    },
-    {
-      "name": "windows.malfind.Malfind",
-      "icon": "BugReport",
-      "description": "Detects and highlights potentially malicious code in memory."
-    }
-  ],
-  "linux": ["linux.pstree.PsTree"]
+    "linux": [
+      {
+        "name": "volatility3.plugins.linux.pstree.PsTree",
+        "icon": "AccountTree",
+        "description": "Plugin for listing processes in a tree based on their parent process ID.",
+        "category": "Processes",
+        "display": "False"
+      }
+    ]
+  }
 }

@@ -1,14 +1,22 @@
-import datetime, hashlib, io, tempfile, os, stat, logging, volatility3, urllib.parse, s3fs
+from inspect import _empty
+from volatility_engine.models import VolatilityPlugin
+import datetime, hashlib, io, tempfile, os, stat, logging, volatility3, urllib.parse, s3fs, json
 from typing import Dict, Any, List, Tuple
 from volatility3.framework import interfaces
-from volatility3.cli import text_renderer
+from volatility3.framework.interfaces.context import ModuleInterface
+from volatility3.framework.interfaces.layers import (
+    DataLayerInterface,
+    TranslationLayerInterface,
+)
+from volatility3.cli.text_renderer import CLIRenderer, optional, quoted_optional, hex_bytes_as_text, display_disassembly, multitypedata_as_text
 from volatility3.framework.renderers import format_hints
 from backend.keyconfig import Secrets
 from evidences.models import Evidence
-from volatility3.framework import automagic, constants
+from volatility3.framework import automagic, constants, exceptions
 from volatility3.cli import MuteProgress
 from volatility3.framework.layers.cloudstorage import S3FileSystemHandler
 from typing import Optional
+
 
 
 logging.basicConfig(level=logging.INFO)
@@ -33,231 +41,6 @@ def fix_permissions(output_path):
 
 class GraphException(Exception):
     """Class to allow filtering of the graph generation errors"""
-
-
-def file_handler(output_dir):
-    class CLIFileHandler(interfaces.plugins.FileHandlerInterface):
-        """The FileHandler from Volatility3 CLI"""
-
-        def _get_final_filename(self):
-            """Gets the final filename"""
-            if output_dir is None:
-                raise TypeError("Output directory is not a string")
-            os.makedirs(output_dir, exist_ok=True)
-
-            pref_name_array = self.preferred_filename.split(".")
-            filename, extension = (
-                os.path.join(output_dir, ".".join(pref_name_array[:-1])),
-                pref_name_array[-1],
-            )
-            output_filename = f"{filename}.{extension}"
-
-            if os.path.exists(output_filename):
-                os.remove(output_filename)
-            return output_filename
-
-    class CLIDirectFileHandler(CLIFileHandler):
-        """We want to save our files directly to disk"""
-
-        def __init__(self, filename: str):
-            fd, self._name = tempfile.mkstemp(
-                suffix=".vol3", prefix="tmp_", dir=output_dir
-            )
-            self._file = io.open(fd, mode="w+b")
-            CLIFileHandler.__init__(self, filename)
-            for item in dir(self._file):
-                if not item.startswith("_") and not item in [
-                    "closed",
-                    "close",
-                    "mode",
-                    "name",
-                ]:
-                    setattr(self, item, getattr(self._file, item))
-
-        def __getattr__(self, item):
-            return getattr(self._file, item)
-
-        @property
-        def closed(self):
-            return self._file.closed
-
-        @property
-        def mode(self):
-            return self._file.mode
-
-        @property
-        def name(self):
-            return self._file.name
-
-        def close(self):
-            """Closes and commits the file (by moving the temporary file to the correct name"""
-            # Don't overcommit
-            if self._file.closed:
-                return
-
-            self._file.close()
-            output_filename = self._get_final_filename()
-            os.rename(self._name, output_filename)
-
-    return CLIDirectFileHandler
-
-
-# Inspired by the JsonRenderer class.
-class DictRendererPsTree(text_renderer.CLIRenderer):
-    """Directly inspired by the JsonRenderer rendered
-    Return : Dict of the plugin result.
-    """
-
-    _type_renderers = {
-        format_hints.HexBytes: text_renderer.quoted_optional(
-            text_renderer.hex_bytes_as_text
-        ),
-        interfaces.renderers.Disassembly: text_renderer.quoted_optional(
-            text_renderer.display_disassembly
-        ),
-        format_hints.MultiTypeData: text_renderer.quoted_optional(
-            text_renderer.multitypedata_as_text
-        ),
-        bytes: text_renderer.optional(lambda x: " ".join([f"{b:02x}" for b in x])),
-        datetime.datetime: lambda x: (
-            x.isoformat()
-            if not isinstance(x, interfaces.renderers.BaseAbsentValue)
-            else None
-        ),
-        "default": lambda x: x,
-    }
-
-    name = "JSON"
-    structured_output = True
-
-    def get_render_options(self) -> List[interfaces.renderers.RenderOption]:
-        pass
-
-    def render(self, grid: interfaces.renderers.TreeGrid):
-        final_output: Tuple[
-            Dict[str, List[interfaces.renderers.TreeNode]],
-            List[interfaces.renderers.TreeNode],
-        ] = ({}, [])
-
-        def visitor(
-            node: interfaces.renderers.TreeNode,
-            accumulator: Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]],
-        ) -> Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]:
-            # Nodes always have a path value, giving them a path_depth of at least 1, we use max just in case
-            acc_map, final_tree = accumulator
-            node_dict: Dict[str, Any] = {"__children": []}
-            depth = "*" * max(0, node.path_depth - 1) + (
-                "" if (node.path_depth <= 1) else " "
-            )
-            node_dict["level"] = depth
-            for column_index in range(len(grid.columns)):
-                column = grid.columns[column_index]
-                renderer = self._type_renderers.get(
-                    column.type, self._type_renderers["default"]
-                )
-                data = renderer(list(node.values)[column_index])
-                if isinstance(data, interfaces.renderers.BaseAbsentValue):
-                    data = None
-                node_dict[column.name] = data
-            if node.parent:
-                acc_map[node.parent.path]["__children"].append(node_dict)
-            else:
-                final_tree.append(node_dict)
-            acc_map[node.path] = node_dict
-
-            return (acc_map, final_tree)
-
-        if not grid.populated:
-            grid.populate(visitor, final_output)
-        else:
-            grid.visit(node=None, function=visitor, initial_accumulator=final_output)
-
-        return final_output[1]
-
-
-# Inspired by the JsonRenderer class.
-class DictRenderer(text_renderer.CLIRenderer):
-    _type_renderers = {
-        format_hints.HexBytes: text_renderer.quoted_optional(
-            text_renderer.hex_bytes_as_text
-        ),
-        interfaces.renderers.Disassembly: text_renderer.quoted_optional(
-            text_renderer.display_disassembly
-        ),
-        format_hints.MultiTypeData: text_renderer.quoted_optional(
-            text_renderer.multitypedata_as_text
-        ),
-        bytes: text_renderer.optional(lambda x: " ".join([f"{b:02x}" for b in x])),
-        datetime.datetime: lambda x: (
-            x.isoformat()
-            if not isinstance(x, interfaces.renderers.BaseAbsentValue)
-            else None
-        ),
-        "default": lambda x: x,
-    }
-
-    name = "JSON"
-    structured_output = True
-
-    def get_render_options(self) -> List[interfaces.renderers.RenderOption]:
-        pass
-
-    def render(self, grid: interfaces.renderers.TreeGrid):
-        final_output: Tuple[
-            Dict[str, List[interfaces.renderers.TreeNode]],
-            List[interfaces.renderers.TreeNode],
-        ] = ({}, [])
-
-        def visitor(
-            node: interfaces.renderers.TreeNode,
-            accumulator: Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]],
-        ) -> Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]:
-            # Nodes always have a path value, giving them a path_depth of at least 1, we use max just in case
-            acc_map, final_tree = accumulator
-            node_dict: Dict[str, Any] = {"__children": []}
-            for column_index in range(len(grid.columns)):
-                column = grid.columns[column_index]
-                renderer = self._type_renderers.get(
-                    column.type, self._type_renderers["default"]
-                )
-                data = renderer(list(node.values)[column_index])
-                if isinstance(data, interfaces.renderers.BaseAbsentValue):
-                    data = None
-                node_dict[column.name] = data
-            if node.parent:
-                acc_map[node.parent.path]["__children"].append(node_dict)
-            else:
-                final_tree.append(node_dict)
-            acc_map[node.path] = node_dict
-
-            return acc_map, final_tree
-
-        if not grid.populated:
-            grid.populate(visitor, final_output)
-        else:
-            grid.visit(node=None, function=visitor, initial_accumulator=final_output)
-
-        return final_output[1]
-
-
-def file_sha256(path):
-    """Compute memory image signature.
-    Args:
-        path: A string indicating the file path
-    Returns:
-        sh256 of the file
-    """
-    blocksize = 65536  # Read the file in 64kb chunks.
-    sha256 = hashlib.sha256()
-    try:
-        with open(path, "rb") as afile:
-            buf = afile.read(blocksize)
-            while len(buf) > 0:
-                sha256.update(buf)
-                buf = afile.read(blocksize)
-        return format(sha256.hexdigest())
-    except:
-        return "error"
 
 
 def generate_windows_network_graph(data):
@@ -403,4 +186,258 @@ def volweb_open(req: urllib.request.Request) -> Optional[Any]:
 
 
 S3FileSystemHandler.default_open = volweb_open
+constants.PLUGINS_PATH = constants.PLUGINS_PATH + [os.path.abspath("volatility_engine/plugins")]
 volatility3.symbols.__path__ = [os.path.abspath(f"media/")] + constants.SYMBOL_BASEPATHS
+
+
+def volweb_add_module(self, module: ModuleInterface) -> None:
+    """Adds a module to the module collection
+
+    This will throw an exception if the required dependencies are not met
+
+    Args:
+        module: the module to add to the list of modules (based on module.name)
+    """
+    if module.name in self._modules:
+        return
+    self._modules[module.name] = module
+
+
+def volweb_add_layer(self, layer: DataLayerInterface) -> None:
+    """Adds a layer to memory model.
+
+    This will throw an exception if the required dependencies are not met
+
+    Args:
+        layer: the layer to add to the list of layers (based on layer.name)
+    """
+    if layer.name in self._layers:
+        return
+    if isinstance(layer, TranslationLayerInterface):
+        missing_list = [
+            sublayer for sublayer in layer.dependencies if sublayer not in self._layers
+        ]
+        if missing_list:
+            raise exceptions.LayerException(
+                layer.name,
+                f"Layer {layer.name} has unmet dependencies: {', '.join(missing_list)}",
+            )
+    self._layers[layer.name] = layer
+
+
+class DjangoRenderer(CLIRenderer):
+    _type_renderers = {
+        format_hints.HexBytes: quoted_optional(hex_bytes_as_text),
+        interfaces.renderers.Disassembly: quoted_optional(display_disassembly),
+        format_hints.MultiTypeData: quoted_optional(multitypedata_as_text),
+        bytes: optional(lambda x: " ".join([f"{b:02x}" for b in x])),
+        datetime.datetime: lambda x: (
+            x.isoformat()
+            if not isinstance(x, interfaces.renderers.BaseAbsentValue)
+            else None
+        ),
+        "default": lambda x: x,
+    }
+    name = "JSON"
+    structured_output = True
+
+    def __init__(self, evidence_id: int, plugin):
+        self.evidence = Evidence.objects.get(id=evidence_id)
+        self.plugin = plugin
+
+    def get_render_options(self) -> List[interfaces.renderers.RenderOption]:
+        pass
+
+    def save_to_database(self, result):
+        """Outputs the Dict data to our django database"""
+        results = False
+        if result:
+            results = True
+
+        VolatilityPlugin(
+            name = self.plugin['name'],
+            icon = self.plugin['icon'],
+            description = self.plugin['description'],
+            evidence = self.evidence,
+            artefacts = result,
+            category = self.plugin['category'],
+            display = self.plugin['display'],
+            results = results
+        ).save()
+
+    def render(self, grid: interfaces.renderers.TreeGrid):
+        final_output: Tuple[
+            Dict[str, List[interfaces.renderers.TreeNode]],
+            List[interfaces.renderers.TreeNode],
+        ] = ({}, [])
+
+        def visitor(
+            node: interfaces.renderers.TreeNode,
+            accumulator: Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]],
+        ) -> Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]:
+            # Nodes always have a path value, giving them a path_depth of at least 1, we use max just in case
+            acc_map, final_tree = accumulator
+            node_dict: Dict[str, Any] = {"__children": []}
+            for column_index in range(len(grid.columns)):
+                column = grid.columns[column_index]
+                renderer = self._type_renderers.get(
+                    column.type, self._type_renderers["default"]
+                )
+                data = renderer(list(node.values)[column_index])
+                if isinstance(data, interfaces.renderers.BaseAbsentValue):
+                    data = None
+                node_dict[column.name] = data
+            if node.parent:
+                acc_map[node.parent.path]["__children"].append(node_dict)
+            else:
+                final_tree.append(node_dict)
+            acc_map[node.path] = node_dict
+
+            return (acc_map, final_tree)
+
+        try:
+            if not grid.populated:
+                grid.populate(visitor, final_output)
+            else:
+                grid.visit(node=None, function=visitor, initial_accumulator=final_output)
+            self.save_to_database(final_output[1])
+        except Exception as e:
+            logger.warning(f'A plugin could not be run: {e}')
+            self.save_to_database(None)
+
+class DictRenderer(CLIRenderer):
+    """
+    Same as JSONRenderer but not dumped into json
+    """
+    _type_renderers = {
+        format_hints.HexBytes: quoted_optional(
+            hex_bytes_as_text
+        ),
+        interfaces.renderers.Disassembly: quoted_optional(
+            display_disassembly
+        ),
+        format_hints.MultiTypeData: quoted_optional(
+            multitypedata_as_text
+        ),
+        bytes: optional(lambda x: " ".join([f"{b:02x}" for b in x])),
+        datetime.datetime: lambda x: (
+            x.isoformat()
+            if not isinstance(x, interfaces.renderers.BaseAbsentValue)
+            else None
+        ),
+        "default": lambda x: x,
+    }
+
+    name = "JSON"
+    structured_output = True
+
+    def get_render_options(self) -> List[interfaces.renderers.RenderOption]:
+        pass
+
+    def render(self, grid: interfaces.renderers.TreeGrid):
+        final_output: Tuple[
+            Dict[str, List[interfaces.renderers.TreeNode]],
+            List[interfaces.renderers.TreeNode],
+        ] = ({}, [])
+
+        def visitor(
+            node: interfaces.renderers.TreeNode,
+            accumulator: Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]],
+        ) -> Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]:
+            # Nodes always have a path value, giving them a path_depth of at least 1, we use max just in case
+            acc_map, final_tree = accumulator
+            node_dict: Dict[str, Any] = {"__children": []}
+            for column_index in range(len(grid.columns)):
+                column = grid.columns[column_index]
+                renderer = self._type_renderers.get(
+                    column.type, self._type_renderers["default"]
+                )
+                data = renderer(list(node.values)[column_index])
+                if isinstance(data, interfaces.renderers.BaseAbsentValue):
+                    data = None
+                node_dict[column.name] = data
+            if node.parent:
+                acc_map[node.parent.path]["__children"].append(node_dict)
+            else:
+                final_tree.append(node_dict)
+            acc_map[node.path] = node_dict
+
+            return acc_map, final_tree
+
+        if not grid.populated:
+            grid.populate(visitor, final_output)
+        else:
+            grid.visit(node=None, function=visitor, initial_accumulator=final_output)
+
+        return final_output[1]
+
+
+def file_handler(output_dir):
+    class CLIFileHandler(interfaces.plugins.FileHandlerInterface):
+        """The FileHandler from Volatility3 CLI"""
+
+        def _get_final_filename(self):
+            """Gets the final filename"""
+            if output_dir is None:
+                raise TypeError("Output directory is not a string")
+            os.makedirs(output_dir, exist_ok=True)
+
+            pref_name_array = self.preferred_filename.split(".")
+            filename, extension = (
+                os.path.join(output_dir, ".".join(pref_name_array[:-1])),
+                pref_name_array[-1],
+            )
+            output_filename = f"{filename}.{extension}"
+
+            if os.path.exists(output_filename):
+                os.remove(output_filename)
+            return output_filename
+
+    class CLIDirectFileHandler(CLIFileHandler):
+        """We want to save our files directly to disk"""
+
+        def __init__(self, filename: str):
+            fd, self._name = tempfile.mkstemp(
+                suffix=".vol3", prefix="tmp_", dir=output_dir
+            )
+            self._file = io.open(fd, mode="w+b")
+            CLIFileHandler.__init__(self, filename)
+            for item in dir(self._file):
+                if not item.startswith("_") and not item in [
+                    "closed",
+                    "close",
+                    "mode",
+                    "name",
+                ]:
+                    setattr(self, item, getattr(self._file, item))
+
+        def __getattr__(self, item):
+            return getattr(self._file, item)
+
+        @property
+        def closed(self):
+            return self._file.closed
+
+        @property
+        def mode(self):
+            return self._file.mode
+
+        @property
+        def name(self):
+            return self._file.name
+
+        def close(self):
+            """Closes and commits the file (by moving the temporary file to the correct name"""
+            # Don't overcommit
+            if self._file.closed:
+                return
+
+            self._file.close()
+            output_filename = self._get_final_filename()
+            os.rename(self._name, output_filename)
+
+    return CLIDirectFileHandler
+
+
+interfaces.context.ModuleContainer.add_module = volweb_add_module
+interfaces.layers.LayerContainer.add_layer = volweb_add_layer

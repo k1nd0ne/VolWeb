@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import { Case } from "../../types";
-import Box from "@mui/material/Box";
+import { Box, Typography } from "@mui/material/";
 import AddCaseDialog from "../../components/CaseCreationDialog";
 import CaseList from "../../components/CaseList";
 import MessageHandler from "../../components/MessageHandler";
@@ -50,7 +50,7 @@ const Cases: React.FC = () => {
   };
 
   return (
-    <Box sx={{ height: "80vh", width: "100%", transform: "translateZ(0px)" }}>
+    <Box>
       <CaseList cases={cases}></CaseList>
       <AddCaseDialog
         open={isAddDialogOpen}

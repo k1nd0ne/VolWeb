@@ -9,7 +9,7 @@ export default function LinearProgressWithLabel(
 ) {
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Box sx={{ width: "50px", mr: 1 }}>
+      <Box sx={{ width: "100px", mr: 1 }}>
         <LinearProgress variant="determinate" {...props} />
       </Box>
       <Box sx={{ minWidth: 35 }}>

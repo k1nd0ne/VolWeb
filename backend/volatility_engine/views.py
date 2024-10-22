@@ -23,6 +23,7 @@ class EvidencePluginsView(APIView):
                 {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
+
 class PluginArtefactsView(APIView):
     def get(self, request, evidence_id, plugin_name):
         try:
@@ -33,6 +34,10 @@ class PluginArtefactsView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Evidence.DoesNotExist:
-            return Response({"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         except VolatilityPlugin.DoesNotExist:
-            return Response({"error": "Plugin not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Plugin not found"}, status=status.HTTP_404_NOT_FOUND
+            )

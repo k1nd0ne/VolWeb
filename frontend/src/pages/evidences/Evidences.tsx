@@ -41,7 +41,7 @@ const EvidencePage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ height: "80vh", width: "100%", transform: "translateZ(0px)" }}>
+    <Box>
       <EvidenceList evidences={evidences}></EvidenceList>
       <MessageHandler
         open={isMessageOpen}

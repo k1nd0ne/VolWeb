@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import DataTable, { createTheme } from "react-data-table-component";
+import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
 import EvidenceCreationDialog from "./EvidenceCreationDialog";
@@ -23,33 +23,6 @@ import { Biotech } from "@mui/icons-material";
 import DeleteSweep from "@mui/icons-material/DeleteSweep";
 import Fab from "@mui/material/Fab";
 import DeleteIcon from "@mui/icons-material/Delete";
-
-createTheme(
-  "mui",
-  {
-    text: {
-      primary: "#fff",
-      secondary: "rgba(255, 255, 255, 0.7)",
-    },
-    background: {
-      default: "#121212",
-    },
-    context: {
-      background: "#121212",
-      text: "#FFFFFF",
-    },
-    divider: {
-      default: "rgba(255, 255, 255, 0.12)",
-    },
-    button: {
-      default: "#fff",
-      hover: "rgba(255, 255, 255, 0.08)",
-      focus: "rgba(255, 255, 255, 0.16)",
-      disabled: "rgba(255, 255, 255, 0.12)",
-    },
-  },
-  "dark",
-);
 
 interface Evidence {
   id: number;
@@ -81,7 +54,6 @@ function EvidenceList({ evidences }: EvidenceListProps) {
 
   useEffect(() => {
     setEvidenceData(evidences);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [evidences]);
 
   const handleCreateSuccess = (newEvidence: Evidence) => {
@@ -147,69 +119,79 @@ function EvidenceList({ evidences }: EvidenceListProps) {
     }
   };
 
-  const columns = [
+  const columns: GridColDef[] = [
     {
-      name: "Evidence Name",
-      selector: (row: Evidence) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
+      field: "name",
+      headerName: "Evidence Name",
+      renderCell: (params: GridRenderCellParams) => (
+        <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
           <Memory style={{ marginRight: 8 }} />
-          {row.name}
+          {params.value}
         </div>
       ),
-      sortable: true,
+      flex: 1,
     },
     {
-      name: "Operating System",
-      selector: (row: Evidence) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
+      field: "os",
+      headerName: "Operating System",
+      renderCell: (params: GridRenderCellParams) => (
+        <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
           <DeviceHub style={{ marginRight: 8 }} />
-          {row.os}
+          {params.value}
         </div>
       ),
-      sortable: true,
+      flex: 1,
     },
     {
-      name: "Status",
-      selector: (row: Evidence) =>
-        row.status !== 100 ? (
-          <LinearProgressWithLabel value={row.status} />
+      field: "status",
+      headerName: "Status",
+      renderCell: (params: GridRenderCellParams) =>
+        params.value !== 100 ? (
+          <div
+            style={{ display: "flex", alignItems: "center", height: "100%" }}
+          >
+            <LinearProgressWithLabel value={Number(params.value)} />
+          </div>
         ) : (
-          <Chip
-            label="success"
-            size="small"
-            color="success"
-            variant="outlined"
-          />
+          <div
+            style={{ display: "flex", alignItems: "center", height: "100%" }}
+          >
+            <Chip
+              label="success"
+              size="small"
+              color="success"
+              variant="outlined"
+            />
+          </div>
         ),
-      ignoreRowClick: true,
-      allowoverflow: true,
+      flex: 1,
     },
     {
-      name: "Actions",
-      cell: (row: Evidence) => (
-        <>
-          <Tooltip title="Review Investigation">
+      field: "actions",
+      headerName: "Actions",
+      renderCell: (params: GridRenderCellParams) => (
+        <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
+          <Tooltip title="Investigate">
             <IconButton
               edge="end"
               aria-label="open"
-              onClick={() => handleToggle(row.id)}
+              onClick={() => handleToggle(params.row.id)}
             >
               <Biotech />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete Evidence">
+          <Tooltip title="Delete">
             <IconButton
               edge="end"
               aria-label="delete"
-              onClick={() => handleDeleteClick(row)}
+              onClick={() => handleDeleteClick(params.row)}
             >
               <DeleteSweep />
             </IconButton>
           </Tooltip>
-        </>
+        </div>
       ),
-      ignoreRowClick: true,
-      allowoverflow: true,
+      flex: 1,
     },
   ];
 
@@ -232,16 +214,14 @@ function EvidenceList({ evidences }: EvidenceListProps) {
         }}
         onCreateSuccess={handleCreateSuccess}
       />
-      <DataTable
-        title="Evidences"
-        theme="mui"
+      <DataGrid
+        rowHeight={40}
+        disableRowSelectionOnClick
+        rows={evidenceData}
         columns={columns}
-        data={evidenceData}
-        pagination
-        selectableRows
-        onSelectedRowsChange={({ selectedRows }) => {
-          const selectedIds = selectedRows.map((row: Evidence) => row.id);
-          setChecked(selectedIds);
+        checkboxSelection
+        onRowSelectionModelChange={(newSelection) => {
+          setChecked(newSelection as number[]);
         }}
       />
       {checked.length > 0 && (

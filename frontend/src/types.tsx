@@ -42,12 +42,11 @@ export interface ProcessInfo {
   ExitTime: string | null; // ISO string representing exit time, null if not applicable
 }
 
-export interface PluginInfo {
-  pluginName: string;
+export interface Plugin {
+  name: string;
   icon: string;
   description: string;
-}
-
-export interface PluginList {
-  plugins: Array<PluginInfo>;
+  display: string;
+  category: string;
+  result: boolean;
 }

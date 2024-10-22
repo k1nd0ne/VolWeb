@@ -4,6 +4,9 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import EvicenceMetadata from "../../components/EvidenceMetadata";
 import EvidenceInvestigate from "../../components/investigate/EvidenceInvestigate";
+import HomeIcon from "@mui/icons-material/Home";
+import SearchIcon from "@mui/icons-material/Search";
+import TimelineIcon from "@mui/icons-material/Timeline";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -37,7 +40,7 @@ function a11yProps(index: number) {
 const EvidenceDetail: React.FC = () => {
   const [value, setValue] = React.useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
@@ -51,16 +54,22 @@ const EvidenceDetail: React.FC = () => {
         >
           <Tab
             label="Overview"
+            icon={<HomeIcon />}
+            iconPosition="start"
             {...a11yProps(0)}
             sx={{ fontSize: "0.75rem" }}
           />
           <Tab
             label="Investigate"
+            icon={<SearchIcon />}
+            iconPosition="start"
             {...a11yProps(1)}
             sx={{ fontSize: "0.75rem" }}
           />
           <Tab
             label="Timeliner"
+            icon={<TimelineIcon />}
+            iconPosition="start"
             {...a11yProps(2)}
             sx={{ fontSize: "0.75rem" }}
           />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DataTable, { createTheme } from "react-data-table-component";
+import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import {
   IconButton,
   Chip,
@@ -25,33 +25,6 @@ import { Case } from "../types";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-
-createTheme(
-  "mui",
-  {
-    text: {
-      primary: "#fff",
-      secondary: "rgba(255, 255, 255, 0.7)",
-    },
-    background: {
-      default: "#121212",
-    },
-    context: {
-      background: "#121212",
-      text: "#FFFFFF",
-    },
-    divider: {
-      default: "rgba(255, 255, 255, 0.12)",
-    },
-    button: {
-      default: "#fff",
-      hover: "rgba(255, 255, 255, 0.08)",
-      focus: "rgba(255, 255, 255, 0.16)",
-      disabled: "rgba(255, 255, 255, 0.12)",
-    },
-  },
-  "dark",
-);
 
 interface CaseListProps {
   cases: Case[];
@@ -136,53 +109,58 @@ function CaseList({ cases }: CaseListProps) {
     navigate(`/cases/${id}`);
   };
 
-  const columns = [
+  const columns: GridColDef[] = [
     {
-      name: "Case Name",
-      selector: (row: Case) => (
+      field: "name",
+      headerName: "Case Name",
+      renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Work style={{ marginRight: 8 }} />
-          {row.name}
+          {params.value}
         </div>
       ),
-      sortable: true,
+      flex: 1,
     },
     {
-      name: "Description",
-      selector: (row: Case) => (
+      field: "description",
+      headerName: "Description",
+      renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Info style={{ marginRight: 8 }} />
-          {row.description}
+          {params.value}
         </div>
       ),
-      sortable: true,
+      flex: 2,
     },
     {
-      name: "Bucket",
-      cell: (row: Case) => (
-        <Chip label={row.bucket_id} color="error" variant="outlined" />
+      field: "bucket_id",
+      headerName: "Bucket",
+      renderCell: (params: GridRenderCellParams) => (
+        <Chip label={params.value} color="error" variant="outlined" />
       ),
-      sortable: true,
+      flex: 1,
     },
     {
-      name: "Last Update",
-      selector: (row: Case) => (
+      field: "last_update",
+      headerName: "Last Update",
+      renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <CalendarToday style={{ marginRight: 8 }} />
-          {row.last_update}
+          {params.value}
         </div>
       ),
-      sortable: true,
+      flex: 1,
     },
     {
-      name: "Actions",
-      cell: (row: Case) => (
+      field: "actions",
+      headerName: "Actions",
+      renderCell: (params: GridRenderCellParams) => (
         <>
           <Tooltip title="Review case">
             <IconButton
               edge="end"
               aria-label="open"
-              onClick={() => handleToggle(row.id)}
+              onClick={() => handleToggle(params.row.id)}
             >
               <Biotech />
             </IconButton>
@@ -191,29 +169,28 @@ function CaseList({ cases }: CaseListProps) {
             <IconButton
               edge="end"
               aria-label="delete"
-              onClick={() => handleDeleteClick(row)}
+              onClick={() => handleDeleteClick(params.row)}
             >
               <DeleteSweep />
             </IconButton>
           </Tooltip>
         </>
       ),
-      ignoreRowClick: true,
-      allowoverflow: true,
+      sortable: false,
+      flex: 1,
     },
   ];
 
   return (
     <>
-      <DataTable
+      <DataGrid
+        rowHeight={40}
+        disableRowSelectionOnClick
         columns={columns}
-        title="Cases"
-        data={caseData}
-        theme="mui"
-        selectableRows
-        onSelectedRowsChange={({ selectedRows }) => {
-          const selectedIds = selectedRows.map((row: Case) => row.id);
-          setChecked(selectedIds);
+        rows={caseData}
+        checkboxSelection
+        onRowSelectionModelChange={(selection) => {
+          setChecked(selection as number[]);
         }}
       />
       <Fab
