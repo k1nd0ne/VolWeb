@@ -14,14 +14,14 @@ def start_extraction(evidence_id):
         engine = VolatiltiyEngine(instance)
         engine.start_extraction()
     else:
-        print("LINUX ENGINE START")
+        print("LINUX ENGINE TODO")
 
-
+@shared_task
 def start_timeliner(evidence_id):
     """
     This task is dedicated to generate the timeline.
     We seperate this because this could take a very long time
     """
     instance = Evidence.objects.get(id=evidence_id)
-    evidence_data = get_evidence_context(instance)
-    print("TIMELINER START")
+    engine = VolatiltiyEngine(instance)
+    engine.start_timeliner()

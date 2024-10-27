@@ -6,14 +6,14 @@ import volatility3
 from volatility3.cli import MuteProgress
 from volatility3.framework import contexts, automagic, constants
 from volatility3.framework.exceptions import UnsatisfiedException
-from .utils import DictRenderer, file_handler, volweb_open
+from .utils import DictRenderer, file_handler, volweb_open, DjangoRenderer
 from volatility3.framework.plugins import construct_plugin
 from volatility3.plugins.windows import (
     mftscan,
     ssdt,
 )
-from .plugins.windows.volweb import VolWeb
-
+from .plugins.windows.volweb_main import VolWebMain
+from .plugins.windows.volweb_misc import VolWebMisc
 
 volatility3.framework.require_interface_version(2, 0, 0)
 logger = logging.getLogger(__name__)
@@ -49,17 +49,10 @@ class VolatiltiyEngine:
             - Construct the plugin
             - Put the result inside the django database using our custom renderer
         """
+        plugin, metadata = plugin.popitem()
 
         self.context = contexts.Context()
         available_automagics = automagic.available(self.context)
-
-
-
-        # if self.evidence.os == "windows":
-        #     dummy_plugin = VolWeb # TODO Create a Windows and Linux Plugin
-        # else:
-        #     print("TODO")
-        #     exit(1)
 
         self.automagics = automagic.choose_automagic(
             available_automagics, plugin
@@ -70,14 +63,6 @@ class VolatiltiyEngine:
             )
         )
 
-        # self.automagics = automagic.choose_automagic(
-        #     available_automagics, VolWeb
-        # )
-        # self.context.config["automagic.LayerStacker.stackers"] = (
-        #     automagic.stacker.choose_os_stackers(
-        #         VolWeb
-        #     )
-        # )
         self.context.config["automagic.LayerStacker.single_location"] = (
             self.evidence_data["bucket"]
         )
@@ -95,16 +80,31 @@ class VolatiltiyEngine:
             file_handler(""),
         )
         if constructed:
-            result = DictRenderer().render(constructed.run())
-
+            result = DjangoRenderer(self.evidence.id, metadata).render(constructed.run())
 
     def start_windows_analysis(self):
         plugin_list = [
-            VolWeb,
-            mftscan.MFTScan,
-            ssdt.SSDT,
+            {
+                VolWebMain: {
+                  "icon": "AccountTree",
+                  "description": "VolWeb Main plugin executing many other plugins with automagics optimization",
+                  "category": "Other",
+                  "display": "False",
+                  "name": "VolWebMain"
+                }
+            },
+            {
+                VolWebMisc: {
+                  "icon": "AccountTree",
+                  "description": "VolWeb Misc plugin executing other plugins that are sharing the same requirements with automagics optimization",
+                  "category": "Other",
+                  "display": "False",
+                  "name": "VolWebMisc"
+                }
+            },
         ]
         for plugin in plugin_list:
+            logger.info(f"RUNNING PLUGIN: {plugin}")
             self.run_plugin(plugin)
 
     def start_extraction(self):
@@ -114,5 +114,12 @@ class VolatiltiyEngine:
             completed_task = 0
             if self.evidence.os == "windows":
                 self.start_windows_analysis()
-        except Exception as e:
-            logger.error(f"An error occurred during extraction: {str(e)}")
+        except UnsatisfiedException as e:
+            logger.info(f"Unsatisfied requirements: {str(e)}")
+
+    def start_timeliner(self):
+        try:
+            logger.info('Starting timeliner')
+            self.start_timeliner()
+        except:
+            logger.info("Could not execute the timeliner plugin")

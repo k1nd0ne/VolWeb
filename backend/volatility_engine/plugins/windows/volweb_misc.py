@@ -8,10 +8,11 @@ from volatility3.framework.configuration import requirements
 from volatility3.framework.renderers import TreeGrid
 from volatility_engine.utils import DjangoRenderer
 from volatility_engine.models import VolatilityPlugin
+from volatility3.plugins import yarascan
 
 vollog = logging.getLogger(__name__)
 
-class VolWeb(plugins.PluginInterface):
+class VolWebMisc(plugins.PluginInterface):
     _required_framework_version = (2, 0, 0)
     _version = (1, 0, 0)
 
@@ -22,11 +23,11 @@ class VolWeb(plugins.PluginInterface):
     @classmethod
     def get_requirements(cls):
         return [
-            requirements.ModuleRequirement(
-                name="kernel",
-                description="Windows kernel",
+            requirements.TranslationLayerRequirement(
+                name="primary",
+                description="Memory layer for the kernel",
                 architectures=["Intel32", "Intel64"],
-            ),
+            )
         ]
 
     def dynamic_import(self, module_name):
@@ -35,7 +36,7 @@ class VolWeb(plugins.PluginInterface):
         return getattr(module, class_name)
 
     def run_all(self):
-        volweb_plugins = self.load_plugin_info("volatility_engine/volweb_plugins.json")
+        volweb_plugins = self.load_plugin_info("volatility_engine/volweb_misc.json")
         instances = {}
         for plugin, details in volweb_plugins.items():
             try:

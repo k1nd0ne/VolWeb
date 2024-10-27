@@ -8,6 +8,7 @@ from volatility3.framework.interfaces.layers import (
     DataLayerInterface,
     TranslationLayerInterface,
 )
+from volatility3.framework.configuration import requirements
 from volatility3.cli.text_renderer import CLIRenderer, optional, quoted_optional, hex_bytes_as_text, display_disassembly, multitypedata_as_text
 from volatility3.framework.renderers import format_hints
 from backend.keyconfig import Secrets
@@ -15,9 +16,8 @@ from evidences.models import Evidence
 from volatility3.framework import automagic, constants, exceptions
 from volatility3.cli import MuteProgress
 from volatility3.framework.layers.cloudstorage import S3FileSystemHandler
+from volatility3.plugins.windows import modules, ssdt
 from typing import Optional
-
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -183,11 +183,6 @@ def volweb_open(req: urllib.request.Request) -> Optional[Any]:
         except Evidence.DoesNotExist:
             return s3fs.S3FileSystem().open(object_uri)
     return None
-
-
-S3FileSystemHandler.default_open = volweb_open
-constants.PLUGINS_PATH = constants.PLUGINS_PATH + [os.path.abspath("volatility_engine/plugins")]
-volatility3.symbols.__path__ = [os.path.abspath(f"media/")] + constants.SYMBOL_BASEPATHS
 
 
 def volweb_add_module(self, module: ModuleInterface) -> None:
@@ -438,6 +433,7 @@ def file_handler(output_dir):
 
     return CLIDirectFileHandler
 
-
-interfaces.context.ModuleContainer.add_module = volweb_add_module
-interfaces.layers.LayerContainer.add_layer = volweb_add_layer
+S3FileSystemHandler.default_open = volweb_open # This is to set the correct AWS endpoint url when the source bucket is of type AWS.
+volatility3.symbols.__path__ = [os.path.abspath(f"media/")] + constants.SYMBOL_BASEPATHS # This is to include the volweb symbols imported by the users.
+interfaces.context.ModuleContainer.add_module = volweb_add_module # A module requirement already present is throwing an exeception, we don't want this.
+interfaces.layers.LayerContainer.add_layer = volweb_add_layer # An already present layer is throwing an exception, we don't want this either.

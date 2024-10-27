@@ -1,6 +1,66 @@
 {
   "plugins": {
     "windows": {
+      "volatility3.plugins.windows.svcscan.SvcScan": {
+        "icon": "Scanner",
+        "description": "Scans for windows services.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.registry.userassist.UserAssist": {
+        "icon": "PersonSearch",
+        "description": "Print userassist registry keys and information.",
+        "category": "Registry",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.sessions.Sessions": {
+        "icon": "Session",
+        "description": "Lists Processes with Session information extracted from Environmental Variables.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.shimcachemem.ShimcacheMem": {
+        "icon": "HistoryToggleOff",
+        "description": "Reads Shimcache entries from the ahcache.sys AVL tree.",
+        "category": "Filesystem",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.svcdiff.SvcDiff": {
+        "icon": "SyncProblem",
+        "description": "Compares services found through list walking versus scanning to find rootkits.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.svclist.SvcList": {
+        "icon": "PlaylistAddCheck",
+        "description": "Lists services contained with the services.exe doubly linked list of services.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.registry.hivelist.HiveList": {
+        "icon": "Settings",
+        "description": "Lists the registry hives present in a particular memory image.",
+        "category": "Registry",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.registry.hivescan.HiveScan": {
+        "icon": "Search",
+        "description": "Scans for registry hives present in a particular windows memory image.",
+        "category": "Registry",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.registry.certificates.Certificates": {
+        "icon": "VerifiedUser",
+        "description": "Lists the certificates in the registry's Certificate Store.",
+        "category": "Registry",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.ssdt.SSDT": {
+        "icon": "TableChart",
+        "description": "Show the System Service Descriptor Table",
+        "category": "Kernel",
+        "display": "True"
+      },
       "volatility3.plugins.windows.info.Info": {
         "icon": "Info",
         "description": "Show OS & kernel details of the memory sample being analyzed.",
@@ -41,7 +101,7 @@
         "icon": "BugReport",
         "description": "Lists process memory ranges that potentially contain injected code.",
         "category": "Malware",
-        "display": "True"
+        "display": "False"
       },
       "volatility3.plugins.windows.cachedump.Cachedump": {
         "icon": "VpnKey",
@@ -244,11 +304,13 @@
     },
     "linux": [
       {
-        "name": "volatility3.plugins.linux.pstree.PsTree",
-        "icon": "AccountTree",
-        "description": "Plugin for listing processes in a tree based on their parent process ID.",
-        "category": "Processes",
-        "display": "False"
+        "volatility3.plugins.linux.pstree.PsTree": {
+          "name": "volatility3.plugins.linux.pstree.PsTree",
+          "icon": "AccountTree",
+          "description": "Plugin for listing processes in a tree based on their parent process ID.",
+          "category": "Processes",
+          "display": "False"
+        }
       }
     ]
   }
