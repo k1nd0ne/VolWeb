@@ -144,21 +144,21 @@ def build_timeline(data):
     nb_event = 1
     actual_date = ""
     try:
+        print(data)
         saved_date = data[0]["Created Date"]
     except:
         raise GraphException("Could not generate timeline graph")
     for i in data:
-        if i["Plugin"] != "MFTScan":
-            try:
-                actual_date = str(i["Created Date"])
-                if actual_date != saved_date:
-                    timeline.append([saved_date, nb_event])
-                    saved_date = actual_date
-                    nb_event = 1
-                else:
-                    nb_event += 1
-            except:
-                raise GraphException("Could not generate timeline graph")
+        try:
+            actual_date = str(i["Created Date"])
+            if actual_date != saved_date:
+                timeline.append([saved_date, nb_event])
+                saved_date = actual_date
+                nb_event = 1
+            else:
+                nb_event += 1
+        except:
+            raise GraphException("Could not generate timeline graph")
     return timeline
 
 
@@ -299,6 +299,7 @@ class DjangoRenderer(CLIRenderer):
         except Exception as e:
             logger.warning(f'A plugin could not be run: {e}')
             self.save_to_database(None)
+        return final_output[1]
 
 class DictRenderer(CLIRenderer):
     """

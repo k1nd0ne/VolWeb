@@ -9,4 +9,3 @@ from evidences.tasks import start_extraction, start_timeliner
 def send_evidence_created(sender, instance, created, **kwargs):
     if created:
         start_extraction.apply_async(args=[instance.id])
-        # start_timeliner.apply_async(args=[instance.id])

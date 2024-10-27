@@ -6,12 +6,9 @@ import volatility3
 from volatility3.cli import MuteProgress
 from volatility3.framework import contexts, automagic, constants
 from volatility3.framework.exceptions import UnsatisfiedException
-from .utils import DictRenderer, file_handler, volweb_open, DjangoRenderer
+from .utils import DictRenderer, file_handler, volweb_open, DjangoRenderer, build_timeline
 from volatility3.framework.plugins import construct_plugin
-from volatility3.plugins.windows import (
-    mftscan,
-    ssdt,
-)
+from volatility3.plugins import timeliner
 from .plugins.windows.volweb_main import VolWebMain
 from .plugins.windows.volweb_misc import VolWebMisc
 
@@ -81,6 +78,8 @@ class VolatiltiyEngine:
         )
         if constructed:
             result = DjangoRenderer(self.evidence.id, metadata).render(constructed.run())
+            return result
+        return None
 
     def start_windows_analysis(self):
         plugin_list = [
@@ -104,8 +103,33 @@ class VolatiltiyEngine:
             },
         ]
         for plugin in plugin_list:
-            logger.info(f"RUNNING PLUGIN: {plugin}")
+            logger.debug(f"RUNNING PLUGIN: {plugin}")
             self.run_plugin(plugin)
+
+
+    def timeliner(self):
+        timeliner_plugin = {
+            timeliner.Timeliner: {
+            "icon": "None",
+            "description": "VolWeb Main plugin executing many other plugins with automagics optimization",
+            "category": "Other",
+            "display": "False",
+            "name": "volatility3.plugins.timeliner.Timeliner"
+            }
+        }
+        result = self.run_plugin(timeliner_plugin)
+        if result:
+            graph = build_timeline(result)
+            VolatilityPlugin(
+                name = "volatility3.plugins.timeliner.TimelinerGraph",
+                icon = "None",
+                description = "None",
+                evidence = self.evidence,
+                artefacts = graph,
+                category = "Timeline",
+                display = "False",
+                results = True
+            ).save()
 
     def start_extraction(self):
         try:
@@ -115,11 +139,8 @@ class VolatiltiyEngine:
             if self.evidence.os == "windows":
                 self.start_windows_analysis()
         except UnsatisfiedException as e:
-            logger.info(f"Unsatisfied requirements: {str(e)}")
+            logger.warning(f"Unsatisfied requirements: {str(e)}")
 
     def start_timeliner(self):
-        try:
-            logger.info('Starting timeliner')
-            self.start_timeliner()
-        except:
-            logger.info("Could not execute the timeliner plugin")
+        logger.info('Starting timeliner')
+        self.timeliner()

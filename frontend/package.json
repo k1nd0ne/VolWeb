@@ -19,8 +19,10 @@
     "@mui/material": "^6.1.1",
     "@mui/x-data-grid": "^7.20.0",
     "@mui/x-tree-view": "^7.20.0",
+    "apexcharts": "^3.54.1",
     "axios": "^1.7.7",
     "react": "^18.3.1",
+    "react-apexcharts": "^1.4.4",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2"
   },
