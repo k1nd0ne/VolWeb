@@ -54,3 +54,40 @@ export interface Plugin {
 export interface Artefact {
     [key: string]: any;
 }
+
+export interface Connection {
+    __children: any[];
+    Offset: number;
+    Proto: string;
+    LocalAddr: string;
+    LocalPort: number;
+    ForeignAddr: string;
+    ForeignPort: number;
+    State: string;
+    PID: number;
+    Owner: string;
+    Created: string;
+    id: number;
+}
+
+// Define the structure of a graph node
+interface GraphNode {
+    id: string;
+    label: string;
+    x: number;
+    y: number;
+    size: number;
+}
+
+// Define the structure of a graph edge
+interface GraphEdge {
+    id: string;
+    source: string;
+    target: string;
+    label: string;
+}
+
+export interface GraphData {
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+}

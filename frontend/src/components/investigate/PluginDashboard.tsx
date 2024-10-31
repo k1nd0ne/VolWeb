@@ -21,7 +21,12 @@ import axiosInstance from "../../utils/axiosInstance";
 import * as Icons from "@mui/icons-material";
 import PluginDataGrid from "./PluginDataGrid";
 import { Plugin } from "../../types";
-
+import Malfind from "./Malfind";
+import HiveList from "./HiveList";
+import FileScan from "./Filescan";
+import UserAssist from "./Userassists";
+import DeviceTree from "./DeviceTree";
+import NetGraph from "./NetGraph";
 const PluginDashboard: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [plugins, setPlugins] = useState<Plugin[] | null>(null);
@@ -112,7 +117,7 @@ const PluginDashboard: React.FC = () => {
                             Tools
                         </Typography>
                         <Divider sx={{ marginBottom: 1 }} />
-                        <Grid container spacing={2}>
+                        <Grid container spacing={1}>
                             {Object.keys(groupedPlugins).map((category) => (
                                 <Grid size={12} key={category}>
                                     <Typography
@@ -123,6 +128,18 @@ const PluginDashboard: React.FC = () => {
                                         {category}
                                     </Typography>
                                     <Grid container spacing={1}>
+                                        {/* Here we insert our custom components */}
+                                        {category === "Filesystem" && (
+                                            <FileScan />
+                                        )}
+                                        {category === "Registry" && (
+                                            <HiveList />
+                                        )}
+                                        {category === "Kernel" && (
+                                            <DeviceTree />
+                                        )}
+                                        {category === "Malware" && <Malfind />}
+                                        {category === "Network" && <NetGraph />}
                                         {groupedPlugins[category].map(
                                             (plugin) => {
                                                 const iconName = plugin.icon;

@@ -4,7 +4,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import { Button, Tooltip } from "@mui/material";
 
 import { BugReportRounded } from "@mui/icons-material";
-const Malfind: React.FC = () => {
+const HiveList: React.FC = () => {
     return (
         <Tooltip title={"Test"} arrow key={"Malfind"} placement="top">
             <span>
@@ -28,4 +28,4 @@ const Malfind: React.FC = () => {
     );
 };
 
-export default Malfind;
+export default HiveList;
