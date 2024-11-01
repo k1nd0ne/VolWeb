@@ -1,20 +1,15 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { FC, useEffect, useMemo } from "react";
 import { MultiDirectedGraph as MultiGraphConstructor } from "graphology";
 import EdgeCurveProgram, {
   DEFAULT_EDGE_CURVATURE,
   indexParallelEdgesIndex,
 } from "@sigma/edge-curve";
 import { EdgeArrowProgram } from "sigma/rendering";
-import {
-  SigmaContainer,
-  useLoadGraph,
-  useRegisterEvents,
-  useSigma,
-} from "@react-sigma/core";
+import { SigmaContainer, useLoadGraph, useSigma } from "@react-sigma/core";
 import { useLayoutCircular } from "@react-sigma/layout-circular";
 import "@react-sigma/core/lib/react-sigma.min.css";
 
-import { Connection } from "../../types";
+import { Connection } from "../../../../types";
 
 type NetworkGraphProps = {
   data: Connection[];
@@ -42,9 +37,7 @@ const NetworkGraphInner: FC<NetworkGraphProps> = ({ data }) => {
   const { assign } = useLayoutCircular();
   // Hook to load the graph
   const loadGraph = useLoadGraph();
-  const registerEvents = useRegisterEvents();
   const sigma = useSigma();
-  const [draggedNode, setDraggedNode] = useState<string | null>(null);
 
   useEffect(() => {
     // Create a new graph instance
@@ -118,34 +111,7 @@ const NetworkGraphInner: FC<NetworkGraphProps> = ({ data }) => {
 
     // Apply the circular layout
     assign();
-
-    // Register the drag and drop events
-    registerEvents({
-      downNode: (e) => {
-        setDraggedNode(e.node);
-        sigma.getGraph().setNodeAttribute(e.node, "highlighted", true);
-      },
-      mousemovebody: (e) => {
-        if (!draggedNode) return;
-        const pos = sigma.viewportToGraph(e);
-        sigma.getGraph().setNodeAttribute(draggedNode, "x", pos.x);
-        sigma.getGraph().setNodeAttribute(draggedNode, "y", pos.y);
-
-        e.preventSigmaDefault();
-        e.original.preventDefault();
-        e.original.stopPropagation();
-      },
-      mouseup: () => {
-        if (draggedNode) {
-          setDraggedNode(null);
-          sigma.getGraph().removeNodeAttribute(draggedNode, "highlighted");
-        }
-      },
-      mousedown: () => {
-        if (!sigma.getCustomBBox()) sigma.setCustomBBox(sigma.getBBox());
-      },
-    });
-  }, [assign, loadGraph, registerEvents, sigma, data, draggedNode]);
+  }, [assign, loadGraph, sigma, data]);
 
   return null;
 };
@@ -156,6 +122,7 @@ const NetworkGraph: FC<NetworkGraphProps> = ({ data }) => {
       allowInvalidContainer: true,
       renderEdgeLabels: true,
       defaultEdgeType: "straight",
+
       edgeProgramClasses: {
         straight: EdgeArrowProgram,
         curved: EdgeCurveProgram,

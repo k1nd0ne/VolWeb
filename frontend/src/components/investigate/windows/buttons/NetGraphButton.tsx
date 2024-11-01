@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "../../../../utils/axiosInstance";
 import {
   Button,
   Tooltip,
@@ -8,13 +8,14 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import NetworkGraph from "./NetworkGraph";
+import NetworkGraph from "../components/NetworkGraph";
 import { BugReportRounded } from "@mui/icons-material";
-import { Connection } from "../../types";
+import { Connection } from "../../../../types";
 
-const NetGraph: React.FC = () => {
+const NetGraphButton: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<Connection[]>([]);
@@ -41,11 +42,10 @@ const NetGraph: React.FC = () => {
 
   return (
     <>
-      <Tooltip title={"NetGraph"} arrow key={"Malfind"} placement="top">
+      <Tooltip title={"NetGraph"} arrow key={"NetGraph"} placement="top">
         <span>
           <Button
             color={"info"}
-            value={"plugin.name"}
             variant="outlined"
             size="small"
             onClick={handleOpen}
@@ -74,7 +74,7 @@ const NetGraph: React.FC = () => {
         }}
       >
         <DialogTitle>
-          "Network Graph"
+          Network Graph
           <IconButton
             edge="end"
             color="inherit"
@@ -85,6 +85,7 @@ const NetGraph: React.FC = () => {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
+        <Divider sx={{ marginBottom: 1 }} />
         <DialogContent>
           <NetworkGraph data={data} />
         </DialogContent>
@@ -93,4 +94,4 @@ const NetGraph: React.FC = () => {
   );
 };
 
-export default NetGraph;
+export default NetGraphButton;
