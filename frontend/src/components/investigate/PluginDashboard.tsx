@@ -23,7 +23,6 @@ import { Plugin } from "../../types";
 import MalfindButton from "./windows/buttons/MalfindButton";
 import HiveList from "./windows/buttons/HiveList";
 import FileScan from "./windows/buttons/Filescan";
-import UserAssist from "./windows/buttons/Userassists";
 import DeviceTree from "./windows/buttons/DeviceTree";
 import NetGraphButton from "./windows/buttons/NetGraphButton";
 const PluginDashboard: React.FC = () => {
@@ -130,8 +129,6 @@ const PluginDashboard: React.FC = () => {
                     {/* Here we insert our custom components */}
                     {category === "Filesystem" && <FileScan />}
                     {category === "Registry" && <HiveList />}
-                    {category === "Registry" && <UserAssist />}
-                    {category === "Kernel" && <DeviceTree />}
                     {category === "Malware" && <MalfindButton />}
                     {category === "Network" && <NetGraphButton />}
                     {groupedPlugins[category].map((plugin) => {

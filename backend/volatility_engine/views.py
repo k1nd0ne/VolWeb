@@ -10,6 +10,7 @@ from .serializers import (
 from evidences.tasks import start_timeliner
 from dateutil.parser import parse as parse_date
 
+
 class EvidencePluginsView(APIView):
     def get(self, request, evidence_id):
         try:
@@ -52,8 +53,8 @@ class PluginArtefactsView(APIView):
             artefacts = plugin.artefacts or []
 
             # Get start and end timestamps from query parameters
-            start_timestamp = request.query_params.get('start')
-            end_timestamp = request.query_params.get('end')
+            start_timestamp = request.query_params.get("start")
+            end_timestamp = request.query_params.get("end")
 
             # Parse and filter artefacts by the created date range
             if start_timestamp and end_timestamp:
@@ -61,14 +62,17 @@ class PluginArtefactsView(APIView):
                 end_date = parse_date(end_timestamp)
 
                 filtered_artefacts = [
-                    artefact for artefact in artefacts
+                    artefact
+                    for artefact in artefacts
                     if artefact.get("Created Date")
                     and start_date <= parse_date(artefact["Created Date"]) <= end_date
                 ]
             else:
                 filtered_artefacts = artefacts
 
-            serializer = VolatilityPluginDetailSerializer({'name': plugin.name, 'artefacts': filtered_artefacts})
+            serializer = VolatilityPluginDetailSerializer(
+                {"name": plugin.name, "artefacts": filtered_artefacts}
+            )
 
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -83,13 +87,15 @@ class PluginArtefactsView(APIView):
         except ValueError as e:
             # Handle parsing errors from dates
             return Response(
-                {"error": f"Invalid date format: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": f"Invalid date format: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
+
 
 class TimelinerTask(APIView):
     def post(self, request):
         try:
-            evidence_id = request.data.get('id')
+            evidence_id = request.data.get("id")
             evidence = Evidence.objects.get(id=evidence_id)
             start_timeliner.apply_async(args=[evidence.id])
             return Response(status=status.HTTP_200_OK)

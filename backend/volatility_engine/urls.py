@@ -1,5 +1,10 @@
 from django.urls import path
-from .views import EvidencePluginsView, PluginArtefactsView, TimelinerArtefactsView, TimelinerTask
+from .views import (
+    EvidencePluginsView,
+    PluginArtefactsView,
+    TimelinerArtefactsView,
+    TimelinerTask,
+)
 
 urlpatterns = [
     path(
@@ -12,6 +17,9 @@ urlpatterns = [
         PluginArtefactsView.as_view(),
         name="evidence-plugin-artefacts",
     ),
-    path('evidence/<int:evidence_id>/plugin/<str:plugin_name>/artefacts/', TimelinerArtefactsView.as_view()),
-    path('evidence/tasks/timeliner/',  TimelinerTask.as_view())
+    path(
+        "evidence/<int:evidence_id>/plugin/<str:plugin_name>/artefacts/",
+        TimelinerArtefactsView.as_view(),
+    ),
+    path("evidence/tasks/timeliner/", TimelinerTask.as_view()),
 ]

@@ -12,12 +12,13 @@ from volatility3.plugins import yarascan
 
 vollog = logging.getLogger(__name__)
 
+
 class VolWebMisc(plugins.PluginInterface):
     _required_framework_version = (2, 0, 0)
     _version = (1, 0, 0)
 
     def load_plugin_info(self, json_file_path):
-        with open(json_file_path, 'r') as file:
+        with open(json_file_path, "r") as file:
             return json.load(file).get("plugins", {}).get("windows", [])
 
     @classmethod
@@ -31,7 +32,7 @@ class VolWebMisc(plugins.PluginInterface):
         ]
 
     def dynamic_import(self, module_name):
-        module_path, class_name = module_name.rsplit('.', 1)
+        module_path, class_name = module_name.rsplit(".", 1)
         module = importlib.import_module(module_path)
         return getattr(module, class_name)
 
@@ -42,17 +43,20 @@ class VolWebMisc(plugins.PluginInterface):
             try:
                 plugin_class = self.dynamic_import(plugin)
                 instances[plugin] = {
-                 "class": plugin_class(self.context, self.config_path),
-                 "details": details
+                    "class": plugin_class(self.context, self.config_path),
+                    "details": details,
                 }
-                instances[plugin]['details']['name'] = plugin
+                instances[plugin]["details"]["name"] = plugin
             except ImportError as e:
                 vollog.error(f"Could not import {plugin}: {e}")
 
         for name, plugin in instances.items():
             vollog.info(f"RUNNING: {name}")
-            self._grid = plugin['class'].run()
-            renderer = DjangoRenderer(evidence_id=self.context.config["VolWeb.Evidence"],plugin=plugin['details'])
+            self._grid = plugin["class"].run()
+            renderer = DjangoRenderer(
+                evidence_id=self.context.config["VolWeb.Evidence"],
+                plugin=plugin["details"],
+            )
             renderer.render(self._grid)
 
     def _generator(self):

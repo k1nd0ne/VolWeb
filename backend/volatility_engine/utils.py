@@ -9,7 +9,14 @@ from volatility3.framework.interfaces.layers import (
     TranslationLayerInterface,
 )
 from volatility3.framework.configuration import requirements
-from volatility3.cli.text_renderer import CLIRenderer, optional, quoted_optional, hex_bytes_as_text, display_disassembly, multitypedata_as_text
+from volatility3.cli.text_renderer import (
+    CLIRenderer,
+    optional,
+    quoted_optional,
+    hex_bytes_as_text,
+    display_disassembly,
+    multitypedata_as_text,
+)
 from volatility3.framework.renderers import format_hints
 from backend.keyconfig import Secrets
 from evidences.models import Evidence
@@ -250,14 +257,14 @@ class DjangoRenderer(CLIRenderer):
             results = True
 
         VolatilityPlugin(
-            name = self.plugin['name'],
-            icon = self.plugin['icon'],
-            description = self.plugin['description'],
-            evidence = self.evidence,
-            artefacts = result,
-            category = self.plugin['category'],
-            display = self.plugin['display'],
-            results = results
+            name=self.plugin["name"],
+            icon=self.plugin["icon"],
+            description=self.plugin["description"],
+            evidence=self.evidence,
+            artefacts=result,
+            category=self.plugin["category"],
+            display=self.plugin["display"],
+            results=results,
         ).save()
 
     def render(self, grid: interfaces.renderers.TreeGrid):
@@ -294,27 +301,24 @@ class DjangoRenderer(CLIRenderer):
             if not grid.populated:
                 grid.populate(visitor, final_output)
             else:
-                grid.visit(node=None, function=visitor, initial_accumulator=final_output)
-            self.save_to_database(final_output[1])
+                grid.visit(
+                    node=None, function=visitor, initial_accumulator=final_output
+                )
         except Exception as e:
-            logger.warning(f'A plugin could not be run: {e}')
-            self.save_to_database(None)
+            logger.warning(f"Could not run plugin: {e}")
+        self.save_to_database(final_output[1])
         return final_output[1]
+
 
 class DictRenderer(CLIRenderer):
     """
     Same as JSONRenderer but not dumped into json
     """
+
     _type_renderers = {
-        format_hints.HexBytes: quoted_optional(
-            hex_bytes_as_text
-        ),
-        interfaces.renderers.Disassembly: quoted_optional(
-            display_disassembly
-        ),
-        format_hints.MultiTypeData: quoted_optional(
-            multitypedata_as_text
-        ),
+        format_hints.HexBytes: quoted_optional(hex_bytes_as_text),
+        interfaces.renderers.Disassembly: quoted_optional(display_disassembly),
+        format_hints.MultiTypeData: quoted_optional(multitypedata_as_text),
         bytes: optional(lambda x: " ".join([f"{b:02x}" for b in x])),
         datetime.datetime: lambda x: (
             x.isoformat()
@@ -393,6 +397,10 @@ def file_handler(output_dir):
         """We want to save our files directly to disk"""
 
         def __init__(self, filename: str):
+            if not os.path.exists(output_dir):
+                os.makedirs(
+                    output_dir, exist_ok=True
+                )  # We create the directory if it does not exists.
             fd, self._name = tempfile.mkstemp(
                 suffix=".vol3", prefix="tmp_", dir=output_dir
             )
@@ -434,7 +442,10 @@ def file_handler(output_dir):
 
     return CLIDirectFileHandler
 
-S3FileSystemHandler.default_open = volweb_open # This is to set the correct AWS endpoint url when the source bucket is of type AWS.
-volatility3.symbols.__path__ = [os.path.abspath(f"media/")] + constants.SYMBOL_BASEPATHS # This is to include the volweb symbols imported by the users.
-interfaces.context.ModuleContainer.add_module = volweb_add_module # A module requirement already present is throwing an exeception, we don't want this.
-interfaces.layers.LayerContainer.add_layer = volweb_add_layer # An already present layer is throwing an exception, we don't want this either.
+
+S3FileSystemHandler.default_open = volweb_open  # This is to set the correct AWS endpoint url when the source bucket is of type AWS.
+volatility3.symbols.__path__ = [
+    os.path.abspath(f"media/")
+] + constants.SYMBOL_BASEPATHS  # This is to include the volweb symbols imported by the users.
+interfaces.context.ModuleContainer.add_module = volweb_add_module  # A module requirement already present is throwing an exeception, we don't want this.
+interfaces.layers.LayerContainer.add_layer = volweb_add_layer  # An already present layer is throwing an exception, we don't want this either.

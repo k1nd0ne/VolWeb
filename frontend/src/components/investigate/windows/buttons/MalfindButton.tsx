@@ -28,7 +28,8 @@ const MalfindButton: React.FC = () => {
       console.log(response.data.artefacts);
       setData(response.data.artefacts);
     } catch (error) {
-      console.error("Error fetching netgraph details", error);
+      // TODO: Error message
+      console.error("Error fetching malfind details", error);
     }
   };
 
