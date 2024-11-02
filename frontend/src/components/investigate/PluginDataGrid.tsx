@@ -116,12 +116,6 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
         autosizeOptions={autosizeOptions}
         apiRef={apiRef}
       />
-      <Button
-        variant="outlined"
-        onClick={() => apiRef.current.autosizeColumns(autosizeOptions)}
-      >
-        Autosize columns
-      </Button>
     </Box>
   );
 };
