@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
+import { Box, Button } from "@mui/material";
+import {
+  DataGrid,
+  GridColDef,
+  GridToolbar,
+  useGridApiRef,
+} from "@mui/x-data-grid";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import Checkbox from "@mui/material/Checkbox";
@@ -16,33 +21,7 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<Artefact[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchPlugins = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `/api/evidence/${id}/plugin/${pluginName}`,
-        );
-        // Assign consistent unique IDs to each row and flatten children
-        const artefactsWithId: Artefact[] = [];
-        response.data.artefacts.forEach((artefact: Artefact, index: number) => {
-          artefactsWithId.push({ ...artefact, id: index });
-          if (artefact.__children && artefact.__children.length) {
-            artefact.__children.map((child: Artefact, idx) => {
-              artefactsWithId.push({ ...child, id: `${index}-${idx}` });
-            });
-          }
-        });
-        setData(artefactsWithId);
-      } catch (error) {
-        console.error("Error fetching case details", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPlugins();
-  }, [id, pluginName]);
+  const apiRef = useGridApiRef();
 
   const columns: GridColDef[] = data[0]
     ? Object.keys(data[0])
@@ -50,8 +29,6 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
         .map((key) => ({
           field: key,
           headerName: key,
-          flex: 1,
-          sortable: true,
           renderCell: (params) =>
             typeof params.value === "boolean" ? (
               params.value ? (
@@ -69,10 +46,57 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
         }))
     : [];
 
+  const autosizeOptions = {
+    columns: [...columns].map((col) => col.headerName ?? ""),
+    includeOutliers: true,
+    includeHeaders: true,
+  };
+
+  useEffect(() => {
+    const fetchPlugins = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/api/evidence/${id}/plugin/${pluginName}`,
+        );
+        // Assign consistent unique IDs to each row and flatten children
+        const artefactsWithId: Artefact[] = [];
+        response.data.artefacts.forEach((artefact: Artefact, index: number) => {
+          artefactsWithId.push({ ...artefact, id: index });
+          if (artefact.__children && artefact.__children.length) {
+            artefact.__children.map((child: Artefact, idx: number) => {
+              artefactsWithId.push({ ...child, id: `${index}-${idx}` });
+            });
+          }
+        });
+
+        setData(artefactsWithId);
+      } catch (error) {
+        console.error("Error fetching case details", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPlugins();
+  }, [id, pluginName]);
+
+  // Add this useEffect to call autosizeColumns after the data is loaded
+  useEffect(() => {
+    if (!loading && data.length > 0) {
+      const timeoutId = setTimeout(() => {
+        if (apiRef.current) {
+          apiRef.current.autosizeColumns(autosizeOptions);
+        }
+      }, 200); // Delay to ensure DataGrid has rendered
+      return () => clearTimeout(timeoutId);
+    }
+  }, [loading, data]);
+
   return (
     <Box sx={{ flexGrow: 1, p: 1 }}>
       <DataGrid
         disableDensitySelector
+        autoPageSize
         slots={{
           toolbar: GridToolbar,
         }}
@@ -88,7 +112,16 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
         getRowId={(row) => row.id}
         pagination
         loading={loading}
+        autosizeOnMount
+        autosizeOptions={autosizeOptions}
+        apiRef={apiRef}
       />
+      <Button
+        variant="outlined"
+        onClick={() => apiRef.current.autosizeColumns(autosizeOptions)}
+      >
+        Autosize columns
+      </Button>
     </Box>
   );
 };
