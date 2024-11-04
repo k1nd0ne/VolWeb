@@ -57,7 +57,7 @@ class VolWebMain(plugins.PluginInterface):
                 self.context.config["plugins.VolWebMain.dump"] = (
                     False  # No dump by default
                 )
-                if name is "volatility3.plugins.windows.registry.hivelist.HiveList":
+                if name == "volatility3.plugins.windows.registry.hivelist.HiveList":
                     self.context.config["plugins.VolWebMain.dump"] = (
                         True  # We want to dump the hivelist
                     )

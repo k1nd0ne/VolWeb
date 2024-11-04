@@ -29,8 +29,24 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
         .map((key) => ({
           field: key,
           headerName: key,
-          renderCell: (params) =>
-            typeof params.value === "boolean" ? (
+          renderCell: (params) => {
+            if (key === "File output" && params.value !== "Disabled") {
+              return (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => window.open(`/media/${id}/${params.value}`)}
+                >
+                  Download
+                </Button>
+              );
+            }
+
+            if (key === "Disasm" || key === "Hexdump") {
+              return <pre>{params.value}</pre>;
+            }
+
+            return typeof params.value === "boolean" ? (
               params.value ? (
                 <Checkbox checked={true} color="success" />
               ) : (
@@ -42,7 +58,8 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
               params.value
             ) : (
               ""
-            ),
+            );
+          },
         }))
     : [];
 
@@ -115,6 +132,7 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
         autosizeOnMount
         autosizeOptions={autosizeOptions}
         apiRef={apiRef}
+        getRowHeight={() => "auto"}
       />
     </Box>
   );
