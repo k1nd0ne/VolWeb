@@ -4,6 +4,9 @@ from .views import (
     PluginArtefactsView,
     TimelinerArtefactsView,
     TimelinerTask,
+    HandlesTask,
+    ProcessDumpTask,
+    FileDumpTask
 )
 
 urlpatterns = [
@@ -22,4 +25,8 @@ urlpatterns = [
         TimelinerArtefactsView.as_view(),
     ),
     path("evidence/tasks/timeliner/", TimelinerTask.as_view()),
+    path("evidence/tasks/handles/", HandlesTask.as_view()),
+    path("evidence/tasks/dump/process/", ProcessDumpTask.as_view()),
+    path("evidence/tasks/dump/file/", FileDumpTask.as_view()),
+
 ]

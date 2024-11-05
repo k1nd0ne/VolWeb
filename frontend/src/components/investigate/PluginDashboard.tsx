@@ -21,9 +21,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import PluginDataGrid from "./PluginDataGrid";
 import { Plugin } from "../../types";
 import MalfindButton from "./windows/buttons/MalfindButton";
-import HiveList from "./windows/buttons/HiveList";
-import FileScan from "./windows/buttons/Filescan";
-import DeviceTree from "./windows/buttons/DeviceTree";
+import FilescanButton from "./windows/buttons/FilescanButton";
 import NetGraphButton from "./windows/buttons/NetGraphButton";
 const PluginDashboard: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -127,8 +125,7 @@ const PluginDashboard: React.FC = () => {
                   </Typography>
                   <Grid container spacing={1}>
                     {/* Here we insert our custom components */}
-                    {category === "Filesystem" && <FileScan />}
-                    {category === "Registry" && <HiveList />}
+                    {category === "Filesystem" && <FilescanButton />}
                     {category === "Malware" && <MalfindButton />}
                     {category === "Network" && <NetGraphButton />}
                     {groupedPlugins[category].map((plugin) => {
@@ -175,7 +172,8 @@ const PluginDashboard: React.FC = () => {
         </Card>
       )}
       <Dialog
-        fullScreen
+        fullWidth
+        maxWidth="xl"
         open={open}
         onClose={handleClose}
         sx={{

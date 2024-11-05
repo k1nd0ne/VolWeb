@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Chart from "react-apexcharts";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import axiosInstance from "../../utils/axiosInstance";
-import { Button, CircularProgress, Typography } from "@mui/material";
+import { Button, CircularProgress, Box } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+import { MouseEvent } from "react";
 
 interface Artefact {
-  __children: any[];
+  __children: Artefact[];
   Plugin: string;
   Description: string;
   "Created Date": string | null;
@@ -18,13 +19,52 @@ interface Artefact {
   "Changed Date": string | null;
 }
 
+interface ChartContext {
+  w: {
+    config: {
+      series: {
+        data: { x: string; y: number }[];
+      }[];
+    };
+  };
+}
+
 const Timeliner: React.FC = () => {
   const [graphData, setGraphData] = useState<[string, number][]>([]);
   const [artefactData, setArtefactData] = useState<Artefact[]>([]);
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState<boolean>(false);
   const [processing, setProcessing] = useState<boolean>(false);
+  const [seriesData, setSeriesData] = useState<{ x: string; y: number }[]>([]);
+  const apiRef = useGridApiRef();
 
+  const columns: GridColDef[] = artefactData[0]
+    ? Object.keys(artefactData[0])
+        .filter((key) => key !== "__children" && key !== "id") // Filter out the "id" column
+        .map((key) => ({
+          field: key,
+          headerName: key,
+          renderCell: (params) =>
+            typeof params.value === "boolean" ? (
+              params.value ? (
+                <Checkbox checked={true} color="success" />
+              ) : (
+                <IconButton color="error">
+                  <CloseIcon />
+                </IconButton>
+              )
+            ) : params.value !== null ? (
+              params.value
+            ) : (
+              ""
+            ),
+        }))
+    : [];
+  const autosizeOptions = {
+    columns: [...columns].map((col) => col.headerName ?? ""),
+    includeOutliers: true,
+    includeHeaders: true,
+  };
   const fetchArtefacts = async (range: [string, string]) => {
     try {
       setLoading(true);
@@ -56,6 +96,12 @@ const Timeliner: React.FC = () => {
           `/api/evidence/${id}/plugin/volatility3.plugins.timeliner.TimelinerGraph`,
         );
         setGraphData(response.data.artefacts);
+        setSeriesData(
+          response.data.artefacts.map((item: [string, number]) => ({
+            x: item[0],
+            y: item[1],
+          })),
+        );
 
         if (response.data && response.data.artefacts.length > 0) {
           fetchArtefacts([
@@ -71,6 +117,17 @@ const Timeliner: React.FC = () => {
     fetchTimelinerGraph();
   }, [id]);
 
+  useEffect(() => {
+    if (!loading && artefactData.length > 0) {
+      const timeoutId = setTimeout(() => {
+        if (apiRef.current) {
+          apiRef.current.autosizeColumns(autosizeOptions);
+        }
+      }, 200); // Delay to ensure DataGrid has rendered
+      return () => clearTimeout(timeoutId);
+    }
+  }, [loading, artefactData]);
+
   const handleRunTask = async () => {
     setProcessing(true);
     try {
@@ -79,9 +136,84 @@ const Timeliner: React.FC = () => {
     } catch (error) {
       console.error("Error triggering timeliner task", error);
     } finally {
-      setProcessing(true);
+      setProcessing(false);
     }
   };
+
+  const options = useMemo(
+    () => ({
+      theme: {
+        mode: "dark" as const,
+        palette: "palette1",
+        monochrome: {
+          enabled: true,
+          color: "#9a0000",
+          shadeTo: "light" as const,
+          shadeIntensity: 0.65,
+        },
+      },
+      series: [{ data: seriesData }],
+      chart: {
+        background: "#121212",
+        type: "area" as const,
+        stacked: false,
+        zoom: {
+          type: "x" as const,
+          enabled: true,
+          autoScaleYaxis: true,
+        },
+        events: {
+          markerClick: function (
+            _event: MouseEvent,
+            chartContext: ChartContext,
+            {
+              seriesIndex,
+              dataPointIndex,
+              config,
+            }: { seriesIndex: number; dataPointIndex: number; config: any },
+          ) {
+            const timestamp =
+              chartContext.w.config.series[seriesIndex].data[dataPointIndex].x;
+            fetchArtefacts([timestamp, timestamp]);
+          },
+          zoomed: function (
+            chartContext: ChartContext,
+            { xaxis }: { xaxis: { min: number; max: number } },
+          ) {
+            const timestamp_min =
+              chartContext.w.config.series[0].data[xaxis.min - 1].x;
+            const timestamp_max =
+              chartContext.w.config.series[0].data[xaxis.max - 1].x;
+            fetchArtefacts([timestamp_min, timestamp_max]);
+          },
+        },
+      },
+      dataLabels: { enabled: false },
+      markers: { size: 0 },
+      title: { text: "Timeline of events", align: "left" as const },
+      fill: {
+        type: "gradient",
+        gradient: {
+          shadeIntensity: 1,
+          inverseColors: false,
+          opacityFrom: 0.5,
+          opacityTo: 0,
+          stops: [0, 70, 80, 100],
+        },
+      },
+      yaxis: {
+        tickAmount: 4,
+        labels: { formatter: (val: number) => val.toFixed(0) },
+        title: { text: "Event Count" },
+      },
+      xaxis: {},
+      tooltip: {
+        shared: false,
+        y: { formatter: (val: number) => val.toFixed(0) },
+      },
+    }),
+    [seriesData],
+  );
 
   if (graphData.length === 0) {
     return (
@@ -105,103 +237,8 @@ const Timeliner: React.FC = () => {
     );
   }
 
-  const seriesData = graphData.map((item) => ({
-    x: item[0],
-    y: item[1],
-  }));
-
-  const options = {
-    theme: {
-      mode: "dark" as const,
-      palette: "palette1",
-      monochrome: {
-        enabled: true,
-        color: "#9a0000",
-        shadeTo: "light" as const,
-        shadeIntensity: 0.65,
-      },
-    },
-    series: [{ data: seriesData }],
-    chart: {
-      background: "#121212",
-      type: "area" as const,
-      stacked: false,
-      zoom: {
-        type: "x" as const,
-        enabled: true,
-        autoScaleYaxis: true,
-      },
-      events: {
-        markerClick: function (
-          _event: any,
-          chartContext: any,
-          { seriesIndex, dataPointIndex }: any,
-        ) {
-          const timestamp =
-            chartContext.w.config.series[seriesIndex].data[dataPointIndex].x;
-          fetchArtefacts([timestamp, timestamp]);
-        },
-        zoomed: function (chartContext: any, { xaxis }: any) {
-          const timestamp_min =
-            chartContext.w.config.series[0].data[xaxis.min - 1].x;
-          const timestamp_max =
-            chartContext.w.config.series[0].data[xaxis.max - 1].x;
-          fetchArtefacts([timestamp_min, timestamp_max]);
-        },
-      },
-    },
-    dataLabels: { enabled: false },
-    markers: { size: 0 },
-    title: { text: "Timeline of events", align: "left" as const },
-    fill: {
-      type: "gradient",
-      gradient: {
-        shadeIntensity: 1,
-        inverseColors: false,
-        opacityFrom: 0.5,
-        opacityTo: 0,
-        stops: [0, 70, 80, 100],
-      },
-    },
-    yaxis: {
-      tickAmount: 4,
-      labels: { formatter: (val: number) => val.toFixed(0) },
-      title: { text: "Event Count" },
-    },
-    xaxis: {},
-    tooltip: {
-      shared: false,
-      y: { formatter: (val: number) => val.toFixed(0) },
-    },
-  };
-
-  const columns: GridColDef[] = artefactData[0]
-    ? Object.keys(artefactData[0])
-        .filter((key) => key !== "__children" && key !== "id") // Filter out the "id" column
-        .map((key) => ({
-          field: key,
-          headerName: key,
-          flex: 1,
-          sortable: true,
-          renderCell: (params) =>
-            typeof params.value === "boolean" ? (
-              params.value ? (
-                <Checkbox checked={true} color="success" />
-              ) : (
-                <IconButton color="error">
-                  <CloseIcon />
-                </IconButton>
-              )
-            ) : params.value !== null ? (
-              params.value
-            ) : (
-              ""
-            ),
-        }))
-    : [];
-
   return (
-    <div>
+    <Box sx={{ flexGrow: 1 }}>
       <Chart
         options={options}
         series={options.series}
@@ -215,10 +252,14 @@ const Timeliner: React.FC = () => {
           density="compact"
           getRowId={(row) => row.id}
           pagination
+          autosizeOnMount
           loading={loading}
+          autosizeOptions={autosizeOptions}
+          apiRef={apiRef}
+          getRowHeight={() => "auto"}
         />
       </div>
-    </div>
+    </Box>
   );
 };
 

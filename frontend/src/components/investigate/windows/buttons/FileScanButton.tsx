@@ -11,30 +11,39 @@ import {
   Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { BugReportRounded } from "@mui/icons-material";
-import { Connection } from "../../../../types";
-import Malfind from "../components/Malfind";
+import { FolderOpen } from "@mui/icons-material";
+import { Artefact } from "../../../../types";
+import FileScan from "../components/FileScan";
 
-const MalfindButton: React.FC = () => {
+const FilescanButton: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [open, setOpen] = useState(false);
-  const [data, setData] = useState<Connection[]>([]);
+  const [data, setData] = useState<Artefact[]>([]);
 
-  const fetchMalfindGraph = async () => {
+  const fetchFileScan = async () => {
     try {
       const response = await axiosInstance.get(
-        `/api/evidence/${id}/plugin/volatility3.plugins.windows.malfind.Malfind`,
+        `/api/evidence/${id}/plugin/volatility3.plugins.windows.filescan.FileScan`,
       );
       console.log(response.data.artefacts);
-      setData(response.data.artefacts);
+      const artefactsWithId: Artefact[] = [];
+      response.data.artefacts.forEach((artefact: Artefact, index: number) => {
+        artefactsWithId.push({ ...artefact, id: index });
+        if (artefact.__children && artefact.__children.length) {
+          artefact.__children.map((child: Artefact, idx: number) => {
+            artefactsWithId.push({ ...child, id: `${index}-${idx}` });
+          });
+        }
+      });
+      setData(artefactsWithId);
     } catch (error) {
       // TODO: Error message
-      console.error("Error fetching malfind details", error);
+      console.error("Error fetching filescan details", error);
     }
   };
 
   const handleOpen = () => {
-    fetchMalfindGraph();
+    fetchFileScan();
     setOpen(true);
   };
 
@@ -44,21 +53,21 @@ const MalfindButton: React.FC = () => {
 
   return (
     <>
-      <Tooltip title={"Malfind"} arrow key={"Malfind"} placement="top">
+      <Tooltip title={"FileScan"} arrow key={"FileScan"} placement="top">
         <span>
           <Button
-            color={"primary"}
+            color={"error"}
             variant="outlined"
             size="small"
             onClick={handleOpen}
-            startIcon={<BugReportRounded />}
+            startIcon={<FolderOpen />}
             sx={{
               marginRight: 1,
               marginBottom: 1,
             }}
             disabled={false}
           >
-            {"Malfind"}
+            {"FileScan"}
           </Button>
         </span>
       </Tooltip>
@@ -76,7 +85,7 @@ const MalfindButton: React.FC = () => {
         }}
       >
         <DialogTitle>
-          MalFind
+          FileScan
           <IconButton
             edge="end"
             color="inherit"
@@ -90,11 +99,11 @@ const MalfindButton: React.FC = () => {
         <Divider sx={{ marginBottom: 1 }} />
 
         <DialogContent>
-          <Malfind data={data} />
+          <FileScan data={data} />
         </DialogContent>
       </Dialog>
     </>
   );
 };
 
-export default MalfindButton;
+export default FilescanButton;

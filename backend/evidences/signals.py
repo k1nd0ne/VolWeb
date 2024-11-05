@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from evidences.models import Evidence
 from evidences.serializers import EvidenceSerializer
-from evidences.tasks import start_extraction, start_timeliner
+from volatility_engine.tasks import start_extraction, start_timeliner
 
 
 @receiver(post_save, sender=Evidence)

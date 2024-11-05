@@ -7,7 +7,7 @@ from .serializers import (
     VolatilityPluginDetailSerializer,
     VolatilityPluginNameSerializer,
 )
-from evidences.tasks import start_timeliner
+from .tasks import dump_windows_file, dump_windows_process, start_timeliner, dump_windows_handles
 from dateutil.parser import parse as parse_date
 
 
@@ -98,6 +98,46 @@ class TimelinerTask(APIView):
             evidence_id = request.data.get("id")
             evidence = Evidence.objects.get(id=evidence_id)
             start_timeliner.apply_async(args=[evidence.id])
+            return Response(status=status.HTTP_200_OK)
+        except Evidence.DoesNotExist:
+            return Response(
+                {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class HandlesTask(APIView):
+    def post(self, request):
+        try:
+            evidence_id = request.data.get("evidenceId")
+            pid = request.data.get("pid")
+            evidence = Evidence.objects.get(id=evidence_id)
+            dump_windows_handles.apply_async(args=[evidence.id, pid])
+            return Response(status=status.HTTP_200_OK)
+        except Evidence.DoesNotExist:
+            return Response(
+                {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+class ProcessDumpTask(APIView):
+    def post(self, request):
+        try:
+            evidence_id = request.data.get("evidenceId")
+            pid = request.data.get("pid")
+            evidence = Evidence.objects.get(id=evidence_id)
+            dump_windows_process.apply_async(args=[evidence.id, pid])
+            return Response(status=status.HTTP_200_OK)
+        except Evidence.DoesNotExist:
+            return Response(
+                {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+class FileDumpTask(APIView):
+    def post(self, request):
+        try:
+            evidence_id = request.data.get("evidenceId")
+            offset = request.data.get("offset")
+            evidence = Evidence.objects.get(id=evidence_id)
+            dump_windows_file.apply_async(args=[evidence.id, offset])
             return Response(status=status.HTTP_200_OK)
         except Evidence.DoesNotExist:
             return Response(

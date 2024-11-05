@@ -15,15 +15,15 @@ from .utils import (
     fix_permissions,
 )
 from volatility3.framework.plugins import construct_plugin
-from volatility3.plugins import timeliner
 from .plugins.windows.volweb_main import VolWebMain
+from volatility3.plugins.windows.dumpfiles import DumpFiles
 from .plugins.windows.volweb_misc import VolWebMisc
 
 volatility3.framework.require_interface_version(2, 0, 0)
 logger = logging.getLogger(__name__)
 
 
-class VolatiltiyEngine:
+class VolatilityEngine:
     """
     The Volatility3 Engine is a modular class to enable the execution multiple volatility3 plugins.
     It is used by VolWeb when a user just uploaded a memory image for a given Evidence
@@ -45,22 +45,16 @@ class VolatiltiyEngine:
             }
         self.base_config_path = "plugins"
 
-    def run_plugin(self, plugin):
-        """
-        This Method can be used to execute any plugins this will:
-            - Create a new context
-            - Choose the automagics
-            - Construct the plugin
-            - Put the result inside the django database using our custom renderer
-        """
-        plugin, metadata = plugin.popitem()
+
+    def build_context(self, plugin):
+        self.plugin, self.metadata = plugin.popitem()
 
         self.context = contexts.Context()
         available_automagics = automagic.available(self.context)
 
-        self.automagics = automagic.choose_automagic(available_automagics, plugin)
+        self.automagics = automagic.choose_automagic(available_automagics, self.plugin)
         self.context.config["automagic.LayerStacker.stackers"] = (
-            automagic.stacker.choose_os_stackers(plugin)
+            automagic.stacker.choose_os_stackers(self.plugin)
         )
 
         self.context.config["automagic.LayerStacker.single_location"] = (
@@ -69,16 +63,27 @@ class VolatiltiyEngine:
 
         self.context.config["VolWeb.Evidence"] = self.evidence.id
 
+    def construct_plugin(self):
+        """
+        This Method can be used to execute any plugins this will:
+            - Create a new context
+            - Choose the automagics
+            - Construct the plugin
+            - Put the result inside the django database using our custom renderer
+        """
         constructed = construct_plugin(
             self.context,
             self.automagics,
-            plugin,
+            self.plugin,
             self.base_config_path,
             MuteProgress(),
             file_handler(self.evidence_data["output_path"]),
         )
+        return constructed
+
+    def run_plugin(self, constructed):
         if constructed:
-            result = DjangoRenderer(self.evidence.id, metadata).render(
+            result = DjangoRenderer(self.evidence.id, self.metadata).render(
                 constructed.run()
             )
             return result
@@ -107,20 +112,24 @@ class VolatiltiyEngine:
         ]
         for plugin in plugin_list:
             logger.debug(f"RUNNING PLUGIN: {plugin}")
-            self.run_plugin(plugin)
+            self.build_context(plugin)
+            builted_plugin = self.construct_plugin()
+            self.run_plugin(builted_plugin)
         fix_permissions(self.evidence_data["output_path"])
 
-    def timeliner(self):
+    def start_timeliner(self):
         timeliner_plugin = {
-            timeliner.Timeliner: {
+             volatility3.plugins.timeliner.Timeliner: {
                 "icon": "None",
-                "description": "VolWeb Main plugin executing many other plugins with automagics optimization",
+                "description": "VolWeb main plugin executing many other plugins with automagics optimization",
                 "category": "Other",
                 "display": "False",
                 "name": "volatility3.plugins.timeliner.Timeliner",
             }
         }
-        result = self.run_plugin(timeliner_plugin)
+        self.build_context(timeliner_plugin)
+        builted_plugin = self.construct_plugin()
+        result = self.run_plugin(builted_plugin)
         if result:
             graph = build_timeline(result)
             VolatilityPlugin(
@@ -144,6 +153,63 @@ class VolatiltiyEngine:
         except UnsatisfiedException as e:
             logger.warning(f"Unsatisfied requirements: {str(e)}")
 
-    def start_timeliner(self):
-        logger.info("Starting timeliner")
-        self.timeliner()
+    def dump_process(self, pid):
+        logger.info(f"Trying to dump PID {pid}")
+        pslist_plugin = {
+            volatility3.plugins.windows.pslist.PsList: {
+                "icon": "N/A",
+                "description": "N/A",
+                "category": "Processes",
+                "display": "False",
+                "name": f"volatility3.plugins.windows.pslist.PsListDump.{pid}",
+            }
+        }
+        self.build_context(pslist_plugin)
+        self.context.config["plugins.PsList.pid"] = [
+            pid,
+        ]
+        self.context.config["plugins.PsList.dump"] = True
+        builted_plugin = self.construct_plugin()
+        result = self.run_plugin(builted_plugin)
+
+    def compute_handles(self, pid):
+        handles_plugin = {
+            volatility3.plugins.windows.handles.Handles: {
+                "icon": "N/A",
+                "description": "N/A",
+                "category": "Processes",
+                "display": "False",
+                "name": f"volatility3.plugins.windows.handles.Handles.{pid}",
+            }
+        }
+        self.build_context(handles_plugin)
+        self.context.config["plugins.Handles.pid"] = [int(pid)]
+        builted_plugin = self.construct_plugin()
+        result = self.run_plugin(builted_plugin)
+
+    def dump_file(self, offset):
+        dumpfiles_plugin = {
+            DumpFiles: {
+                "icon": "N/A",
+                "description": "N/A",
+                "category": "Processes",
+                "display": "False",
+                "name": f"volatility3.plugins.dumpfiles.DumpFiles.{offset}",
+            }
+        }
+        self.build_context(dumpfiles_plugin)
+        self.context.config["plugins.DumpFiles.virtaddr"] = int(offset)
+        builted_plugin = self.construct_plugin()
+        try:
+            result = self.run_plugin(builted_plugin)
+            if not result:
+                del self.context.config["plugins.DumpFiles.virtaddr"]
+                self.context.config["plugins.DumpFiles.physaddr"] = int(offset)
+                result = self.run_plugin(builted_plugin)
+
+            fix_permissions(f"media/{self.evidence.id}")
+            print(result)
+            return result
+        except Exception as e:
+            logger.error(e)
+            return None

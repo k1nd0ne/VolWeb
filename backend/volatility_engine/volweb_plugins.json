@@ -14,7 +14,7 @@
         "display": "True"
       },
       "volatility3.plugins.windows.sessions.Sessions": {
-        "icon": "Session",
+        "icon": "ScreenshotMonitor",
         "description": "Lists Processes with Session information extracted from Environmental Variables.",
         "category": "Processes",
         "display": "True"
@@ -140,7 +140,7 @@
         "display": "True"
       },
       "volatility3.plugins.windows.envars.Envars": {
-        "icon": "Eco",
+        "icon": "Public",
         "description": "Display process environment variables.",
         "category": "Processes",
         "display": "True"
@@ -278,7 +278,7 @@
         "display": "True"
       },
       "volatility3.plugins.windows.threads.Threads": {
-        "icon": "Thread",
+        "icon": "MoreVert",
         "description": "Lists process threads.",
         "category": "Processes",
         "display": "True"

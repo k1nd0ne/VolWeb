@@ -85,7 +85,7 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
             });
           }
         });
-
+        console.log(artefactsWithId);
         setData(artefactsWithId);
       } catch (error) {
         console.error("Error fetching case details", error);
@@ -110,10 +110,9 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
   }, [loading, data]);
 
   return (
-    <Box sx={{ flexGrow: 1, p: 1 }}>
+    <Box sx={{ flexGrow: 1 }}>
       <DataGrid
         disableDensitySelector
-        autoPageSize
         slots={{
           toolbar: GridToolbar,
         }}
@@ -124,7 +123,7 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
         }}
         rows={data}
         density="compact"
-        sx={{ height: "90vh" }}
+        sx={{ height: "80vh" }}
         columns={columns}
         getRowId={(row) => row.id}
         pagination
