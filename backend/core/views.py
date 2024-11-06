@@ -7,8 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 from stix2.exceptions import InvalidValueError
 from rest_framework import generics
-from core.serializers import UserSerializer
-from core.models import Indicator
+from core.serializers import UserSerializer, TypeSerializer
+from core.models import TYPES, Indicator
 from core.serializers import IndicatorSerializer
 from django.http import JsonResponse, HttpResponse
 from rest_framework import status
@@ -72,11 +72,11 @@ class IndicatorEvidenceApiView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [SessionAuthentication, TokenAuthentication]
 
-    def get(self, request, dump_id, *args, **kwargs):
+    def get(self, request, evidence_id, *args, **kwargs):
         """
         Get all the indicators for an evidence
         """
-        indicators = Indicator.objects.filter(evidence__dump_id=dump_id)
+        indicators = Indicator.objects.filter(evidence__id=evidence_id)
         serializer = IndicatorSerializer(indicators, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -89,7 +89,7 @@ class IndicatorCaseApiView(APIView):
         """
         Get all the indicators for a case
         """
-        indicators = Indicator.objects.filter(evidence__dump_linked_case=case_id)
+        indicators = Indicator.objects.filter(evidence__linked_case=case_id)
         serializer = IndicatorSerializer(indicators, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -102,10 +102,21 @@ class IndicatorExportApiView(APIView):
         """
         Get all the indicators for a case and return as a file blob
         """
-        indicators = Indicator.objects.filter(evidence__dump_linked_case=case_id)
+        indicators = Indicator.objects.filter(evidence__linked_case=case_id)
         bundle = export_bundle(indicators)
         response = HttpResponse(bundle, content_type="application/octet-stream")
         response[
             "Content-Disposition"
         ] = 'attachment; filename="indicators_case_{}.json"'.format(case_id)
         return response
+
+class IndicatorTypeListAPIView(APIView):
+    """
+    API view to list all indicator types.
+    """
+    def get(self, request, format=None):
+        types = [{"value": type_[0], "display": type_[1]} for type_ in TYPES]
+        serializer = TypeSerializer(data=types, many=True)
+        if serializer.is_valid():
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

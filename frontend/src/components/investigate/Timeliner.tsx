@@ -227,6 +227,8 @@ const Timeliner: React.FC = () => {
       >
         <Button
           variant="outlined"
+          size="large"
+          color="error"
           onClick={handleRunTask}
           disabled={processing}
           startIcon={processing && <CircularProgress size={20} />}

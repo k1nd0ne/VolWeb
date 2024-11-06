@@ -85,7 +85,6 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
             });
           }
         });
-        console.log(artefactsWithId);
         setData(artefactsWithId);
       } catch (error) {
         console.error("Error fetching case details", error);

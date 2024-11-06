@@ -178,7 +178,6 @@ class VolatilityEngine:
         try:
             logger.info("Starting extraction")
             self.evidence.status = 0  # Make sure we start at 0%
-            completed_task = 0
             if self.evidence.os == "windows":
                 self.start_windows_analysis()
             else:

@@ -9,6 +9,7 @@ import {
   DialogTitle,
   IconButton,
   Divider,
+  Paper,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { BugReportRounded } from "@mui/icons-material";
@@ -67,9 +68,6 @@ const MalfindButton: React.FC = () => {
         open={open}
         onClose={handleClose}
         sx={{
-          "& .MuiPaper-root": {
-            background: "#121212",
-          },
           "& .MuiBackdrop-root": {
             backgroundColor: "transparent",
           },
@@ -90,7 +88,9 @@ const MalfindButton: React.FC = () => {
         <Divider sx={{ marginBottom: 1 }} />
 
         <DialogContent>
-          <Malfind data={data} />
+          <Paper>
+            <Malfind data={data} />
+          </Paper>
         </DialogContent>
       </Dialog>
     </>

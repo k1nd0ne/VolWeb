@@ -149,7 +149,7 @@
         "icon": "FolderOpen",
         "description": "Scans for file objects present in a particular windows memory image.",
         "category": "Filesystem",
-        "display": "True"
+        "display": "False"
       },
       "volatility3.plugins.windows.getservicesids.GetServiceSIDs": {
         "icon": "AccountCircle",

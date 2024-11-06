@@ -9,6 +9,7 @@ import {
   DialogTitle,
   IconButton,
   Divider,
+  Paper,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import NetworkGraph from "../components/NetworkGraph";
@@ -60,19 +61,7 @@ const NetGraphButton: React.FC = () => {
           </Button>
         </span>
       </Tooltip>
-      <Dialog
-        fullScreen
-        open={open}
-        onClose={handleClose}
-        sx={{
-          "& .MuiPaper-root": {
-            background: "#121212",
-          },
-          "& .MuiBackdrop-root": {
-            backgroundColor: "transparent",
-          },
-        }}
-      >
+      <Dialog fullScreen open={open} onClose={handleClose}>
         <DialogTitle>
           Network Graph
           <IconButton
@@ -87,7 +76,9 @@ const NetGraphButton: React.FC = () => {
         </DialogTitle>
         <Divider sx={{ marginBottom: 1 }} />
         <DialogContent>
-          <NetworkGraph data={data} />
+          <Paper>
+            <NetworkGraph data={data} />
+          </Paper>
         </DialogContent>
       </Dialog>
     </>

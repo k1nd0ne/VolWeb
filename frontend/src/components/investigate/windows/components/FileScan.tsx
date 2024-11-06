@@ -67,7 +67,7 @@ const FileScan: React.FC<FileScanProps> = ({ data }) => {
   });
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box>
       <DataGrid
         disableDensitySelector
         slots={{
@@ -78,6 +78,7 @@ const FileScan: React.FC<FileScanProps> = ({ data }) => {
             showQuickFilter: true,
           },
         }}
+        sx={{ height: "85vh" }}
         rows={data}
         columns={columns}
         getRowId={(row) => row.id}

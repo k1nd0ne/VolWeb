@@ -9,6 +9,7 @@ import {
   DialogTitle,
   IconButton,
   Divider,
+  Paper,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { FolderOpen } from "@mui/icons-material";
@@ -71,19 +72,7 @@ const FilescanButton: React.FC = () => {
           </Button>
         </span>
       </Tooltip>
-      <Dialog
-        fullScreen
-        open={open}
-        onClose={handleClose}
-        sx={{
-          "& .MuiPaper-root": {
-            background: "#121212",
-          },
-          "& .MuiBackdrop-root": {
-            backgroundColor: "transparent",
-          },
-        }}
-      >
+      <Dialog fullScreen open={open} onClose={handleClose}>
         <DialogTitle>
           FileScan
           <IconButton
@@ -99,7 +88,9 @@ const FilescanButton: React.FC = () => {
         <Divider sx={{ marginBottom: 1 }} />
 
         <DialogContent>
-          <FileScan data={data} />
+          <Paper>
+            <FileScan data={data} />
+          </Paper>
         </DialogContent>
       </Dialog>
     </>

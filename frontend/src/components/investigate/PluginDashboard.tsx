@@ -13,6 +13,7 @@ import {
   DialogContent,
   CircularProgress,
   Tooltip,
+  Paper,
 } from "@mui/material";
 import * as Icons from "@mui/icons-material";
 import { HomeRepairService, Close } from "@mui/icons-material";
@@ -177,9 +178,6 @@ const PluginDashboard: React.FC = () => {
         open={open}
         onClose={handleClose}
         sx={{
-          "& .MuiPaper-root": {
-            background: "#121212",
-          },
           "& .MuiBackdrop-root": {
             backgroundColor: "transparent",
           },
@@ -198,9 +196,11 @@ const PluginDashboard: React.FC = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <PluginDataGrid
-            pluginName={currentPlugin ? currentPlugin.name : ""}
-          />
+          <Paper>
+            <PluginDataGrid
+              pluginName={currentPlugin ? currentPlugin.name : ""}
+            />
+          </Paper>
         </DialogContent>
       </Dialog>
     </Box>

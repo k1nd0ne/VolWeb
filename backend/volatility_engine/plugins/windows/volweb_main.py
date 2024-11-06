@@ -80,6 +80,7 @@ class VolWebMain(plugins.PluginInterface):
             except:
                 pass
             evidence.status = 100
+            evidence.save()
 
     def _generator(self):
         yield (0, ("Success",))

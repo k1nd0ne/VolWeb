@@ -17,4 +17,9 @@ class IndicatorSerializer(serializers.ModelSerializer):
 
     def get_dump_linked_dump_name(self, obj):
         # Return the name of the linked case instead of the id
-        return obj.evidence.dump_name
+        return obj.evidence.name
+
+
+class TypeSerializer(serializers.Serializer):
+    value = serializers.CharField()
+    display = serializers.CharField()

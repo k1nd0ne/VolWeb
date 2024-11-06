@@ -64,10 +64,7 @@ const Malfind: FC<MalfindProps> = ({ data }) => {
                 <Grid container>
                   <Grid size={6}>
                     <List component="div" disablePadding>
-                      <ListItemText
-                        primary={`Tag: ${selectedProcess.Tag}`}
-                        primaryTypographyProps={{ color: "white" }}
-                      />
+                      <ListItemText primary={`Tag: ${selectedProcess.Tag}`} />
                       <ListItemText
                         primary={`Protection: ${selectedProcess.Protection}`}
                         primaryTypographyProps={{ color: "warning" }}
@@ -78,11 +75,9 @@ const Malfind: FC<MalfindProps> = ({ data }) => {
                     <List component="div" disablePadding>
                       <ListItemText
                         primary={`CommitCharge: ${selectedProcess.CommitCharge}`}
-                        primaryTypographyProps={{ color: "white" }}
                       />
                       <ListItemText
                         primary={`PrivateMemory: ${selectedProcess.PrivateMemory}`}
-                        primaryTypographyProps={{ color: "white" }}
                       />
                     </List>
                   </Grid>

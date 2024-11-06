@@ -43,7 +43,7 @@ def create_indicator(indicator):
         stix_indicator = StixIndicator(
             pattern_type="stix",
             pattern=pattern,
-            valid_from=indicator.evidence.dump_linked_case.case_last_update,
+            valid_from=indicator.evidence.linked_case.last_update,
             description=indicator.description,
         )
         return stix_indicator
