@@ -6,18 +6,22 @@ import { Outlet } from "react-router-dom";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
 import IconButton from "@mui/material/IconButton";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Dashboard,
+  Work,
+  Memory,
+  QuestionMark,
+  BackupTable,
+} from "@mui/icons-material";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import WorkIcon from "@mui/icons-material/Work";
+
 import ResponsiveAppBar from "./MenuBar";
-import MemoryIcon from "@mui/icons-material/Memory";
 import { Link } from "react-router-dom";
-import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 
 const drawerWidth = 240;
 
@@ -71,13 +75,15 @@ const Drawer = styled(MuiDrawer, {
 function renderIcon(index: number) {
   switch (index) {
     case 0:
-      return <DashboardIcon />;
+      return <Dashboard />;
     case 1:
-      return <WorkIcon />;
+      return <Work />;
     case 2:
-      return <MemoryIcon />;
+      return <Memory />;
+    case 3:
+      return <BackupTable />;
     default:
-      return <QuestionMarkIcon />;
+      return <QuestionMark />;
   }
 }
 
@@ -103,33 +109,39 @@ export default function MiniDrawer() {
           {/* Box to contain navigation links, allowed to grow */}
           <Box flexGrow={1}>
             <List>
-              {["Dashboard", "Cases", "Evidences"].map((text, index) => (
-                <ListItem key={index} disablePadding sx={{ display: "block" }}>
-                  <ListItemButton
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: open ? "initial" : "center",
-                      px: 2.5,
-                    }}
-                    component={Link}
-                    to={`/${text.toLowerCase().replace(" ", "")}`}
+              {["Dashboard", "Cases", "Evidences", "Symbols"].map(
+                (text, index) => (
+                  <ListItem
+                    key={index}
+                    disablePadding
+                    sx={{ display: "block" }}
                   >
-                    <ListItemIcon
+                    <ListItemButton
                       sx={{
-                        minWidth: 0,
-                        mr: open ? 3 : "auto",
-                        justifyContent: "center",
+                        minHeight: 48,
+                        justifyContent: open ? "initial" : "center",
+                        px: 2.5,
                       }}
+                      component={Link}
+                      to={`/${text.toLowerCase().replace(" ", "")}`}
                     >
-                      {renderIcon(index)}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={text}
-                      sx={{ opacity: open ? 1 : 0 }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : "auto",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {renderIcon(index)}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={text}
+                        sx={{ opacity: open ? 1 : 0 }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ),
+              )}
             </List>
           </Box>
 
@@ -153,7 +165,7 @@ export default function MiniDrawer() {
                   <IconButton
                     onClick={open ? handleDrawerClose : handleDrawerOpen}
                   >
-                    {open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                    {open ? <ChevronRight /> : <ChevronLeft />}
                   </IconButton>
                 </ListItemIcon>
                 <ListItemText primary="Close" sx={{ opacity: open ? 1 : 0 }} />

@@ -9,13 +9,8 @@ def start_extraction(evidence_id):
     This task will extract all the artefacts using different plugins
     """
     instance = Evidence.objects.get(id=evidence_id)
-    if instance.os == "windows":
-        # Start the Windows Artefact extraction
-        engine = VolatilityEngine(instance)
-        engine.start_extraction()
-    else:
-        print("LINUX ENGINE TODO")
-
+    engine = VolatilityEngine(instance)
+    engine.start_extraction()
 
 @shared_task
 def start_timeliner(evidence_id):

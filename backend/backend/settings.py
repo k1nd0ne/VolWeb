@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "cases",
     "evidences",
     "volatility_engine",
+    "symbols",
 ]
 
 MIDDLEWARE = [

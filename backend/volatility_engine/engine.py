@@ -15,9 +15,11 @@ from .utils import (
     fix_permissions,
 )
 from volatility3.framework.plugins import construct_plugin
-from .plugins.windows.volweb_main import VolWebMain
+from .plugins.windows.volweb_main import VolWebMain as VolWebMainW
+from .plugins.windows.volweb_misc import VolWebMisc as VolWebMiscW
+from .plugins.linux.volweb_main import VolWebMain as VolWebMainL
+from .plugins.linux.volweb_misc import VolWebMisc as VolWebMiscL
 from volatility3.plugins.windows.dumpfiles import DumpFiles
-from .plugins.windows.volweb_misc import VolWebMisc
 
 volatility3.framework.require_interface_version(2, 0, 0)
 logger = logging.getLogger(__name__)
@@ -92,7 +94,7 @@ class VolatilityEngine:
     def start_windows_analysis(self):
         plugin_list = [
             {
-                VolWebMain: {
+                VolWebMainW: {
                     "icon": "None",
                     "description": "VolWeb Main plugin executing many other plugins with automagics optimization",
                     "category": "Other",
@@ -101,7 +103,7 @@ class VolatilityEngine:
                 }
             },
             {
-                VolWebMisc: {
+                VolWebMiscW: {
                     "icon": "None",
                     "description": "VolWeb Misc plugin executing other plugins that are sharing the same requirements with automagics optimization",
                     "category": "Other",
@@ -116,6 +118,35 @@ class VolatilityEngine:
             builted_plugin = self.construct_plugin()
             self.run_plugin(builted_plugin)
         fix_permissions(self.evidence_data["output_path"])
+
+    def start_linux_analysis(self):
+        plugin_list = [
+            {
+                VolWebMainL: {
+                    "icon": "None",
+                    "description": "VolWeb Main plugin executing many other plugins with automagics optimization",
+                    "category": "Other",
+                    "display": "False",
+                    "name": "VolWebMain",
+                }
+            },
+            {
+                VolWebMiscL: {
+                    "icon": "None",
+                    "description": "VolWeb Misc plugin executing other plugins that are sharing the same requirements with automagics optimization",
+                    "category": "Other",
+                    "display": "False",
+                    "name": "VolWebMisc",
+                }
+            },
+        ]
+        for plugin in plugin_list:
+            logger.debug(f"RUNNING PLUGIN: {plugin}")
+            self.build_context(plugin)
+            builted_plugin = self.construct_plugin()
+            self.run_plugin(builted_plugin)
+        fix_permissions(self.evidence_data["output_path"])
+
 
     def start_timeliner(self):
         timeliner_plugin = {
@@ -150,6 +181,8 @@ class VolatilityEngine:
             completed_task = 0
             if self.evidence.os == "windows":
                 self.start_windows_analysis()
+            else:
+                self.start_linux_analysis()
         except UnsatisfiedException as e:
             logger.warning(f"Unsatisfied requirements: {str(e)}")
 
@@ -208,7 +241,6 @@ class VolatilityEngine:
                 result = self.run_plugin(builted_plugin)
 
             fix_permissions(f"media/{self.evidence.id}")
-            print(result)
             return result
         except Exception as e:
             logger.error(e)
