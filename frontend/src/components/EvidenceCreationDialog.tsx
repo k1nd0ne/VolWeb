@@ -120,9 +120,6 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
       setUploading(false);
       onClose();
 
-      // Notify the parent component about the new evidence
-
-      // Reset form
       setOs("");
       setFile(null);
       setUploadProgress(null);

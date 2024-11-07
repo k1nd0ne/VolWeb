@@ -8,13 +8,6 @@ import {
   TextField,
   Button,
   IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Select,
   MenuItem,
   InputLabel,
@@ -29,15 +22,12 @@ import {
   Close as CloseIcon,
 } from "@mui/icons-material";
 import axiosInstance from "../utils/axiosInstance";
+import IndicatorsList from "./IndicatorsList"; // Import the new component
+
 const StixModule = ({ evidenceId }) => {
-  // State for Drawers
   const [isFormDrawerOpen, setFormDrawerOpen] = useState(false);
   const [isIndicatorsDrawerOpen, setIndicatorsDrawerOpen] = useState(false);
 
-  // State for Indicators
-  const [indicators, setIndicators] = useState([]);
-
-  // State for Types
   const [types, setTypes] = useState([]);
   const [isLoadingTypes, setIsLoadingTypes] = useState(false);
   const [typesError, setTypesError] = useState("");
@@ -68,9 +58,7 @@ const StixModule = ({ evidenceId }) => {
 
   const toggleIndicatorsDrawer = (open) => () => {
     setIndicatorsDrawerOpen(open);
-    if (open) {
-      fetchIndicators();
-    }
+    // IndicatorsList handles its own fetching when open
   };
 
   // Handlers for Snackbar
@@ -95,21 +83,6 @@ const StixModule = ({ evidenceId }) => {
       });
     } finally {
       setIsLoadingTypes(false);
-    }
-  };
-
-  // Fetch Indicators
-  const fetchIndicators = async () => {
-    try {
-      const url = `/core/stix/indicators/evidence/${evidenceId}/`;
-      const response = await axiosInstance.get(url);
-      setIndicators(response.data);
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "Failed to fetch indicators.",
-        severity: "error",
-      });
     }
   };
 
@@ -149,7 +122,8 @@ const StixModule = ({ evidenceId }) => {
         message: "Indicator created successfully!",
         severity: "success",
       });
-      fetchIndicators(); // Refresh indicators list
+      // If you keep indicators as state in StixModule, you would refresh them here
+      // Otherwise, IndicatorsList will handle its own refresh
     } catch (error) {
       const message =
         error.response?.data?.message ||
@@ -163,28 +137,8 @@ const StixModule = ({ evidenceId }) => {
     }
   };
 
-  // Handle Delete Indicator
-  const handleDelete = async (indicatorId) => {
-    try {
-      await axiosInstance.delete(`/core/stix/indicators/${indicatorId}/`);
-      setSnackbar({
-        open: true,
-        message: "Indicator deleted successfully.",
-        severity: "success",
-      });
-      fetchIndicators(); // Refresh indicators list
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "Failed to delete the indicator.",
-        severity: "error",
-      });
-    }
-  };
-
   return (
     <Box>
-      {/* Add New Indicator FAB */}
       <Tooltip title="New Indicator" placement="left">
         <Fab
           color="error"
@@ -196,7 +150,6 @@ const StixModule = ({ evidenceId }) => {
         </Fab>
       </Tooltip>
 
-      {/* View Indicators FAB */}
       <Tooltip title="View Indicators" placement="left">
         <Fab
           color="primary"
@@ -208,7 +161,6 @@ const StixModule = ({ evidenceId }) => {
         </Fab>
       </Tooltip>
 
-      {/* Form Drawer */}
       <Drawer
         anchor="right"
         open={isFormDrawerOpen}
@@ -291,7 +243,6 @@ const StixModule = ({ evidenceId }) => {
               required
               margin="normal"
             />
-            {/* Hidden Evidence Field */}
             <input type="hidden" name="evidence" value={formData.evidence} />
             <Button
               type="submit"
@@ -307,111 +258,21 @@ const StixModule = ({ evidenceId }) => {
         </Box>
       </Drawer>
 
-      {/* Indicators Drawer */}
       <Drawer
         anchor="right"
         open={isIndicatorsDrawerOpen}
         onClose={toggleIndicatorsDrawer(false)}
         PaperProps={{ sx: { width: "60%" } }}
       >
-        <Box
-          sx={{
-            padding: 2,
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography variant="h6" color="warning">
-              Indicators
-            </Typography>
-            <IconButton onClick={toggleIndicatorsDrawer(false)}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          <Box mt={2} flexGrow={1} overflow="auto">
-            <TableContainer component={Paper}>
-              <Table size="small" aria-label="indicators table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Value</TableCell>
-                    <TableCell>Source</TableCell>
-                    <TableCell>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {indicators.map((indicator) => (
-                    <TableRow key={indicator.id}>
-                      <TableCell>
-                        <Box
-                          sx={{
-                            p: 1,
-                            textTransform: "uppercase",
-                            fontWeight: "600",
-                            color: "warning.main",
-                            border: "1px solid",
-                            borderColor: "warning.light",
-                            textAlign: "center",
-                          }}
-                        >
-                          {indicator.type}
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" color="text.secondary">
-                          {indicator.name}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" color="text.secondary">
-                          {indicator.description}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" color="error">
-                          {indicator.value}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" color="text.secondary">
-                          {indicator.dump_linked_dump_name}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          size="small"
-                          onClick={() => handleDelete(indicator.id)}
-                        >
-                          Remove
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {indicators.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={6} align="center">
-                        No indicators found.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </Box>
+        <IndicatorsList
+          open={isIndicatorsDrawerOpen}
+          onClose={toggleIndicatorsDrawer(false)}
+          evidenceId={evidenceId}
+          // Optionally, handle indicator deletion callbacks here
+          // onIndicatorDeleted={(deletedId) => { /* Your logic */ }}
+        />
       </Drawer>
 
-      {/* Snackbar for Notifications */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}

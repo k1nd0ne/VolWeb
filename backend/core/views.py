@@ -132,6 +132,9 @@ class IndicatorTypeListAPIView(APIView):
 
 
 class StatisticsApiView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+
     def get(self, request, *args, **kwargs):
         total_cases = Case.objects.count()
         total_evidences = Evidence.objects.count()

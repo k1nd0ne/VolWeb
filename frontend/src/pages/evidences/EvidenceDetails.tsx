@@ -2,7 +2,7 @@ import React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import EvicenceMetadata from "../../components/EvidenceMetadata";
+import EvidenceMetadata from "../../components/EvidenceMetadata";
 import EvidenceInvestigate from "../../components/investigate/EvidenceInvestigate";
 import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
@@ -90,7 +90,7 @@ const EvidenceDetail: React.FC = () => {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <EvicenceMetadata />
+        <EvidenceMetadata evidenceId={id} theme={"dark"} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <EvidenceInvestigate />
