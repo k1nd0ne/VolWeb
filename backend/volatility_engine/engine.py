@@ -180,6 +180,8 @@ class VolatilityEngine:
             self.evidence.status = 0  # Make sure we start at 0%
             if self.evidence.os == "windows":
                 self.start_windows_analysis()
+                self.evidence.status = 100
+                self.evidence.save()
             else:
                 self.start_linux_analysis()
         except UnsatisfiedException as e:

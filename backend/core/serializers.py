@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Indicator
+from django_celery_results.models import TaskResult
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,3 +25,10 @@ class IndicatorSerializer(serializers.ModelSerializer):
 class TypeSerializer(serializers.Serializer):
     value = serializers.CharField()
     display = serializers.CharField()
+
+class TasksSerializer(serializers.ModelSerializer):
+    task_kwargs = serializers.JSONField
+
+    class Meta:
+        model = TaskResult
+        fields = "__all__"

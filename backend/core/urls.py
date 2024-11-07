@@ -7,7 +7,8 @@ from core.views import (
     IndicatorCaseApiView,
     IndicatorExportApiView,
     IndicatorEvidenceApiView,
-    IndicatorTypeListAPIView,  # Import the new view
+    IndicatorTypeListAPIView,
+    StatisticsApiView
 )
 
 urlpatterns = [
@@ -25,5 +26,6 @@ urlpatterns = [
         IndicatorEvidenceApiView.as_view(),
     ),
     path("stix/export/<int:case_id>/", IndicatorExportApiView.as_view()),
-    path("stix/indicator-types/", IndicatorTypeListAPIView.as_view(), name="indicator_types"),  # New URL
+    path("stix/indicator-types/", IndicatorTypeListAPIView.as_view(), name="indicator_types"),
+    path("statistics/", StatisticsApiView.as_view(), name="statistics"),
 ]

@@ -9,7 +9,14 @@ from stix2.exceptions import InvalidValueError
 from rest_framework import generics
 from core.serializers import UserSerializer, TypeSerializer
 from core.models import TYPES, Indicator
-from core.serializers import IndicatorSerializer
+from cases.models import Case
+from cases.serializers import CaseSerializer
+from evidences.serializers import EvidenceSerializer
+from evidences.models import Evidence
+from symbols.models import Symbol
+from symbols.serializers import SymbolSerializer
+from core.serializers import IndicatorSerializer, TasksSerializer
+from django_celery_results.models import TaskResult
 from django.http import JsonResponse, HttpResponse
 from rest_framework import status
 from core.stix import export_bundle, create_indicator
@@ -114,9 +121,45 @@ class IndicatorTypeListAPIView(APIView):
     """
     API view to list all indicator types.
     """
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
     def get(self, request, format=None):
         types = [{"value": type_[0], "display": type_[1]} for type_ in TYPES]
         serializer = TypeSerializer(data=types, many=True)
         if serializer.is_valid():
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StatisticsApiView(APIView):
+    def get(self, request, *args, **kwargs):
+        total_cases = Case.objects.count()
+        total_evidences = Evidence.objects.count()
+        total_evidences_progress = Evidence.objects.exclude(status=100).count()
+        total_evidences_windows = Evidence.objects.filter(os="windows").count()
+        total_evidences_linux = Evidence.objects.filter(os="linux").count()
+        total_symbols = Symbol.objects.count()
+        total_users = User.objects.count()
+        last_5_cases = Case.objects.all()[:5]
+        last_5_isf = Symbol.objects.all()[:5]
+
+        total_tasks = TaskResult.objects.filter(task_name="Windows.Engine")
+        tasks_serializer = TasksSerializer(total_tasks, many=True)
+        cases_serializer = CaseSerializer(last_5_cases, many=True)
+        symbols_serializer = SymbolSerializer(last_5_isf, many=True)
+
+        return Response(
+            {
+                "total_cases": total_cases,
+                "total_evidences": total_evidences,
+                "total_evidences_progress": total_evidences_progress,
+                "total_evidences_windows": total_evidences_windows,
+                "total_evidences_linux": total_evidences_linux,
+                "total_symbols": total_symbols,
+                "total_users": total_users,
+                "tasks": tasks_serializer.data,
+                "last_5_cases": cases_serializer.data,
+                "last_5_isf": symbols_serializer.data,
+            },
+            status=status.HTTP_200_OK
+        )
