@@ -32,12 +32,13 @@ if SECRET_KEY == "DEV_SECRET":
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
+    "rest_framework.authtoken",
     "django_celery_results",
     "corsheaders",
     "core",
@@ -53,6 +55,7 @@ INSTALLED_APPS = [
     "evidences",
     "volatility_engine",
     "symbols",
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -98,7 +101,21 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "backend.wsgi.application"
+ASGI_APPLICATION = "backend.asgi.application"
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                (
+                    Secrets.BROKER_HOST,
+                    Secrets.BROKER_PORT,
+                )
+            ],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

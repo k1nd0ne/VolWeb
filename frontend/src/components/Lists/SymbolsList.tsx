@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import SymbolCreationDialog from "../Dialogs/SymbolCreationDialog";
 import MessageHandler from "../MessageHandler";
@@ -24,13 +23,8 @@ import {
 } from "@mui/icons-material";
 import { Symbol } from "../../types";
 
-interface SymbolsListProps {
-  symbols: Symbol[];
-}
-
-function SymbolsList({ symbols }: SymbolsListProps) {
-  const navigate = useNavigate();
-  const [symbolData, setSymbolData] = useState<Symbol[]>(symbols);
+function SymbolsList() {
+  const [symbolData, setSymbolData] = useState<Symbol[]>([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openCreationDialog, setOpenCreationDialog] = useState<boolean>(false);
   const [selectedSymbol, setSelectedSymbol] = useState<Symbol | null>(null);
@@ -43,19 +37,70 @@ function SymbolsList({ symbols }: SymbolsListProps) {
     "success" | "error"
   >("success");
 
-  useEffect(() => {
-    setSymbolData(symbols);
-  }, [symbols]);
+  // WebSocket related state
+  const [isConnected, setIsConnected] = useState(false);
+  const ws = useRef<WebSocket | null>(null);
 
-  const handleCreateSuccess = (newSymbol: Symbol) => {
+  useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsUrl = `${protocol}://localhost:8000/ws/symbols/`;
+    ws.current = new WebSocket(wsUrl);
+
+    ws.current.onopen = () => {
+      console.log("WebSocket connected");
+      setIsConnected(true);
+    };
+
+    ws.current.onclose = () => {
+      console.log("WebSocket disconnected");
+      setIsConnected(false);
+    };
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const status = data.status;
+      const message = data.message;
+
+      if (status === "created") {
+        setSymbolData((prevData) => [...prevData, message]);
+      } else if (status === "updated") {
+        setSymbolData((prevData) =>
+          prevData.map((symbol) =>
+            symbol.id === message.id ? message : symbol,
+          ),
+        );
+      } else if (status === "deleted") {
+        setSymbolData((prevData) =>
+          prevData.filter((symbol) => symbol.id !== message.id),
+        );
+      }
+    };
+
+    ws.current.onerror = (error) => {
+      console.log("WebSocket error:", error);
+    };
+
+    // Fetch initial symbol data
+    axiosInstance
+      .get("/api/symbols/")
+      .then((response) => {
+        setSymbolData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching symbol data:", error);
+      });
+
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, []);
+
+  const handleCreateSuccess = () => {
     setMessageHandlerMessage("Symbol created successfully");
     setMessageHandlerSeverity("success");
-    setSymbolData([...symbolData, newSymbol]); // Corrected from `newESymbol` to `newSymbol`
     setMessageHandlerOpen(true);
-  };
-
-  const handleToggle = (id: number) => {
-    navigate(`/symbols/${id}`);
   };
 
   const handleDeleteClick = (row: Symbol) => {
@@ -75,9 +120,6 @@ function SymbolsList({ symbols }: SymbolsListProps) {
         await axiosInstance.delete(`/api/symbols/${selectedSymbol.id}/`);
         setMessageHandlerMessage("Symbol deleted successfully");
         setMessageHandlerSeverity("success");
-        setSymbolData((prevData) =>
-          prevData.filter((symbol) => symbol.id !== selectedSymbol.id),
-        );
       } catch {
         setMessageHandlerMessage("Error deleting symbol");
         setMessageHandlerSeverity("error");
@@ -98,9 +140,6 @@ function SymbolsList({ symbols }: SymbolsListProps) {
       );
       setMessageHandlerMessage("Selected symbols deleted successfully");
       setMessageHandlerSeverity("success");
-      setSymbolData((prevData) =>
-        prevData.filter((symbol) => !checked.includes(symbol.id)),
-      );
       setChecked([]);
     } catch {
       setMessageHandlerMessage("Error deleting selected symbols");
@@ -189,6 +228,7 @@ function SymbolsList({ symbols }: SymbolsListProps) {
         disableRowSelectionOnClick
         rows={symbolData}
         columns={columns}
+        loading={!isConnected}
         checkboxSelection
         onRowSelectionModelChange={(newSelection) => {
           setChecked(newSelection as number[]);

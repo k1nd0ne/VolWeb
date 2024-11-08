@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import {
@@ -28,11 +28,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import AddCaseDialog from "../Dialogs/CaseCreationDialog";
 import { Case } from "../../types";
 
-interface CaseListProps {
-  cases: Case[];
-}
-
-function CaseList({ cases }: CaseListProps) {
+function CaseList() {
   const navigate = useNavigate();
   const [checked, setChecked] = useState<number[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
@@ -43,15 +39,73 @@ function CaseList({ cases }: CaseListProps) {
     "success",
   );
   const [caseDialogOpen, setCaseDialogOpen] = useState(false);
-  const [caseData, setCaseData] = useState<Case[]>(cases);
+  const [caseData, setCaseData] = useState<Case[]>([]);
   const [deleteMultiple, setDeleteMultiple] = useState(false);
 
-  useEffect(() => {
-    setCaseData(cases);
-  }, [cases]);
+  // WebSocket related state
+  const [isConnected, setIsConnected] = useState(false);
+  const ws = useRef<WebSocket | null>(null);
 
-  const handleCreateSuccess = (newCase: Case) => {
-    setCaseData([...caseData, newCase]);
+  useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsUrl = `${protocol}://localhost:8000/ws/cases/`;
+    ws.current = new WebSocket(wsUrl);
+
+    ws.current.onopen = () => {
+      console.log("WebSocket connected");
+      setIsConnected(true);
+    };
+
+    ws.current.onclose = () => {
+      console.log("WebSocket disconnected");
+      setIsConnected(false);
+    };
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const status = data.status;
+      const message = data.message;
+
+      if (status === "created") {
+        setCaseData((prevData) => [...prevData, message]);
+      } else if (status === "updated") {
+        setCaseData((prevData) =>
+          prevData.map((caseItem) =>
+            caseItem.id === message.id ? message : caseItem,
+          ),
+        );
+      } else if (status === "deleted") {
+        setCaseData((prevData) =>
+          prevData.filter((caseItem) => caseItem.id !== message.id),
+        );
+      }
+    };
+
+    ws.current.onerror = (error) => {
+      console.log("WebSocket error:", error);
+    };
+
+    // Fetch initial case data
+    axiosInstance
+      .get("/api/cases/")
+      .then((response) => {
+        setCaseData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching case data:", error);
+      });
+
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, []);
+
+  const handleCreateSuccess = () => {
+    setSnackbarMessage("Case created successfully");
+    setSnackbarSeverity("success");
+    setOpenSnackbar(true);
   };
 
   const handleDeleteClick = (row: Case) => {
@@ -66,9 +120,6 @@ function CaseList({ cases }: CaseListProps) {
         await axiosInstance.delete(`/api/cases/${selectedCase.id}/`);
         setSnackbarMessage("Case deleted successfully");
         setSnackbarSeverity("success");
-        setCaseData(
-          caseData.filter((caseItem) => caseItem.id !== selectedCase.id),
-        );
       } catch {
         setSnackbarMessage("Error deleting case");
         setSnackbarSeverity("error");
@@ -89,9 +140,6 @@ function CaseList({ cases }: CaseListProps) {
       );
       setSnackbarMessage("Selected cases deleted successfully");
       setSnackbarSeverity("success");
-      setCaseData(
-        caseData.filter((caseItem) => !checked.includes(caseItem.id)),
-      );
       setChecked([]);
     } catch {
       setSnackbarMessage("Error deleting selected cases");
@@ -190,6 +238,7 @@ function CaseList({ cases }: CaseListProps) {
         disableRowSelectionOnClick
         columns={columns}
         rows={caseData}
+        loading={!isConnected}
         checkboxSelection
         onRowSelectionModelChange={(selection) => {
           setChecked(selection as number[]);
@@ -258,4 +307,5 @@ function CaseList({ cases }: CaseListProps) {
     </>
   );
 }
+
 export default CaseList;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import axiosInstance from "../../utils/axiosInstance";
@@ -16,6 +16,7 @@ import {
   DialogActions,
   Button,
   Fab,
+  CircularProgress,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -33,13 +34,9 @@ interface Evidence {
   status: number;
 }
 
-interface EvidenceListProps {
-  evidences: Evidence[];
-}
-
-function EvidenceList({ evidences }: EvidenceListProps) {
+function EvidenceList() {
   const navigate = useNavigate();
-  const [evidenceData, setEvidenceData] = useState<Evidence[]>(evidences);
+  const [evidenceData, setEvidenceData] = useState<Evidence[]>([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openCreationDialog, setOpenCreationDialog] = useState<boolean>(false);
   const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(
@@ -54,14 +51,67 @@ function EvidenceList({ evidences }: EvidenceListProps) {
     "success" | "error"
   >("success");
 
-  useEffect(() => {
-    setEvidenceData(evidences);
-  }, [evidences]);
+  const [isConnected, setIsConnected] = useState(false);
+  const ws = useRef<WebSocket | null>(null);
 
-  const handleCreateSuccess = (newEvidence: Evidence) => {
+  useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsUrl = `${protocol}://localhost:8000/ws/evidences/`;
+    ws.current = new WebSocket(wsUrl);
+
+    ws.current.onopen = () => {
+      console.log("WebSocket connected");
+      setIsConnected(true);
+    };
+
+    ws.current.onclose = () => {
+      console.log("WebSocket disconnected");
+      setIsConnected(false);
+    };
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const status = data.status;
+      const message = data.message;
+      // message is the evidence data
+
+      if (status === "created") {
+        setEvidenceData((prevData) =>
+          prevData.map((evidence) =>
+            evidence.id === message.id ? message : evidence,
+          ),
+        );
+      } else {
+        setEvidenceData((prevData) =>
+          prevData.filter((evidence) => evidence.id !== message.id),
+        );
+      }
+    };
+
+    ws.current.onerror = (error) => {
+      console.log("WebSocket error:", error);
+    };
+
+    // Fetch initial evidence data
+    axiosInstance
+      .get("/api/evidences/")
+      .then((response) => {
+        setEvidenceData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching evidence data:", error);
+      });
+
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, []);
+
+  const handleCreateSuccess = () => {
     setMessageHandlerMessage("Evidence created successfully");
     setMessageHandlerSeverity("success");
-    setEvidenceData([...evidenceData, newEvidence]);
   };
 
   const handleToggle = (id: number) => {
@@ -85,9 +135,6 @@ function EvidenceList({ evidences }: EvidenceListProps) {
         await axiosInstance.delete(`/api/evidences/${selectedEvidence.id}/`);
         setMessageHandlerMessage("Evidence deleted successfully");
         setMessageHandlerSeverity("success");
-        setEvidenceData((prevData) =>
-          prevData.filter((evidence) => evidence.id !== selectedEvidence.id),
-        );
       } catch {
         setMessageHandlerMessage("Error deleting evidence");
         setMessageHandlerSeverity("error");
@@ -108,9 +155,6 @@ function EvidenceList({ evidences }: EvidenceListProps) {
       );
       setMessageHandlerMessage("Selected evidences deleted successfully");
       setMessageHandlerSeverity("success");
-      setEvidenceData((prevData) =>
-        prevData.filter((evidence) => !checked.includes(evidence.id)),
-      );
       setChecked([]);
     } catch {
       setMessageHandlerMessage("Error deleting selected evidences");
@@ -221,6 +265,7 @@ function EvidenceList({ evidences }: EvidenceListProps) {
         disableRowSelectionOnClick
         rows={evidenceData}
         columns={columns}
+        loading={!isConnected}
         checkboxSelection
         onRowSelectionModelChange={(newSelection) => {
           setChecked(newSelection as number[]);
