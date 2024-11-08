@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import { Case } from "../../types";
 import { Box, Typography } from "@mui/material/";
-import AddCaseDialog from "../../components/CaseCreationDialog";
-import CaseList from "../../components/CaseList";
+import AddCaseDialog from "../../components/Dialogs/CaseCreationDialog";
+import CaseList from "../../components/Lists/CaseList";
 import MessageHandler from "../../components/MessageHandler";
 
 const Cases: React.FC = () => {

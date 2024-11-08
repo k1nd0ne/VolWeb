@@ -21,9 +21,9 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import PluginDataGrid from "./PluginDataGrid";
 import { Plugin } from "../../types";
-import MalfindButton from "./windows/buttons/MalfindButton";
-import FilescanButton from "./windows/buttons/FilescanButton";
-import NetGraphButton from "./windows/buttons/NetGraphButton";
+import MalfindButton from "./Windows/Buttons/MalfindButton";
+import FilescanButton from "./Windows/Buttons/FilescanButton";
+import NetGraphButton from "./Windows/Buttons/NetGraphButton";
 const PluginDashboard: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [plugins, setPlugins] = useState<Plugin[] | null>(null);

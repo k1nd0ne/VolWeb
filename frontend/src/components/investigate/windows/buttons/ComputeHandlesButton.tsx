@@ -6,7 +6,6 @@ import {
   DialogTitle,
   DialogContent,
   IconButton,
-  Typography,
 } from "@mui/material";
 import { Close, Settings } from "@mui/icons-material";
 import axios from "axios";

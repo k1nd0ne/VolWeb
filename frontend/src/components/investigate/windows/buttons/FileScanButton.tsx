@@ -14,7 +14,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { FolderOpen } from "@mui/icons-material";
 import { Artefact } from "../../../../types";
-import FileScan from "../components/FileScan";
+import FileScan from "../Components/FileScan";
 
 const FilescanButton: React.FC = () => {
   const { id } = useParams<{ id: string }>();

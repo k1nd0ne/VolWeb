@@ -12,7 +12,7 @@ import {
   Paper,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import NetworkGraph from "../components/NetworkGraph";
+import NetworkGraph from "../Components/NetworkGraph";
 import { BugReportRounded } from "@mui/icons-material";
 import { Connection } from "../../../../types";
 

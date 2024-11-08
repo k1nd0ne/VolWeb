@@ -23,7 +23,12 @@ const MessageHandler: React.FC<MessageHandlerProps> = ({
 }) => {
   return (
     <Snackbar open={open} autoHideDuration={6000} onClose={onClose}>
-      <Alert onClose={onClose} severity={severity} sx={{ width: "100%" }}>
+      <Alert
+        variant="outlined"
+        onClose={onClose}
+        severity={severity}
+        sx={{ width: "100%" }}
+      >
         {message}
       </Alert>
     </Snackbar>

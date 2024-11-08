@@ -1,21 +1,23 @@
 import React, { useState } from "react";
-import axiosInstance from "../utils/axiosInstance";
-import Button from "@mui/material/Button";
+import axiosInstance from "../../utils/axiosInstance";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  IconButton,
+  FormControl,
+  Divider,
+  TextField,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
 import CloseIcon from "@mui/icons-material/Close";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import FormControl from "@mui/material/FormControl";
-import Divider from "@mui/material/Divider";
-import TextField from "@mui/material/TextField";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import { Case, User } from "../types";
-import InvestigatorSelect from "./InvestigatorSelect";
+import { Case, User } from "../../types";
+import InvestigatorSelect from "../InvestigatorSelect";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {

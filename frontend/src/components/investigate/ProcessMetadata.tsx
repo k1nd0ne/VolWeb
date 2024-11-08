@@ -13,8 +13,8 @@ import {
 import InfoIcon from "@mui/icons-material/Info";
 import { ProcessInfo } from "../../types";
 import { styled } from "@mui/material/styles";
-import DumpButton from "./windows/buttons/DumpButton";
-import ComputeHandlesButton from "./windows/buttons/ComputeHandlesButton";
+import DumpButton from "./Windows/Buttons/DumpButton";
+import ComputeHandlesButton from "./Windows/Buttons/ComputeHandlesButton";
 
 interface ProcessMetadataProps {
   processMetadata: ProcessInfo;

@@ -14,7 +14,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { BugReportRounded } from "@mui/icons-material";
 import { Connection } from "../../../../types";
-import Malfind from "../components/Malfind";
+import Malfind from "../Components/Malfind";
 
 const MalfindButton: React.FC = () => {
   const { id } = useParams<{ id: string }>();

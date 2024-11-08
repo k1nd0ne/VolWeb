@@ -11,8 +11,8 @@ import {
   InputLabel,
   TextField,
 } from "@mui/material";
-import axiosInstance from "../utils/axiosInstance";
-import { Symbol } from "../types";
+import axiosInstance from "../../utils/axiosInstance";
+import { Symbol } from "../../types";
 
 interface SymbolCreationDialogProps {
   open: boolean;

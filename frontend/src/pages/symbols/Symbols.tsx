@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import SymbolsList from "../../components/SymbolsList";
+import SymbolsList from "../../components/Lists/SymbolsList";
 
 import { Symbol } from "../../types";
 import Box from "@mui/material/Box";

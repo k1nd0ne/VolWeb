@@ -22,7 +22,7 @@ import {
   Close as CloseIcon,
 } from "@mui/icons-material";
 import axiosInstance from "../utils/axiosInstance";
-import IndicatorsList from "./IndicatorsList"; // Import the new component
+import IndicatorsList from "./Lists/IndicatorsList"; // Import the new component
 
 const StixModule = ({ evidenceId }) => {
   const [isFormDrawerOpen, setFormDrawerOpen] = useState(false);

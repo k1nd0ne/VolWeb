@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import EvidenceList from "../../components/EvidenceList";
+import EvidenceList from "../../components/Lists/EvidenceList";
 
 import { Evidence } from "../../types";
 import Box from "@mui/material/Box";

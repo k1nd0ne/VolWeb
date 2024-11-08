@@ -16,7 +16,7 @@ import {
   Alert,
 } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
-import axiosInstance from "../utils/axiosInstance";
+import axiosInstance from "../../utils/axiosInstance";
 import PropTypes from "prop-types";
 
 const IndicatorsList = ({ open, onClose, evidenceId, onIndicatorDeleted }) => {

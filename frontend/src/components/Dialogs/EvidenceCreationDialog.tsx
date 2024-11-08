@@ -14,9 +14,9 @@ import {
   Autocomplete,
   CircularProgress,
 } from "@mui/material";
-import axiosInstance from "../utils/axiosInstance";
+import axiosInstance from "../../utils/axiosInstance";
 import axios from "axios";
-import { Evidence, Case } from "../types";
+import { Evidence, Case } from "../../types";
 
 interface EvidenceCreationDialogProps {
   open: boolean;

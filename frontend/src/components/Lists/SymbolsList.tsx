@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../utils/axiosInstance";
-import EvidenceCreationDialog from "./EvidenceCreationDialog";
-import AddIcon from "@mui/icons-material/Add";
-import Memory from "@mui/icons-material/Memory";
-import DeviceHub from "@mui/icons-material/DeviceHub";
-import MessageHandler from "./MessageHandler";
-import LinearProgressWithLabel from "./LinearProgressBar";
-import Chip from "@mui/material/Chip";
+import axiosInstance from "../../utils/axiosInstance";
+import SymbolCreationDialog from "../Dialogs/SymbolCreationDialog";
+import MessageHandler from "../MessageHandler";
 import {
   IconButton,
   Tooltip,
@@ -18,31 +13,27 @@ import {
   DialogContentText,
   DialogActions,
   Button,
+  Fab,
 } from "@mui/material";
-import { Biotech } from "@mui/icons-material";
-import DeleteSweep from "@mui/icons-material/DeleteSweep";
-import Fab from "@mui/material/Fab";
-import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  Add as AddIcon,
+  Memory,
+  DeviceHub,
+  DeleteSweep,
+  Delete as DeleteIcon,
+} from "@mui/icons-material";
+import { Symbol } from "../../types";
 
-interface Evidence {
-  id: number;
-  name: string;
-  os: string;
-  status: number;
+interface SymbolsListProps {
+  symbols: Symbol[];
 }
 
-interface EvidenceListProps {
-  evidences: Evidence[];
-}
-
-function EvidenceList({ evidences }: EvidenceListProps) {
+function SymbolsList({ symbols }: SymbolsListProps) {
   const navigate = useNavigate();
-  const [evidenceData, setEvidenceData] = useState<Evidence[]>(evidences);
+  const [symbolData, setSymbolData] = useState<Symbol[]>(symbols);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openCreationDialog, setOpenCreationDialog] = useState<boolean>(false);
-  const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(
-    null,
-  );
+  const [selectedSymbol, setSelectedSymbol] = useState<Symbol | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
   const [deleteMultiple, setDeleteMultiple] = useState(false);
   const [messageHandlerOpen, setMessageHandlerOpen] = useState<boolean>(false);
@@ -53,21 +44,22 @@ function EvidenceList({ evidences }: EvidenceListProps) {
   >("success");
 
   useEffect(() => {
-    setEvidenceData(evidences);
-  }, [evidences]);
+    setSymbolData(symbols);
+  }, [symbols]);
 
-  const handleCreateSuccess = (newEvidence: Evidence) => {
-    setMessageHandlerMessage("Evidence created successfully");
+  const handleCreateSuccess = (newSymbol: Symbol) => {
+    setMessageHandlerMessage("Symbol created successfully");
     setMessageHandlerSeverity("success");
-    setEvidenceData([...evidenceData, newEvidence]);
+    setSymbolData([...symbolData, newSymbol]); // Corrected from `newESymbol` to `newSymbol`
+    setMessageHandlerOpen(true);
   };
 
   const handleToggle = (id: number) => {
-    navigate(`/evidences/${id}`);
+    navigate(`/symbols/${id}`);
   };
 
-  const handleDeleteClick = (row: Evidence) => {
-    setSelectedEvidence(row);
+  const handleDeleteClick = (row: Symbol) => {
+    setSelectedSymbol(row);
     setOpenDeleteDialog(true);
     setDeleteMultiple(false);
   };
@@ -78,21 +70,21 @@ function EvidenceList({ evidences }: EvidenceListProps) {
   };
 
   const handleConfirmDelete = async () => {
-    if (selectedEvidence && !deleteMultiple) {
+    if (selectedSymbol && !deleteMultiple) {
       try {
-        await axiosInstance.delete(`/api/evidences/${selectedEvidence.id}/`);
-        setMessageHandlerMessage("Evidence deleted successfully");
+        await axiosInstance.delete(`/api/symbols/${selectedSymbol.id}/`);
+        setMessageHandlerMessage("Symbol deleted successfully");
         setMessageHandlerSeverity("success");
-        setEvidenceData((prevData) =>
-          prevData.filter((evidence) => evidence.id !== selectedEvidence.id),
+        setSymbolData((prevData) =>
+          prevData.filter((symbol) => symbol.id !== selectedSymbol.id),
         );
       } catch {
-        setMessageHandlerMessage("Error deleting evidence");
+        setMessageHandlerMessage("Error deleting symbol");
         setMessageHandlerSeverity("error");
       } finally {
         setMessageHandlerOpen(true);
         setOpenDeleteDialog(false);
-        setSelectedEvidence(null);
+        setSelectedSymbol(null);
       }
     } else if (deleteMultiple) {
       handleDeleteSelected();
@@ -102,16 +94,16 @@ function EvidenceList({ evidences }: EvidenceListProps) {
   const handleDeleteSelected = async () => {
     try {
       await Promise.all(
-        checked.map((id) => axiosInstance.delete(`/api/evidences/${id}/`)),
+        checked.map((id) => axiosInstance.delete(`/api/symbols/${id}/`)),
       );
-      setMessageHandlerMessage("Selected evidences deleted successfully");
+      setMessageHandlerMessage("Selected symbols deleted successfully");
       setMessageHandlerSeverity("success");
-      setEvidenceData((prevData) =>
-        prevData.filter((evidence) => !checked.includes(evidence.id)),
+      setSymbolData((prevData) =>
+        prevData.filter((symbol) => !checked.includes(symbol.id)),
       );
       setChecked([]);
     } catch {
-      setMessageHandlerMessage("Error deleting selected evidences");
+      setMessageHandlerMessage("Error deleting selected symbols");
       setMessageHandlerSeverity("error");
     } finally {
       setMessageHandlerOpen(true);
@@ -122,7 +114,7 @@ function EvidenceList({ evidences }: EvidenceListProps) {
   const columns: GridColDef[] = [
     {
       field: "name",
-      headerName: "Evidence Name",
+      headerName: "Symbol Name",
       renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
           <Memory style={{ marginRight: 8 }} />
@@ -143,27 +135,14 @@ function EvidenceList({ evidences }: EvidenceListProps) {
       flex: 1,
     },
     {
-      field: "status",
-      headerName: "Status",
-      renderCell: (params: GridRenderCellParams) =>
-        params.value !== 100 ? (
-          <div
-            style={{ display: "flex", alignItems: "center", height: "100%" }}
-          >
-            <LinearProgressWithLabel value={Number(params.value)} />
-          </div>
-        ) : (
-          <div
-            style={{ display: "flex", alignItems: "center", height: "100%" }}
-          >
-            <Chip
-              label="success"
-              size="small"
-              color="success"
-              variant="outlined"
-            />
-          </div>
-        ),
+      field: "description",
+      headerName: "Description",
+      renderCell: (params: GridRenderCellParams) => (
+        <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
+          <Memory style={{ marginRight: 8 }} />
+          {params.value}
+        </div>
+      ),
       flex: 1,
     },
     {
@@ -171,15 +150,6 @@ function EvidenceList({ evidences }: EvidenceListProps) {
       headerName: "Actions",
       renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
-          <Tooltip title="Investigate">
-            <IconButton
-              edge="end"
-              aria-label="open"
-              onClick={() => handleToggle(params.row.id)}
-            >
-              <Biotech />
-            </IconButton>
-          </Tooltip>
           <Tooltip title="Delete">
             <IconButton
               edge="end"
@@ -207,7 +177,7 @@ function EvidenceList({ evidences }: EvidenceListProps) {
       >
         <AddIcon />
       </Fab>
-      <EvidenceCreationDialog
+      <SymbolCreationDialog
         open={openCreationDialog}
         onClose={() => {
           setOpenCreationDialog(false);
@@ -217,7 +187,7 @@ function EvidenceList({ evidences }: EvidenceListProps) {
       <DataGrid
         rowHeight={40}
         disableRowSelectionOnClick
-        rows={evidenceData}
+        rows={symbolData}
         columns={columns}
         checkboxSelection
         onRowSelectionModelChange={(newSelection) => {
@@ -247,12 +217,12 @@ function EvidenceList({ evidences }: EvidenceListProps) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">{`Delete ${
-          deleteMultiple ? "Selected Evidences" : "Evidence"
+          deleteMultiple ? "Selected Symbols" : "Symbol"
         }`}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {`Are you sure you want to delete ${
-              deleteMultiple ? "these evidences" : "this evidence"
+              deleteMultiple ? "these symbols" : "this symbol"
             }?`}
           </DialogContentText>
         </DialogContent>
@@ -269,4 +239,4 @@ function EvidenceList({ evidences }: EvidenceListProps) {
   );
 }
 
-export default EvidenceList;
+export default SymbolsList;

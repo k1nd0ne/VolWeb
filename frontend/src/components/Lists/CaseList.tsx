@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import {
@@ -13,18 +13,20 @@ import {
   Button,
   Alert,
   Tooltip,
+  Fab,
 } from "@mui/material";
-import Biotech from "@mui/icons-material/Biotech";
-import DeleteSweep from "@mui/icons-material/DeleteSweep";
-import Work from "@mui/icons-material/Work";
-import Info from "@mui/icons-material/Info";
-import CalendarToday from "@mui/icons-material/CalendarToday";
-import axiosInstance from "../utils/axiosInstance";
-import AddCaseDialog from "./CaseCreationDialog";
-import { Case } from "../types";
-import Fab from "@mui/material/Fab";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  Biotech,
+  DeleteSweep,
+  Work,
+  Info,
+  CalendarToday,
+  Add as AddIcon,
+  Delete as DeleteIcon,
+} from "@mui/icons-material";
+import axiosInstance from "../../utils/axiosInstance";
+import AddCaseDialog from "../Dialogs/CaseCreationDialog";
+import { Case } from "../../types";
 
 interface CaseListProps {
   cases: Case[];
