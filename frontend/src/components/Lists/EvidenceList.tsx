@@ -16,7 +16,6 @@ import {
   DialogActions,
   Button,
   Fab,
-  CircularProgress,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -24,8 +23,10 @@ import {
   DeviceHub,
   Biotech,
   DeleteSweep,
+  Link,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
+import BindEvidenceDialog from "../Dialogs/BindEvidenceDialog";
 
 interface Evidence {
   id: number;
@@ -39,6 +40,7 @@ function EvidenceList() {
   const [evidenceData, setEvidenceData] = useState<Evidence[]>([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openCreationDialog, setOpenCreationDialog] = useState<boolean>(false);
+  const [openBindingDialog, setOpenBindingDialog] = useState<boolean>(false);
   const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(
     null,
   );
@@ -53,46 +55,68 @@ function EvidenceList() {
 
   const [isConnected, setIsConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
+  const retryInterval = useRef<number | null>(null);
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const wsUrl = `${protocol}://localhost:8000/ws/evidences/`;
-    ws.current = new WebSocket(wsUrl);
 
-    ws.current.onopen = () => {
-      console.log("WebSocket connected");
-      setIsConnected(true);
+    const connectWebSocket = () => {
+      ws.current = new WebSocket(wsUrl);
+
+      ws.current.onopen = () => {
+        console.log("WebSocket connected");
+        setIsConnected(true);
+        if (retryInterval.current) {
+          clearInterval(retryInterval.current);
+          retryInterval.current = null;
+        }
+      };
+
+      ws.current.onclose = () => {
+        console.log("WebSocket disconnected");
+        setIsConnected(false);
+        if (!retryInterval.current) {
+          retryInterval.current = window.setTimeout(connectWebSocket, 5000);
+          console.log("Attempting to reconnect to WebSocket...");
+        }
+      };
+
+      ws.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        const status = data.status;
+        const message = data.message;
+
+        if (status === "created") {
+          setEvidenceData((prevData) => {
+            const exists = prevData.some(
+              (evidence) => evidence.id === message.id,
+            );
+            if (exists) {
+              return prevData.map((evidence) =>
+                evidence.id === message.id ? message : evidence,
+              );
+            } else {
+              return [...prevData, message];
+            }
+          });
+        } else {
+          setEvidenceData((prevData) =>
+            prevData.filter((evidence) => evidence.id !== message.id),
+          );
+          setChecked((prevChecked) =>
+            prevChecked.filter((id) => id !== message.id),
+          );
+        }
+      };
+
+      ws.current.onerror = (error) => {
+        console.log("WebSocket error:", error);
+      };
     };
 
-    ws.current.onclose = () => {
-      console.log("WebSocket disconnected");
-      setIsConnected(false);
-    };
+    connectWebSocket();
 
-    ws.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const status = data.status;
-      const message = data.message;
-      // message is the evidence data
-
-      if (status === "created") {
-        setEvidenceData((prevData) =>
-          prevData.map((evidence) =>
-            evidence.id === message.id ? message : evidence,
-          ),
-        );
-      } else {
-        setEvidenceData((prevData) =>
-          prevData.filter((evidence) => evidence.id !== message.id),
-        );
-      }
-    };
-
-    ws.current.onerror = (error) => {
-      console.log("WebSocket error:", error);
-    };
-
-    // Fetch initial evidence data
     axiosInstance
       .get("/api/evidences/")
       .then((response) => {
@@ -105,6 +129,9 @@ function EvidenceList() {
     return () => {
       if (ws.current) {
         ws.current.close();
+      }
+      if (retryInterval.current) {
+        clearInterval(retryInterval.current);
       }
     };
   }, []);
@@ -222,6 +249,7 @@ function EvidenceList() {
               edge="end"
               aria-label="open"
               onClick={() => handleToggle(params.row.id)}
+              disabled={params.row.status !== 100}
             >
               <Biotech />
             </IconButton>
@@ -231,6 +259,7 @@ function EvidenceList() {
               edge="end"
               aria-label="delete"
               onClick={() => handleDeleteClick(params.row)}
+              disabled={params.row.status !== 100}
             >
               <DeleteSweep />
             </IconButton>
@@ -259,6 +288,23 @@ function EvidenceList() {
           setOpenCreationDialog(false);
         }}
         onCreateSuccess={handleCreateSuccess}
+      />
+      <Fab
+        color="secondary"
+        aria-label="bind"
+        onClick={() => {
+          setOpenBindingDialog(true);
+        }}
+        style={{ position: "fixed", bottom: "16px", right: "80px" }}
+      >
+        <Link />
+      </Fab>
+      <BindEvidenceDialog
+        open={openBindingDialog}
+        onClose={() => {
+          setOpenBindingDialog(false);
+        }}
+        onBindSuccess={handleCreateSuccess}
       />
       <DataGrid
         rowHeight={40}
