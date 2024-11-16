@@ -6,12 +6,19 @@ from evidences.models import Evidence
 from .serializers import (
     VolatilityPluginDetailSerializer,
     VolatilityPluginNameSerializer,
+    TasksSerializer
 )
+from rest_framework.permissions import IsAuthenticated
 from .tasks import dump_windows_file, dump_windows_process, start_timeliner, dump_windows_handles
 from dateutil.parser import parse as parse_date
+from django_celery_results.models import TaskResult
+from django.db.models import Q
+import ast
 
 
 class EvidencePluginsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, evidence_id):
         try:
             evidence = Evidence.objects.get(id=evidence_id)
@@ -143,3 +150,20 @@ class FileDumpTask(APIView):
             return Response(
                 {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+class TasksApiView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, evidence_id, *args, **kwargs):
+        """
+        Return the requested tasks if existing.
+        """
+        tasks = TaskResult.objects.all()
+        tasks = TaskResult.objects.filter(Q(status="STARTED") | Q(status="PENDING"))
+
+        filtered_tasks = [
+            task for task in tasks
+            if ast.literal_eval(ast.literal_eval(task.task_args))[0] == evidence_id
+        ]
+        serializer = TasksSerializer(filtered_tasks, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -1,5 +1,4 @@
 import React from "react";
-import { useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import {
   Card,
@@ -18,6 +17,11 @@ import ComputeHandlesButton from "./Windows/Buttons/ComputeHandlesButton";
 
 interface ProcessMetadataProps {
   processMetadata: ProcessInfo;
+  id: string | undefined;
+  loadingDump: boolean;
+  setLoadingDump: (loading: boolean) => void;
+  loadingHandles: boolean;
+  setLoadingHandles: (loading: boolean) => void;
 }
 
 const ValueText = styled("span")(({ theme }) => ({
@@ -29,9 +33,12 @@ const ValueText = styled("span")(({ theme }) => ({
 
 const ProcessMetadata: React.FC<ProcessMetadataProps> = ({
   processMetadata,
+  id,
+  loadingDump,
+  setLoadingDump,
+  loadingHandles,
+  setLoadingHandles,
 }) => {
-  const { id } = useParams<{ id: string }>();
-
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Card variant="outlined">
@@ -78,8 +85,18 @@ const ProcessMetadata: React.FC<ProcessMetadataProps> = ({
             )}
           </List>
           <Box sx={{ display: "flex", justifyContent: "left", mt: 2 }}>
-            <DumpButton evidenceId={id} pid={processMetadata.PID} />
-            <ComputeHandlesButton evidenceId={id} pid={processMetadata.PID} />
+            <DumpButton
+              evidenceId={id}
+              pid={processMetadata.PID}
+              loading={loadingDump}
+              setLoading={setLoadingDump}
+            />
+            <ComputeHandlesButton
+              evidenceId={id}
+              pid={processMetadata.PID}
+              loading={loadingHandles}
+              setLoading={setLoadingHandles}
+            />
           </Box>
         </CardContent>
       </Card>

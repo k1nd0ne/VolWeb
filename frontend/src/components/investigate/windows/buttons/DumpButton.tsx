@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, CircularProgress } from "@mui/material";
 import { Download } from "@mui/icons-material";
 import axios from "axios";
@@ -6,11 +6,16 @@ import axios from "axios";
 interface DumpButtonProps {
   evidenceId: string | undefined;
   pid: number | undefined;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 }
 
-const DumpButton: React.FC<DumpButtonProps> = ({ evidenceId, pid }) => {
-  const [loading, setLoading] = useState(false);
-
+const DumpButton: React.FC<DumpButtonProps> = ({
+  evidenceId,
+  pid,
+  loading,
+  setLoading,
+}) => {
   const handleDump = async () => {
     setLoading(true);
     try {
@@ -18,11 +23,10 @@ const DumpButton: React.FC<DumpButtonProps> = ({ evidenceId, pid }) => {
         pid,
         evidenceId,
       });
-      // You can handle the response here if needed
+      // Loading remains true until task completes and WebSocket updates it
     } catch (error) {
       // Handle the error appropriately
       console.error("Error dumping process:", error);
-    } finally {
       setLoading(false);
     }
   };
@@ -37,7 +41,7 @@ const DumpButton: React.FC<DumpButtonProps> = ({ evidenceId, pid }) => {
       disabled={loading}
       startIcon={loading ? <CircularProgress size={20} /> : <Download />}
     >
-      Dump
+      {loading ? "Dumping..." : "Dump"}
     </Button>
   );
 };

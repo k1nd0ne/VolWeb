@@ -4,8 +4,8 @@ import json
 
 class VolatilityTaskConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
-        self.dump_id = self.scope["url_route"]["kwargs"]["dump_id"]
-        self.room_group_name = f"volatility_tasks_{self.dump_id}"
+        self.evidence_id = self.scope["url_route"]["kwargs"]["evidence_id"]
+        self.room_group_name = f"volatility_tasks_{self.evidence_id}"
 
         # Join room group
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)

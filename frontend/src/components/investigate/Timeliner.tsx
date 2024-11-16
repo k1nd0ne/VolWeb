@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { useParams } from "react-router-dom";
 import Chart from "react-apexcharts";
 import { DataGrid, GridColDef, useGridApiRef } from "@mui/x-data-grid";
@@ -17,6 +23,7 @@ interface Artefact {
   "Modified Date": string | null;
   "Accessed Date": string | null;
   "Changed Date": string | null;
+  [key: string]: string | null;
 }
 
 interface ChartContext {
@@ -29,6 +36,12 @@ interface ChartContext {
   };
 }
 
+interface TaskData {
+  task_name: string;
+  status: string;
+  task_args: string;
+}
+
 const Timeliner: React.FC = () => {
   const [graphData, setGraphData] = useState<[string, number][]>([]);
   const [artefactData, setArtefactData] = useState<Artefact[]>([]);
@@ -37,10 +50,12 @@ const Timeliner: React.FC = () => {
   const [processing, setProcessing] = useState<boolean>(false);
   const [seriesData, setSeriesData] = useState<{ x: string; y: number }[]>([]);
   const apiRef = useGridApiRef();
+  const ws = useRef<WebSocket | null>(null);
 
+  // Define columns for DataGrid
   const columns: GridColDef[] = artefactData[0]
     ? Object.keys(artefactData[0])
-        .filter((key) => key !== "__children" && key !== "id") // Filter out the "id" column
+        .filter((key) => key !== "__children" && key !== "id")
         .map((key) => ({
           field: key,
           headerName: key,
@@ -60,86 +75,159 @@ const Timeliner: React.FC = () => {
             ),
         }))
     : [];
+
   const autosizeOptions = {
     columns: [...columns].map((col) => col.headerName ?? ""),
     includeOutliers: true,
     includeHeaders: true,
   };
-  const fetchArtefacts = async (range: [string, string]) => {
-    try {
-      setLoading(true);
-      const [start, end] = range;
-      const params: { start: string; end: string } = { start, end };
-      const response = await axiosInstance.get(
-        `/api/evidence/${id}/plugin/volatility3.plugins.timeliner.Timeliner`,
-        { params },
-      );
-      // Assign consistent unique IDs to each row
-      const artefactsWithId = response.data.artefacts.map(
-        (artefact: Artefact, index: number) => ({
-          ...artefact,
-          id: index,
-        }),
-      );
-      setArtefactData(artefactsWithId);
-    } catch (error) {
-      console.error("Error fetching artefacts", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  useEffect(() => {
-    const fetchTimelinerGraph = async () => {
+  // Function to fetch artefacts based on timestamp range
+  const fetchArtefacts = useCallback(
+    async (range: [string, string]) => {
       try {
+        setLoading(true);
+        const [start, end] = range;
+        const params: { start: string; end: string } = { start, end };
         const response = await axiosInstance.get(
-          `/api/evidence/${id}/plugin/volatility3.plugins.timeliner.TimelinerGraph`,
+          `/api/evidence/${id}/plugin/volatility3.plugins.timeliner.Timeliner`,
+          { params },
         );
-        setGraphData(response.data.artefacts);
-        setSeriesData(
-          response.data.artefacts.map((item: [string, number]) => ({
-            x: item[0],
-            y: item[1],
-          })),
+        // Assign consistent unique IDs to each row
+        const artefactsWithId = response.data.artefacts.map(
+          (artefact: Artefact, index: number) => ({
+            ...artefact,
+            id: index,
+          }),
         );
-
-        if (response.data && response.data.artefacts.length > 0) {
-          fetchArtefacts([
-            response.data.artefacts[0][0],
-            response.data.artefacts[0][0],
-          ]);
-        }
+        setArtefactData(artefactsWithId);
       } catch (error) {
-        console.error("Error fetching TimelinerGraph", error);
+        console.error("Error fetching artefacts", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [id],
+  );
+
+  // Function to check if a timeliner task is running
+  const checkIfTimelinerTaskRunning = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get(`/api/evidence/${id}/tasks/`);
+      const tasksData: TaskData[] = response.data;
+
+      const isTimelinerTaskRunning = tasksData.some((task) => {
+        return (
+          task.task_name === "volatility_engine.tasks.start_timeliner" &&
+          task.status === "STARTED"
+        );
+      });
+
+      setProcessing(isTimelinerTaskRunning);
+    } catch (error) {
+      console.error("Error fetching tasks", error);
+    }
+  }, [id]);
+
+  // Function to fetch TimelinerGraph data
+  const fetchTimelinerGraph = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/api/evidence/${id}/plugin/volatility3.plugins.timeliner.TimelinerGraph`,
+      );
+      setGraphData(response.data.artefacts);
+      setSeriesData(
+        response.data.artefacts.map((item: [string, number]) => ({
+          x: item[0],
+          y: item[1],
+        })),
+      );
+
+      if (response.data && response.data.artefacts.length > 0) {
+        fetchArtefacts([
+          response.data.artefacts[0][0],
+          response.data.artefacts[0][0],
+        ]);
+      }
+    } catch (error: any) {
+      console.error("Error fetching TimelinerGraph", error);
+      if (error.response && error.response.status === 404) {
+        // Data not available, check if task is running
+        checkIfTimelinerTaskRunning();
+      }
+    }
+  }, [id, fetchArtefacts, checkIfTimelinerTaskRunning]);
+
+  // Fetch TimelinerGraph on component mount
+  useEffect(() => {
+    fetchTimelinerGraph();
+  }, [fetchTimelinerGraph]);
+
+  // WebSocket setup
+  useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsUrl = `${protocol}://${window.location.hostname}:8000/ws/engine/${id}/`;
+
+    ws.current = new WebSocket(wsUrl);
+
+    ws.current.onopen = () => {
+      console.log("WebSocket connected");
+    };
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("WebSocket message:", data);
+
+      // Handle WebSocket notifications
+      const message = data.message;
+      if (message.name === "timeliner") {
+        if (message.status === "finished") {
+          setProcessing(false);
+          fetchTimelinerGraph();
+        }
       }
     };
 
-    fetchTimelinerGraph();
-  }, [id]);
+    ws.current.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
 
+    ws.current.onerror = (error) => {
+      console.log("WebSocket error:", error);
+    };
+
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, [id, fetchTimelinerGraph]);
+
+  // Autosize columns when artefactData changes
   useEffect(() => {
     if (!loading && artefactData.length > 0) {
       const timeoutId = setTimeout(() => {
-        if (apiRef.current) {
+        if (apiRef.current && apiRef.current.autosizeColumns) {
           apiRef.current.autosizeColumns(autosizeOptions);
         }
-      }, 200); // Delay to ensure DataGrid has rendered
+      }, 200);
       return () => clearTimeout(timeoutId);
     }
-  }, [loading, artefactData]);
+  }, [loading, artefactData, autosizeOptions, apiRef]);
 
+  // Handle "Build timeline" button click
   const handleRunTask = async () => {
     setProcessing(true);
     try {
       await axiosInstance.post(`/api/evidence/tasks/timeliner/`, { id });
-      // Completion logic goes here
+      // Task started, processing remains true until task completes via WebSocket
     } catch (error) {
       console.error("Error triggering timeliner task", error);
-    } finally {
-      setProcessing(false);
+      setProcessing(false); // Stop processing on error
     }
   };
 
+  // Chart options
   const options = useMemo(
     () => ({
       theme: {
@@ -212,7 +300,7 @@ const Timeliner: React.FC = () => {
         y: { formatter: (val: number) => val.toFixed(0) },
       },
     }),
-    [seriesData],
+    [seriesData, fetchArtefacts],
   );
 
   if (graphData.length === 0) {
@@ -233,7 +321,7 @@ const Timeliner: React.FC = () => {
           disabled={processing}
           startIcon={processing && <CircularProgress size={20} />}
         >
-          Build timeline
+          {processing ? "Processing..." : "Build timeline"}
         </Button>
       </div>
     );

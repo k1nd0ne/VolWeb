@@ -6,7 +6,8 @@ from .views import (
     TimelinerTask,
     HandlesTask,
     ProcessDumpTask,
-    FileDumpTask
+    FileDumpTask,
+    TasksApiView
 )
 
 urlpatterns = [
@@ -28,5 +29,7 @@ urlpatterns = [
     path("evidence/tasks/handles/", HandlesTask.as_view()),
     path("evidence/tasks/dump/process/", ProcessDumpTask.as_view()),
     path("evidence/tasks/dump/file/", FileDumpTask.as_view()),
+    path("evidence/<int:evidence_id>/tasks/", TasksApiView.as_view()),
+
 
 ]

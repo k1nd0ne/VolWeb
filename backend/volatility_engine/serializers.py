@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import VolatilityPlugin
+from django_celery_results.models import TaskResult
 
 
 class VolatilityPluginNameSerializer(serializers.ModelSerializer):
@@ -12,3 +13,10 @@ class VolatilityPluginDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = VolatilityPlugin
         fields = ["name", "artefacts"]
+
+class TasksSerializer(serializers.ModelSerializer):
+    task_kwargs = serializers.JSONField
+
+    class Meta:
+        model = TaskResult
+        fields = "__all__"

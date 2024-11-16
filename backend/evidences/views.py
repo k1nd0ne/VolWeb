@@ -131,11 +131,12 @@ class BindEvidenceViewSet(APIView):
                 return Response({'detail': f'Error accessing AWS S3: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
         elif source == 'MINIO':
             try:
+                is_secure = endpoint.startswith('https://')
                 minio_client = Minio(
                     endpoint.replace('http://', '').replace('https://', ''),
                     access_key=access_key_id,
                     secret_key=access_key,
-                    secure=False,
+                    secure=is_secure,
                 )
                 stat = minio_client.stat_object(bucket, key)
                 etag = stat.etag

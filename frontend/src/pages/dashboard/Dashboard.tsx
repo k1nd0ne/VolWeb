@@ -32,7 +32,6 @@ const Dashboard: React.FC = () => {
       try {
         const response =
           await axiosInstance.get<StatisticsData>("/core/statistics/");
-        console.log(response.data);
         setData(response.data);
       } catch (error) {
         console.error("Error fetching statistics:", error);
@@ -59,7 +58,6 @@ const Dashboard: React.FC = () => {
       </Box>
     );
   }
-  console.log(data.tasks);
   const tasksStats = countTasksByDate(data.tasks);
 
   return (

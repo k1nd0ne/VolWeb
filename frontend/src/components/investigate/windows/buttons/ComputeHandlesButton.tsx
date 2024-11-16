@@ -9,18 +9,21 @@ import {
 } from "@mui/material";
 import { Close, Settings } from "@mui/icons-material";
 import axios from "axios";
-import PluginDataGrid from "../../PluginDataGrid"; // Adjust the path as necessary
+import PluginDataGrid from "../../PluginDataGrid";
 
 interface ComputeHandlesButtonProps {
   evidenceId: string | undefined;
   pid: number;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 }
 
 const ComputeHandlesButton: React.FC<ComputeHandlesButtonProps> = ({
   evidenceId,
   pid,
+  loading,
+  setLoading,
 }) => {
-  const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
 
   const handleComputeHandles = async () => {
@@ -37,25 +40,23 @@ const ComputeHandlesButton: React.FC<ComputeHandlesButtonProps> = ({
       ) {
         // Data exists, open dialog to display results
         setOpenDialog(true);
+        setLoading(false);
       } else {
         // Data does not exist, start computation
         await axios.post(`/api/evidence/tasks/handles/`, { pid, evidenceId });
-        alert("Computation started. Please wait a moment and try again.");
+        // Loading remains true until task completes and WebSocket updates it
       }
     } catch (error: any) {
       if (error.response && error.response.status === 404) {
         // Data does not exist, start computation
         await axios.post(`/api/evidence/tasks/handles/`, { pid, evidenceId });
-        alert(
-          "Computation started. TODO: Implement websockets with tasks monitoring",
-        );
+        // Loading remains true
       } else {
         // Handle other errors
         console.error("Error computing handles:", error);
+        setLoading(false);
         alert("An error occurred while checking or computing handles.");
       }
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -74,7 +75,7 @@ const ComputeHandlesButton: React.FC<ComputeHandlesButtonProps> = ({
         disabled={loading}
         startIcon={loading ? <CircularProgress size={20} /> : <Settings />}
       >
-        Compute Handles
+        {loading ? "Computing..." : "Compute Handles"}
       </Button>
 
       {/* Dialog to display the handles data */}
