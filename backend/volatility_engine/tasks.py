@@ -36,7 +36,7 @@ def start_timeliner(evidence_id):
     )
 
 @shared_task
-def dump_windows_process(evidence_id, pid):
+def dump_process(evidence_id, pid):
     """
     This task is dedicated to performing a pslist dump.
     """
@@ -87,15 +87,16 @@ def dump_windows_file(evidence_id, offset):
     instance = Evidence.objects.get(id=evidence_id)
     channel_layer = get_channel_layer()
     engine = VolatilityEngine(instance)
-    engine.dump_file(offset)
+    result = engine.dump_file(offset)
+    print(result)
     async_to_sync(channel_layer.group_send)(
         f"volatility_tasks_{evidence_id}",
         {
             "type": "send_notification",
             "message": {
-                "name": "dump",
+                "name": "file_dump",
                 "status": "finished",
-                "msg": "Message",
+                "result": result,
             },
         },
     )

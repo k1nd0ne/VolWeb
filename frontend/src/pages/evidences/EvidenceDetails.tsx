@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
+import axiosInstance from "../../utils/axiosInstance";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import EvidenceMetadata from "../../components/EvidenceMetadata";
-import EvidenceInvestigate from "../../components/investigate/EvidenceInvestigate";
+import InvestigateWindows from "../../components/Investigate/Windows/Components/InvestigateWindows";
+import InvestigateLinux from "../../components/Investigate/Linux/Components/InvestigateLinux";
 import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
 import TimelineIcon from "@mui/icons-material/Timeline";
-import Timeliner from "../../components/investigate/Timeliner";
+import Timeliner from "../../components/Investigate/Timeliner";
 import StixModule from "../../components/StixModule";
+import { Evidence } from "../../types";
 import { useParams } from "react-router-dom";
 
 interface TabPanelProps {
@@ -43,6 +46,21 @@ function a11yProps(index: number) {
 const EvidenceDetail: React.FC = () => {
   const [value, setValue] = React.useState(0);
   const { id } = useParams<{ id: string }>();
+  const [currentEvidence, setCurrentEvidence] = React.useState<Evidence>();
+  useEffect(() => {
+    const fetchEvidenceDetails = async () => {
+      if (id) {
+        try {
+          const response = await axiosInstance.get(`/api/evidences/${id}`);
+          setCurrentEvidence(response.data);
+        } catch (error) {
+          console.error("Failed to fetch evidence details:", error);
+        }
+      }
+    };
+
+    fetchEvidenceDetails();
+  }, [id]);
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -93,7 +111,12 @@ const EvidenceDetail: React.FC = () => {
         <EvidenceMetadata evidenceId={id} theme={"dark"} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        <EvidenceInvestigate />
+        {currentEvidence && currentEvidence.os === "windows" && (
+          <InvestigateWindows evidence={currentEvidence} />
+        )}
+        {currentEvidence && currentEvidence.os === "linux" && (
+          <InvestigateLinux evidence={currentEvidence} />
+        )}
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
         <Timeliner />

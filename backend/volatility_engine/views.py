@@ -9,7 +9,7 @@ from .serializers import (
     TasksSerializer
 )
 from rest_framework.permissions import IsAuthenticated
-from .tasks import dump_windows_file, dump_windows_process, start_timeliner, dump_windows_handles
+from .tasks import dump_windows_file, dump_process, start_timeliner, dump_windows_handles
 from dateutil.parser import parse as parse_date
 from django_celery_results.models import TaskResult
 from django.db.models import Q
@@ -131,7 +131,7 @@ class ProcessDumpTask(APIView):
             evidence_id = request.data.get("evidenceId")
             pid = request.data.get("pid")
             evidence = Evidence.objects.get(id=evidence_id)
-            dump_windows_process.apply_async(args=[evidence.id, pid])
+            dump_process.apply_async(args=[evidence.id, pid])
             return Response(status=status.HTTP_200_OK)
         except Evidence.DoesNotExist:
             return Response(

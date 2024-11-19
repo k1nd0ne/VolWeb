@@ -39,6 +39,7 @@ class VolWebMain(plugins.PluginInterface):
 
     def run_all(self):
         volweb_plugins = self.load_plugin_info("volatility_engine/volweb_plugins.json")
+
         instances = {}
         for plugin, details in volweb_plugins.items():
             try:
@@ -58,6 +59,13 @@ class VolWebMain(plugins.PluginInterface):
         for name, plugin in instances.items():
             try:
                 vollog.info(f"RUNNING: {name}")
+                self.context.config["plugins.VolWebMain.dump"] = (
+                    False  # No dump by default
+                )
+                if name == "volatility3.plugins.windows.registry.hivelist.HiveList":
+                    self.context.config["plugins.VolWebMain.dump"] = (
+                        True  # We want to dump the hivelist
+                    )
                 plugin["class"]._file_handler = file_handler(
                     f"media/{evidence_id}/"
                 )  # Our file_handler need to be passed to the sub-plugin
@@ -71,7 +79,6 @@ class VolWebMain(plugins.PluginInterface):
                 evidence.save()
             except:
                 pass
-            evidence.status = 100
 
     def _generator(self):
         yield (0, ("Success",))

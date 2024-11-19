@@ -6,8 +6,10 @@ import {
   List,
   ListItem,
   ListItemText,
+  ListItemIcon,
+  Divider,
 } from "@mui/material";
-
+import BackupTableIcon from "@mui/icons-material/BackupTable";
 interface ISFItem {
   name: string;
 }
@@ -23,9 +25,13 @@ const RecentISF: React.FC<RecentISFProps> = ({ isfList }) => {
         <Typography variant="h6" gutterBottom>
           Recent ISF
         </Typography>
+        <Divider />
         <List>
           {isfList.map((isfItem, index) => (
-            <ListItem key={index} button>
+            <ListItem key={index}>
+              <ListItemIcon>
+                <BackupTableIcon />
+              </ListItemIcon>
               <ListItemText primary={isfItem.name} />
             </ListItem>
           ))}

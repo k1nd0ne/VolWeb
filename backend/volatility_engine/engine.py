@@ -14,6 +14,7 @@ from .utils import (
     build_timeline,
     fix_permissions,
 )
+from volatility3.plugins.linux.pslist import PsList
 from volatility3.framework.plugins import construct_plugin
 from .plugins.windows.volweb_main import VolWebMain as VolWebMainW
 from .plugins.windows.volweb_misc import VolWebMisc as VolWebMiscW
@@ -189,15 +190,26 @@ class VolatilityEngine:
 
     def dump_process(self, pid):
         logger.info(f"Trying to dump PID {pid}")
-        pslist_plugin = {
-            volatility3.plugins.windows.pslist.PsList: {
-                "icon": "N/A",
-                "description": "N/A",
-                "category": "Processes",
-                "display": "False",
-                "name": f"volatility3.plugins.windows.pslist.PsListDump.{pid}",
+        if self.evidence.os == "windows":
+            pslist_plugin = {
+                volatility3.plugins.windows.pslist.PsList: {
+                    "icon": "N/A",
+                    "description": "N/A",
+                    "category": "Processes",
+                    "display": "False",
+                    "name": f"volatility3.plugins.windows.pslist.PsListDump.{pid}",
+                }
             }
-        }
+        else:
+            pslist_plugin = {
+                PsList: {
+                    "icon": "N/A",
+                    "description": "N/A",
+                    "category": "Processes",
+                    "display": "False",
+                    "name": f"volatility3.plugins.linux.pslist.PsListDump.{pid}",
+                }
+            }
         self.build_context(pslist_plugin)
         self.context.config["plugins.PsList.pid"] = [
             pid,

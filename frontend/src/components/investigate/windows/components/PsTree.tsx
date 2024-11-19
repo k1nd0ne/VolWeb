@@ -7,10 +7,10 @@ import { styled } from "@mui/material/styles";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import { TreeItem, treeItemClasses } from "@mui/x-tree-view/TreeItem";
 import { TreeViewBaseItem } from "@mui/x-tree-view/models";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "../../../../utils/axiosInstance";
 import { useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
-import { ProcessInfo } from "../../types";
+import { ProcessInfo } from "../../../../types";
 
 interface ProcessNode {
   PID: number;

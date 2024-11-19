@@ -20,11 +20,16 @@ import { HomeRepairService, Close } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import PluginDataGrid from "./PluginDataGrid";
-import { Plugin } from "../../types";
+import { Plugin, Evidence } from "../../types";
 import MalfindButton from "./Windows/Buttons/MalfindButton";
 import FilescanButton from "./Windows/Buttons/FilescanButton";
 import NetGraphButton from "./Windows/Buttons/NetGraphButton";
-const PluginDashboard: React.FC = () => {
+
+interface PluginDashboardProps {
+  evidence: Evidence;
+}
+
+const PluginDashboard: React.FC<PluginDashboardProps> = ({ evidence }) => {
   const { id } = useParams<{ id: string }>();
   const [plugins, setPlugins] = useState<Plugin[] | null>(null);
   const [open, setOpen] = useState(false);
@@ -42,7 +47,7 @@ const PluginDashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchCaseDetail = async () => {
+    const fetchPlugins = async () => {
       try {
         const response = await axiosInstance.get(
           `/api/evidence/${id}/plugins/`,
@@ -55,7 +60,7 @@ const PluginDashboard: React.FC = () => {
       }
     };
 
-    fetchCaseDetail();
+    fetchPlugins();
   }, [id]);
 
   // Group plugins by category
@@ -126,9 +131,15 @@ const PluginDashboard: React.FC = () => {
                   </Typography>
                   <Grid container spacing={1}>
                     {/* Here we insert our custom components */}
-                    {category === "Filesystem" && <FilescanButton />}
-                    {category === "Malware" && <MalfindButton />}
-                    {category === "Network" && <NetGraphButton />}
+                    {evidence.os === "windows" && category === "Filesystem" && (
+                      <FilescanButton />
+                    )}
+                    {evidence.os === "windows" && category === "Malware" && (
+                      <MalfindButton />
+                    )}
+                    {evidence.os === "windows" && category === "Network" && (
+                      <NetGraphButton />
+                    )}
                     {groupedPlugins[category].map((plugin) => {
                       const iconName = plugin.icon;
                       const IconComponent =

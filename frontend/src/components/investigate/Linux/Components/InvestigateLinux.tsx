@@ -3,12 +3,16 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
 import PsTree from "./PsTree";
 import ProcessMetadata from "./ProcessMetadata";
-import PluginDashboard from "./PluginDashboard";
-import { ProcessInfo } from "../../types";
+import PluginDashboard from "../../PluginDashboard";
+import { ProcessInfo, Evidence } from "../../../../types";
 import { useParams } from "react-router-dom";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "../../../../utils/axiosInstance";
 
-const EvidenceInvestigate: React.FC = () => {
+interface InvestigateLinuxProps {
+  evidence: Evidence;
+}
+
+const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
   const [processMetadata, setProcessMetadata] = useState<ProcessInfo>(
     {} as ProcessInfo,
   );
@@ -70,7 +74,6 @@ const EvidenceInvestigate: React.FC = () => {
           const response = await axiosInstance.get(
             `/api/evidence/${id}/tasks/`,
           );
-          console.log(response.data);
           const tasksData: TaskData[] = response.data;
 
           const pid = processMetadata.PID;
@@ -146,11 +149,11 @@ const EvidenceInvestigate: React.FC = () => {
           />
         </Grid>
         <Grid size={6}>
-          <PluginDashboard />
+          <PluginDashboard evidence={evidence} />
         </Grid>
       </Grid>
     </Box>
   );
 };
 
-export default EvidenceInvestigate;
+export default InvestigateLinux;

@@ -45,45 +45,73 @@ function CaseList() {
   // WebSocket related state
   const [isConnected, setIsConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
+  const retryInterval = useRef<number | null>(null);
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const wsUrl = `${protocol}://localhost:8000/ws/cases/`;
-    ws.current = new WebSocket(wsUrl);
 
-    ws.current.onopen = () => {
-      console.log("WebSocket connected");
-      setIsConnected(true);
+    const connectWebSocket = () => {
+      ws.current = new WebSocket(wsUrl);
+
+      ws.current.onopen = () => {
+        console.log("WebSocket connected");
+        setIsConnected(true);
+        if (retryInterval.current) {
+          clearTimeout(retryInterval.current);
+          retryInterval.current = null;
+        }
+      };
+
+      ws.current.onclose = () => {
+        console.log("WebSocket disconnected");
+        setIsConnected(false);
+        if (!retryInterval.current) {
+          retryInterval.current = window.setTimeout(connectWebSocket, 5000);
+          console.log("Attempting to reconnect to WebSocket...");
+        }
+      };
+
+      ws.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        const status = data.status;
+        const message = data.message;
+
+        if (status === "created") {
+          setCaseData((prevData) => {
+            const exists = prevData.some(
+              (caseItem) => caseItem.id === message.id,
+            );
+            if (exists) {
+              return prevData.map((caseItem) =>
+                caseItem.id === message.id ? message : caseItem,
+              );
+            } else {
+              return [...prevData, message];
+            }
+          });
+        } else if (status === "updated") {
+          setCaseData((prevData) =>
+            prevData.map((caseItem) =>
+              caseItem.id === message.id ? message : caseItem,
+            ),
+          );
+        } else if (status === "deleted") {
+          setCaseData((prevData) =>
+            prevData.filter((caseItem) => caseItem.id !== message.id),
+          );
+          setChecked((prevChecked) =>
+            prevChecked.filter((id) => id !== message.id),
+          );
+        }
+      };
+
+      ws.current.onerror = (error) => {
+        console.log("WebSocket error:", error);
+      };
     };
 
-    ws.current.onclose = () => {
-      console.log("WebSocket disconnected");
-      setIsConnected(false);
-    };
-
-    ws.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const status = data.status;
-      const message = data.message;
-
-      if (status === "created") {
-        setCaseData((prevData) => [...prevData, message]);
-      } else if (status === "updated") {
-        setCaseData((prevData) =>
-          prevData.map((caseItem) =>
-            caseItem.id === message.id ? message : caseItem,
-          ),
-        );
-      } else if (status === "deleted") {
-        setCaseData((prevData) =>
-          prevData.filter((caseItem) => caseItem.id !== message.id),
-        );
-      }
-    };
-
-    ws.current.onerror = (error) => {
-      console.log("WebSocket error:", error);
-    };
+    connectWebSocket();
 
     // Fetch initial case data
     axiosInstance
@@ -98,6 +126,9 @@ function CaseList() {
     return () => {
       if (ws.current) {
         ws.current.close();
+      }
+      if (retryInterval.current) {
+        clearTimeout(retryInterval.current);
       }
     };
   }, []);

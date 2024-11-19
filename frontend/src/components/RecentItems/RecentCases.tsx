@@ -6,14 +6,14 @@ import {
   List,
   ListItem,
   ListItemText,
+  ListItemIcon,
+  Divider,
 } from "@mui/material";
-
-interface CaseItem {
-  case_name: string;
-}
+import WorkIcon from "@mui/icons-material/Work";
+import { Case } from "../../types";
 
 interface RecentCasesProps {
-  cases: CaseItem[];
+  cases: Case[];
 }
 
 const RecentCases: React.FC<RecentCasesProps> = ({ cases }) => {
@@ -23,9 +23,13 @@ const RecentCases: React.FC<RecentCasesProps> = ({ cases }) => {
         <Typography variant="h6" gutterBottom>
           Recent Cases
         </Typography>
+        <Divider />
         <List>
           {cases.map((caseItem, index) => (
-            <ListItem key={index} button>
+            <ListItem key={index}>
+              <ListItemIcon>
+                <WorkIcon />
+              </ListItemIcon>
               <ListItemText primary={caseItem.name} />
             </ListItem>
           ))}

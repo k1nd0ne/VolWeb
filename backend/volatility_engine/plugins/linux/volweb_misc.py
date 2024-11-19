@@ -19,7 +19,7 @@ class VolWebMisc(plugins.PluginInterface):
 
     def load_plugin_info(self, json_file_path):
         with open(json_file_path, "r") as file:
-            return json.load(file).get("plugins", {}).get("windows", [])
+            return json.load(file).get("plugins", {}).get("linux", [])
 
     @classmethod
     def get_requirements(cls):

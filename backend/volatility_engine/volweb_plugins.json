@@ -302,16 +302,146 @@
         "display": "True"
       }
     },
-    "linux": [
-      {
-        "volatility3.plugins.linux.pstree.PsTree": {
-          "name": "volatility3.plugins.linux.pstree.PsTree",
-          "icon": "AccountTree",
-          "description": "Plugin for listing processes in a tree based on their parent process ID.",
-          "category": "Processes",
-          "display": "False"
-        }
+    "linux": {
+      "volatility3.plugins.linux.pstree.PsTree": {
+        "name": "volatility3.plugins.linux.pstree.PsTree",
+        "icon": "AccountTree",
+        "description": "Plugin for listing processes in a tree based on their parent process ID.",
+        "category": "Processes",
+        "display": "False"
+      },
+      "volatility3.plugins.linux.bash.Bash": {
+        "icon": "History",
+        "description": "Recovers bash command history from memory.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.capabilities.Capabilities": {
+        "icon": "PermScanWifi",
+        "description": "Lists process capabilities.",
+        "category": "Security",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.check_afinfo.Check_afinfo": {
+        "icon": "CheckBox",
+        "description": "Verifies the operation function pointers of network protocols.",
+        "category": "Network",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.check_creds.Check_creds": {
+        "icon": "AccountCircle",
+        "description": "Checks if any processes are sharing credential structures.",
+        "category": "Security",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.check_idt.Check_idt": {
+        "icon": "Compare",
+        "description": "Checks if the IDT has been altered.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.check_modules.Check_modules": {
+        "icon": "InsertChart",
+        "description": "Compares module list to sysfs info, if available.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.check_syscall.Check_syscall": {
+        "icon": "SettingsEthernet",
+        "description": "Check system call table for hooks.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.elfs.Elfs": {
+        "icon": "Description",
+        "description": "Lists all memory mapped ELF files for all processes.",
+        "category": "Filesystem",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.envars.Envars": {
+        "icon": "Public",
+        "description": "Lists processes with their environment variables.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.iomem.IOMem": {
+        "icon": "Memory",
+        "description": "Generates an output similar to /proc/iomem on a running system.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.keyboard_notifiers.Keyboard_notifiers": {
+        "icon": "Keyboard",
+        "description": "Parses the keyboard notifier call chain.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.kmsg.Kmsg": {
+        "icon": "SpeakerNotes",
+        "description": "Kernel log buffer reader.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.lsmod.Lsmod": {
+        "icon": "Visibility",
+        "description": "Lists loaded kernel modules.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.lsof.Lsof": {
+        "icon": "FolderOpen",
+        "description": "Lists all memory maps for all processes.",
+        "category": "Filesystem",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.malfind.Malfind": {
+        "icon": "BugReport",
+        "description": "Lists process memory ranges that potentially contain injected code.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.mountinfo.MountInfo": {
+        "icon": "Storage",
+        "description": "Lists mount points on processes mount namespaces.",
+        "category": "Filesystem",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.netfilter.Netfilter": {
+        "icon": "FilterList",
+        "description": "Lists Netfilter hooks.",
+        "category": "Network",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.psaux.PsAux": {
+        "icon": "Terminal",
+        "description": "Lists processes with their command line arguments.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.pslist.PsList": {
+        "icon": "ListAlt",
+        "description": "Lists the processes present in a particular Linux memory image.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.psscan.PsScan": {
+        "icon": "Pageview",
+        "description": "Scans for processes present in a particular Linux image.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.sockstat.Sockstat": {
+        "icon": "WifiTethering",
+        "description": "Lists all network connections for all processes.",
+        "category": "Network",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.tty_check.tty_check": {
+        "icon": "Call",
+        "description": "Checks tty devices for hooks.",
+        "category": "Kernel",
+        "display": "True"
       }
-    ]
+    }
   }
 }

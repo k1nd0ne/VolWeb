@@ -32,14 +32,19 @@ logger = logging.getLogger(__name__)
 
 def fix_permissions(output_path):
     try:
+        if not os.path.exists(output_path):
+            logger.error(f"Output path does not exist: {output_path}")
+            return
         for filename in os.listdir(output_path):
             filepath = os.path.join(output_path, filename)
             if os.path.isfile(filepath):
-                current_permissions = stat.S_IMODE(os.lstat(filepath).st_mode)
-                if not current_permissions & stat.S_IROTH:
-                    os.chmod(filepath, current_permissions | stat.S_IROTH)
-                    logger.info(f"Updated permissions for: {filepath}")
-
+                try:
+                    current_permissions = stat.S_IMODE(os.lstat(filepath).st_mode)
+                    if not current_permissions & stat.S_IROTH:
+                        os.chmod(filepath, current_permissions | stat.S_IROTH)
+                        logger.info(f"Updated permissions for: {filepath}")
+                except Exception as e:
+                    logger.error(f"Error changing permissions for {filepath}: {e}")
             else:
                 logger.warning(f"Skipping {filepath}, not a file.")
     except Exception as e:
@@ -445,7 +450,7 @@ def file_handler(output_dir):
 
 S3FileSystemHandler.default_open = volweb_open  # This is to set the correct AWS endpoint url when the source bucket is of type AWS.
 volatility3.symbols.__path__ = [
-    os.path.abspath(f"media/")
+    os.path.abspath(f"media/symbols")
 ] + constants.SYMBOL_BASEPATHS  # This is to include the volweb symbols imported by the users.
 interfaces.context.ModuleContainer.add_module = volweb_add_module  # A module requirement already present is throwing an exeception, we don't want this.
 interfaces.layers.LayerContainer.add_layer = volweb_add_layer  # An already present layer is throwing an exception, we don't want this either.

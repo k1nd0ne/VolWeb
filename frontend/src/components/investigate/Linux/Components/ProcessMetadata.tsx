@@ -10,10 +10,10 @@ import {
   ListItemText,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
-import { ProcessInfo } from "../../types";
+import { ProcessInfo } from "../../../../types";
 import { styled } from "@mui/material/styles";
-import DumpButton from "./Windows/Buttons/DumpButton";
-import ComputeHandlesButton from "./Windows/Buttons/ComputeHandlesButton";
+import DumpButton from "../Buttons/DumpButton";
+// import ComputeHandlesButton from "../Buttons/ComputeHandlesButton";
 
 interface ProcessMetadataProps {
   processMetadata: ProcessInfo;
@@ -91,12 +91,13 @@ const ProcessMetadata: React.FC<ProcessMetadataProps> = ({
               loading={loadingDump}
               setLoading={setLoadingDump}
             />
+            {/*
             <ComputeHandlesButton
               evidenceId={id}
               pid={processMetadata.PID}
               loading={loadingHandles}
               setLoading={setLoadingHandles}
-            />
+            /> */}
           </Box>
         </CardContent>
       </Card>
