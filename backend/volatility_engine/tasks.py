@@ -12,6 +12,8 @@ def start_extraction(evidence_id):
     instance = Evidence.objects.get(id=evidence_id)
     engine = VolatilityEngine(instance)
     engine.start_extraction()
+    instance.status = 100
+    instance.save()
 
 @shared_task
 def start_timeliner(evidence_id):

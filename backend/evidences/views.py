@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from .models import Evidence
 from .serializers import EvidenceSerializer, BindEvidenceSerializer
 from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework import status
 from evidences.models import Evidence
@@ -17,6 +18,8 @@ class EvidenceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Evidence.objects.all()
     serializer_class = EvidenceSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['linked_case']
 
 
 class EvidenceStatisticsApiView(APIView):

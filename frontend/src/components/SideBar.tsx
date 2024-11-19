@@ -13,7 +13,7 @@ import {
   Work,
   Memory,
   QuestionMark,
-  BackupTable,
+  TableBar,
 } from "@mui/icons-material";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -81,7 +81,7 @@ function renderIcon(index: number) {
     case 2:
       return <Memory />;
     case 3:
-      return <BackupTable />;
+      return <TableBar />;
     default:
       return <QuestionMark />;
   }
@@ -175,7 +175,7 @@ export default function MiniDrawer() {
         </Box>
       </Drawer>
 
-      <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
+      <Box component="main" sx={{ width: "100%", p: 2 }}>
         <DrawerHeader />
         <Outlet />
       </Box>

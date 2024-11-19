@@ -5,6 +5,7 @@ import { Box, Typography } from "@mui/material/";
 import AddCaseDialog from "../../components/Dialogs/CaseCreationDialog";
 import CaseList from "../../components/Lists/CaseList";
 import MessageHandler from "../../components/MessageHandler";
+import Grid from "@mui/material/Grid2";
 
 const Cases: React.FC = () => {
   const [cases, setCases] = useState<Case[]>([]);

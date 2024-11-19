@@ -28,27 +28,28 @@ class CaseViewSet(viewsets.ModelViewSet):
             )
             client.make_bucket(str(bucket_uuid))
         except Exception as e:
-            print(e)
             return Response(
                 {"error": "The bucket could not be created", "details": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-        print(request.data)
-        data = {
-            "name": request.data.get("name"),
-            "description": request.data.get("description"),
-            "linked_users": request.data.get("linked_users"),
-            "bucket_id": bucket_uuid,
-        }
 
-        serializer = CaseSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            print(serializer.errors)
+        # Extract direct fields
+        name = request.data.get("name")
+        description = request.data.get("description")
+        linked_users_ids = request.data.get("linked_users", [])
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Create the case instance with direct fields
+        case = Case(name=name, description=description, bucket_id=bucket_uuid)
+        case.save()
+
+        # Add linked users
+        for user_id in linked_users_ids:
+            case.linked_users.add(user_id)
+
+        case.save()
+
+        serializer = CaseSerializer(case)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class GeneratePresignedUrlView(APIView):
@@ -66,5 +67,4 @@ class GeneratePresignedUrlView(APIView):
             object_name=filename,
             expires=timedelta(hours=1),
         )
-        print(url)
         return Response({"url": url})

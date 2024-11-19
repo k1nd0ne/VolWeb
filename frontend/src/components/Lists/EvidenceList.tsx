@@ -27,15 +27,12 @@ import {
   Delete as DeleteIcon,
 } from "@mui/icons-material";
 import BindEvidenceDialog from "../Dialogs/BindEvidenceDialog";
-
-interface Evidence {
-  id: number;
-  name: string;
-  os: string;
-  status: number;
+import { Evidence } from "../../types";
+interface EvidenceListProps {
+  caseId?: number;
 }
 
-function EvidenceList() {
+function EvidenceList({ caseId }: EvidenceListProps) {
   const navigate = useNavigate();
   const [evidenceData, setEvidenceData] = useState<Evidence[]>([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
@@ -59,7 +56,7 @@ function EvidenceList() {
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${protocol}://localhost:8000/ws/evidences/`;
+    const wsUrl = `${protocol}://localhost:8000/ws/evidences/${caseId ? `${caseId}/` : ""}`;
 
     const connectWebSocket = () => {
       ws.current = new WebSocket(wsUrl);
@@ -118,7 +115,7 @@ function EvidenceList() {
     connectWebSocket();
 
     axiosInstance
-      .get("/api/evidences/")
+      .get("/api/evidences/", { params: caseId ? { linked_case: caseId } : {} })
       .then((response) => {
         setEvidenceData(response.data);
       })
@@ -134,11 +131,18 @@ function EvidenceList() {
         clearInterval(retryInterval.current);
       }
     };
-  }, []);
+  }, [caseId]);
 
   const handleCreateSuccess = () => {
     setMessageHandlerMessage("Evidence created successfully");
     setMessageHandlerSeverity("success");
+    setMessageHandlerOpen(true);
+  };
+
+  const handleBindSuccess = () => {
+    setMessageHandlerMessage("Evidence bound successfully");
+    setMessageHandlerSeverity("success");
+    setMessageHandlerOpen(true);
   };
 
   const handleToggle = (id: number) => {
@@ -244,7 +248,7 @@ function EvidenceList() {
       headerName: "Actions",
       renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
-          <Tooltip title="Investigate">
+          <Tooltip title="Investigate" placement="left">
             <IconButton
               edge="end"
               aria-label="open"
@@ -254,7 +258,7 @@ function EvidenceList() {
               <Biotech />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete">
+          <Tooltip title="Delete" placement="right">
             <IconButton
               edge="end"
               aria-label="delete"
@@ -288,6 +292,7 @@ function EvidenceList() {
           setOpenCreationDialog(false);
         }}
         onCreateSuccess={handleCreateSuccess}
+        caseId={caseId}
       />
       <Fab
         color="secondary"
@@ -304,7 +309,8 @@ function EvidenceList() {
         onClose={() => {
           setOpenBindingDialog(false);
         }}
-        onBindSuccess={handleCreateSuccess}
+        onBindSuccess={handleBindSuccess}
+        caseId={caseId}
       />
       <DataGrid
         rowHeight={40}

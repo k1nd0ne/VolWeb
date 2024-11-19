@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "volatility_engine",
     "symbols",
     "channels",
+    "django_filters",
 ]
 
 MIDDLEWARE = [

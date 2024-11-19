@@ -20,12 +20,14 @@ interface BindEvidenceDialogProps {
   open: boolean;
   onClose: () => void;
   onBindSuccess: (newEvidence: Evidence) => void;
+  caseId?: number;
 }
 
 const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
   open,
   onClose,
   onBindSuccess,
+  caseId,
 }) => {
   const OS_OPTIONS = [
     { value: "windows", label: "Windows" },
@@ -53,7 +55,12 @@ const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
 
   useEffect(() => {
     if (open) {
-      fetchCases();
+      if (caseId) {
+        setSelectedCase({ id: caseId } as Case);
+        setCasesLoading(false);
+      } else {
+        fetchCases();
+      }
       // Reset form fields
       setOs("");
       setSource("");
@@ -63,9 +70,8 @@ const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
       setRegion("");
       setEndpoint("");
       setError(null);
-      setSelectedCase(null);
     }
-  }, [open]);
+  }, [open, caseId]);
 
   const fetchCases = async () => {
     setCasesLoading(true);
@@ -85,7 +91,7 @@ const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
     const missingFields = [];
 
     if (!os) missingFields.push("Operating System");
-    if (!selectedCase) missingFields.push("Linked Case");
+    if (!selectedCase && !caseId) missingFields.push("Linked Case");
     if (!source) missingFields.push("Source");
     if (!accessKeyId) missingFields.push("Access Key ID");
     if (!accessKey) missingFields.push("Access Key");
@@ -101,7 +107,7 @@ const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
     // Prepare data
     const data: any = {
       os,
-      linked_case: selectedCase!.id,
+      linked_case: caseId || selectedCase!.id,
       source,
       access_key_id: accessKeyId,
       access_key: accessKey,
@@ -123,7 +129,6 @@ const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
       onClose();
       // Reset form fields
       setOs("");
-      setSelectedCase(null);
       setSource("");
       setAccessKeyId("");
       setAccessKey("");
@@ -131,8 +136,14 @@ const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
       setRegion("");
       setEndpoint("");
       setError(null);
-    } catch (error) {
-      setError(`Failed to bind evidence: ${error.response.data.detail}`);
+    } catch (error: any) {
+      setError(
+        `Failed to bind evidence: ${
+          error.response && error.response.data
+            ? error.response.data.detail
+            : error.message
+        }`,
+      );
     }
   };
 
@@ -161,23 +172,25 @@ const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
           </div>
         ) : (
           <>
-            <Autocomplete
-              options={cases}
-              getOptionLabel={(option) => option.name}
-              value={selectedCase}
-              onChange={(event, newValue) => {
-                setSelectedCase(newValue);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select Case"
-                  margin="dense"
-                  fullWidth
-                  required
-                />
-              )}
-            />
+            {!caseId && (
+              <Autocomplete
+                options={cases}
+                getOptionLabel={(option) => option.name}
+                value={selectedCase}
+                onChange={(event, newValue) => {
+                  setSelectedCase(newValue);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Case"
+                    margin="dense"
+                    fullWidth
+                    required
+                  />
+                )}
+              />
+            )}
             <FormControl fullWidth margin="dense">
               <InputLabel id="os-select-label">Operating System</InputLabel>
               <Select
@@ -267,7 +280,7 @@ const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
         <Button
           onClick={handleBind}
           variant="contained"
-          disabled={casesLoading || !selectedCase}
+          disabled={casesLoading || (!selectedCase && !caseId)}
         >
           Bind
         </Button>

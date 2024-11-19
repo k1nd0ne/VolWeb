@@ -22,12 +22,14 @@ interface EvidenceCreationDialogProps {
   open: boolean;
   onClose: () => void;
   onCreateSuccess: (newEvidence: Evidence) => void;
+  caseId?: number;
 }
 
 const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
   open,
   onClose,
   onCreateSuccess,
+  caseId,
 }) => {
   const OS_OPTIONS = [
     { value: "windows", label: "Windows" },
@@ -46,9 +48,15 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
 
   useEffect(() => {
     if (open) {
-      fetchCases();
+      if (caseId) {
+        // If caseId is provided, set the selectedCase directly
+        setSelectedCase({ id: caseId } as Case);
+        setCasesLoading(false);
+      } else {
+        fetchCases();
+      }
     }
-  }, [open]);
+  }, [open, caseId]);
 
   const fetchCases = async () => {
     setCasesLoading(true);
@@ -64,7 +72,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
   };
 
   const handleUpload = async () => {
-    if (!os || !file || !selectedCase) {
+    if (!os || !file || (!selectedCase && !caseId)) {
       setError("Please fill in all fields.");
       return;
     }
@@ -72,9 +80,11 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
     setUploading(true);
     setError(null);
 
+    const uploadCaseId = caseId || selectedCase?.id;
+
     try {
       const response = await axiosInstance.get<{ url: string }>(
-        `/api/cases/${selectedCase.id}/generate-presigned-url/`,
+        `/api/cases/${uploadCaseId}/generate-presigned-url/`,
         {
           params: {
             filename: file.name,
@@ -105,7 +115,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
           {
             name: file.name,
             os,
-            linked_case: selectedCase.id,
+            linked_case: uploadCaseId,
             etag,
           },
         );
@@ -140,23 +150,25 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
           </div>
         ) : (
           <>
-            <Autocomplete
-              options={cases}
-              getOptionLabel={(option) => option.name}
-              value={selectedCase}
-              onChange={(event, newValue) => {
-                setSelectedCase(newValue);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select Case"
-                  margin="dense"
-                  fullWidth
-                  required
-                />
-              )}
-            />
+            {!caseId && (
+              <Autocomplete
+                options={cases}
+                getOptionLabel={(option) => option.name}
+                value={selectedCase}
+                onChange={(event, newValue) => {
+                  setSelectedCase(newValue);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Case"
+                    margin="dense"
+                    fullWidth
+                    required
+                  />
+                )}
+              />
+            )}
             <FormControl fullWidth margin="dense">
               <InputLabel id="os-select-label">Operating System</InputLabel>
               <Select
@@ -212,7 +224,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
         <Button
           onClick={handleUpload}
           variant="contained"
-          disabled={uploading || !selectedCase || casesLoading}
+          disabled={uploading || (!selectedCase && !caseId) || casesLoading}
         >
           Upload
         </Button>
