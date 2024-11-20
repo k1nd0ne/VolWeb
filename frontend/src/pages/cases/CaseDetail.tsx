@@ -9,6 +9,7 @@ import {
   CardContent,
   Divider,
   Stack,
+  Container,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import EvidenceList from "../../components/Lists/EvidenceList";
@@ -43,7 +44,7 @@ const CaseDetail: React.FC = () => {
     caseDetail && (
       <Grid spacing={2}>
         <Grid size={12}>
-          <Card>
+          <Card variant="outlined" sx={{ marginBottom: 2 }}>
             <CardContent>
               <Typography variant="h5" component="div">
                 {caseDetail.name}
@@ -71,6 +72,13 @@ const CaseDetail: React.FC = () => {
           </Card>
         </Grid>
         <Grid size={12}>
+          <Typography variant="h5" component="div" sx={{ marginBottom: 2 }}>
+            Linked evidences
+          </Typography>
+          <Divider sx={{ marginBottom: 2 }} />
+          <EvidenceList caseId={caseDetail.id} />
+        </Grid>
+        <Container sx={{ marginTop: 2 }}>
           <Stack
             direction="row"
             spacing={2}
@@ -81,16 +89,9 @@ const CaseDetail: React.FC = () => {
             </Typography>
             <StixButton caseId={caseDetail.id.toString()} />
           </Stack>
-          <Divider sx={{ marginBottom: 2 }} />
+
           <CaseIndicatorsList caseId={caseDetail.id.toString()} />
-        </Grid>
-        <Grid size={12}>
-          <Typography variant="h5" component="div" sx={{ marginBottom: 2 }}>
-            Linked evidences
-          </Typography>
-          <Divider sx={{ marginBottom: 2 }} />
-          <EvidenceList caseId={caseDetail.id} />
-        </Grid>
+        </Container>
       </Grid>
     )
   );

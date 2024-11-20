@@ -146,18 +146,20 @@ const PsTree: React.FC<PsTreeProps> = ({ setProcessMetadata }) => {
             Process tree
           </Typography>
           <Divider />
-          <RichTreeView
-            expandedItems={expanded}
-            selectedItems={selected}
-            onSelectedItemsChange={handleSelect}
-            slots={{
-              expandIcon: MemoryIcon,
-              collapseIcon: MemoryIcon,
-              endIcon: MemoryIcon,
-              item: CustomTreeItem,
-            }}
-            items={treeItems}
-          />
+          <div style={{ maxHeight: "70vh", overflowY: "auto" }}>
+            <RichTreeView
+              expandedItems={expanded}
+              selectedItems={selected}
+              onSelectedItemsChange={handleSelect}
+              slots={{
+                expandIcon: MemoryIcon,
+                collapseIcon: MemoryIcon,
+                endIcon: MemoryIcon,
+                item: CustomTreeItem,
+              }}
+              items={treeItems}
+            />
+          </div>
         </CardContent>
       </Card>
     </Box>

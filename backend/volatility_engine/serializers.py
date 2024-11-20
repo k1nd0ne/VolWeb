@@ -8,7 +8,6 @@ class VolatilityPluginNameSerializer(serializers.ModelSerializer):
         model = VolatilityPlugin
         fields = ["name", "description", "icon", "category", "display", "results"]
 
-
 class VolatilityPluginDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = VolatilityPlugin
