@@ -4,7 +4,7 @@ import { Box, Button, CircularProgress } from "@mui/material";
 import axiosInstance from "../../../../utils/axiosInstance";
 import { useParams } from "react-router-dom";
 import { Artefact } from "../../../../types";
-
+import { downloadFile } from "../../../../utils/downloadFile";
 interface FileScanProps {
   data: Artefact[];
 }
@@ -125,26 +125,6 @@ const FileScan: React.FC<FileScanProps> = ({ data }) => {
       }
     };
   }, [evidenceId, data]);
-
-  const downloadFile = async (fileUrl: string, fileName: string) => {
-    try {
-      const response = await axiosInstance.get(fileUrl, {
-        responseType: "blob",
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", fileName);
-      document.body.appendChild(link);
-      link.click();
-      // Clean up
-      link.parentNode?.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading file:", error);
-      // Optionally handle error notification
-    }
-  };
 
   // Define columns for DataGrid, including the "Actions" column
   const columns: GridColDef[] = data[0]

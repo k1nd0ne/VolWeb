@@ -5,7 +5,8 @@ from .views import (
     TimelinerArtefactsView,
     TimelinerTask,
     HandlesTask,
-    ProcessDumpTask,
+    ProcessDumpPslistTask,
+    ProcessDumpMapsTask,
     FileDumpTask,
     TasksApiView
 )
@@ -27,7 +28,8 @@ urlpatterns = [
     ),
     path("evidence/tasks/timeliner/", TimelinerTask.as_view()),
     path("evidence/tasks/handles/", HandlesTask.as_view()),
-    path("evidence/tasks/dump/process/", ProcessDumpTask.as_view()),
+    path("evidence/tasks/dump/process/pslist/", ProcessDumpPslistTask.as_view()),
+    path("evidence/tasks/dump/process/maps/", ProcessDumpMapsTask.as_view()),
     path("evidence/tasks/dump/file/", FileDumpTask.as_view()),
     path("evidence/<int:evidence_id>/tasks/", TasksApiView.as_view()),
 

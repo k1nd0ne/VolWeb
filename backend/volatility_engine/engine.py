@@ -15,6 +15,7 @@ from .utils import (
     fix_permissions,
 )
 from volatility3.plugins.linux.pslist import PsList
+from volatility3.plugins.linux.proc import Maps
 from volatility3.framework.plugins import construct_plugin
 from .plugins.windows.volweb_main import VolWebMain as VolWebMainW
 from .plugins.windows.volweb_misc import VolWebMisc as VolWebMiscW
@@ -215,6 +216,40 @@ class VolatilityEngine:
         self.context.config["plugins.PsList.dump"] = True
         builted_plugin = self.construct_plugin()
         result = self.run_plugin(builted_plugin)
+        return result
+
+
+    def dump_process_maps(self, pid):
+        logger.info(f"Trying to dump PID {pid}")
+        if self.evidence.os == "windows":
+            procmaps_plugin = {
+                volatility3.plugins.windows.pslist.PsList: {
+                    "icon": "N/A",
+                    "description": "N/A",
+                    "category": "Processes",
+                    "display": "False",
+                    "name": f"volatility3.plugins.windows.pslist.PsListDump.{pid}",
+                }
+            }
+        else:
+            procmaps_plugin = {
+                Maps: {
+                    "icon": "N/A",
+                    "description": "N/A",
+                    "category": "Processes",
+                    "display": "False",
+                    "name": f"volatility3.plugins.linux.proc.MapsDump.{pid}",
+                }
+            }
+        self.build_context(procmaps_plugin)
+        self.context.config["plugins.Maps.pid"] = [
+            pid,
+        ]
+        self.context.config["plugins.Maps.dump"] = True
+        builted_plugin = self.construct_plugin()
+        result = self.run_plugin(builted_plugin)
+        return result
+
 
     def compute_handles(self, pid):
         handles_plugin = {

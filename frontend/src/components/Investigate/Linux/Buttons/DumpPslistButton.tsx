@@ -19,7 +19,7 @@ const DumpButton: React.FC<DumpButtonProps> = ({
   const handleDump = async () => {
     setLoading(true);
     try {
-      await axios.post(`/api/evidence/tasks/dump/process/`, {
+      await axios.post(`/api/evidence/tasks/dump/process/pslist/`, {
         pid,
         evidenceId,
       });
@@ -41,7 +41,7 @@ const DumpButton: React.FC<DumpButtonProps> = ({
       disabled={loading}
       startIcon={loading ? <CircularProgress size={20} /> : <Download />}
     >
-      {loading ? "Dumping..." : "Dump"}
+      {loading ? "Dumping..." : "Dump (pslist)"}
     </Button>
   );
 };

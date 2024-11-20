@@ -12,16 +12,16 @@ import {
 import InfoIcon from "@mui/icons-material/Info";
 import { ProcessInfo } from "../../../../types";
 import { styled } from "@mui/material/styles";
-import DumpButton from "../Buttons/DumpButton";
-// import ComputeHandlesButton from "../Buttons/ComputeHandlesButton";
+import DumpPslistButton from "../Buttons/DumpPslistButton";
+import DumpMapsButton from "../Buttons/DumpMapsButton";
 
 interface ProcessMetadataProps {
   processMetadata: ProcessInfo;
   id: string | undefined;
-  loadingDump: boolean;
-  setLoadingDump: (loading: boolean) => void;
-  loadingHandles: boolean;
-  setLoadingHandles: (loading: boolean) => void;
+  loadingDumpPslist: boolean;
+  setLoadingDumpPslist: (loading: boolean) => void;
+  loadingDumpMaps: boolean;
+  setLoadingDumpMaps: (loading: boolean) => void;
 }
 
 const ValueText = styled("span")(({ theme }) => ({
@@ -34,10 +34,10 @@ const ValueText = styled("span")(({ theme }) => ({
 const ProcessMetadata: React.FC<ProcessMetadataProps> = ({
   processMetadata,
   id,
-  loadingDump,
-  setLoadingDump,
-  loadingHandles,
-  setLoadingHandles,
+  loadingDumpPslist,
+  setLoadingDumpPslist,
+  loadingDumpMaps,
+  setLoadingDumpMaps,
 }) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -85,19 +85,18 @@ const ProcessMetadata: React.FC<ProcessMetadataProps> = ({
             )}
           </List>
           <Box sx={{ display: "flex", justifyContent: "left", mt: 2 }}>
-            <DumpButton
+            <DumpPslistButton
               evidenceId={id}
               pid={processMetadata.PID}
-              loading={loadingDump}
-              setLoading={setLoadingDump}
+              loading={loadingDumpPslist}
+              setLoading={setLoadingDumpPslist}
             />
-            {/*
-            <ComputeHandlesButton
+            <DumpMapsButton
               evidenceId={id}
               pid={processMetadata.PID}
-              loading={loadingHandles}
-              setLoading={setLoadingHandles}
-            /> */}
+              loading={loadingDumpMaps}
+              setLoading={setLoadingDumpMaps}
+            />
           </Box>
         </CardContent>
       </Card>

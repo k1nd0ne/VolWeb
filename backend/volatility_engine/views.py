@@ -9,7 +9,7 @@ from .serializers import (
     TasksSerializer
 )
 from rest_framework.permissions import IsAuthenticated
-from .tasks import dump_windows_file, dump_process, start_timeliner, dump_windows_handles
+from .tasks import dump_windows_file, dump_process, start_timeliner, dump_windows_handles, dump_maps
 from dateutil.parser import parse as parse_date
 from django_celery_results.models import TaskResult
 from django.db.models import Q
@@ -125,7 +125,7 @@ class HandlesTask(APIView):
                 {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-class ProcessDumpTask(APIView):
+class ProcessDumpPslistTask(APIView):
     def post(self, request):
         try:
             evidence_id = request.data.get("evidenceId")
@@ -137,6 +137,21 @@ class ProcessDumpTask(APIView):
             return Response(
                 {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+class ProcessDumpMapsTask(APIView):
+    def post(self, request):
+        try:
+            evidence_id = request.data.get("evidenceId")
+            pid = request.data.get("pid")
+            evidence = Evidence.objects.get(id=evidence_id)
+            dump_maps.apply_async(args=[evidence.id, pid])
+            return Response(status=status.HTTP_200_OK)
+        except Evidence.DoesNotExist:
+            return Response(
+                {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+
 
 class FileDumpTask(APIView):
     def post(self, request):

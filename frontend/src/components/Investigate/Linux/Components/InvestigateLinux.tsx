@@ -7,6 +7,7 @@ import PluginDashboard from "../../PluginDashboard";
 import { ProcessInfo, Evidence } from "../../../../types";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../../../utils/axiosInstance";
+import { downloadFile } from "../../../../utils/downloadFile";
 
 interface InvestigateLinuxProps {
   evidence: Evidence;
@@ -23,7 +24,7 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
 
   // Loading states
   const [loadingDump, setLoadingDump] = useState<boolean>(false);
-  const [loadingHandles, setLoadingHandles] = useState<boolean>(false);
+  const [loadingMaps, setLoadingMaps] = useState<boolean>(false);
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
@@ -41,10 +42,26 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
       const message = data.message;
       if (message.status === "finished") {
         if (message.pid === processMetadata.PID) {
-          if (message.name === "handles") {
-            setLoadingHandles(false);
+          if (message.name === "maps") {
+            setLoadingMaps(false);
           } else if (message.name === "dump") {
             setLoadingDump(false);
+            if (message.result) {
+              const results = message.result;
+              results.forEach((item: any) => {
+                const fileName = item["File output"];
+                if (fileName === "Error outputting file") {
+                  // TODO use the message handler
+                  console.log(
+                    `The volatility engine failed to dump ${item.COMM}`,
+                  );
+                  return;
+                }
+                const fileUrl = `/media/${id}/${fileName}`;
+                // Initiate file download
+                downloadFile(fileUrl, fileName);
+              });
+            }
           }
         }
       }
@@ -91,8 +108,7 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
 
           const isDumpTaskRunning = tasksData.some((task) => {
             if (
-              task.task_name ===
-                "volatility_engine.tasks.dump_windows_process" &&
+              task.task_name === "volatility_engine.tasks.dump_process" &&
               task.status === "STARTED" &&
               task.task_args
             ) {
@@ -103,10 +119,9 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
             return false;
           });
 
-          const isHandlesTaskRunning = tasksData.some((task) => {
+          const isMapsTaskRunning = tasksData.some((task) => {
             if (
-              task.task_name ===
-                "volatility_engine.tasks.dump_windows_handles" &&
+              task.task_name === "volatility_engine.tasks.dump_maps" &&
               task.status === "STARTED" &&
               task.task_args
             ) {
@@ -118,7 +133,7 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
           });
 
           setLoadingDump(isDumpTaskRunning);
-          setLoadingHandles(isHandlesTaskRunning);
+          setLoadingMaps(isMapsTaskRunning);
         } catch (error) {
           console.error("Error fetching tasks", error);
         }
@@ -128,7 +143,7 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
     } else {
       console.log("No process selected or PID missing.");
       setLoadingDump(false);
-      setLoadingHandles(false);
+      setLoadingMaps(false);
     }
   }, [processMetadata, id]);
 
@@ -141,10 +156,10 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
         <Grid size={3}>
           <ProcessMetadata
             processMetadata={processMetadata}
-            loadingDump={loadingDump}
-            setLoadingDump={setLoadingDump}
-            loadingHandles={loadingHandles}
-            setLoadingHandles={setLoadingHandles}
+            loadingDumpPslist={loadingDump}
+            setLoadingDumpPslist={setLoadingDump}
+            loadingDumpMaps={loadingMaps}
+            setLoadingDumpMaps={setLoadingMaps}
             id={id}
           />
         </Grid>

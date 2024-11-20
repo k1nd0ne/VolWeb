@@ -7,6 +7,7 @@ import PluginDashboard from "../../PluginDashboard";
 import { ProcessInfo, Evidence } from "../../../../types";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../../../utils/axiosInstance";
+import { downloadFile } from "../../../../utils/downloadFile";
 
 interface InvestigateWindowsProps {
   evidence: Evidence;
@@ -47,6 +48,22 @@ const InvestigateWindows: React.FC<InvestigateWindowsProps> = ({
             setLoadingHandles(false);
           } else if (message.name === "dump") {
             setLoadingDump(false);
+            if (message.result) {
+              const results = message.result;
+              results.forEach((item: any) => {
+                const fileName = item["File output"];
+                if (fileName === "Error outputting file") {
+                  // TODO use the message handler
+                  console.log(
+                    `The volatility engine failed to dump ${item.ImageFileName}`,
+                  );
+                  return;
+                }
+                const fileUrl = `/media/${id}/${fileName}`;
+                // Initiate file download
+                downloadFile(fileUrl, fileName);
+              });
+            }
           }
         }
       }
@@ -93,8 +110,7 @@ const InvestigateWindows: React.FC<InvestigateWindowsProps> = ({
 
           const isDumpTaskRunning = tasksData.some((task) => {
             if (
-              task.task_name ===
-                "volatility_engine.tasks.dump_windows_process" &&
+              task.task_name === "volatility_engine.tasks.dump_process" &&
               task.status === "STARTED" &&
               task.task_args
             ) {

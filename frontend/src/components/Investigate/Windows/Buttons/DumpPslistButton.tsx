@@ -3,14 +3,14 @@ import { Button, CircularProgress } from "@mui/material";
 import { Download } from "@mui/icons-material";
 import axios from "axios";
 
-interface DumpButtonProps {
+interface DumpPslistButtonProps {
   evidenceId: string | undefined;
   pid: number | undefined;
   loading: boolean;
   setLoading: (loading: boolean) => void;
 }
 
-const DumpButton: React.FC<DumpButtonProps> = ({
+const DumpPslistButton: React.FC<DumpPslistButtonProps> = ({
   evidenceId,
   pid,
   loading,
@@ -19,7 +19,7 @@ const DumpButton: React.FC<DumpButtonProps> = ({
   const handleDump = async () => {
     setLoading(true);
     try {
-      await axios.post(`/api/evidence/tasks/dump/process/`, {
+      await axios.post(`/api/evidence/tasks/dump/process/pslist/`, {
         pid,
         evidenceId,
       });
@@ -41,9 +41,9 @@ const DumpButton: React.FC<DumpButtonProps> = ({
       disabled={loading}
       startIcon={loading ? <CircularProgress size={20} /> : <Download />}
     >
-      {loading ? "Dumping..." : "Dump"}
+      {loading ? "Dumping..." : "Dump (pslist)"}
     </Button>
   );
 };
 
-export default DumpButton;
+export default DumpPslistButton;

@@ -45,7 +45,7 @@ def dump_process(evidence_id, pid):
     channel_layer = get_channel_layer()
     instance = Evidence.objects.get(id=evidence_id)
     engine = VolatilityEngine(instance)
-    engine.dump_process(pid)
+    result = engine.dump_process(pid)
     async_to_sync(channel_layer.group_send)(
         f"volatility_tasks_{evidence_id}",
         {
@@ -54,7 +54,7 @@ def dump_process(evidence_id, pid):
                 "name": "dump",
                 "pid": pid,
                 "status": "finished",
-                "msg": "Message",
+                "result": result,
             },
         },
     )
@@ -97,6 +97,28 @@ def dump_windows_file(evidence_id, offset):
             "type": "send_notification",
             "message": {
                 "name": "file_dump",
+                "status": "finished",
+                "result": result,
+            },
+        },
+    )
+
+@shared_task
+def dump_maps(evidence_id, pid):
+    """
+    This task is dedicated to compute the maps for a specific process.
+    """
+    instance = Evidence.objects.get(id=evidence_id)
+    channel_layer = get_channel_layer()
+    engine = VolatilityEngine(instance)
+    result = engine.dump_process_maps(pid)
+    async_to_sync(channel_layer.group_send)(
+        f"volatility_tasks_{evidence_id}",
+        {
+            "type": "send_notification",
+            "message": {
+                "name": "maps",
+                "pid": pid,
                 "status": "finished",
                 "result": result,
             },
