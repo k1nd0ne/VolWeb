@@ -87,7 +87,7 @@ const LineChart: React.FC<LineChartProps> = ({ dates, counts, theme }) => {
   ];
 
   return (
-    <Card>
+    <Card variant="outlined">
       <CardContent>
         <ReactApexChart
           options={options}

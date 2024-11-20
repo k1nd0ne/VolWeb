@@ -124,7 +124,7 @@ const IndicatorsList = ({ open, onClose, evidenceId, onIndicatorDeleted }) => {
         ) : error ? (
           <Typography color="error">{error}</Typography>
         ) : (
-          <TableContainer component={Paper}>
+          <TableContainer component={Box}>
             <Table size="small" aria-label="indicators table">
               <TableHead>
                 <TableRow>

@@ -4,6 +4,7 @@ import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
+import PluginList from "./Lists/PluginList";
 
 interface EvidenceMetadataProps {
   evidenceId: string | undefined;
@@ -117,7 +118,7 @@ const EvidenceMetadata: React.FC<EvidenceMetadataProps> = ({
       },
     },
     dataLabels: {
-      enabled: false,
+      enabled: true,
     },
     fill: {
       type: "gradient",
@@ -158,7 +159,7 @@ const EvidenceMetadata: React.FC<EvidenceMetadataProps> = ({
         breakpoint: 480,
         options: {
           chart: {
-            width: 200,
+            width: 100,
           },
           legend: {
             position: "bottom",
@@ -173,22 +174,31 @@ const EvidenceMetadata: React.FC<EvidenceMetadataProps> = ({
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2}>
-        <Grid size={6}>
-          <ReactApexChart
-            options={radarOptions}
-            series={radarSeries}
-            type="radar"
-          />
-        </Grid>
         <Grid size={4}>
-          <ReactApexChart
-            options={donutOptions}
-            series={donutSeries}
-            type="donut"
-          />
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              <PluginList evidenceId={evidenceId} />
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid size={6}>Loot</Grid>
-        <Grid size={6}></Grid>
+        <Grid size={8}>
+          <Grid container spacing={2}>
+            <Grid size={7}>
+              <ReactApexChart
+                options={radarOptions}
+                series={radarSeries}
+                type="radar"
+              />
+            </Grid>
+            <Grid size={5}>
+              <ReactApexChart
+                options={donutOptions}
+                series={donutSeries}
+                type="donut"
+              />
+            </Grid>
+          </Grid>
+        </Grid>
       </Grid>
     </Box>
   );

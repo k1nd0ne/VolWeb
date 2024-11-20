@@ -33,7 +33,7 @@ const StixButton: React.FC<StixButtonProps> = ({ caseId }) => {
   return (
     <Button
       variant="outlined"
-      color="error"
+      color="success"
       startIcon={<GetAppIcon />}
       onClick={exportStixBundle}
     >

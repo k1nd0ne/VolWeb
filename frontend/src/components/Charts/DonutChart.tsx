@@ -73,7 +73,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
   const series = [totalWindows, totalLinux];
 
   return (
-    <Card>
+    <Card variant="outlined">
       <CardContent>
         <ReactApexChart
           options={options}

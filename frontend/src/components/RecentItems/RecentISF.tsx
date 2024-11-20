@@ -20,7 +20,7 @@ interface RecentISFProps {
 
 const RecentISF: React.FC<RecentISFProps> = ({ isfList }) => {
   return (
-    <Card>
+    <Card variant="outlined">
       <CardContent>
         <Typography variant="h6" gutterBottom>
           Recent ISF

@@ -165,6 +165,7 @@ const StixModule = ({ evidenceId }) => {
         anchor="right"
         open={isFormDrawerOpen}
         onClose={toggleFormDrawer(false)}
+        variant="outlined"
       >
         <Box
           sx={{ width: 350, padding: 2 }}
@@ -263,13 +264,12 @@ const StixModule = ({ evidenceId }) => {
         open={isIndicatorsDrawerOpen}
         onClose={toggleIndicatorsDrawer(false)}
         PaperProps={{ sx: { width: "60%" } }}
+        variant="outlined"
       >
         <IndicatorsList
           open={isIndicatorsDrawerOpen}
           onClose={toggleIndicatorsDrawer(false)}
           evidenceId={evidenceId}
-          // Optionally, handle indicator deletion callbacks here
-          // onIndicatorDeleted={(deletedId) => { /* Your logic */ }}
         />
       </Drawer>
 

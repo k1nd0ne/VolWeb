@@ -8,7 +8,7 @@ interface StatisticsCardProps {
 
 const StatisticsCard: React.FC<StatisticsCardProps> = ({ title, value }) => {
   return (
-    <Card>
+    <Card variant="outlined">
       <CardContent>
         <Typography variant="h6" gutterBottom>
           {title}

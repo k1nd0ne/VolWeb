@@ -18,7 +18,7 @@ interface RecentCasesProps {
 
 const RecentCases: React.FC<RecentCasesProps> = ({ cases }) => {
   return (
-    <Card>
+    <Card variant="outlined">
       <CardContent>
         <Typography variant="h6" gutterBottom>
           Recent Cases
