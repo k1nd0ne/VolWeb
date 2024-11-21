@@ -3,6 +3,7 @@ import axiosInstance from "../../../utils/axiosInstance";
 import ProcessGraph from "./ProcessGraph";
 import { ProcessInfo, Evidence } from "../../../types";
 import { Box } from "@mui/material";
+import { annotateProcessData } from "../../../utils/processAnalysis";
 interface ExploreProps {
   evidence: Evidence;
 }
@@ -16,7 +17,8 @@ const Explore: React.FC<ExploreProps> = ({ evidence }) => {
         const response = await axiosInstance.get(
           `/api/evidence/${evidence.id}/plugin/volatility3.plugins.windows.pstree.PsTree/`,
         );
-        console.log(response.data);
+        // Annotate processes with anomalies
+        annotateProcessData(response.data.artefacts);
         setData(response.data.artefacts);
       } catch (error) {
         console.error("Error fetching pstree data", error);

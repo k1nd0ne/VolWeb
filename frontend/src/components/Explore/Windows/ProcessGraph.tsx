@@ -1,16 +1,49 @@
 import React, { useRef, useEffect, useState } from "react";
 import Graph from "graphology";
 import Sigma from "sigma";
+import { Settings } from "sigma/settings";
+import { NodeDisplayData, PartialButFor, PlainObject } from "sigma/types";
 import ProcessDetails from "./ProcessDetails";
 import { NodeEventPayload } from "sigma/types/events";
 import ForceSupervisor from "graphology-layout-force/worker";
-import drawHover from "sigma/rendering/canvas/hover";
 import Grid from "@mui/material/Grid2";
 import { ProcessInfo } from "../../../types";
-
+import { Box } from "@mui/material";
 interface ProcessGraphProps {
   data: ProcessInfo[];
 }
+
+/**
+ * Custom label renderer
+ */
+function drawLabel(
+  context: CanvasRenderingContext2D,
+  data: PartialButFor<NodeDisplayData, "x" | "y" | "size" | "label" | "color">,
+  settings: Settings,
+): void {
+  if (!data.label) return;
+
+  const size = settings.labelSize,
+    font = settings.labelFont,
+    weight = settings.labelWeight;
+
+  context.font = `${weight} ${size}px ${font}`;
+  const width = context.measureText(data.label).width + 8;
+
+  context.fillStyle = "#ffffffcc";
+  context.fillRect(data.x + data.size, data.y + size / 3 - 15, width, 20);
+
+  context.fillStyle = "#000";
+  context.fillText(data.label, data.x + data.size + 3, data.y + size / 3);
+}
+
+const commonStyles = {
+  bgcolor: "background.paper",
+  m: 1,
+  border: 1,
+  width: "5rem",
+  height: "5rem",
+};
 
 const ProcessGraph: React.FC<ProcessGraphProps> = ({ data }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,9 +70,12 @@ const ProcessGraph: React.FC<ProcessGraphProps> = ({ data }) => {
         const y = 100 * Math.sin(angle);
 
         graph.addNode(nodeId, {
-          label: process.ImageFileName || "Unknown",
+          label: `${process.ImageFileName || "Unknown"} (${process.__children.length}) `,
           size: 10,
-          color: "#FFFFFF",
+          color:
+            process.anomalies && process.anomalies?.length > 0
+              ? "orange"
+              : "#FFFFFF",
           x: x,
           y: y,
         });
@@ -49,7 +85,8 @@ const ProcessGraph: React.FC<ProcessGraphProps> = ({ data }) => {
       sigmaRef.current = new Sigma(graph, containerRef.current, {
         renderEdgeLabels: true,
         labelSize: 12,
-        labelRenderer: drawHover,
+        labelRenderer: drawLabel,
+        hoverRenderer: drawLabel,
         labelRenderedSizeThreshold: 1,
       });
       setGraph(graph);
@@ -175,9 +212,14 @@ const ProcessGraph: React.FC<ProcessGraphProps> = ({ data }) => {
 
       if (!graph.hasNode(childId)) {
         graph.addNode(childId, {
-          label: child.ImageFileName || "Unknown",
-          size: 10,
-          color: "#FFFFFF",
+          label: `${child.ImageFileName || "Unknown"} (${child.__children.length}) `,
+          size: 5,
+          color:
+            child.__children.length > 0
+              ? "blue"
+              : child.anomalies && child.anomalies.length > 0
+                ? "orange"
+                : "#FFFFFF",
           x: x,
           y: y,
         });
@@ -201,10 +243,11 @@ const ProcessGraph: React.FC<ProcessGraphProps> = ({ data }) => {
   return (
     <Grid container>
       <Grid size={12}>
-        <div
+        <Box
+          sx={{ ...commonStyles, borderColor: "error.main" }}
           ref={containerRef}
-          style={{ width: "100%", height: "600px" }}
-        ></div>
+          style={{ width: "100%", height: "70vh" }}
+        ></Box>
       </Grid>
       <Grid size={8}>
         {selectedProcess && <ProcessDetails process={selectedProcess} />}
