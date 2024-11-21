@@ -76,9 +76,7 @@ const NetGraphButton: React.FC = () => {
         </DialogTitle>
         <Divider sx={{ marginBottom: 1 }} />
         <DialogContent>
-          <Paper>
-            <NetworkGraph data={data} />
-          </Paper>
+          <Paper>{/* <NetworkGraph data={data} /> */}</Paper>
         </DialogContent>
       </Dialog>
     </>

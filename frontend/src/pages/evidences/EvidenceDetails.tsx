@@ -10,7 +10,8 @@ import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import Timeliner from "../../components/Investigate/Timeliner";
-import StixModule from "../../components/StixModule";
+import StixModule from "../../Components/StixModule";
+import Explore from "../../Components/Explore/Windows/Explore";
 import { Evidence } from "../../types";
 import { useParams } from "react-router-dom";
 
@@ -92,17 +93,24 @@ const EvidenceDetail: React.FC = () => {
             }}
           />
           <Tab
-            label="Investigate"
+            label="Explore"
             icon={<SearchIcon />}
             iconPosition="start"
             {...a11yProps(1)}
             sx={{ fontSize: "0.75rem" }}
           />
           <Tab
+            label="Investigate"
+            icon={<SearchIcon />}
+            iconPosition="start"
+            {...a11yProps(2)}
+            sx={{ fontSize: "0.75rem" }}
+          />
+          <Tab
             label="Timeline"
             icon={<TimelineIcon />}
             iconPosition="start"
-            {...a11yProps(2)}
+            {...a11yProps(3)}
             sx={{ fontSize: "0.75rem" }}
           />
         </Tabs>
@@ -112,13 +120,18 @@ const EvidenceDetail: React.FC = () => {
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         {currentEvidence && currentEvidence.os === "windows" && (
+          <Explore evidence={currentEvidence} />
+        )}
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={2}>
+        {currentEvidence && currentEvidence.os === "windows" && (
           <InvestigateWindows evidence={currentEvidence} />
         )}
         {currentEvidence && currentEvidence.os === "linux" && (
           <InvestigateLinux evidence={currentEvidence} />
         )}
       </CustomTabPanel>
-      <CustomTabPanel value={value} index={2}>
+      <CustomTabPanel value={value} index={3}>
         <Timeliner />
       </CustomTabPanel>
       <StixModule evidenceId={id} />
