@@ -60,7 +60,8 @@ const ProcessMetadata: React.FC<ProcessMetadataProps> = ({
             {processMetadata ? (
               Object.entries(processMetadata).map(
                 ([key, value]) =>
-                  key !== "__children" && (
+                  key !== "__children" &&
+                  key !== "File output" && (
                     <ListItem key={key} sx={{ fontSize: "0.800rem" }}>
                       <ListItemText
                         primary={

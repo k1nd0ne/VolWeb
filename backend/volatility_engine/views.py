@@ -151,8 +151,6 @@ class ProcessDumpMapsTask(APIView):
                 {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-
-
 class FileDumpTask(APIView):
     def post(self, request):
         try:

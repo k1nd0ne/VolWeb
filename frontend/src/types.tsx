@@ -37,6 +37,8 @@ export interface ProcessInfo {
   Wow64: boolean | null; // 32-bit process on 64-bit Windows
   CreateTime: string | null; // ISO string representing creation time
   ExitTime: string | null; // ISO string representing exit time, null if not applicable
+  __children: ProcessInfo[];
+  anomalies: string[] | undefined; // Add this line to include anomalies
 }
 
 export interface Plugin {

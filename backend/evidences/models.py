@@ -21,7 +21,7 @@ class Evidence(models.Model):
 
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=250)
-    etag = models.CharField(max_length=256)
+    etag = models.CharField(max_length=256, unique=True)
     os = models.CharField(max_length=10, choices=OS)
     linked_case = models.ForeignKey(Case, on_delete=models.CASCADE, null=False)
     status = models.IntegerField(default=0)

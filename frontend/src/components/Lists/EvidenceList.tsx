@@ -220,6 +220,21 @@ function EvidenceList({ caseId }: EvidenceListProps) {
       flex: 1,
     },
     {
+      field: "etag",
+      headerName: "Etag",
+      renderCell: (params: GridRenderCellParams) => (
+        <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
+          <Chip
+            label={params.value}
+            size="small"
+            color="secondary"
+            variant="outlined"
+          />
+        </div>
+      ),
+      flex: 1,
+    },
+    {
       field: "status",
       headerName: "Status",
       renderCell: (params: GridRenderCellParams) =>
