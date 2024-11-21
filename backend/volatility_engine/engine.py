@@ -1,5 +1,5 @@
 from evidences.models import Evidence
-from .models import VolatilityPlugin
+from .models import VolatilityPlugin, EnrichedProcess
 from celery import shared_task
 import logging, os, json
 import volatility3
@@ -267,6 +267,7 @@ class VolatilityEngine:
         result = self.run_plugin(builted_plugin)
 
     def dump_file(self, offset):
+        self.construct_windows_explorer()
         dumpfiles_plugin = {
             DumpFiles: {
                 "icon": "N/A",
@@ -291,3 +292,56 @@ class VolatilityEngine:
         except Exception as e:
             logger.error(e)
             return None
+
+
+    def construct_windows_explorer(self):
+        # Get all VolatilityPlugin objects linked to this evidence
+        plugins = VolatilityPlugin.objects.filter(evidence=self.evidence)
+
+        # Get the pslist plugin's output, which contains the list of processes
+        try:
+            pslist_plugin = VolatilityPlugin.objects.get(
+                evidence=self.evidence,
+                name="volatility3.plugins.windows.pslist.PsList"
+            )
+        except VolatilityPlugin.DoesNotExist:
+            logger.error("pslist plugin not found for this evidence")
+            return
+
+        pslist_artefacts = pslist_plugin.artefacts  # This should be a list of process dicts
+
+        # Iterate over each process in pslist
+        for process in pslist_artefacts:
+            pid = process.get("PID") or process.get("Process ID")
+            if pid is None:
+                continue  # Skip if no PID
+            pid = int(pid)
+
+            # Initialize enriched process data with pslist data
+            enriched_process_data = {'pslist': process}
+
+            # Iterate over other plugins linked to the same evidence
+            for plugin in plugins.exclude(id=pslist_plugin.id):
+                if plugin.category == "Process":
+                    continue  # Only consider plugins with category "Process"
+
+                artefacts = plugin.artefacts
+                if not artefacts:
+                    continue
+
+                # Check if the PID matches in the plugin's artefacts
+                for artefact in artefacts:
+                    plugin_pid = artefact.get("PID") or artefact.get("Process ID")
+                    if plugin_pid and int(plugin_pid) == pid:
+                        # Ensure enriched process data contains an array of artefacts
+                        if plugin.name not in enriched_process_data:
+                            enriched_process_data[plugin.name] = []
+                        # Append the artefact to the array
+                        enriched_process_data[plugin.name].append(artefact)
+
+            # Save the enriched process data into the EnrichedProcess model
+            EnrichedProcess.objects.update_or_create(
+                evidence=self.evidence,
+                pid=pid,
+                defaults={'data': enriched_process_data}
+            )

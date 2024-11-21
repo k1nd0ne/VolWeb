@@ -1,11 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import VolatilityPlugin
+from .models import VolatilityPlugin, EnrichedProcess
 from evidences.models import Evidence
 from .serializers import (
     VolatilityPluginDetailSerializer,
     VolatilityPluginNameSerializer,
+    EnrichedProcessSerializer,
     TasksSerializer
 )
 from rest_framework.permissions import IsAuthenticated
@@ -32,6 +33,26 @@ class EvidencePluginsView(APIView):
                 {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
+
+class EnrichedProcessView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, evidence_id, pid):
+        try:
+            evidence = Evidence.objects.get(id=evidence_id)
+            enriched = EnrichedProcess.objects.get(evidence=evidence, pid=pid)
+            serializer = EnrichedProcessSerializer(enriched, many=False)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Evidence.DoesNotExist:
+            return Response(
+                {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        except EnrichedProcess.DoesNotExist:
+            return Response(
+                {"error": "Enriched process not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
 class TimelinerArtefactsView(APIView):
     def get(self, request, evidence_id, plugin_name):

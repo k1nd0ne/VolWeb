@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import VolatilityPlugin
+from .models import VolatilityPlugin, EnrichedProcess
 from django_celery_results.models import TaskResult
 
 
@@ -18,4 +18,10 @@ class TasksSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskResult
+        fields = "__all__"
+
+
+class EnrichedProcessSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EnrichedProcess
         fields = "__all__"

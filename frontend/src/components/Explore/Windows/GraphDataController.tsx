@@ -25,7 +25,7 @@ const GraphDataController: FC<GraphDataControllerProps> = ({ data }) => {
       const y = 100 * Math.sin(angle);
 
       graph.addNode(nodeId, {
-        label: `${process.ImageFileName || "Unknown"} (${process.__children.length})`,
+        label: `${process.ImageFileName || "Unknown"} - ${process.PID} (${process.__children.length})`,
         size: 10,
         color:
           process.anomalies && process.anomalies.length > 0

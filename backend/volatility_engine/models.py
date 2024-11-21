@@ -19,3 +19,16 @@ class VolatilityPlugin(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+
+class EnrichedProcess(models.Model):
+    """
+    Model to store enriched process information.
+    Combines data from multiple plugins for processes.
+    """
+    evidence = models.ForeignKey(Evidence, on_delete=models.CASCADE)
+    pid = models.IntegerField()
+    data = models.JSONField()
+
+    def __str__(self):
+        return str(self.pid)

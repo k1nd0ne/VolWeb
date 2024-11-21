@@ -5,3 +5,65 @@ a:hover {
 body {
     min-height: 100vh;
 }
+
+.controls {
+    position: absolute;
+    bottom: var(--stage-padding);
+    left: var(--stage-padding);
+}
+
+:root {
+    --ruby: #e22653;
+    --grey: #999;
+    --dark-grey: #666;
+    --light-grey: #ccc;
+    --cream: #f9f7ed;
+    --transparent-white: #ffffffcc;
+    --transition: all ease-out 300ms;
+    --shadow: 0 1px 5px var(--dark-grey);
+    --hover-opacity: 0.7;
+    --stage-padding: 8px;
+    --panels-width: 350px;
+    --border-radius: 3px;
+}
+
+div.ico {
+    --sigma-controls-size: 2rem;
+}
+
+.panels {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 400px;
+    max-height: calc(100vh - 2 * var(--stage-padding));
+    overflow-y: auto;
+    padding: var(--stage-padding);
+    scrollbar-width: thin;
+}
+
+.panel {
+    padding: 1em;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+.panel:not(:last-child) {
+    margin-bottom: 0.5em;
+}
+.panel h2 button {
+    float: right;
+    border: 1px solid black;
+    border-radius: var(--border-radius);
+    font-size: 1.2em;
+    height: 1em;
+    width: 1em;
+    text-align: center;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.panel h2 button:hover {
+    opacity: var(--hover-opacity);
+}

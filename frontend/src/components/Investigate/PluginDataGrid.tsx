@@ -25,7 +25,7 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
 
   const columns: GridColDef[] = data[0]
     ? Object.keys(data[0])
-        .filter((key) => key !== "__children" && key !== "id") // Filter out the "id" and "__children" column
+        .filter((key) => key !== "__children" && key !== "id")
         .map((key) => ({
           field: key,
           headerName: key,
@@ -85,6 +85,7 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
             });
           }
         });
+        console.log(artefactsWithId);
         setData(artefactsWithId);
       } catch (error) {
         console.error("Error fetching case details", error);

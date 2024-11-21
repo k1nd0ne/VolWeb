@@ -1,10 +1,11 @@
 import "@react-sigma/core/lib/react-sigma.min.css";
-import React, { FC, useMemo } from "react";
+import React, { FC, useMemo, useState } from "react";
 import {
   SigmaContainer,
   FullScreenControl,
   ZoomControl,
 } from "@react-sigma/core";
+import { Settings } from "sigma/settings";
 import GraphDataController from "./GraphDataController";
 import GraphEventsController from "./GraphEventsController";
 import { ProcessInfo } from "../../../types";
@@ -17,6 +18,8 @@ import {
 } from "@mui/icons-material";
 import Grid from "@mui/material/Grid2";
 import { Box } from "@mui/material";
+import ProcessDetails from "./ProcessDetails";
+
 const commonStyles = {
   bgcolor: "background.paper",
   m: 1,
@@ -50,6 +53,10 @@ interface ProcessGraphProps {
 }
 
 const ProcessGraph: FC<ProcessGraphProps> = ({ data }) => {
+  const [selectedProcess, setSelectedProcess] = useState<ProcessInfo | null>(
+    null,
+  );
+
   const sigmaSettings: Partial<Settings> = useMemo(
     () => ({
       defaultDrawNodeLabel: drawLabel,
@@ -66,35 +73,41 @@ const ProcessGraph: FC<ProcessGraphProps> = ({ data }) => {
   return (
     <Grid container>
       <Grid size={12}>
-        <Box
-          sx={{ ...commonStyles, borderColor: "error.main" }}
-          style={{ width: "100%", height: "70vh" }}
-        >
+        <Box style={{ width: "100%", height: "80vh" }}>
           <SigmaContainer
             style={{ backgroundColor: "#121212" }}
             settings={sigmaSettings}
+            className="react-sigma"
           >
-            <div
-              className="controls"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <FullScreenControl className="ico">
-                <ZoomOutMap />
-                <ZoomInMap />
-              </FullScreenControl>
-
-              <ZoomControl className="ico">
-                <ZoomIn />
-                <ZoomOut />
-                <CenterFocusWeak />
-              </ZoomControl>
-            </div>
             <GraphDataController data={data} />
-            <GraphEventsController data={data} />
+            <GraphEventsController
+              data={data}
+              onProcessSelect={setSelectedProcess}
+            />
+            {data && (
+              <>
+                <div className="controls">
+                  <FullScreenControl className="ico">
+                    <ZoomOutMap />
+                    <ZoomInMap />
+                  </FullScreenControl>
+
+                  <ZoomControl className="ico">
+                    <ZoomIn />
+                    <ZoomOut />
+                    <CenterFocusWeak />
+                  </ZoomControl>
+                </div>
+
+                <div className="panels">
+                  <div className="panel">
+                    {selectedProcess && (
+                      <ProcessDetails process={selectedProcess} />
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </SigmaContainer>
         </Box>
       </Grid>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, CircularProgress } from "@mui/material";
 import { Download } from "@mui/icons-material";
-import axios from "axios";
+import axiosInstance from "../../../../utils/axiosInstance";
 
 interface DumpPslistButtonProps {
   evidenceId: string | undefined;
@@ -19,7 +19,7 @@ const DumpPslistButton: React.FC<DumpPslistButtonProps> = ({
   const handleDump = async () => {
     setLoading(true);
     try {
-      await axios.post(`/api/evidence/tasks/dump/process/pslist/`, {
+      await axiosInstance.post(`/api/evidence/tasks/dump/process/pslist/`, {
         pid,
         evidenceId,
       });

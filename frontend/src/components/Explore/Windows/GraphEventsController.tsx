@@ -2,14 +2,17 @@ import { FC, useEffect, useState, useRef } from "react";
 import { useSigma, useRegisterEvents } from "@react-sigma/core";
 import Graph from "graphology";
 import { ProcessInfo } from "../../../types";
-import ProcessDetails from "./ProcessDetails";
 import ForceSupervisor from "graphology-layout-force/worker";
 
 interface GraphEventsControllerProps {
   data: ProcessInfo[];
+  onProcessSelect: (process: ProcessInfo | null) => void;
 }
 
-const GraphEventsController: FC<GraphEventsControllerProps> = ({ data }) => {
+const GraphEventsController: FC<GraphEventsControllerProps> = ({
+  data,
+  onProcessSelect,
+}) => {
   const sigma = useSigma();
   const graph = sigma.getGraph();
   const registerEvents = useRegisterEvents();
@@ -30,6 +33,7 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({ data }) => {
       const process = findProcessByPID(data, pid);
       if (process) {
         setSelectedProcess(process);
+        onProcessSelect(process); // Notify parent component
       }
 
       // Check if node has been expanded already
@@ -82,7 +86,7 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({ data }) => {
       mousemove: handleMouseMove,
       mouseup: handleMouseUp,
     });
-  }, [data, graph, sigma, registerEvents]);
+  }, [data, graph, sigma, registerEvents, onProcessSelect]);
 
   // Helper functions
   function findProcessByPID(
@@ -119,7 +123,7 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({ data }) => {
 
       if (!graph.hasNode(childId)) {
         graph.addNode(childId, {
-          label: `${child.ImageFileName || "Unknown"} (${child.__children.length})`,
+          label: `${child.ImageFileName || "Unknown"} - ${child.PID} (${child.__children.length})`,
           size: 5,
           color:
             child.__children.length > 0
@@ -145,7 +149,7 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({ data }) => {
     sigma.refresh();
   }
 
-  return selectedProcess && <ProcessDetails process={selectedProcess} />;
+  return null;
 };
 
 export default GraphEventsController;
