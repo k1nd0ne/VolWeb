@@ -261,7 +261,7 @@ class DjangoRenderer(CLIRenderer):
         if result:
             results = True
 
-        VolatilityPlugin(
+        VolatilityPlugin.objects.update_or_create(
             name=self.plugin["name"],
             icon=self.plugin["icon"],
             description=self.plugin["description"],
@@ -269,8 +269,8 @@ class DjangoRenderer(CLIRenderer):
             artefacts=result,
             category=self.plugin["category"],
             display=self.plugin["display"],
-            results=results,
-        ).save()
+            results=results
+        )
 
     def render(self, grid: interfaces.renderers.TreeGrid):
         final_output: Tuple[

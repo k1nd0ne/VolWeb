@@ -27,6 +27,50 @@ export interface CloudStorage {
 }
 
 export interface ProcessInfo {
+  PID: number;
+  PPID: number;
+  ImageFileName: string | null;
+  OffsetV: number | null;
+  Threads: number | null;
+  Handles: number | null;
+  SessionId: number | null;
+  Wow64: boolean | null;
+  CreateTime: string | null;
+  ExitTime: string | null;
+  __children: ProcessInfo[];
+  anomalies: string[] | undefined;
+}
+
+export interface NetworkInfo {
+  __children: string[];
+  Offset: number;
+  Proto: string;
+  LocalAddr: string;
+  LocalPort: number;
+  ForeignAddr: string;
+  ForeignPort: number;
+  State: string;
+  PID: number;
+  Owner: string;
+  Created: string;
+  id: number;
+}
+
+// Define the structure of the enriched process data
+export interface EnrichedProcessData {
+  pslist: ProcessInfo;
+  "volatility3.plugins.windows.cmdline.CmdLine"?: { Args: string }[];
+  "volatility3.plugins.windows.sessions.Sessions"?: {
+    "Session ID": number;
+    Process: string;
+    "User Name": string;
+    "Create Time": string;
+  }[];
+  "volatility3.plugins.windows.netscan.NetScan"?: NetworkInfo[];
+  "volatility3.plugins.windows.netstat.NetStat"?: NetworkInfo[];
+}
+
+export interface ProcessInfo {
   PID: number; // Process ID
   PPID: number; // Parent Process ID
   ImageFileName: string | null; // Executable file name
@@ -51,11 +95,11 @@ export interface Plugin {
 }
 
 export interface Artefact {
-  [key: string]: any;
+  [key: string]: object;
 }
 
 export interface Connection {
-  __children: any[];
+  __children: Connection[];
   Offset: number;
   Proto: string;
   LocalAddr: string;

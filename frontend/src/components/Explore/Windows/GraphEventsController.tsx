@@ -127,9 +127,9 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({
           size: 5,
           color:
             child.__children.length > 0
-              ? "blue"
+              ? "#ce93d8"
               : child.anomalies && child.anomalies.length > 0
-                ? "orange"
+                ? "#ffa726"
                 : "#FFFFFF",
           x: x,
           y: y,
@@ -138,7 +138,7 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({
 
       if (!graph.hasEdge(parentId, childId)) {
         graph.addEdge(parentId, childId, {
-          label: "",
+          label: "Created",
           size: 1,
           color: "#fff",
           type: "arrow",

@@ -115,7 +115,7 @@ class VolatilityEngine:
             },
         ]
         for plugin in plugin_list:
-            logger.debug(f"RUNNING PLUGIN: {plugin}")
+            logger.debug(f"Running {plugin}...")
             self.build_context(plugin)
             builted_plugin = self.construct_plugin()
             self.run_plugin(builted_plugin)
@@ -322,13 +322,9 @@ class VolatilityEngine:
 
             # Iterate over other plugins linked to the same evidence
             for plugin in plugins.exclude(id=pslist_plugin.id):
-                if plugin.category == "Process":
-                    continue  # Only consider plugins with category "Process"
-
                 artefacts = plugin.artefacts
                 if not artefacts:
                     continue
-
                 # Check if the PID matches in the plugin's artefacts
                 for artefact in artefacts:
                     plugin_pid = artefact.get("PID") or artefact.get("Process ID")

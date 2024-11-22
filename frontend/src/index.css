@@ -33,8 +33,10 @@ div.ico {
 
 .panels {
     position: absolute;
+    font-size: 0.08rem;
     top: 0;
     right: 0;
+    max-width: 400px;
     width: 400px;
     max-height: calc(100vh - 2 * var(--stage-padding));
     overflow-y: auto;
@@ -65,5 +67,42 @@ div.ico {
     justify-content: center;
 }
 .panel h2 button:hover {
+    opacity: var(--hover-opacity);
+}
+
+.panels-2 {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: "100%";
+    max-height: calc(20vh - 2 * var(--stage-padding));
+    overflow-y: auto;
+    padding: var(--stage-padding);
+    scrollbar-width: thin;
+}
+
+.panel-2 {
+    padding: 1em;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+.panel-2:not(:last-child) {
+    margin-bottom: 0.5em;
+}
+.panel-2 h2 button {
+    float: right;
+    border: 1px solid black;
+    border-radius: var(--border-radius);
+    font-size: 1.2em;
+    height: 1em;
+    width: 1em;
+    text-align: center;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.panel-2 h2 button:hover {
     opacity: var(--hover-opacity);
 }

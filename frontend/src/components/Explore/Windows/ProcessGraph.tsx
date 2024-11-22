@@ -6,9 +6,10 @@ import {
   ZoomControl,
 } from "@react-sigma/core";
 import { Settings } from "sigma/settings";
+import { NodeDisplayData, PartialButFor } from "sigma/types";
 import GraphDataController from "./GraphDataController";
 import GraphEventsController from "./GraphEventsController";
-import { ProcessInfo } from "../../../types";
+import { ProcessInfo, EnrichedProcessData } from "../../../types";
 import {
   CenterFocusWeak,
   ZoomIn,
@@ -19,17 +20,11 @@ import {
 import Grid from "@mui/material/Grid2";
 import { Box } from "@mui/material";
 import ProcessDetails from "./ProcessDetails";
+import FilteredPlugins from "./FilteredPlugins";
 
-const commonStyles = {
-  bgcolor: "background.paper",
-  m: 1,
-  border: 1,
-  width: "5rem",
-  height: "5rem",
-};
 function drawLabel(
   context: CanvasRenderingContext2D,
-  data: { x: number; y: number; size: number; label: string; color: string },
+  data: PartialButFor<NodeDisplayData, "x" | "y" | "size" | "label" | "color">,
   settings: Settings,
 ): void {
   if (!data.label) return;
@@ -57,11 +52,18 @@ const ProcessGraph: FC<ProcessGraphProps> = ({ data }) => {
     null,
   );
 
+  const [show, setShow] = useState<boolean>(false);
+
+  const [enrichedData, setEnrichedData] = useState<EnrichedProcessData | null>(
+    null,
+  );
+
   const sigmaSettings: Partial<Settings> = useMemo(
     () => ({
       defaultDrawNodeLabel: drawLabel,
       defaultDrawNodeHover: drawLabel,
       defaultEdgeType: "arrow",
+      renderEdgeLabels: true,
       labelDensity: 0.07,
       labelGridCellSize: 60,
       labelRenderedSizeThreshold: 1,
@@ -99,13 +101,30 @@ const ProcessGraph: FC<ProcessGraphProps> = ({ data }) => {
                   </ZoomControl>
                 </div>
 
-                <div className="panels">
-                  <div className="panel">
-                    {selectedProcess && (
-                      <ProcessDetails process={selectedProcess} />
-                    )}
+                {selectedProcess && (
+                  <div className="panels">
+                    <div className="panel">
+                      <ProcessDetails
+                        enrichedData={enrichedData}
+                        setEnrichedData={setEnrichedData}
+                        process={selectedProcess}
+                        show={show}
+                        setShow={setShow}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
+                {selectedProcess && (
+                  <div className="panels-2">
+                    <div className="panel-2">
+                      <FilteredPlugins
+                        enrichedData={enrichedData}
+                        process={selectedProcess}
+                        show={show}
+                      />
+                    </div>
+                  </div>
+                )}
               </>
             )}
           </SigmaContainer>

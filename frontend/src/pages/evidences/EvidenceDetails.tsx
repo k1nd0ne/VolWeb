@@ -7,13 +7,13 @@ import EvidenceMetadata from "../../components/EvidenceMetadata";
 import InvestigateWindows from "../../components/Investigate/Windows/Components/InvestigateWindows";
 import InvestigateLinux from "../../components/Investigate/Linux/Components/InvestigateLinux";
 import HomeIcon from "@mui/icons-material/Home";
-import SearchIcon from "@mui/icons-material/Search";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import Timeliner from "../../components/Investigate/Timeliner";
-import StixModule from "../../Components/StixModule";
-import Explore from "../../Components/Explore/Windows/Explore";
+import StixModule from "../../components/StixModule";
+import Explore from "../../components/Explore/Windows/Explore";
 import { Evidence } from "../../types";
 import { useParams } from "react-router-dom";
+import { Biotech, BlurOn } from "@mui/icons-material";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -94,14 +94,14 @@ const EvidenceDetail: React.FC = () => {
           />
           <Tab
             label="Explore"
-            icon={<SearchIcon />}
+            icon={<BlurOn />}
             iconPosition="start"
             {...a11yProps(1)}
             sx={{ fontSize: "0.75rem" }}
           />
           <Tab
             label="Investigate"
-            icon={<SearchIcon />}
+            icon={<Biotech />}
             iconPosition="start"
             {...a11yProps(2)}
             sx={{ fontSize: "0.75rem" }}

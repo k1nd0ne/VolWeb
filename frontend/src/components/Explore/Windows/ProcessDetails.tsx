@@ -3,67 +3,46 @@ import axiosInstance from "../../../utils/axiosInstance";
 import {
   CircularProgress,
   Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   List,
   ListItemIcon,
   ListItem,
   ListItemText,
+  Button,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import { useParams } from "react-router-dom";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import EnrichedDataGrid from "./EnrichedDataGrid";
 import {
   AddCircleOutline,
   AlignHorizontalLeft,
   BugReport,
   Cancel,
-  ExitToApp,
   Fingerprint,
   InfoRounded,
   PermIdentity,
   Terminal,
 } from "@mui/icons-material";
-
-// Define the ProcessInfo interface
-interface ProcessInfo {
-  PID: number;
-  PPID: number;
-  ImageFileName: string | null;
-  OffsetV: number | null;
-  Threads: number | null;
-  Handles: number | null;
-  SessionId: number | null;
-  Wow64: boolean | null;
-  CreateTime: string | null;
-  ExitTime: string | null;
-  __children: ProcessInfo[];
-  anomalies: string[] | undefined;
-}
-
-// Define the structure of the enriched process data
-interface EnrichedProcessData {
-  pslist: ProcessInfo;
-  "volatility3.plugins.windows.cmdline.CmdLine"?: { Args: string }[];
-  "volatility3.plugins.windows.sessions.Sessions"?: {
-    "Session ID": number;
-    Process: string;
-    "User Name": string;
-    "Create Time": string;
-  }[];
-  [key: string]: any;
-}
+import { useSigma } from "@react-sigma/core";
+import Graph from "graphology";
+import { ProcessInfo, NetworkInfo, EnrichedProcessData } from "../../../types";
 
 interface ProcessDetailsProps {
   process: ProcessInfo;
+  enrichedData: EnrichedProcessData | null;
+  setEnrichedData: React.Dispatch<
+    React.SetStateAction<EnrichedProcessData | null>
+  >;
+  show: boolean;
+  setShow: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ProcessDetails: React.FC<ProcessDetailsProps> = ({ process }) => {
-  const [enrichedData, setEnrichedData] = useState<EnrichedProcessData | null>(
-    null,
-  );
+const ProcessDetails: React.FC<ProcessDetailsProps> = ({
+  process,
+  enrichedData,
+  setEnrichedData,
+  show,
+  setShow,
+}) => {
+  const sigma = useSigma();
+  const graph = sigma.getGraph();
   const [loading, setLoading] = useState(true);
   const { id } = useParams<{ id: string }>();
 
@@ -76,6 +55,30 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({ process }) => {
           `/api/evidence/${id}/process/${process.PID}/enriched/`,
         );
         setEnrichedData(response.data.data);
+
+        // After receiving enriched data, process netscan and netstat data
+        const enrichedData = response.data.data;
+
+        // Process netscan data
+        const netScanData =
+          enrichedData["volatility3.plugins.windows.netscan.NetScan"];
+        if (netScanData && Array.isArray(netScanData)) {
+          netScanData.forEach((netEntry: NetworkInfo) => {
+            processNetEntry(netEntry, process, graph);
+          });
+        }
+
+        // Process netstat data
+        const netStatData =
+          enrichedData["volatility3.plugins.windows.netstat.NetStat"];
+        if (netStatData && Array.isArray(netStatData)) {
+          netStatData.forEach((netEntry: NetworkInfo) => {
+            processNetEntry(netEntry, process, graph);
+          });
+        }
+
+        // Refresh the sigma graph
+        sigma.refresh();
       } catch (error) {
         console.error("Error fetching enriched process data:", error);
       } finally {
@@ -84,7 +87,55 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({ process }) => {
     };
 
     fetchData();
-  }, [process.PID, id]);
+  }, [process, process.PID, id, graph, sigma]);
+
+  function processNetEntry(
+    netEntry: NetworkInfo,
+    process: ProcessInfo,
+    graph: Graph,
+  ) {
+    const parentId = process.PID.toString();
+
+    const foreignAddr = netEntry.ForeignAddr;
+    const foreignPort = netEntry.ForeignPort;
+    const localPort = netEntry.LocalPort;
+    const state = netEntry.State;
+
+    if (!foreignAddr || !foreignPort || !localPort || !state) {
+      return; // Skip if required fields are missing
+    }
+
+    const nodeId = `${foreignAddr}:${foreignPort}`;
+
+    // Check if node already exists
+    if (!graph.hasNode(nodeId)) {
+      // Get position near the process node
+      const parentAttributes = graph.getNodeAttributes(parentId);
+      const { x: px, y: py } = parentAttributes;
+
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = 100;
+      const x = px + distance * Math.cos(angle);
+      const y = py + distance * Math.sin(angle);
+
+      graph.addNode(nodeId, {
+        label: `${foreignAddr}:${foreignPort}`,
+        size: 3,
+        color: "#90caf9", // Blue color for network nodes
+        x: x,
+        y: y,
+      });
+    }
+
+    if (!graph.hasEdge(parentId, nodeId)) {
+      graph.addEdge(parentId, nodeId, {
+        label: `${localPort} (${state})`,
+        size: 1,
+        color: "#90caf9",
+        type: "arrow",
+      });
+    }
+  }
 
   if (loading) {
     return <CircularProgress />;
@@ -95,224 +146,133 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({ process }) => {
   }
 
   return (
-    <List dense>
-      <ListItem>
-        <ListItemIcon>
-          <InfoRounded />
-        </ListItemIcon>
-        <ListItemText primary={<strong>PID:</strong>} secondary={process.PID} />
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <Fingerprint />
-        </ListItemIcon>
-        <ListItemText
-          primary={<strong>ImageFileName:</strong>}
-          secondary={process.ImageFileName}
-        />
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <AlignHorizontalLeft />
-        </ListItemIcon>
-        <ListItemText
-          primary={<strong>PPID:</strong>}
-          secondary={process.PPID}
-        />
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <AddCircleOutline />
-        </ListItemIcon>
-        <ListItemText
-          primary={<strong>CreateTime:</strong>}
-          secondary={process.CreateTime}
-        />
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <Cancel />
-        </ListItemIcon>
-        <ListItemText
-          primary={<strong>ExitTime:</strong>}
-          secondary={process.ExitTime || "N/A"}
-        />
-      </ListItem>
-      {enrichedData["volatility3.plugins.windows.cmdline.CmdLine"] && (
+    <>
+      <List
+        dense
+        sx={{
+          "& .MuiListItemText-secondary": {
+            color: "primary.main",
+          },
+          "& .MuiListItemText-primary": {
+            color: "inherit",
+          },
+        }}
+      >
         <ListItem>
           <ListItemIcon>
-            <Terminal />
+            <InfoRounded />
           </ListItemIcon>
           <ListItemText
-            primary={<strong>Command Line Arguments:</strong>}
-            secondary={
-              enrichedData["volatility3.plugins.windows.cmdline.CmdLine"][0]
-                .Args || "N/A"
-            }
+            primary={<strong>PID</strong>}
+            secondary={process.PID}
           />
         </ListItem>
-      )}
-      {enrichedData["volatility3.plugins.windows.sessions.Sessions"] &&
-        enrichedData["volatility3.plugins.windows.sessions.Sessions"].map(
-          (session, index) => (
-            <ListItem key={index}>
-              <ListItemIcon>
-                <PermIdentity />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <strong>{`Session ID ${session["Session ID"] || "N/A"}`}</strong>
-                }
-                secondary={`User Name: ${session["User Name"] || "N/A"}`}
-              />
-            </ListItem>
-          ),
+        <ListItem>
+          <ListItemIcon>
+            <Fingerprint />
+          </ListItemIcon>
+          <ListItemText
+            primary={<strong>ImageFileName</strong>}
+            secondary={process.ImageFileName}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <AlignHorizontalLeft />
+          </ListItemIcon>
+          <ListItemText
+            primary={<strong>PPID</strong>}
+            secondary={process.PPID}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <AddCircleOutline />
+          </ListItemIcon>
+          <ListItemText
+            primary={<strong>CreateTime</strong>}
+            secondary={process.CreateTime}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <Cancel />
+          </ListItemIcon>
+          <ListItemText
+            primary={<strong>ExitTime</strong>}
+            secondary={process.ExitTime || "N/A"}
+          />
+        </ListItem>
+        {enrichedData["volatility3.plugins.windows.cmdline.CmdLine"] && (
+          <ListItem>
+            <ListItemIcon>
+              <Terminal />
+            </ListItemIcon>
+            <ListItemText
+              primary={<strong>Command Line Arguments</strong>}
+              secondary={
+                enrichedData["volatility3.plugins.windows.cmdline.CmdLine"][0]
+                  .Args || "N/A"
+              }
+            />
+          </ListItem>
         )}
-      {process.anomalies && process.anomalies.length > 0 && (
-        <ListItem>
-          <ListItemIcon>
-            <BugReport />
-          </ListItemIcon>
-          <ListItemText
-            primary={<strong>Anomalies:</strong>}
-            secondary={
-              <ul>
-                {process.anomalies.map((anomaly, index) => (
-                  <li key={index}>{anomaly}</li>
-                ))}
-              </ul>
-            }
-          />
-        </ListItem>
-      )}
-    </List>
+        {enrichedData["volatility3.plugins.windows.sessions.Sessions"] &&
+          enrichedData["volatility3.plugins.windows.sessions.Sessions"].map(
+            (session, index) => (
+              <ListItem key={index}>
+                <ListItemIcon>
+                  <PermIdentity />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <strong>{`Session ID ${session["Session ID"] || "N/A"}`}</strong>
+                  }
+                  secondary={`${session["User Name"] || "N/A"}`}
+                />
+              </ListItem>
+            ),
+          )}
+        {process.anomalies && process.anomalies.length > 0 && (
+          <ListItem>
+            <ListItemIcon>
+              <BugReport />
+            </ListItemIcon>
+            <ListItemText
+              sx={{
+                "& .MuiListItemText-secondary": {
+                  color: "warning.main",
+                },
+                "& .MuiListItemText-primary": {
+                  color: "inherit",
+                },
+              }}
+              primary={<strong>Anomalies:</strong>}
+              secondary={
+                <ul>
+                  {process.anomalies.map((anomaly, index) => (
+                    <li key={index}>{anomaly}</li>
+                  ))}
+                </ul>
+              }
+            />
+          </ListItem>
+        )}
+      </List>
 
-    // <Grid size={10}>
-    //   {/* Enriched data */}
-    //   {/* DLL List */}
-    //   {enrichedData["volatility3.plugins.windows.dlllist.DllList"] && (
-    //     <Accordion>
-    //       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-    //         <Typography>Loaded DLLs</Typography>
-    //       </AccordionSummary>
-    //       <AccordionDetails>
-    //         <EnrichedDataGrid
-    //           data={
-    //             enrichedData["volatility3.plugins.windows.dlllist.DllList"]
-    //           }
-    //         />
-    //       </AccordionDetails>
-    //     </Accordion>
-    //   )}
-
-    //   {/* Environment Variables */}
-    //   {enrichedData["volatility3.plugins.windows.envars.Envars"] && (
-    //     <Accordion>
-    //       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-    //         <Typography>Environment Variables</Typography>
-    //       </AccordionSummary>
-    //       <AccordionDetails>
-    //         <EnrichedDataGrid
-    //           data={enrichedData["volatility3.plugins.windows.envars.Envars"]}
-    //         />
-    //       </AccordionDetails>
-    //     </Accordion>
-    //   )}
-
-    //   {/* SIDs */}
-    //   {enrichedData["volatility3.plugins.windows.getsids.GetSIDs"] && (
-    //     <Accordion>
-    //       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-    //         <Typography>Security Identifiers (SIDs)</Typography>
-    //       </AccordionSummary>
-    //       <AccordionDetails>
-    //         <EnrichedDataGrid
-    //           data={
-    //             enrichedData["volatility3.plugins.windows.getsids.GetSIDs"]
-    //           }
-    //         />
-    //       </AccordionDetails>
-    //     </Accordion>
-    //   )}
-
-    //   {/* Privileges */}
-    //   {enrichedData["volatility3.plugins.windows.privileges.Privs"] && (
-    //     <Accordion>
-    //       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-    //         <Typography>Privileges</Typography>
-    //       </AccordionSummary>
-    //       <AccordionDetails>
-    //         <EnrichedDataGrid
-    //           data={
-    //             enrichedData["volatility3.plugins.windows.privileges.Privs"]
-    //           }
-    //         />
-    //       </AccordionDetails>
-    //     </Accordion>
-    //   )}
-
-    //   {/* Threads */}
-    //   {enrichedData["volatility3.plugins.windows.threads.Threads"] && (
-    //     <Accordion>
-    //       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-    //         <Typography>Threads</Typography>
-    //       </AccordionSummary>
-    //       <AccordionDetails>
-    //         <EnrichedDataGrid
-    //           data={
-    //             enrichedData["volatility3.plugins.windows.threads.Threads"]
-    //           }
-    //         />
-    //       </AccordionDetails>
-    //     </Accordion>
-    //   )}
-
-    //   {/* PsScan */}
-    //   {enrichedData["volatility3.plugins.windows.psscan.PsScan"] && (
-    //     <Accordion>
-    //       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-    //         <Typography>Process Scan (PsScan)</Typography>
-    //       </AccordionSummary>
-    //       <AccordionDetails>
-    //         <EnrichedDataGrid
-    //           data={enrichedData["volatility3.plugins.windows.psscan.PsScan"]}
-    //         />
-    //       </AccordionDetails>
-    //     </Accordion>
-    //   )}
-
-    //   {/* PsXView */}
-    //   {enrichedData["volatility3.plugins.windows.psxview.PsXView"] && (
-    //     <Accordion>
-    //       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-    //         <Typography>PsXView</Typography>
-    //       </AccordionSummary>
-    //       <AccordionDetails>
-    //         <EnrichedDataGrid
-    //           data={
-    //             enrichedData["volatility3.plugins.windows.psxview.PsXView"]
-    //           }
-    //         />
-    //       </AccordionDetails>
-    //     </Accordion>
-    //   )}
-
-    //   {/* ThrdScan */}
-    //   {enrichedData["volatility3.plugins.windows.thrdscan.ThrdScan"] && (
-    //     <Accordion>
-    //       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-    //         <Typography>Thread Scan (ThrdScan)</Typography>
-    //       </AccordionSummary>
-    //       <AccordionDetails>
-    //         <EnrichedDataGrid
-    //           data={
-    //             enrichedData["volatility3.plugins.windows.thrdscan.ThrdScan"]
-    //           }
-    //         />
-    //       </AccordionDetails>
-    //     </Accordion>
-    //   )}
-    // </Grid>
+      <div style={{ display: "flex", justifyContent: "center", margin: 16 }}>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => {
+            setShow(!show);
+          }}
+          color="secondary"
+        >
+          {show ? "Less" : "More"}
+        </Button>
+      </div>
+    </>
   );
 };
 

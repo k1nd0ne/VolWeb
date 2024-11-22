@@ -20,6 +20,7 @@
     "@mui/x-data-grid": "^7.20.0",
     "@mui/x-tree-view": "^7.20.0",
     "@react-sigma/core": "^4.0.3",
+    "@sigma/node-image": "^3.0.0-beta.16",
     "apexcharts": "^3.54.1",
     "axios": "^1.7.7",
     "graphology": "^0.25.4",

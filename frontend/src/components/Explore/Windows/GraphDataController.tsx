@@ -29,7 +29,7 @@ const GraphDataController: FC<GraphDataControllerProps> = ({ data }) => {
         size: 10,
         color:
           process.anomalies && process.anomalies.length > 0
-            ? "orange"
+            ? "#ffa726"
             : "#FFFFFF",
         x: x,
         y: y,
