@@ -23,7 +23,6 @@ import PluginDataGrid from "./PluginDataGrid";
 import { Plugin, Evidence } from "../../types";
 import MalfindButton from "./Windows/Buttons/MalfindButton";
 import FilescanButton from "./Windows/Buttons/FilescanButton";
-import NetGraphButton from "./Windows/Buttons/NetGraphButton";
 
 interface PluginDashboardProps {
   evidence: Evidence;
@@ -136,9 +135,6 @@ const PluginDashboard: React.FC<PluginDashboardProps> = ({ evidence }) => {
                     )}
                     {evidence.os === "windows" && category === "Malware" && (
                       <MalfindButton />
-                    )}
-                    {evidence.os === "windows" && category === "Network" && (
-                      <NetGraphButton />
                     )}
                     {groupedPlugins[category].map((plugin) => {
                       const iconName = plugin.icon;

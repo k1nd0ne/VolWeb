@@ -48,7 +48,7 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({
           layout.start();
           setTimeout(() => {
             layout.stop();
-          }, 1000);
+          }, 5000);
         }
       }
     };

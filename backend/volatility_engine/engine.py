@@ -182,6 +182,7 @@ class VolatilityEngine:
             self.evidence.status = 0  # Make sure we start at 0%
             if self.evidence.os == "windows":
                 self.start_windows_analysis()
+                self.construct_windows_explorer()
             else:
                 self.start_linux_analysis()
         except UnsatisfiedException as e:
@@ -267,7 +268,6 @@ class VolatilityEngine:
         result = self.run_plugin(builted_plugin)
 
     def dump_file(self, offset):
-        self.construct_windows_explorer()
         dumpfiles_plugin = {
             DumpFiles: {
                 "icon": "N/A",

@@ -56,8 +56,7 @@ export interface NetworkInfo {
   id: number;
 }
 
-// Define the structure of the enriched process data
-export interface EnrichedProcessData {
+interface KnownEnrichedData {
   pslist: ProcessInfo;
   "volatility3.plugins.windows.cmdline.CmdLine"?: { Args: string }[];
   "volatility3.plugins.windows.sessions.Sessions"?: {
@@ -68,6 +67,10 @@ export interface EnrichedProcessData {
   }[];
   "volatility3.plugins.windows.netscan.NetScan"?: NetworkInfo[];
   "volatility3.plugins.windows.netstat.NetStat"?: NetworkInfo[];
+}
+
+export interface EnrichedProcessData extends KnownEnrichedData {
+  [key: string]: ProcessInfo | NetworkInfo | unknown;
 }
 
 export interface ProcessInfo {

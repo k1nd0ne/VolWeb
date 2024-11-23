@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Box } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 interface EnrichedDataGridProps {
@@ -35,14 +34,13 @@ const EnrichedDataGrid: React.FC<EnrichedDataGridProps> = ({ data }) => {
   }, [data]);
 
   return (
-    <Box sx={{ height: "400px", width: "100%" }}>
-      <DataGrid
-        rows={data.map((row, index) => ({ id: index, ...row }))}
-        columns={columns}
-        density="compact"
-        getRowId={(row) => row.id as string | number}
-      />
-    </Box>
+    <DataGrid
+      sx={{ width: "100%", p: 2 }}
+      rows={data.map((row, index) => ({ id: index, ...row }))}
+      columns={columns}
+      density="compact"
+      getRowId={(row) => row.id as string | number}
+    />
   );
 };
 

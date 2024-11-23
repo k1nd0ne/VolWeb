@@ -72,10 +72,10 @@ div.ico {
 
 .panels-2 {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    width: "100%";
-    max-height: calc(20vh - 2 * var(--stage-padding));
+    top: 0;
+    left: 0;
+    width: 70%;
+    max-height: calc(100vh - 2 * var(--stage-padding));
     overflow-y: auto;
     padding: var(--stage-padding);
     scrollbar-width: thin;
@@ -84,6 +84,7 @@ div.ico {
 .panel-2 {
     padding: 1em;
     border-radius: var(--border-radius);
+
     box-shadow: var(--shadow);
 }
 .panel-2:not(:last-child) {

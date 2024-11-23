@@ -1,3 +1,5 @@
+import { ProcessInfo } from "../types";
+
 export const flattenProcesses = (processes: ProcessInfo[]): ProcessInfo[] => {
   let result: ProcessInfo[] = [];
 
@@ -17,6 +19,28 @@ export const annotateProcessData = (processTree: ProcessInfo[]): void => {
   const processesByPID = new Map<number, ProcessInfo>();
   const processesByName = new Map<string, ProcessInfo[]>();
 
+  // Prepare instance counts
+  const instanceExpectedSingles = [
+    "smss.exe",
+    "wininit.exe",
+    "services.exe",
+    "lsass.exe",
+  ];
+  const suspiciousProcesses = [
+    "powershell.exe",
+    "cmd.exe",
+    "net.exe",
+    "net1.exe",
+    "psexec.exe",
+    "psexesvc.exe",
+    "schtasks.exe",
+    "at.exe",
+    "sc.exe",
+    "wmic.exe",
+    "wmiprvse.exe",
+    "wsmprovhost.exe",
+  ];
+
   processes.forEach((process) => {
     processesByPID.set(process.PID, process);
 
@@ -29,88 +53,52 @@ export const annotateProcessData = (processTree: ProcessInfo[]): void => {
 
     // Initialize anomalies array in process
     process.anomalies = [];
-  });
 
-  // Check number of instances
-  ["smss.exe", "wininit.exe", "services.exe", "lsass.exe"].forEach(
-    (processName) => {
-      const instances = processesByName.get(processName) || [];
+    if (process.Wow64) {
+      process.anomalies.push("Wow64 is enabled for this process.");
+    }
+
+    // Check number of instances
+    if (instanceExpectedSingles.includes(nameLower)) {
+      const instances = processesByName.get(nameLower) || [];
       if (instances.length !== 1) {
-        // Mark all instances as anomalous
-        instances.forEach((proc) =>
-          proc.anomalies?.push("Unexpected number of instances"),
-        );
+        process.anomalies.push("Unexpected number of instances");
       }
-    },
-  );
+    }
 
-  // Check parent-child relationships
-  processes.forEach((process) => {
-    const nameLower = (process.ImageFileName ?? "").toLowerCase();
-
-    if (nameLower === "smss.exe") {
-      // Expected PPID is 4
-      if (process.PPID !== 4) {
-        process.anomalies?.push("Unexpected parent PID");
-      }
+    // Check parent-child relationships
+    if (nameLower === "smss.exe" && process.PPID !== 4) {
+      process.anomalies.push("Unexpected parent PID");
     } else if (nameLower === "svchost.exe") {
-      // Expected parent is 'services.exe' or another 'svchost.exe'
       const servicesProcesses = processesByName.get("services.exe") || [];
-      if (servicesProcesses.length === 1) {
-        const servicesPID = servicesProcesses[0].PID;
-        if (process.PPID !== servicesPID) {
-          const parentProcess = processesByPID.get(process.PPID);
-          if (
-            (parentProcess?.ImageFileName ?? "").toLowerCase() !== "svchost.exe"
-          ) {
-            process.anomalies?.push("Unexpected parent PID");
-          }
-        }
-      } else {
-        process.anomalies?.push(
-          "Cannot verify parent PID (services.exe not found or multiple instances)",
+      if (
+        servicesProcesses.length !== 1 ||
+        (servicesProcesses.length === 1 &&
+          process.PPID !== servicesProcesses[0].PID &&
+          (
+            processesByPID.get(process.PPID)?.ImageFileName ?? ""
+          ).toLowerCase() !== "svchost.exe")
+      ) {
+        process.anomalies.push(
+          servicesProcesses.length !== 1
+            ? "Cannot verify parent PID (services.exe not found or multiple instances)"
+            : "Unexpected parent PID",
         );
       }
     }
-  });
 
-  // Verify processes are running in expected sessions
-  processes.forEach((process) => {
-    const nameLower = (process.ImageFileName ?? "").toLowerCase();
-
+    // Verify processes are running in expected sessions
     if (
-      ["smss.exe", "wininit.exe", "services.exe", "lsass.exe"].includes(
-        nameLower,
-      )
+      instanceExpectedSingles.includes(nameLower) &&
+      process.SessionId !== 0 &&
+      process.SessionId
     ) {
-      if (process.SessionId !== null && process.SessionId !== 0) {
-        process.anomalies?.push("Unexpected SessionId (should be 0)");
-      }
+      process.anomalies.push("Unexpected SessionId (should be 0)");
     }
-  });
 
-  // Flag specific processes and those that have exited unexpectedly
-  processes.forEach((process) => {
-    const nameLower = (process.ImageFileName ?? "").toLowerCase();
-
-    // List of suspicious process names
-    const suspiciousProcesses = [
-      "powershell.exe",
-      "cmd.exe",
-      "net.exe",
-      "net1.exe",
-      "psexec.exe",
-      "psexesvc.exe",
-      "schtasks.exe",
-      "at.exe",
-      "sc.exe",
-      "wmic.exe",
-      "wmiprvse.exe",
-      "wsmprovhost.exe",
-    ];
-
+    // Flag specific processes and those that have exited unexpectedly
     if (suspiciousProcesses.includes(nameLower)) {
-      process.anomalies?.push("Suspicious process");
+      process.anomalies.push("The process is usually suspicious");
     }
 
     if (
@@ -120,11 +108,10 @@ export const annotateProcessData = (processTree: ProcessInfo[]): void => {
         "services.exe",
         "lsass.exe",
         "csrss.exe",
-      ].includes(nameLower)
+      ].includes(nameLower) &&
+      process.ExitTime
     ) {
-      if (process.ExitTime) {
-        process.anomalies?.push("Exited unexpectedly");
-      }
+      process.anomalies.push("Exited unexpectedly");
     }
   });
 };

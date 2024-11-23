@@ -54,23 +54,19 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({
         const response = await axiosInstance.get(
           `/api/evidence/${id}/process/${process.PID}/enriched/`,
         );
-        setEnrichedData(response.data.data);
+        const data = response.data.data;
+        setEnrichedData(data);
 
-        // After receiving enriched data, process netscan and netstat data
-        const enrichedData = response.data.data;
-
-        // Process netscan data
-        const netScanData =
-          enrichedData["volatility3.plugins.windows.netscan.NetScan"];
+        // Process netscan data directly from response data
+        const netScanData = data["volatility3.plugins.windows.netscan.NetScan"];
         if (netScanData && Array.isArray(netScanData)) {
           netScanData.forEach((netEntry: NetworkInfo) => {
             processNetEntry(netEntry, process, graph);
           });
         }
 
-        // Process netstat data
-        const netStatData =
-          enrichedData["volatility3.plugins.windows.netstat.NetStat"];
+        // Process netstat data directly from response data
+        const netStatData = data["volatility3.plugins.windows.netstat.NetStat"];
         if (netStatData && Array.isArray(netStatData)) {
           netStatData.forEach((netEntry: NetworkInfo) => {
             processNetEntry(netEntry, process, graph);
@@ -87,7 +83,7 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({
     };
 
     fetchData();
-  }, [process, process.PID, id, graph, sigma]);
+  }, [process, process.PID, id, graph, sigma, setEnrichedData]);
 
   function processNetEntry(
     netEntry: NetworkInfo,
@@ -96,14 +92,10 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({
   ) {
     const parentId = process.PID.toString();
 
-    const foreignAddr = netEntry.ForeignAddr;
-    const foreignPort = netEntry.ForeignPort;
-    const localPort = netEntry.LocalPort;
-    const state = netEntry.State;
-
-    if (!foreignAddr || !foreignPort || !localPort || !state) {
-      return; // Skip if required fields are missing
-    }
+    const foreignAddr = netEntry.ForeignAddr || "Unknown addresse";
+    const foreignPort = netEntry.ForeignPort || "Unknown port";
+    const localPort = netEntry.LocalPort || "Unknown port";
+    const state = netEntry.State || "Unknown state";
 
     const nodeId = `${foreignAddr}:${foreignPort}`;
 
@@ -121,7 +113,7 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({
       graph.addNode(nodeId, {
         label: `${foreignAddr}:${foreignPort}`,
         size: 3,
-        color: "#90caf9", // Blue color for network nodes
+        color: "#ffa726", // Blue color for network nodes
         x: x,
         y: y,
       });
@@ -131,11 +123,13 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({
       graph.addEdge(parentId, nodeId, {
         label: `${localPort} (${state})`,
         size: 1,
-        color: "#90caf9",
+        color: "#ffa726",
         type: "arrow",
       });
     }
   }
+
+  sigma.refresh();
 
   if (loading) {
     return <CircularProgress />;

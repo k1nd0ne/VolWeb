@@ -30,7 +30,7 @@ function drawLabel(
   if (!data.label) return;
 
   const size = settings.labelSize || 12;
-  const font = settings.labelFont || "Arial";
+  const font = settings.labelFont || "Roboto";
   const weight = settings.labelWeight || "normal";
 
   context.font = `${weight} ${size}px ${font}`;
@@ -114,7 +114,7 @@ const ProcessGraph: FC<ProcessGraphProps> = ({ data }) => {
                     </div>
                   </div>
                 )}
-                {selectedProcess && (
+                {selectedProcess && show && (
                   <div className="panels-2">
                     <div className="panel-2">
                       <FilteredPlugins
