@@ -76,7 +76,8 @@ const FileScan: React.FC<FileScanProps> = ({ data }) => {
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${protocol}://${window.location.hostname}:8000/ws/engine/${evidenceId}/`;
+    const port = window.location.port ? `:${window.location.port}` : "";
+    const wsUrl = `${protocol}://${window.location.hostname}${port}/ws/engine/${evidenceId}/`;
 
     ws.current = new WebSocket(wsUrl);
 

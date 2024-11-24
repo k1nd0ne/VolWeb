@@ -11,11 +11,10 @@ export const downloadFile = async (fileUrl: string, fileName: string) => {
     link.setAttribute("download", fileName);
     document.body.appendChild(link);
     link.click();
-    // Clean up
+
     link.parentNode?.removeChild(link);
     window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error("Error downloading file:", error);
-    // Optionally handle error notification
   }
 };

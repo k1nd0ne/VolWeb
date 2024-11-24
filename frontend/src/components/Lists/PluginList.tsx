@@ -6,6 +6,7 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  Box,
 } from "@mui/material";
 import * as Icons from "@mui/icons-material";
 import { Plugin } from "../../types";
@@ -41,7 +42,7 @@ const PluginList: React.FC<PluginListProps> = ({ evidenceId }) => {
   };
 
   return (
-    <div style={{ maxHeight: "80vh", overflowY: "auto" }}>
+    <Box style={{ maxHeight: "80vh", overflowY: "auto" }}>
       <List>
         {plugins.map((plugin) => (
           <ListItem key={plugin.name}>
@@ -49,26 +50,38 @@ const PluginList: React.FC<PluginListProps> = ({ evidenceId }) => {
             <ListItemText
               primary={plugin.name}
               secondary={
-                <>
-                  <Typography variant="body2" color="textSecondary">
+                <React.Fragment>
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{ color: "text.secondary", display: "block" }}
+                  >
                     Category: {plugin.category}
                   </Typography>
-                  <Typography variant="body2" color="textPrimary">
+                  <Typography
+                    component="span"
+                    variant="caption"
+                    sx={{ color: "text.primary", display: "block" }}
+                  >
                     {plugin.description}
                   </Typography>
                   <Typography
+                    component="span"
                     variant="body2"
-                    style={{ color: plugin.results ? "green" : "red" }}
+                    sx={{
+                      color: plugin.results ? "green" : "red",
+                      display: "block",
+                    }}
                   >
                     {plugin.results ? "Available" : "Unavailable"}
                   </Typography>
-                </>
+                </React.Fragment>
               }
             />
           </ListItem>
         ))}
       </List>
-    </div>
+    </Box>
   );
 };
 

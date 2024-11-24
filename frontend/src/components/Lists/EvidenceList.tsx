@@ -53,7 +53,8 @@ function EvidenceList({ caseId }: EvidenceListProps) {
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${protocol}://localhost:8000/ws/evidences/${caseId ? `${caseId}/` : ""}`;
+    const port = window.location.port ? `:${window.location.port}` : "";
+    const wsUrl = `${protocol}://${window.location.hostname}${port}/ws/evidences/${caseId ? `${caseId}/` : ""}`;
 
     const connectWebSocket = () => {
       ws.current = new WebSocket(wsUrl);

@@ -24,13 +24,19 @@ const InvestigateWindows: React.FC<InvestigateWindowsProps> = ({
   const { display_message } = useSnackbar();
 
   const ws = useRef<WebSocket | null>(null);
+  const processMetadataRef = useRef<ProcessInfo>(processMetadata);
 
   const [loadingDump, setLoadingDump] = useState<boolean>(false);
   const [loadingHandles, setLoadingHandles] = useState<boolean>(false);
 
   useEffect(() => {
+    processMetadataRef.current = processMetadata;
+  }, [processMetadata]);
+
+  useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${protocol}://${window.location.hostname}:8000/ws/engine/${id}/`;
+    const port = window.location.port ? `:${window.location.port}` : "";
+    const wsUrl = `${protocol}://${window.location.hostname}${port}/ws/engine/${id}/`;
 
     ws.current = new WebSocket(wsUrl);
 
@@ -42,45 +48,48 @@ const InvestigateWindows: React.FC<InvestigateWindowsProps> = ({
       const data = JSON.parse(event.data);
       console.log("WebSocket message:", data);
       const message = data.message;
-      if (message.status === "finished") {
-        if (message.pid === processMetadata.PID) {
-          if (message.name === "handles") {
-            setLoadingHandles(false);
-            display_message(
-              "success",
-              `Handles are available for ${processMetadata.PID}`,
-            );
-          } else if (message.name === "dump") {
-            setLoadingDump(false);
-            if (message.result) {
-              const results = message.result;
-              results.forEach((item: Artefact) => {
-                const fileName = item["File output"] as string;
-                if (fileName === "Error outputting file") {
-                  console.log(
-                    `The volatility engine failed to dump ${item.ImageFileName}`,
-                  );
-                  display_message(
-                    "warning",
-                    `The volatility engine failed to dump ${item.ImageFileName}`,
-                  );
 
-                  return;
-                }
-                const fileUrl = `/media/${id}/${fileName}`;
-                // Initiate file download
-                downloadFile(fileUrl, fileName);
-                display_message(
-                  "success",
-                  `${item.ImageFileName} was dumped with success.`,
+      // Use processMetadataRef.current instead of processMetadata
+      const currentPID = processMetadataRef.current.PID;
+
+      if (message.status === "finished") {
+        if (message.pid === currentPID && message.name === "handles") {
+          setLoadingHandles(false);
+        }
+        if (message.pid === currentPID && message.name === "dump") {
+          setLoadingDump(false);
+        }
+
+        if (message.name === "handles") {
+          display_message("success", `Handles are available for ${currentPID}`);
+        } else if (message.name === "dump") {
+          if (message.result) {
+            const results = message.result;
+            results.forEach((item: Artefact) => {
+              const fileName = item["File output"] as string;
+              if (fileName === "Error outputting file") {
+                console.log(
+                  `The volatility engine failed to dump ${item.ImageFileName}`,
                 );
-              });
-            }
+                display_message(
+                  "warning",
+                  `The volatility engine failed to dump ${item.ImageFileName}`,
+                );
+
+                return;
+              }
+              const fileUrl = `/media/${id}/${fileName}`;
+              // Initiate file download
+              downloadFile(fileUrl, fileName);
+              display_message(
+                "success",
+                `${item.ImageFileName} was dumped with success.`,
+              );
+            });
           }
         }
       }
     };
-
     ws.current.onclose = () => {
       console.log("WebSocket disconnected");
     };
@@ -94,7 +103,8 @@ const InvestigateWindows: React.FC<InvestigateWindowsProps> = ({
         ws.current.close();
       }
     };
-  }, [id, display_message, processMetadata.PID]);
+    // Remove processMetadata from dependencies
+  }, [id, display_message]); // Only depends on id and display_message
 
   // Fetch tasks when processMetadata updates
   useEffect(() => {
@@ -158,11 +168,10 @@ const InvestigateWindows: React.FC<InvestigateWindowsProps> = ({
       fetchTasks();
     } else {
       console.log("No process selected or PID missing.");
-      display_message("warning", `No process selected or PID missing.`);
       setLoadingDump(false);
       setLoadingHandles(false);
     }
-  }, [processMetadata, display_message, id]);
+  }, [processMetadata, id, display_message]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>

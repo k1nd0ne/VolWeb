@@ -39,7 +39,8 @@ function SymbolsList() {
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${protocol}://localhost:8000/ws/symbols/`;
+    const port = window.location.port ? `:${window.location.port}` : "";
+    const wsUrl = `${protocol}://${window.location.hostname}${port}/ws/symbols/`;
 
     const connectWebSocket = () => {
       ws.current = new WebSocket(wsUrl);

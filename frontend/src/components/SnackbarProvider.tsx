@@ -1,4 +1,11 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useMemo,
+  useCallback,
+} from "react";
 import { Snackbar, Alert, AlertColor } from "@mui/material";
 
 interface SnackbarContextValue {
@@ -25,16 +32,21 @@ export const SnackbarProvider: React.FC<SnackbarProviderProps> = ({
   children,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [severity, setSeverity] = useState<AlertColor>("success"); // 'error', 'warning', 'info', 'success'
+  const [severity, setSeverity] = useState<AlertColor>("success");
   const [message, setMessage] = useState<string>("");
 
-  const display_message = (severity: AlertColor, message: string) => {
-    setSeverity(severity);
-    setMessage(message);
-    setOpen(true);
-  };
+  // Memoize the display_message function
+  const display_message = useCallback(
+    (severity: AlertColor, message: string) => {
+      setSeverity(severity);
+      setMessage(message);
+      setOpen(true);
+    },
+    [],
+  );
 
-  // Function to handle closing the Snackbar
+  const contextValue = useMemo(() => ({ display_message }), [display_message]);
+
   const handleClose = (
     _event?: React.SyntheticEvent | Event,
     reason?: string,
@@ -46,7 +58,7 @@ export const SnackbarProvider: React.FC<SnackbarProviderProps> = ({
   };
 
   return (
-    <SnackbarContext.Provider value={{ display_message }}>
+    <SnackbarContext.Provider value={contextValue}>
       {children}
       <Snackbar
         open={open}

@@ -23,28 +23,47 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
   const { display_message } = useSnackbar();
 
   const ws = useRef<WebSocket | null>(null);
+  const processMetadataRef = useRef<LinuxProcessInfo>(processMetadata);
 
   const [loadingDump, setLoadingDump] = useState<boolean>(false);
   const [loadingMaps, setLoadingMaps] = useState<boolean>(false);
 
   useEffect(() => {
-    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${protocol}://${window.location.hostname}:8000/ws/engine/${id}/`;
+    processMetadataRef.current = processMetadata;
+  }, [processMetadata]);
 
-    ws.current = new WebSocket(wsUrl);
+  useEffect(() => {
+    const connectWebSocket = () => {
+      const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+      const port = window.location.port ? `:${window.location.port}` : "";
+      const wsUrl = `${protocol}://${window.location.hostname}${port}/ws/engine/${id}/`;
 
-    ws.current.onopen = () => {
-      console.log("WebSocket connected");
-    };
+      ws.current = new WebSocket(wsUrl);
 
-    ws.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("WebSocket message:", data);
-      const message = data.message;
-      if (message.status === "finished") {
-        if (message.pid === processMetadata.PID) {
+      ws.current.onopen = () => {
+        console.log("WebSocket connected");
+      };
+
+      ws.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log("WebSocket message:", data);
+        const message = data.message;
+
+        const currentPID = processMetadataRef.current.PID;
+
+        if (message.status === "finished") {
+          if (message.pid === currentPID && message.name === "maps") {
+            setLoadingMaps(false);
+          }
+          if (message.pid === currentPID && message.name === "dump") {
+            setLoadingDump(false);
+          }
           if (message.name === "maps") {
             setLoadingMaps(false);
+            display_message(
+              "success",
+              `${currentPID} available maps were extracted`,
+            );
           } else if (message.name === "dump") {
             setLoadingDump(false);
             if (message.result) {
@@ -52,7 +71,6 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
               results.forEach((item: Artefact) => {
                 const fileName = item["File output"] as string;
                 if (fileName === "Error outputting file") {
-                  // TODO use the message handler
                   console.log(
                     `The volatility engine failed to dump ${item.COMM}`,
                   );
@@ -73,25 +91,26 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
             }
           }
         }
-      }
+      };
+
+      ws.current.onclose = () => {
+        console.log("WebSocket disconnected");
+      };
+
+      ws.current.onerror = (error) => {
+        console.log("WebSocket error:", error);
+      };
     };
 
-    ws.current.onclose = () => {
-      console.log("WebSocket disconnected");
-    };
-
-    ws.current.onerror = (error) => {
-      console.log("WebSocket error:", error);
-    };
+    connectWebSocket();
 
     return () => {
       if (ws.current) {
         ws.current.close();
       }
     };
-  }, [id, processMetadata.PID, display_message]);
+  }, [id, display_message]);
 
-  // Fetch tasks when processMetadata updates
   useEffect(() => {
     if (processMetadata && processMetadata.PID) {
       console.log("Fetching tasks for PID:", processMetadata.PID);

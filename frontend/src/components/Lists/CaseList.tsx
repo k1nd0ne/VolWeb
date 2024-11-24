@@ -45,7 +45,8 @@ function CaseList() {
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${protocol}://localhost:8000/ws/cases/`;
+    const port = window.location.port ? `:${window.location.port}` : "";
+    const wsUrl = `${protocol}://${window.location.hostname}${port}/ws/cases/`;
 
     const connectWebSocket = () => {
       ws.current = new WebSocket(wsUrl);
