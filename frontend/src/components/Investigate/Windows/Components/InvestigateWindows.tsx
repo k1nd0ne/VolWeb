@@ -4,10 +4,11 @@ import Grid from "@mui/material/Grid2";
 import PsTree from "./PsTree";
 import ProcessMetadata from "./ProcessMetadata";
 import PluginDashboard from "../../PluginDashboard";
-import { ProcessInfo, Evidence } from "../../../../types";
+import { ProcessInfo, Evidence, Artefact, TaskData } from "../../../../types";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../../../utils/axiosInstance";
 import { downloadFile } from "../../../../utils/downloadFile";
+import { useSnackbar } from "../../../SnackbarProvider";
 
 interface InvestigateWindowsProps {
   evidence: Evidence;
@@ -20,11 +21,10 @@ const InvestigateWindows: React.FC<InvestigateWindowsProps> = ({
     {} as ProcessInfo,
   );
   const { id } = useParams<{ id: string }>();
+  const { display_message } = useSnackbar();
 
-  // WebSocket setup
   const ws = useRef<WebSocket | null>(null);
 
-  // Loading states
   const [loadingDump, setLoadingDump] = useState<boolean>(false);
   const [loadingHandles, setLoadingHandles] = useState<boolean>(false);
 
@@ -46,22 +46,34 @@ const InvestigateWindows: React.FC<InvestigateWindowsProps> = ({
         if (message.pid === processMetadata.PID) {
           if (message.name === "handles") {
             setLoadingHandles(false);
+            display_message(
+              "success",
+              `Handles are available for ${processMetadata.PID}`,
+            );
           } else if (message.name === "dump") {
             setLoadingDump(false);
             if (message.result) {
               const results = message.result;
-              results.forEach((item: any) => {
-                const fileName = item["File output"];
+              results.forEach((item: Artefact) => {
+                const fileName = item["File output"] as string;
                 if (fileName === "Error outputting file") {
-                  // TODO use the message handler
                   console.log(
                     `The volatility engine failed to dump ${item.ImageFileName}`,
                   );
+                  display_message(
+                    "warning",
+                    `The volatility engine failed to dump ${item.ImageFileName}`,
+                  );
+
                   return;
                 }
                 const fileUrl = `/media/${id}/${fileName}`;
                 // Initiate file download
                 downloadFile(fileUrl, fileName);
+                display_message(
+                  "success",
+                  `${item.ImageFileName} was dumped with success.`,
+                );
               });
             }
           }
@@ -82,12 +94,11 @@ const InvestigateWindows: React.FC<InvestigateWindowsProps> = ({
         ws.current.close();
       }
     };
-  }, [id, processMetadata.PID]);
+  }, [id, display_message, processMetadata.PID]);
 
   // Fetch tasks when processMetadata updates
   useEffect(() => {
     if (processMetadata && processMetadata.PID) {
-      console.log("Fetching tasks for PID:", processMetadata.PID);
       const fetchTasks = async () => {
         try {
           const response = await axiosInstance.get(
@@ -104,6 +115,7 @@ const InvestigateWindows: React.FC<InvestigateWindowsProps> = ({
               return parsedTwice;
             } catch (error) {
               console.error("Error parsing task_args", error);
+              display_message("warning", `Error parsing task_args ${error}`);
               return [];
             }
           };
@@ -145,10 +157,11 @@ const InvestigateWindows: React.FC<InvestigateWindowsProps> = ({
       fetchTasks();
     } else {
       console.log("No process selected or PID missing.");
+      display_message("warning", `No process selected or PID missing.`);
       setLoadingDump(false);
       setLoadingHandles(false);
     }
-  }, [processMetadata, id]);
+  }, [processMetadata, display_message, id]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>

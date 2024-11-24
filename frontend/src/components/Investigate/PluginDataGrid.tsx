@@ -23,51 +23,57 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const apiRef = useGridApiRef();
 
-  const columns: GridColDef[] = data[0]
-    ? Object.keys(data[0])
-        .filter((key) => key !== "__children" && key !== "id")
-        .map((key) => ({
-          field: key,
-          headerName: key,
-          renderCell: (params) => {
-            if (key === "File output" && params.value !== "Disabled") {
-              return (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => window.open(`/media/${id}/${params.value}`)}
-                >
-                  Download
-                </Button>
-              );
-            }
-
-            if (key === "Disasm" || key === "Hexdump") {
-              return <pre>{params.value}</pre>;
-            }
-
-            return typeof params.value === "boolean" ? (
-              params.value ? (
-                <Checkbox checked={true} color="success" />
-              ) : (
-                <IconButton color="error">
-                  <CloseIcon />
-                </IconButton>
-              )
-            ) : params.value !== null ? (
-              params.value
-            ) : (
-              ""
+  const columns: GridColDef[] = React.useMemo(() => {
+    if (!data[0]) {
+      return [];
+    }
+    return Object.keys(data[0])
+      .filter((key) => key !== "__children" && key !== "id")
+      .map((key) => ({
+        field: key,
+        headerName: key,
+        renderCell: (params) => {
+          if (key === "File output" && params.value !== "Disabled") {
+            return (
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => window.open(`/media/${id}/${params.value}`)}
+              >
+                Download
+              </Button>
             );
-          },
-        }))
-    : [];
+          }
 
-  const autosizeOptions = {
-    columns: [...columns].map((col) => col.headerName ?? ""),
-    includeOutliers: true,
-    includeHeaders: true,
-  };
+          if (key === "Disasm" || key === "Hexdump") {
+            return <pre>{params.value}</pre>;
+          }
+
+          return typeof params.value === "boolean" ? (
+            params.value ? (
+              <Checkbox checked={true} color="success" />
+            ) : (
+              <IconButton color="error">
+                <CloseIcon />
+              </IconButton>
+            )
+          ) : params.value !== null ? (
+            params.value
+          ) : (
+            ""
+          );
+        },
+      }));
+  }, [data, id]);
+
+  const autosizeOptions = React.useMemo(
+    () => ({
+      columns: [...columns].map((col) => col.headerName ?? ""),
+      includeOutliers: true,
+      includeHeaders: true,
+    }),
+    [columns],
+  );
 
   useEffect(() => {
     const fetchPlugins = async () => {
@@ -79,8 +85,11 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
         const artefactsWithId: Artefact[] = [];
         response.data.artefacts.forEach((artefact: Artefact, index: number) => {
           artefactsWithId.push({ ...artefact, id: index });
-          if (artefact.__children && artefact.__children.length) {
-            artefact.__children.map((child: Artefact, idx: number) => {
+          if (
+            Array.isArray(artefact.__children) &&
+            artefact.__children.length
+          ) {
+            artefact.__children.forEach((child: Artefact, idx: number) => {
               artefactsWithId.push({ ...child, id: `${index}-${idx}` });
             });
           }
@@ -107,7 +116,7 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
       }, 200); // Delay to ensure DataGrid has rendered
       return () => clearTimeout(timeoutId);
     }
-  }, [loading, data]);
+  }, [loading, data, apiRef, autosizeOptions]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>

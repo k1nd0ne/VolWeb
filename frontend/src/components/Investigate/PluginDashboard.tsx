@@ -21,8 +21,7 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import PluginDataGrid from "./PluginDataGrid";
 import { Plugin, Evidence } from "../../types";
-import MalfindButton from "./Windows/Buttons/MalfindButton";
-import FilescanButton from "./Windows/Buttons/FilescanButton";
+import FilescanButton from "./Windows/Buttons/FileScanButton";
 
 interface PluginDashboardProps {
   evidence: Evidence;
@@ -132,9 +131,6 @@ const PluginDashboard: React.FC<PluginDashboardProps> = ({ evidence }) => {
                     {/* Here we insert our custom components */}
                     {evidence.os === "windows" && category === "Filesystem" && (
                       <FilescanButton />
-                    )}
-                    {evidence.os === "windows" && category === "Malware" && (
-                      <MalfindButton />
                     )}
                     {groupedPlugins[category].map((plugin) => {
                       const iconName = plugin.icon;

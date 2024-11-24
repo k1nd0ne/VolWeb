@@ -11,13 +11,12 @@ import {
   FormControl,
   Divider,
   TextField,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import { Case, User } from "../../types";
 import InvestigatorSelect from "../InvestigatorSelect";
+import { useSnackbar } from "../SnackbarProvider";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -39,33 +38,27 @@ const AddCaseDialog: React.FC<AddCaseDialogProps> = ({
   onClose,
   onCreateSuccess,
 }) => {
+  const { display_message } = useSnackbar();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
-    "success",
-  );
 
   const handleCreate = async () => {
     const requestData = {
       name,
       description,
-      bucket_id: "123e4567-e89b-12d3-a456-426614174000", // Replace with actual bucket_id
       linked_users: selectedUsers.map((user) => user.id),
     };
     try {
       const response = await axiosInstance.post("/api/cases/", requestData);
       onCreateSuccess(response.data);
-      setSnackbarMessage("Case created successfully");
-      setSnackbarSeverity("success");
+      display_message("success", "Case created.");
       onClose();
-    } catch {
-      setSnackbarMessage("Error creating case");
-      setSnackbarSeverity("error");
-    } finally {
-      setOpenSnackbar(true);
+      setName("");
+      setDescription("");
+      setSelectedUsers([]);
+    } catch (error) {
+      display_message("error", `Error creating case: ${error}`);
     }
   };
 
@@ -141,18 +134,6 @@ const AddCaseDialog: React.FC<AddCaseDialogProps> = ({
           Create
         </Button>
       </DialogActions>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={() => setOpenSnackbar(false)}
-      >
-        <Alert
-          onClose={() => setOpenSnackbar(false)}
-          severity={snackbarSeverity}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </BootstrapDialog>
   );
 };

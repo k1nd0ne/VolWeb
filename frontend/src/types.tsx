@@ -3,6 +3,21 @@ export interface User {
   username: string;
 }
 
+export interface Indicator {
+  id: number;
+  type: string;
+  name: string;
+  description: string;
+  value: string;
+  dump_linked_dump_name: string;
+}
+
+export interface TaskData {
+  task_name: string;
+  status: string;
+  task_args: string;
+}
+
 export interface Case {
   id: number;
   name: string;
@@ -94,11 +109,12 @@ export interface Plugin {
   description: string;
   display: string;
   category: string;
-  result: boolean;
+  results: boolean;
 }
 
 export interface Artefact {
-  [key: string]: object;
+  [key: string]: unknown;
+  __childrens?: Artefact[];
 }
 
 export interface Connection {

@@ -7,10 +7,16 @@ from .serializers import (
     VolatilityPluginDetailSerializer,
     VolatilityPluginNameSerializer,
     EnrichedProcessSerializer,
-    TasksSerializer
+    TasksSerializer,
 )
 from rest_framework.permissions import IsAuthenticated
-from .tasks import dump_windows_file, dump_process, start_timeliner, dump_windows_handles, dump_maps
+from .tasks import (
+    dump_windows_file,
+    dump_process,
+    start_timeliner,
+    dump_windows_handles,
+    dump_maps,
+)
 from dateutil.parser import parse as parse_date
 from django_celery_results.models import TaskResult
 from django.db.models import Q
@@ -51,8 +57,10 @@ class EnrichedProcessView(APIView):
 
         except EnrichedProcess.DoesNotExist:
             return Response(
-                {"error": "Enriched process not found"}, status=status.HTTP_404_NOT_FOUND
+                {"error": "Enriched process not found"},
+                status=status.HTTP_404_NOT_FOUND,
             )
+
 
 class TimelinerArtefactsView(APIView):
     def get(self, request, evidence_id, plugin_name):
@@ -146,6 +154,7 @@ class HandlesTask(APIView):
                 {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
+
 class ProcessDumpPslistTask(APIView):
     def post(self, request):
         try:
@@ -158,6 +167,7 @@ class ProcessDumpPslistTask(APIView):
             return Response(
                 {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
 
 class ProcessDumpMapsTask(APIView):
     def post(self, request):
@@ -172,6 +182,7 @@ class ProcessDumpMapsTask(APIView):
                 {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
+
 class FileDumpTask(APIView):
     def post(self, request):
         try:
@@ -185,6 +196,7 @@ class FileDumpTask(APIView):
                 {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
+
 class TasksApiView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -196,7 +208,8 @@ class TasksApiView(APIView):
         tasks = TaskResult.objects.filter(Q(status="STARTED") | Q(status="PENDING"))
 
         filtered_tasks = [
-            task for task in tasks
+            task
+            for task in tasks
             if ast.literal_eval(ast.literal_eval(task.task_args))[0] == evidence_id
         ]
         serializer = TasksSerializer(filtered_tasks, many=True)

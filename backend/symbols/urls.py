@@ -12,5 +12,4 @@ urlpatterns = [
         name="upload-symbols",
     ),
     path("", include(router.urls)),
-
 ]

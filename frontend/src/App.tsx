@@ -19,7 +19,7 @@ import Login from "./pages/auth/Login";
 import CaseDetail from "./pages/cases/CaseDetail";
 import Symbols from "./pages/symbols/Symbols";
 import EvidenceDetail from "./pages/evidences/EvidenceDetails";
-
+import { SnackbarProvider } from "./components/SnackbarProvider";
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -42,7 +42,9 @@ const App: React.FC = () => {
             path="/"
             element={
               <PrivateRoute>
-                <MiniDrawer />
+                <SnackbarProvider>
+                  <MiniDrawer />
+                </SnackbarProvider>
               </PrivateRoute>
             }
           >

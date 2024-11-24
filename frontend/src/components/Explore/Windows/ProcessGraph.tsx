@@ -1,5 +1,5 @@
 import "@react-sigma/core/lib/react-sigma.min.css";
-import React, { FC, useMemo, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import {
   SigmaContainer,
   FullScreenControl,

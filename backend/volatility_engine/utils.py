@@ -269,7 +269,7 @@ class DjangoRenderer(CLIRenderer):
             artefacts=result,
             category=self.plugin["category"],
             display=self.plugin["display"],
-            results=results
+            results=results,
         )
 
     def render(self, grid: interfaces.renderers.TreeGrid):

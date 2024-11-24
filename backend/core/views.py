@@ -22,7 +22,6 @@ from rest_framework import status
 from core.stix import export_bundle, create_indicator
 
 
-
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -112,17 +111,20 @@ class IndicatorExportApiView(APIView):
         indicators = Indicator.objects.filter(evidence__linked_case=case_id)
         bundle = export_bundle(indicators)
         response = HttpResponse(bundle, content_type="application/octet-stream")
-        response[
-            "Content-Disposition"
-        ] = 'attachment; filename="indicators_case_{}.json"'.format(case_id)
+        response["Content-Disposition"] = (
+            'attachment; filename="indicators_case_{}.json"'.format(case_id)
+        )
         return response
+
 
 class IndicatorTypeListAPIView(APIView):
     """
     API view to list all indicator types.
     """
+
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication, TokenAuthentication]
+
     def get(self, request, format=None):
         types = [{"value": type_[0], "display": type_[1]} for type_ in TYPES]
         serializer = TypeSerializer(data=types, many=True)
@@ -163,5 +165,5 @@ class StatisticsApiView(APIView):
                 "last_5_cases": cases_serializer.data,
                 "last_5_isf": symbols_serializer.data,
             },
-            status=status.HTTP_200_OK
+            status=status.HTTP_200_OK,
         )

@@ -4,7 +4,7 @@ import GetAppIcon from "@mui/icons-material/GetApp";
 import axiosInstance from "../utils/axiosInstance";
 
 interface StixButtonProps {
-  caseId: string;
+  caseId: number;
 }
 
 const StixButton: React.FC<StixButtonProps> = ({ caseId }) => {

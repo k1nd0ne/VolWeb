@@ -9,6 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ("id", "username", "email", "first_name", "last_name")
 
+
 class IndicatorSerializer(serializers.ModelSerializer):
     dump_linked_dump_name = serializers.SerializerMethodField()
 
@@ -25,6 +26,7 @@ class IndicatorSerializer(serializers.ModelSerializer):
 class TypeSerializer(serializers.Serializer):
     value = serializers.CharField()
     display = serializers.CharField()
+
 
 class TasksSerializer(serializers.ModelSerializer):
     task_kwargs = serializers.JSONField

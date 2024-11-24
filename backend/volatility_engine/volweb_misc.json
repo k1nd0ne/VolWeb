@@ -1,0 +1,19 @@
+{
+  "plugins": {
+    "windows": {
+      "volatility3.plugins.windows.mftscan.MFTScan": {
+        "icon": "Info",
+        "description": "Retreive any MFT records residing in memory.",
+        "category": "Filesystem",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.mftscan.ADS": {
+        "icon": "AccountTree",
+        "description": "Retrive the Alternative Data Stream from the MFT records.",
+        "category": "Filesystem",
+        "display": "True"
+      }
+    },
+    "linux": {}
+  }
+}

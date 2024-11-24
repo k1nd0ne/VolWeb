@@ -23,6 +23,7 @@ import {
 import { useSigma } from "@react-sigma/core";
 import Graph from "graphology";
 import { ProcessInfo, NetworkInfo, EnrichedProcessData } from "../../../types";
+import { useSnackbar } from "../../SnackbarProvider";
 
 interface ProcessDetailsProps {
   process: ProcessInfo;
@@ -41,6 +42,7 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({
   show,
   setShow,
 }) => {
+  const { display_message } = useSnackbar();
   const sigma = useSigma();
   const graph = sigma.getGraph();
   const [loading, setLoading] = useState(true);
@@ -57,7 +59,6 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({
         const data = response.data.data;
         setEnrichedData(data);
 
-        // Process netscan data directly from response data
         const netScanData = data["volatility3.plugins.windows.netscan.NetScan"];
         if (netScanData && Array.isArray(netScanData)) {
           netScanData.forEach((netEntry: NetworkInfo) => {
@@ -65,7 +66,6 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({
           });
         }
 
-        // Process netstat data directly from response data
         const netStatData = data["volatility3.plugins.windows.netstat.NetStat"];
         if (netStatData && Array.isArray(netStatData)) {
           netStatData.forEach((netEntry: NetworkInfo) => {
@@ -73,9 +73,12 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({
           });
         }
 
-        // Refresh the sigma graph
         sigma.refresh();
       } catch (error) {
+        display_message(
+          "error",
+          `Error fetching enriched process data: ${error}`,
+        );
         console.error("Error fetching enriched process data:", error);
       } finally {
         setLoading(false);
@@ -83,7 +86,15 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({
     };
 
     fetchData();
-  }, [process, process.PID, id, graph, sigma, setEnrichedData]);
+  }, [
+    process,
+    process.PID,
+    id,
+    graph,
+    sigma,
+    setEnrichedData,
+    display_message,
+  ]);
 
   function processNetEntry(
     netEntry: NetworkInfo,
@@ -92,10 +103,12 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({
   ) {
     const parentId = process.PID.toString();
 
-    const foreignAddr = netEntry.ForeignAddr || "Unknown addresse";
-    const foreignPort = netEntry.ForeignPort || "Unknown port";
-    const localPort = netEntry.LocalPort || "Unknown port";
-    const state = netEntry.State || "Unknown state";
+    const foreignAddr = netEntry.ForeignAddr || "?";
+    const foreignPort = netEntry.ForeignPort || "?";
+    const localPort = netEntry.LocalPort || "?";
+    const localAddr = netEntry.LocalAddr || "?";
+
+    const state = netEntry.State || "?";
 
     const nodeId = `${foreignAddr}:${foreignPort}`;
 
@@ -121,7 +134,7 @@ const ProcessDetails: React.FC<ProcessDetailsProps> = ({
 
     if (!graph.hasEdge(parentId, nodeId)) {
       graph.addEdge(parentId, nodeId, {
-        label: `${localPort} (${state})`,
+        label: `${localAddr}:${localPort} (${state})`,
         size: 1,
         color: "#ffa726",
         type: "arrow",

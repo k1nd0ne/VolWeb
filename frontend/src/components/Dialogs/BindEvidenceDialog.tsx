@@ -12,9 +12,11 @@ import {
   InputLabel,
   Autocomplete,
   CircularProgress,
+  SelectChangeEvent,
 } from "@mui/material";
 import axiosInstance from "../../utils/axiosInstance";
 import { Evidence, Case } from "../../types";
+import { AxiosError } from "axios";
 
 interface BindEvidenceDialogProps {
   open: boolean;
@@ -87,7 +89,6 @@ const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
   };
 
   const handleBind = async () => {
-    // Validation logic
     const missingFields = [];
 
     if (!os) missingFields.push("Operating System");
@@ -104,8 +105,7 @@ const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
       return;
     }
 
-    // Prepare data
-    const data: any = {
+    const data: Record<string, unknown> = {
       os,
       linked_case: caseId || selectedCase!.id,
       source,
@@ -136,20 +136,20 @@ const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
       setRegion("");
       setEndpoint("");
       setError(null);
-    } catch (error: any) {
+    } catch (error) {
       setError(
         `Failed to bind evidence: ${
-          error.response && error.response.data
-            ? error.response.data.detail
-            : error.message
+          error instanceof AxiosError && error.response
+            ? Object.entries(error.response.data)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(", ")
+            : "Unknown error"
         }`,
       );
     }
   };
 
-  const handleSourceChange = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>,
-  ) => {
+  const handleSourceChange = (event: SelectChangeEvent<string>) => {
     const newSource = event.target.value as string;
     setSource(newSource);
     setError(null);
@@ -177,7 +177,7 @@ const BindEvidenceDialog: React.FC<BindEvidenceDialogProps> = ({
                 options={cases}
                 getOptionLabel={(option) => option.name}
                 value={selectedCase}
-                onChange={(event, newValue) => {
+                onChange={(_event, newValue) => {
                   setSelectedCase(newValue);
                 }}
                 renderInput={(params) => (

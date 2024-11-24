@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import Box from "@mui/material/Box";
+import { Box, CircularProgress } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import PluginList from "./Lists/PluginList";
 
 interface EvidenceMetadataProps {
-  evidenceId: string | undefined;
+  evidenceId?: number;
   theme: "light" | "dark";
 }
 
@@ -38,7 +38,7 @@ const EvidenceMetadata: React.FC<EvidenceMetadataProps> = ({
   }, [evidenceId]);
 
   if (!data) {
-    return <div>Loading...</div>;
+    return <CircularProgress />;
   }
 
   const categories = Object.keys(data.categories);

@@ -8,10 +8,12 @@ from rest_framework import status
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
+
 class SymbolViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Symbol.objects.all()
     serializer_class = SymbolSerializer
+
 
 class SymbolUploadView(APIView):
     permission_classes = [IsAuthenticated]
@@ -25,8 +27,8 @@ class SymbolUploadView(APIView):
             symbol_data = SymbolSerializer(symbol).data
 
             return Response(
-                {'detail': 'File uploaded successfully.', 'symbol': symbol_data},
-                status=status.HTTP_201_CREATED
+                {"detail": "File uploaded successfully.", "symbol": symbol_data},
+                status=status.HTTP_201_CREATED,
             )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

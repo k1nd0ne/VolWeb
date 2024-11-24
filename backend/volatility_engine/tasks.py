@@ -4,6 +4,7 @@ from volatility_engine.engine import VolatilityEngine
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
+
 @shared_task(name="Windows.Engine")
 def start_extraction(evidence_id):
     """
@@ -14,6 +15,7 @@ def start_extraction(evidence_id):
     engine.start_extraction()
     instance.status = 100
     instance.save()
+
 
 @shared_task
 def start_timeliner(evidence_id):
@@ -37,6 +39,7 @@ def start_timeliner(evidence_id):
         },
     )
 
+
 @shared_task
 def dump_process(evidence_id, pid):
     """
@@ -58,6 +61,7 @@ def dump_process(evidence_id, pid):
             },
         },
     )
+
 
 @shared_task
 def dump_windows_handles(evidence_id, pid):
@@ -81,6 +85,7 @@ def dump_windows_handles(evidence_id, pid):
         },
     )
 
+
 @shared_task
 def dump_windows_file(evidence_id, offset):
     """
@@ -102,6 +107,7 @@ def dump_windows_file(evidence_id, offset):
             },
         },
     )
+
 
 @shared_task
 def dump_maps(evidence_id, pid):

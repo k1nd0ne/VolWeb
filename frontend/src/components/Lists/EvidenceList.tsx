@@ -2,8 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import axiosInstance from "../../utils/axiosInstance";
+import { AxiosError } from "axios";
 import EvidenceCreationDialog from "../Dialogs/EvidenceCreationDialog";
-import MessageHandler from "../MessageHandler";
 import LinearProgressWithLabel from "../LinearProgressBar";
 import {
   Chip,
@@ -31,6 +31,7 @@ import { Evidence } from "../../types";
 interface EvidenceListProps {
   caseId?: number;
 }
+import { useSnackbar } from "../SnackbarProvider";
 
 function EvidenceList({ caseId }: EvidenceListProps) {
   const navigate = useNavigate();
@@ -43,12 +44,8 @@ function EvidenceList({ caseId }: EvidenceListProps) {
   );
   const [checked, setChecked] = useState<number[]>([]);
   const [deleteMultiple, setDeleteMultiple] = useState(false);
-  const [messageHandlerOpen, setMessageHandlerOpen] = useState<boolean>(false);
-  const [messageHandlerMessage, setMessageHandlerMessage] =
-    useState<string>("");
-  const [messageHandlerSeverity, setMessageHandlerSeverity] = useState<
-    "success" | "error"
-  >("success");
+
+  const { display_message } = useSnackbar();
 
   const [isConnected, setIsConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
@@ -120,6 +117,7 @@ function EvidenceList({ caseId }: EvidenceListProps) {
         setEvidenceData(response.data);
       })
       .catch((error) => {
+        display_message("error", `Error fetching evidence data: ${error}`);
         console.error("Error fetching evidence data:", error);
       });
 
@@ -131,18 +129,30 @@ function EvidenceList({ caseId }: EvidenceListProps) {
         clearInterval(retryInterval.current);
       }
     };
-  }, [caseId]);
+  }, [caseId, display_message]);
 
   const handleCreateSuccess = () => {
-    setMessageHandlerMessage("Evidence created successfully");
-    setMessageHandlerSeverity("success");
-    setMessageHandlerOpen(true);
+    display_message("success", "Evidence created.");
+  };
+
+  const handleCreateFailed = (error: unknown) => {
+    console.log(error);
+    display_message("success", "Evidence created.");
+
+    display_message(
+      "error",
+      `Evidence could not be created: ${
+        error instanceof AxiosError && error.response
+          ? Object.entries(error.response.data)
+              .map(([key, value]) => `${key}: ${value}`)
+              .join(", ")
+          : "Unknown error"
+      }`,
+    );
   };
 
   const handleBindSuccess = () => {
-    setMessageHandlerMessage("Evidence bound successfully");
-    setMessageHandlerSeverity("success");
-    setMessageHandlerOpen(true);
+    display_message("success", "Evidence binded.");
   };
 
   const handleToggle = (id: number) => {
@@ -164,13 +174,10 @@ function EvidenceList({ caseId }: EvidenceListProps) {
     if (selectedEvidence && !deleteMultiple) {
       try {
         await axiosInstance.delete(`/api/evidences/${selectedEvidence.id}/`);
-        setMessageHandlerMessage("Evidence deleted successfully");
-        setMessageHandlerSeverity("success");
-      } catch {
-        setMessageHandlerMessage("Error deleting evidence");
-        setMessageHandlerSeverity("error");
+        display_message("success", "Evidence deleted.");
+      } catch (error) {
+        display_message("error", `Error deleting the evidence: ${error}`);
       } finally {
-        setMessageHandlerOpen(true);
         setOpenDeleteDialog(false);
         setSelectedEvidence(null);
       }
@@ -184,14 +191,14 @@ function EvidenceList({ caseId }: EvidenceListProps) {
       await Promise.all(
         checked.map((id) => axiosInstance.delete(`/api/evidences/${id}/`)),
       );
-      setMessageHandlerMessage("Selected evidences deleted successfully");
-      setMessageHandlerSeverity("success");
+      display_message("success", "Selected evidences deleted.");
       setChecked([]);
-    } catch {
-      setMessageHandlerMessage("Error deleting selected evidences");
-      setMessageHandlerSeverity("error");
+    } catch (error) {
+      display_message(
+        "error",
+        `Error deleting the selected evidence: ${error}`,
+      );
     } finally {
-      setMessageHandlerOpen(true);
       setOpenDeleteDialog(false);
     }
   };
@@ -307,6 +314,7 @@ function EvidenceList({ caseId }: EvidenceListProps) {
           setOpenCreationDialog(false);
         }}
         onCreateSuccess={handleCreateSuccess}
+        onCreateFailed={handleCreateFailed}
         caseId={caseId}
       />
       <Fab
@@ -348,12 +356,6 @@ function EvidenceList({ caseId }: EvidenceListProps) {
           <DeleteIcon />
         </Fab>
       )}
-      <MessageHandler
-        open={messageHandlerOpen}
-        message={messageHandlerMessage}
-        severity={messageHandlerSeverity}
-        onClose={() => setMessageHandlerOpen(false)}
-      />
       <Dialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}

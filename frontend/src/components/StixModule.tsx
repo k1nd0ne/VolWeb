@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Fab,
@@ -12,9 +12,8 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  Snackbar,
-  Alert,
   CircularProgress,
+  SelectChangeEvent,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -22,13 +21,19 @@ import {
   Close as CloseIcon,
 } from "@mui/icons-material";
 import axiosInstance from "../utils/axiosInstance";
-import IndicatorsList from "./Lists/IndicatorsList"; // Import the new component
+import IndicatorsList from "./Lists/IndicatorsList";
+import { useSnackbar } from "./SnackbarProvider";
 
-const StixModule = ({ evidenceId }) => {
+interface StixModuleProps {
+  evidenceId?: number;
+}
+
+const StixModule: React.FC<StixModuleProps> = ({ evidenceId }) => {
   const [isFormDrawerOpen, setFormDrawerOpen] = useState(false);
   const [isIndicatorsDrawerOpen, setIndicatorsDrawerOpen] = useState(false);
+  const { display_message } = useSnackbar();
 
-  const [types, setTypes] = useState([]);
+  const [types, setTypes] = useState<{ value: string; display: string }[]>([]);
   const [isLoadingTypes, setIsLoadingTypes] = useState(false);
   const [typesError, setTypesError] = useState("");
 
@@ -41,30 +46,17 @@ const StixModule = ({ evidenceId }) => {
     evidence: evidenceId || "",
   });
 
-  // State for Notifications
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success", // 'success' | 'error' | 'warning' | 'info'
-  });
-
   // Handlers for Drawers
-  const toggleFormDrawer = (open) => () => {
+  const toggleFormDrawer = (open: boolean) => () => {
     setFormDrawerOpen(open);
     if (open && types.length === 0) {
       fetchTypes();
     }
   };
 
-  const toggleIndicatorsDrawer = (open) => () => {
+  const toggleIndicatorsDrawer = (open: boolean) => () => {
     setIndicatorsDrawerOpen(open);
     // IndicatorsList handles its own fetching when open
-  };
-
-  // Handlers for Snackbar
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") return;
-    setSnackbar({ ...snackbar, open: false });
   };
 
   // Fetch Types
@@ -75,25 +67,28 @@ const StixModule = ({ evidenceId }) => {
       const response = await axiosInstance.get("/core/stix/indicator-types/");
       setTypes(response.data);
     } catch (error) {
-      setTypesError("Failed to fetch indicator types.");
-      setSnackbar({
-        open: true,
-        message: "Failed to fetch indicator types.",
-        severity: "error",
-      });
+      display_message("error", `Failed to fetch indicator types: ${error}`);
     } finally {
       setIsLoadingTypes(false);
     }
   };
 
   // Handle Form Input Change
-  const handleInputChange = (e) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>,
+  ) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name as string]: value as string });
+  };
+
+  // Handle Select Input Change
+  const handleSelectChange = (event: SelectChangeEvent<string>) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name as string]: value });
   };
 
   // Handle Form Submission
-  const handleFormSubmit = async (e) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       // Preparing the data for submission
@@ -117,22 +112,9 @@ const StixModule = ({ evidenceId }) => {
       });
 
       setFormDrawerOpen(false);
-      setSnackbar({
-        open: true,
-        message: "Indicator created successfully!",
-        severity: "success",
-      });
-      // If you keep indicators as state in StixModule, you would refresh them here
-      // Otherwise, IndicatorsList will handle its own refresh
+      display_message("success", "Indicator created successfully.");
     } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        "An error occurred while creating the indicator.";
-      setSnackbar({
-        open: true,
-        message,
-        severity: "error",
-      });
+      display_message("error", `Failed to fetch indicators: ${error}`);
       setFormDrawerOpen(false);
     }
   };
@@ -165,7 +147,6 @@ const StixModule = ({ evidenceId }) => {
         anchor="right"
         open={isFormDrawerOpen}
         onClose={toggleFormDrawer(false)}
-        variant="outlined"
       >
         <Box
           sx={{ width: 350, padding: 2 }}
@@ -204,7 +185,7 @@ const StixModule = ({ evidenceId }) => {
                   name="type"
                   value={formData.type}
                   label="Indicator Type"
-                  onChange={handleInputChange}
+                  onChange={handleSelectChange}
                   required
                 >
                   {types.map((type) => (
@@ -264,7 +245,6 @@ const StixModule = ({ evidenceId }) => {
         open={isIndicatorsDrawerOpen}
         onClose={toggleIndicatorsDrawer(false)}
         PaperProps={{ sx: { width: "60%" } }}
-        variant="outlined"
       >
         <IndicatorsList
           open={isIndicatorsDrawerOpen}
@@ -272,21 +252,6 @@ const StixModule = ({ evidenceId }) => {
           evidenceId={evidenceId}
         />
       </Drawer>
-
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };

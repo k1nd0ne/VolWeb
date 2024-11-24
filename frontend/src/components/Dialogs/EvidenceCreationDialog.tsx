@@ -17,11 +17,11 @@ import {
 import axiosInstance from "../../utils/axiosInstance";
 import axios from "axios";
 import { Evidence, Case } from "../../types";
-
 interface EvidenceCreationDialogProps {
   open: boolean;
   onClose: () => void;
   onCreateSuccess: (newEvidence: Evidence) => void;
+  onCreateFailed: (error: unknown) => void;
   caseId?: number;
 }
 
@@ -29,6 +29,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
   open,
   onClose,
   onCreateSuccess,
+  onCreateFailed,
   caseId,
 }) => {
   const OS_OPTIONS = [
@@ -43,15 +44,15 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const [cases, setCases] = useState<Case[]>([]);
-  const [selectedCase, setSelectedCase] = useState<Case | null>(null);
-  const [casesLoading, setCasesLoading] = useState<boolean>(false);
+  const [selectedEvidence, setSelectedEvidence] = useState<Case | null>(null);
+  const [evidenceLoading, setEvidencesLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (open) {
       if (caseId) {
-        // If caseId is provided, set the selectedCase directly
-        setSelectedCase({ id: caseId } as Case);
-        setCasesLoading(false);
+        // If caseId is provided, set the selectedEvidence directly
+        setSelectedEvidence({ id: caseId } as Case);
+        setEvidencesLoading(false);
       } else {
         fetchCases();
       }
@@ -59,7 +60,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
   }, [open, caseId]);
 
   const fetchCases = async () => {
-    setCasesLoading(true);
+    setEvidencesLoading(true);
     try {
       const response = await axiosInstance.get<Case[]>("/api/cases/");
       setCases(response.data);
@@ -67,12 +68,12 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
       console.error("Error fetching cases:", err);
       setError("Failed to load cases.");
     } finally {
-      setCasesLoading(false);
+      setEvidencesLoading(false);
     }
   };
 
   const handleUpload = async () => {
-    if (!os || !file || (!selectedCase && !caseId)) {
+    if (!os || !file || (!selectedEvidence && !caseId)) {
       setError("Please fill in all fields.");
       return;
     }
@@ -80,7 +81,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
     setUploading(true);
     setError(null);
 
-    const uploadCaseId = caseId || selectedCase?.id;
+    const uploadCaseId = caseId || selectedEvidence?.id;
 
     try {
       const response = await axiosInstance.get<{ url: string }>(
@@ -122,14 +123,12 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
         onCreateSuccess(newEvidenceResp.data);
         onClose();
       } catch (error) {
-        console.log("ERROR creating evidence:", error);
-      } finally {
-        console.log("Finally");
+        onCreateFailed(error);
+        console.log(error);
       }
 
       setUploading(false);
       onClose();
-
       setOs("");
       setFile(null);
       setUploadProgress(null);
@@ -144,7 +143,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
     <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle>Upload New Evidence</DialogTitle>
       <DialogContent>
-        {casesLoading ? (
+        {evidenceLoading ? (
           <div style={{ textAlign: "center", marginTop: "20px" }}>
             <CircularProgress />
           </div>
@@ -154,9 +153,9 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
               <Autocomplete
                 options={cases}
                 getOptionLabel={(option) => option.name}
-                value={selectedCase}
-                onChange={(event, newValue) => {
-                  setSelectedCase(newValue);
+                value={selectedEvidence}
+                onChange={(_event, newValue) => {
+                  setSelectedEvidence(newValue);
                 }}
                 renderInput={(params) => (
                   <TextField
@@ -218,13 +217,15 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={uploading || casesLoading}>
+        <Button onClick={onClose} disabled={uploading || evidenceLoading}>
           Cancel
         </Button>
         <Button
           onClick={handleUpload}
           variant="contained"
-          disabled={uploading || (!selectedCase && !caseId) || casesLoading}
+          disabled={
+            uploading || (!selectedEvidence && !caseId) || evidenceLoading
+          }
         >
           Upload
         </Button>

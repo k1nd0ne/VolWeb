@@ -101,7 +101,7 @@
         "icon": "BugReport",
         "description": "Lists process memory ranges that potentially contain injected code.",
         "category": "Malware",
-        "display": "False"
+        "display": "True"
       },
       "volatility3.plugins.windows.cachedump.Cachedump": {
         "icon": "VpnKey",

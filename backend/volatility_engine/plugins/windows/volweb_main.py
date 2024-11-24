@@ -17,7 +17,6 @@ class VolWebMain(plugins.PluginInterface):
     _required_framework_version = (2, 0, 0)
     _version = (1, 0, 0)
 
-
     def load_plugin_info(self, json_file_path):
         with open(json_file_path, "r") as file:
             return json.load(file).get("plugins", {}).get("windows", [])
@@ -74,7 +73,7 @@ class VolWebMain(plugins.PluginInterface):
                     evidence_id=evidence_id, plugin=plugin["details"]
                 )  # Render the output of each plugin in the django database
                 renderer.render(self._grid)
-                evidence.status = (count*100)/total
+                evidence.status = (count * 100) / total
                 count += 1
                 evidence.save()
             except:

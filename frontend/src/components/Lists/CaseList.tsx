@@ -1,17 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import {
   IconButton,
   Chip,
-  Snackbar,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
   Button,
-  Alert,
   Tooltip,
   Fab,
 } from "@mui/material";
@@ -27,22 +25,20 @@ import {
 import axiosInstance from "../../utils/axiosInstance";
 import AddCaseDialog from "../Dialogs/CaseCreationDialog";
 import { Case } from "../../types";
+import { useSnackbar } from "../SnackbarProvider";
 
 function CaseList() {
   const navigate = useNavigate();
   const [checked, setChecked] = useState<number[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
-    "success",
-  );
+
   const [caseDialogOpen, setCaseDialogOpen] = useState(false);
   const [caseData, setCaseData] = useState<Case[]>([]);
   const [deleteMultiple, setDeleteMultiple] = useState(false);
 
-  // WebSocket related state
+  const { display_message } = useSnackbar();
+
   const [isConnected, setIsConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
   const retryInterval = useRef<number | null>(null);
@@ -67,7 +63,7 @@ function CaseList() {
         console.log("WebSocket disconnected");
         setIsConnected(false);
         if (!retryInterval.current) {
-          retryInterval.current = window.setTimeout(connectWebSocket, 5000);
+          retryInterval.current = window.setTimeout(connectWebSocket, 2000);
           console.log("Attempting to reconnect to WebSocket...");
         }
       };
@@ -100,9 +96,7 @@ function CaseList() {
           setCaseData((prevData) =>
             prevData.filter((caseItem) => caseItem.id !== message.id),
           );
-          setChecked((prevChecked) =>
-            prevChecked.filter((id) => id !== message.id),
-          );
+          setChecked([]);
         }
       };
 
@@ -113,13 +107,13 @@ function CaseList() {
 
     connectWebSocket();
 
-    // Fetch initial case data
     axiosInstance
       .get("/api/cases/")
       .then((response) => {
         setCaseData(response.data);
       })
       .catch((error) => {
+        display_message("error", "Error fetching the case data.");
         console.error("Error fetching case data:", error);
       });
 
@@ -131,12 +125,10 @@ function CaseList() {
         clearTimeout(retryInterval.current);
       }
     };
-  }, []);
+  }, [display_message]);
 
   const handleCreateSuccess = () => {
-    setSnackbarMessage("Case created successfully");
-    setSnackbarSeverity("success");
-    setOpenSnackbar(true);
+    display_message("success", "Case created.");
   };
 
   const handleDeleteClick = (row: Case) => {
@@ -149,13 +141,10 @@ function CaseList() {
     if (selectedCase && !deleteMultiple) {
       try {
         await axiosInstance.delete(`/api/cases/${selectedCase.id}/`);
-        setSnackbarMessage("Case deleted successfully");
-        setSnackbarSeverity("success");
+        display_message("success", "Case deleted.");
       } catch {
-        setSnackbarMessage("Error deleting case");
-        setSnackbarSeverity("error");
+        display_message("error", "Error deleting case");
       } finally {
-        setOpenSnackbar(true);
         setOpenDialog(false);
         setSelectedCase(null);
       }
@@ -169,14 +158,11 @@ function CaseList() {
       await Promise.all(
         checked.map((id) => axiosInstance.delete(`/api/cases/${id}/`)),
       );
-      setSnackbarMessage("Selected cases deleted successfully");
-      setSnackbarSeverity("success");
+      display_message("success", "Selected cases deleted.");
       setChecked([]);
     } catch {
-      setSnackbarMessage("Error deleting selected cases");
-      setSnackbarSeverity("error");
+      display_message("error", "Error deleting selected cases");
     } finally {
-      setOpenSnackbar(true);
       setOpenDialog(false);
     }
   };
@@ -298,18 +284,6 @@ function CaseList() {
         onClose={() => setCaseDialogOpen(false)}
         onCreateSuccess={handleCreateSuccess}
       />
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={() => setOpenSnackbar(false)}
-      >
-        <Alert
-          onClose={() => setOpenSnackbar(false)}
-          severity={snackbarSeverity}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
       <Dialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}

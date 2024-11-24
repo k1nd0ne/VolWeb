@@ -75,7 +75,7 @@ const ComputeHandlesButton: React.FC<ComputeHandlesButtonProps> = ({
         disabled={loading}
         startIcon={loading ? <CircularProgress size={20} /> : <Settings />}
       >
-        {loading ? "Computing..." : "Compute Handles"}
+        {loading ? "Computing..." : "Fetch Handles"}
       </Button>
 
       {/* Dialog to display the handles data */}

@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import axiosInstance from "../../utils/axiosInstance";
 import SymbolCreationDialog from "../Dialogs/SymbolCreationDialog";
-import MessageHandler from "../MessageHandler";
 import {
   IconButton,
   Tooltip,
@@ -22,20 +21,16 @@ import {
   Delete as DeleteIcon,
 } from "@mui/icons-material";
 import { Symbol } from "../../types";
+import { useSnackbar } from "../SnackbarProvider";
 
 function SymbolsList() {
+  const { display_message } = useSnackbar();
   const [symbolData, setSymbolData] = useState<Symbol[]>([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openCreationDialog, setOpenCreationDialog] = useState<boolean>(false);
   const [selectedSymbol, setSelectedSymbol] = useState<Symbol | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
   const [deleteMultiple, setDeleteMultiple] = useState(false);
-  const [messageHandlerOpen, setMessageHandlerOpen] = useState<boolean>(false);
-  const [messageHandlerMessage, setMessageHandlerMessage] =
-    useState<string>("");
-  const [messageHandlerSeverity, setMessageHandlerSeverity] = useState<
-    "success" | "error"
-  >("success");
 
   // WebSocket related state
   const [isConnected, setIsConnected] = useState(false);
@@ -113,6 +108,7 @@ function SymbolsList() {
         setSymbolData(response.data);
       })
       .catch((error) => {
+        display_message("error", `Error fetching symbol data: ${error}`);
         console.error("Error fetching symbol data:", error);
       });
 
@@ -124,12 +120,10 @@ function SymbolsList() {
         clearTimeout(retryInterval.current);
       }
     };
-  }, []);
+  }, [display_message]);
 
   const handleCreateSuccess = () => {
-    setMessageHandlerMessage("Symbol created successfully");
-    setMessageHandlerSeverity("success");
-    setMessageHandlerOpen(true);
+    display_message("success", "Symbol created.");
   };
 
   const handleDeleteClick = (row: Symbol) => {
@@ -147,13 +141,10 @@ function SymbolsList() {
     if (selectedSymbol && !deleteMultiple) {
       try {
         await axiosInstance.delete(`/api/symbols/${selectedSymbol.id}/`);
-        setMessageHandlerMessage("Symbol deleted successfully");
-        setMessageHandlerSeverity("success");
-      } catch {
-        setMessageHandlerMessage("Error deleting symbol");
-        setMessageHandlerSeverity("error");
+        display_message("success", "Symbols deleted.");
+      } catch (error) {
+        display_message("error", `Error deleting symbols: ${error}`);
       } finally {
-        setMessageHandlerOpen(true);
         setOpenDeleteDialog(false);
         setSelectedSymbol(null);
       }
@@ -167,14 +158,11 @@ function SymbolsList() {
       await Promise.all(
         checked.map((id) => axiosInstance.delete(`/api/symbols/${id}/`)),
       );
-      setMessageHandlerMessage("Selected symbols deleted successfully");
-      setMessageHandlerSeverity("success");
+      display_message("success", `Selected symbols deleted.`);
       setChecked([]);
-    } catch {
-      setMessageHandlerMessage("Error deleting selected symbols");
-      setMessageHandlerSeverity("error");
+    } catch (error) {
+      display_message("error", `Error deleting the symbols: ${error}`);
     } finally {
-      setMessageHandlerOpen(true);
       setOpenDeleteDialog(false);
     }
   };
@@ -273,12 +261,6 @@ function SymbolsList() {
           <DeleteIcon />
         </Fab>
       )}
-      <MessageHandler
-        open={messageHandlerOpen}
-        message={messageHandlerMessage}
-        severity={messageHandlerSeverity}
-        onClose={() => setMessageHandlerOpen(false)}
-      />
       <Dialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}

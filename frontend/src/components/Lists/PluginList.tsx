@@ -8,36 +8,28 @@ import {
   Typography,
 } from "@mui/material";
 import * as Icons from "@mui/icons-material";
+import { Plugin } from "../../types";
+import { useSnackbar } from "../SnackbarProvider";
 
-// Define the type for a plugin
-interface Plugin {
-  name: string;
-  icon: string;
-  category: string;
-  description: string;
-  results: boolean;
-}
-
-// Define the props type for the PluginList component
 interface PluginListProps {
-  evidenceId: string | number; // Adjust the type based on real usage
+  evidenceId?: number;
 }
 
 const PluginList: React.FC<PluginListProps> = ({ evidenceId }) => {
   const [plugins, setPlugins] = useState<Plugin[]>([]);
+  const { display_message } = useSnackbar();
 
   useEffect(() => {
-    // Fetch the list of plugins for the given evidence ID
     axiosInstance
       .get(`/api/evidence/${evidenceId}/plugins/`)
       .then((response) => {
-        console.log(response);
         setPlugins(response.data);
       })
       .catch((error) => {
-        console.error("Error fetching plugins:", error);
+        display_message("error", `Error fetching plugins: ${error}`);
+        console.error("Error fetching plugins", error);
       });
-  }, [evidenceId]);
+  }, [evidenceId, display_message]);
 
   // Function to get the icon component by name
   const getIcon = (iconName: string) => {

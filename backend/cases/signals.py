@@ -6,6 +6,7 @@ from volatility_engine.tasks import start_extraction, start_timeliner
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
+
 @receiver(post_save, sender=Case)
 def send_case_created(sender, instance, created, **kwargs):
     channel_layer = get_channel_layer()

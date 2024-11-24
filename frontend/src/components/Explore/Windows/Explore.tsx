@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../utils/axiosInstance";
 import ProcessGraph from "./ProcessGraph";
 import { ProcessInfo, Evidence } from "../../../types";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { annotateProcessData } from "../../../utils/processAnalysis";
 interface ExploreProps {
   evidence: Evidence;
 }
+import { useSnackbar } from "../../SnackbarProvider";
 
 const Explore: React.FC<ExploreProps> = ({ evidence }) => {
   const [data, setData] = useState<ProcessInfo[]>([]); // Initialize with an empty array
+  const { display_message } = useSnackbar();
 
   useEffect(() => {
     const fetchTree = async () => {
@@ -17,20 +19,23 @@ const Explore: React.FC<ExploreProps> = ({ evidence }) => {
         const response = await axiosInstance.get(
           `/api/evidence/${evidence.id}/plugin/volatility3.plugins.windows.pstree.PsTree/`,
         );
-        // Annotate processes with anomalies
         annotateProcessData(response.data.artefacts);
         setData(response.data.artefacts);
       } catch (error) {
+        display_message(
+          "error",
+          `The pstree data could not be retreived: ${error}`,
+        );
         console.error("Error fetching pstree data", error);
       }
     };
 
     fetchTree();
-  }, [evidence.id]);
+  }, [evidence.id, display_message]);
 
   return (
     <Box>
-      {data.length > 0 ? <ProcessGraph data={data} /> : <p>Loading...</p>}
+      {data.length > 0 ? <ProcessGraph data={data} /> : <CircularProgress />}
     </Box>
   );
 };

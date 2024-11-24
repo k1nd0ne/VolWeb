@@ -14,6 +14,7 @@ import Explore from "../../components/Explore/Windows/Explore";
 import { Evidence } from "../../types";
 import { useParams } from "react-router-dom";
 import { Biotech, BlurOn } from "@mui/icons-material";
+import { useSnackbar } from "../../components/SnackbarProvider";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -46,6 +47,7 @@ function a11yProps(index: number) {
 
 const EvidenceDetail: React.FC = () => {
   const [value, setValue] = React.useState(0);
+  const { display_message } = useSnackbar();
   const { id } = useParams<{ id: string }>();
   const [currentEvidence, setCurrentEvidence] = React.useState<Evidence>();
   useEffect(() => {
@@ -55,13 +57,16 @@ const EvidenceDetail: React.FC = () => {
           const response = await axiosInstance.get(`/api/evidences/${id}`);
           setCurrentEvidence(response.data);
         } catch (error) {
-          console.error("Failed to fetch evidence details:", error);
+          display_message(
+            "error",
+            `Failed to fetch evidence details: ${error}`,
+          );
         }
       }
     };
 
     fetchEvidenceDetails();
-  }, [id]);
+  }, [id, display_message]);
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);

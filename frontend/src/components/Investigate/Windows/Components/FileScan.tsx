@@ -3,16 +3,19 @@ import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 import { Box, Button, CircularProgress } from "@mui/material";
 import axiosInstance from "../../../../utils/axiosInstance";
 import { useParams } from "react-router-dom";
-import { Artefact } from "../../../../types";
+import { Artefact, TaskData } from "../../../../types";
 import { downloadFile } from "../../../../utils/downloadFile";
+import { useSnackbar } from "../../../SnackbarProvider";
+
 interface FileScanProps {
   data: Artefact[];
 }
 
-interface TaskData {
-  task_name: string;
-  status: string;
-  task_args: string;
+interface File {
+  id: number;
+  Offset: number;
+  FileObject: string;
+  Result: string;
 }
 
 const FileScan: React.FC<FileScanProps> = ({ data }) => {
@@ -21,8 +24,8 @@ const FileScan: React.FC<FileScanProps> = ({ data }) => {
     {},
   );
   const ws = useRef<WebSocket | null>(null);
+  const { display_message } = useSnackbar();
 
-  // Fetch tasks to check for ongoing dump tasks on component mount
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -31,12 +34,13 @@ const FileScan: React.FC<FileScanProps> = ({ data }) => {
         );
         const tasksData: TaskData[] = response.data;
 
-        const getTaskArgsArray = (taskArgsString: string): any[] => {
+        const getTaskArgsArray = (taskArgsString: string): unknown[] => {
           try {
             const parsedOnce = JSON.parse(taskArgsString);
             const parsedTwice = JSON.parse(parsedOnce);
             return parsedTwice;
           } catch (error) {
+            display_message("error", `Error parsing task_args ${error}`);
             console.error("Error parsing task_args", error);
             return [];
           }
@@ -54,15 +58,13 @@ const FileScan: React.FC<FileScanProps> = ({ data }) => {
             const taskOffset = argsArray && argsArray[1];
             if (taskOffset) {
               data.forEach((row) => {
-                if (row.Offset.toString() === taskOffset.toString()) {
-                  loadingStates[row.id] = true;
+                if (row.Offset === taskOffset) {
+                  loadingStates[row.id as unknown as number] = true;
                 }
               });
             }
           }
         });
-
-        // Update loadingRows state with ongoing tasks
         setLoadingRows(loadingStates);
       } catch (error) {
         console.error("Error fetching tasks", error);
@@ -70,9 +72,8 @@ const FileScan: React.FC<FileScanProps> = ({ data }) => {
     };
 
     fetchTasks();
-  }, [evidenceId, data]);
+  }, [evidenceId, data, display_message]);
 
-  // Set up WebSocket connection to listen for task completion messages
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const wsUrl = `${protocol}://${window.location.hostname}:8000/ws/engine/${evidenceId}/`;
@@ -91,20 +92,28 @@ const FileScan: React.FC<FileScanProps> = ({ data }) => {
       const message = eventData.message;
       if (message.status === "finished") {
         if (message.name === "file_dump" && message.result) {
-          // Handle file download for each result
           const results = message.result;
-          results.forEach((item: any) => {
-            const fileName = item.Result;
-            const fileUrl = `/media/${evidenceId}/${fileName}`;
-            // Initiate file download
-            downloadFile(fileUrl, fileName);
-          });
+          if (results.length > 0) {
+            results.forEach((item: File) => {
+              const fileName = item.Result;
+              const fileUrl = `/media/${evidenceId}/${fileName}`;
+              downloadFile(fileUrl, fileName);
+              display_message("success", "The file was dumped with success.");
+            });
+          } else {
+            display_message(
+              "warning",
+              "The volatility3 filescan plugin returned no results",
+            );
+          }
 
-          // Update loading state for the corresponding rows
-          const fileObjects = results.map((item: any) => item.FileObject);
+          const fileObjects = results.map((item: File) => item.Result);
           data.forEach((row) => {
-            if (fileObjects.includes(row.FileObject)) {
-              setLoadingRows((prev) => ({ ...prev, [row.id]: false }));
+            if (fileObjects.includes(row.Result)) {
+              setLoadingRows((prev) => ({
+                ...prev,
+                [row.id as unknown as number]: false,
+              }));
             }
           });
         }
@@ -124,7 +133,7 @@ const FileScan: React.FC<FileScanProps> = ({ data }) => {
         ws.current.close();
       }
     };
-  }, [evidenceId, data]);
+  }, [evidenceId, data, display_message]);
 
   // Define columns for DataGrid, including the "Actions" column
   const columns: GridColDef[] = data[0]

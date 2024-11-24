@@ -49,7 +49,6 @@ class VolatilityEngine:
             }
         self.base_config_path = "plugins"
 
-
     def build_context(self, plugin):
         self.plugin, self.metadata = plugin.popitem()
 
@@ -149,10 +148,9 @@ class VolatilityEngine:
             self.run_plugin(builted_plugin)
         fix_permissions(self.evidence_data["output_path"])
 
-
     def start_timeliner(self):
         timeliner_plugin = {
-             volatility3.plugins.timeliner.Timeliner: {
+            volatility3.plugins.timeliner.Timeliner: {
                 "icon": "None",
                 "description": "VolWeb main plugin executing many other plugins with automagics optimization",
                 "category": "Other",
@@ -165,7 +163,7 @@ class VolatilityEngine:
         result = self.run_plugin(builted_plugin)
         if result:
             graph = build_timeline(result)
-            VolatilityPlugin(
+            VolatilityPlugin.objects.update_or_create(
                 name="volatility3.plugins.timeliner.TimelinerGraph",
                 icon="None",
                 description="None",
@@ -174,7 +172,7 @@ class VolatilityEngine:
                 category="Timeline",
                 display="False",
                 results=True,
-            ).save()
+            )
 
     def start_extraction(self):
         try:
@@ -219,7 +217,6 @@ class VolatilityEngine:
         result = self.run_plugin(builted_plugin)
         return result
 
-
     def dump_process_maps(self, pid):
         logger.info(f"Trying to dump PID {pid}")
         if self.evidence.os == "windows":
@@ -250,7 +247,6 @@ class VolatilityEngine:
         builted_plugin = self.construct_plugin()
         result = self.run_plugin(builted_plugin)
         return result
-
 
     def compute_handles(self, pid):
         handles_plugin = {
@@ -293,7 +289,6 @@ class VolatilityEngine:
             logger.error(e)
             return None
 
-
     def construct_windows_explorer(self):
         # Get all VolatilityPlugin objects linked to this evidence
         plugins = VolatilityPlugin.objects.filter(evidence=self.evidence)
@@ -301,14 +296,15 @@ class VolatilityEngine:
         # Get the pslist plugin's output, which contains the list of processes
         try:
             pslist_plugin = VolatilityPlugin.objects.get(
-                evidence=self.evidence,
-                name="volatility3.plugins.windows.pslist.PsList"
+                evidence=self.evidence, name="volatility3.plugins.windows.pslist.PsList"
             )
         except VolatilityPlugin.DoesNotExist:
             logger.error("pslist plugin not found for this evidence")
             return
 
-        pslist_artefacts = pslist_plugin.artefacts  # This should be a list of process dicts
+        pslist_artefacts = (
+            pslist_plugin.artefacts
+        )  # This should be a list of process dicts
 
         # Iterate over each process in pslist
         for process in pslist_artefacts:
@@ -318,7 +314,7 @@ class VolatilityEngine:
             pid = int(pid)
 
             # Initialize enriched process data with pslist data
-            enriched_process_data = {'pslist': process}
+            enriched_process_data = {"pslist": process}
 
             # Iterate over other plugins linked to the same evidence
             for plugin in plugins.exclude(id=pslist_plugin.id):
@@ -339,5 +335,5 @@ class VolatilityEngine:
             EnrichedProcess.objects.update_or_create(
                 evidence=self.evidence,
                 pid=pid,
-                defaults={'data': enriched_process_data}
+                defaults={"data": enriched_process_data},
             )

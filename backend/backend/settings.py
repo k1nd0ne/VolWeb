@@ -32,7 +32,7 @@ if SECRET_KEY == "DEV_SECRET":
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
@@ -101,7 +101,7 @@ TEMPLATES = [
     },
 ]
 
-#WSGI_APPLICATION = "backend.wsgi.application"
+# WSGI_APPLICATION = "backend.wsgi.application"
 ASGI_APPLICATION = "backend.asgi.application"
 
 CHANNEL_LAYERS = {

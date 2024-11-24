@@ -8,6 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["username", "id"]
 
+
 class CaseSerializer(serializers.ModelSerializer):
     linked_users = UserSerializer(many=True)
 

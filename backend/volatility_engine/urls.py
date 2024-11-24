@@ -9,7 +9,7 @@ from .views import (
     ProcessDumpMapsTask,
     FileDumpTask,
     TasksApiView,
-    EnrichedProcessView
+    EnrichedProcessView,
 )
 
 urlpatterns = [
@@ -33,5 +33,8 @@ urlpatterns = [
     path("evidence/tasks/dump/process/maps/", ProcessDumpMapsTask.as_view()),
     path("evidence/tasks/dump/file/", FileDumpTask.as_view()),
     path("evidence/<int:evidence_id>/tasks/", TasksApiView.as_view()),
-    path("evidence/<int:evidence_id>/process/<int:pid>/enriched/", EnrichedProcessView.as_view()),
+    path(
+        "evidence/<int:evidence_id>/process/<int:pid>/enriched/",
+        EnrichedProcessView.as_view(),
+    ),
 ]

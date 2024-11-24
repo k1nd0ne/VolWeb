@@ -15,7 +15,10 @@ import Grid from "@mui/material/Grid2";
 import EvidenceList from "../../components/Lists/EvidenceList";
 import CaseIndicatorsList from "../../components/Lists/CaseIndicatorsList";
 import StixButton from "../../components/StixButton";
+import { useSnackbar } from "../../components/SnackbarProvider";
 const CaseDetail: React.FC = () => {
+  const { display_message } = useSnackbar();
+
   const { id } = useParams<{ id: string }>();
   const [caseDetail, setCaseDetail] = useState<Case | null>(null);
   const [loading, setLoading] = useState(true);
@@ -24,17 +27,16 @@ const CaseDetail: React.FC = () => {
     const fetchCaseDetail = async () => {
       try {
         const response = await axiosInstance.get(`/api/cases/${id}/`);
-        console.log(response.data);
         setCaseDetail(response.data);
-      } catch (error) {
-        console.error("Error fetching case details", error);
-      } finally {
         setLoading(false);
+      } catch (error) {
+        display_message("error", `An error fetching case details: ${error}`);
+        console.error("Error fetching case details", error);
       }
     };
 
     fetchCaseDetail();
-  }, [id]);
+  }, [id, display_message]);
 
   if (loading) {
     return <CircularProgress />;
@@ -42,7 +44,7 @@ const CaseDetail: React.FC = () => {
 
   return (
     caseDetail && (
-      <Grid spacing={2}>
+      <Grid spacing={2} container>
         <Grid size={12}>
           <Card variant="outlined" sx={{ marginBottom: 2 }}>
             <CardContent>
@@ -78,7 +80,7 @@ const CaseDetail: React.FC = () => {
           <Divider sx={{ marginBottom: 2 }} />
           <EvidenceList caseId={caseDetail.id} />
         </Grid>
-        <Container sx={{ marginTop: 2 }}>
+        <Container sx={{ marginTop: 12 }}>
           <Stack
             direction="row"
             spacing={2}
@@ -87,10 +89,10 @@ const CaseDetail: React.FC = () => {
             <Typography gutterBottom variant="h5" component="div">
               Indicators
             </Typography>
-            <StixButton caseId={caseDetail.id.toString()} />
+            <StixButton caseId={caseDetail.id} />
           </Stack>
 
-          <CaseIndicatorsList caseId={caseDetail.id.toString()} />
+          <CaseIndicatorsList caseId={caseDetail.id} />
         </Container>
       </Grid>
     )

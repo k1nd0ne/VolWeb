@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, useRef } from "react";
+import { FC, useEffect, useRef, useCallback } from "react";
 import { useSigma, useRegisterEvents } from "@react-sigma/core";
 import Graph from "graphology";
 import { ProcessInfo } from "../../../types";
@@ -16,13 +16,72 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({
   const sigma = useSigma();
   const graph = sigma.getGraph();
   const registerEvents = useRegisterEvents();
-  const [selectedProcess, setSelectedProcess] = useState<ProcessInfo | null>(
-    null,
-  );
 
-  // Refs for drag handling
   const isDragging = useRef<boolean>(false);
   const draggedNode = useRef<string | null>(null);
+
+  const findProcessByPID = useCallback(
+    (data: ProcessInfo[], pid: number): ProcessInfo | null => {
+      for (const process of data) {
+        if (process.PID === pid) {
+          return process;
+        } else if (process.__children) {
+          const result = findProcessByPID(process.__children, pid);
+          if (result) return result;
+        }
+      }
+      return null;
+    },
+    [],
+  );
+
+  const expandNode = useCallback(
+    (process: ProcessInfo, graph: Graph) => {
+      const parentId = process.PID.toString();
+
+      const parentAttributes = graph.getNodeAttributes(parentId);
+      const { x: px, y: py } = parentAttributes;
+
+      const children = process.__children || [];
+      const N = children.length;
+
+      children.forEach((child, i) => {
+        const childId = child.PID.toString();
+
+        const angle = (i * 2 * Math.PI) / N;
+        const distance = 50;
+        const x = px + distance * Math.cos(angle);
+        const y = py + distance * Math.sin(angle);
+
+        if (!graph.hasNode(childId)) {
+          graph.addNode(childId, {
+            label: `${child.ImageFileName || "Unknown"} - ${child.PID} (${child.__children.length})`,
+            size: 5,
+            color:
+              child.__children.length > 0
+                ? "#ce93d8"
+                : child.anomalies && child.anomalies.length > 0
+                  ? "#ffa726"
+                  : "#FFFFFF",
+            x: x,
+            y: y,
+          });
+        }
+
+        if (!graph.hasEdge(parentId, childId)) {
+          graph.addEdge(parentId, childId, {
+            label: "Created",
+            size: 1,
+            color: "#fff",
+            type: "arrow",
+          });
+        }
+      });
+
+      sigma.refresh();
+    },
+    [sigma],
+  );
 
   useEffect(() => {
     const handleClickNode = ({ node }: { node: string }) => {
@@ -32,7 +91,6 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({
       const pid = parseInt(node);
       const process = findProcessByPID(data, pid);
       if (process) {
-        setSelectedProcess(process);
         onProcessSelect(process); // Notify parent component
       }
 
@@ -59,11 +117,7 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({
       graph.setNodeAttribute(node, "highlighted", true);
     };
 
-    const handleMouseMove = (event: {
-      x: number;
-      y: number;
-      dragging: boolean;
-    }) => {
+    const handleMouseMove = (event: { x: number; y: number }) => {
       if (isDragging.current && draggedNode.current) {
         const coords = sigma.viewportToGraph({ x: event.x, y: event.y });
         graph.setNodeAttribute(draggedNode.current, "x", coords.x);
@@ -86,68 +140,15 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({
       mousemove: handleMouseMove,
       mouseup: handleMouseUp,
     });
-  }, [data, graph, sigma, registerEvents, onProcessSelect]);
-
-  // Helper functions
-  function findProcessByPID(
-    data: ProcessInfo[],
-    pid: number,
-  ): ProcessInfo | null {
-    for (const process of data) {
-      if (process.PID === pid) {
-        return process;
-      } else if (process.__children) {
-        const result = findProcessByPID(process.__children, pid);
-        if (result) return result;
-      }
-    }
-    return null;
-  }
-
-  function expandNode(process: ProcessInfo, graph: Graph) {
-    const parentId = process.PID.toString();
-
-    const parentAttributes = graph.getNodeAttributes(parentId);
-    const { x: px, y: py } = parentAttributes;
-
-    const children = process.__children || [];
-    const N = children.length;
-
-    children.forEach((child, i) => {
-      const childId = child.PID.toString();
-
-      const angle = (i * 2 * Math.PI) / N;
-      const distance = 50;
-      const x = px + distance * Math.cos(angle);
-      const y = py + distance * Math.sin(angle);
-
-      if (!graph.hasNode(childId)) {
-        graph.addNode(childId, {
-          label: `${child.ImageFileName || "Unknown"} - ${child.PID} (${child.__children.length})`,
-          size: 5,
-          color:
-            child.__children.length > 0
-              ? "#ce93d8"
-              : child.anomalies && child.anomalies.length > 0
-                ? "#ffa726"
-                : "#FFFFFF",
-          x: x,
-          y: y,
-        });
-      }
-
-      if (!graph.hasEdge(parentId, childId)) {
-        graph.addEdge(parentId, childId, {
-          label: "Created",
-          size: 1,
-          color: "#fff",
-          type: "arrow",
-        });
-      }
-    });
-
-    sigma.refresh();
-  }
+  }, [
+    data,
+    graph,
+    sigma,
+    registerEvents,
+    onProcessSelect,
+    expandNode,
+    findProcessByPID,
+  ]);
 
   return null;
 };

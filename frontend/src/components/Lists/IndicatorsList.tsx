@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -9,26 +9,29 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Button,
   CircularProgress,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
 import axiosInstance from "../../utils/axiosInstance";
-import PropTypes from "prop-types";
+import { useSnackbar } from "../SnackbarProvider";
+import { Indicator } from "../../types";
+interface IndicatorsListProps {
+  open: boolean;
+  onClose: () => void;
+  evidenceId?: number;
+  onIndicatorDeleted?: (indicatorId: number) => void;
+}
 
-const IndicatorsList = ({ open, onClose, evidenceId, onIndicatorDeleted }) => {
+const IndicatorsList: React.FC<IndicatorsListProps> = ({
+  open,
+  onClose,
+  evidenceId,
+  onIndicatorDeleted,
+}) => {
   const [indicators, setIndicators] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
+  const { display_message } = useSnackbar();
 
   useEffect(() => {
     if (open) {
@@ -37,58 +40,34 @@ const IndicatorsList = ({ open, onClose, evidenceId, onIndicatorDeleted }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Fetch Indicators
   const fetchIndicators = async () => {
     setIsLoading(true);
-    setError("");
     try {
       const url = `/core/stix/indicators/evidence/${evidenceId}/`;
       const response = await axiosInstance.get(url);
       setIndicators(response.data);
     } catch (err) {
-      setError("Failed to fetch indicators.");
-      setSnackbar({
-        open: true,
-        message: "Failed to fetch indicators.",
-        severity: "error",
-      });
+      display_message("error", `Failed to fetch indicators: ${err}`);
     } finally {
       setIsLoading(false);
     }
   };
 
   // Handle Delete Indicator
-  const handleDelete = async (indicatorId) => {
+  const handleDelete = async (indicatorId: number) => {
     if (!window.confirm("Are you sure you want to delete this indicator?")) {
       return;
     }
 
     try {
       await axiosInstance.delete(`/core/stix/indicators/${indicatorId}/`);
-      setSnackbar({
-        open: true,
-        message: "Indicator deleted successfully.",
-        severity: "success",
-      });
-      // Refresh indicators list
       fetchIndicators();
-      // Notify parent component if needed
       if (onIndicatorDeleted) {
         onIndicatorDeleted(indicatorId);
       }
     } catch (err) {
-      setSnackbar({
-        open: true,
-        message: "Failed to delete the indicator.",
-        severity: "error",
-      });
+      display_message("error", `Failed to delete the indicator: ${err}`);
     }
-  };
-
-  // Handle Snackbar Close
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") return;
-    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
@@ -100,7 +79,6 @@ const IndicatorsList = ({ open, onClose, evidenceId, onIndicatorDeleted }) => {
         flexDirection: "column",
       }}
     >
-      {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography variant="h6" color="warning">
           Indicators
@@ -110,7 +88,6 @@ const IndicatorsList = ({ open, onClose, evidenceId, onIndicatorDeleted }) => {
         </IconButton>
       </Box>
 
-      {/* Content */}
       <Box mt={2} flexGrow={1} overflow="auto">
         {isLoading ? (
           <Box
@@ -121,8 +98,6 @@ const IndicatorsList = ({ open, onClose, evidenceId, onIndicatorDeleted }) => {
           >
             <CircularProgress />
           </Box>
-        ) : error ? (
-          <Typography color="error">{error}</Typography>
         ) : (
           <TableContainer component={Box}>
             <Table size="small" aria-label="indicators table">
@@ -138,7 +113,7 @@ const IndicatorsList = ({ open, onClose, evidenceId, onIndicatorDeleted }) => {
               </TableHead>
               <TableBody>
                 {indicators.length > 0 ? (
-                  indicators.map((indicator) => (
+                  indicators.map((indicator: Indicator) => (
                     <TableRow key={indicator.id}>
                       <TableCell>
                         <Box
@@ -199,31 +174,8 @@ const IndicatorsList = ({ open, onClose, evidenceId, onIndicatorDeleted }) => {
           </TableContainer>
         )}
       </Box>
-
-      {/* Snackbar for Notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
-};
-
-IndicatorsList.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  evidenceId: PropTypes.string.isRequired,
-  onIndicatorDeleted: PropTypes.func, // Optional callback
 };
 
 export default IndicatorsList;

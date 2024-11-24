@@ -14,16 +14,17 @@ import Checkbox from "@mui/material/Checkbox";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import { MouseEvent } from "react";
+import axios from "axios";
+import { useSnackbar } from "../SnackbarProvider";
 
 interface Artefact {
   __children: Artefact[];
   Plugin: string;
   Description: string;
-  "Created Date": string | null;
-  "Modified Date": string | null;
-  "Accessed Date": string | null;
-  "Changed Date": string | null;
-  [key: string]: string | null;
+  "Created Date": Date | null;
+  "Modified Date": Date | null;
+  "Accessed Date": Date | null;
+  "Changed Date": Date | null;
 }
 
 interface ChartContext {
@@ -51,36 +52,41 @@ const Timeliner: React.FC = () => {
   const [seriesData, setSeriesData] = useState<{ x: string; y: number }[]>([]);
   const apiRef = useGridApiRef();
   const ws = useRef<WebSocket | null>(null);
+  const { display_message } = useSnackbar();
 
-  // Define columns for DataGrid
-  const columns: GridColDef[] = artefactData[0]
-    ? Object.keys(artefactData[0])
-        .filter((key) => key !== "__children" && key !== "id")
-        .map((key) => ({
-          field: key,
-          headerName: key,
-          renderCell: (params) =>
-            typeof params.value === "boolean" ? (
-              params.value ? (
-                <Checkbox checked={true} color="success" />
+  const columns: GridColDef[] = useMemo(() => {
+    return artefactData[0]
+      ? Object.keys(artefactData[0])
+          .filter((key) => key !== "__children" && key !== "id")
+          .map((key) => ({
+            field: key,
+            headerName: key,
+            renderCell: (params) =>
+              typeof params.value === "boolean" ? (
+                params.value ? (
+                  <Checkbox checked={true} color="success" />
+                ) : (
+                  <IconButton color="error">
+                    <CloseIcon />
+                  </IconButton>
+                )
+              ) : params.value !== null ? (
+                params.value
               ) : (
-                <IconButton color="error">
-                  <CloseIcon />
-                </IconButton>
-              )
-            ) : params.value !== null ? (
-              params.value
-            ) : (
-              ""
-            ),
-        }))
-    : [];
+                ""
+              ),
+          }))
+      : [];
+  }, [artefactData]);
 
-  const autosizeOptions = {
-    columns: [...columns].map((col) => col.headerName ?? ""),
-    includeOutliers: true,
-    includeHeaders: true,
-  };
+  const autosizeOptions = useMemo(
+    () => ({
+      columns: [...columns].map((col) => col.headerName ?? ""),
+      includeOutliers: true,
+      includeHeaders: true,
+    }),
+    [columns],
+  );
 
   // Function to fetch artefacts based on timestamp range
   const fetchArtefacts = useCallback(
@@ -102,12 +108,12 @@ const Timeliner: React.FC = () => {
         );
         setArtefactData(artefactsWithId);
       } catch (error) {
-        console.error("Error fetching artefacts", error);
+        display_message("error", `Error fetching artefacts: ${error}`);
       } finally {
         setLoading(false);
       }
     },
-    [id],
+    [id, display_message],
   );
 
   // Function to check if a timeliner task is running
@@ -125,9 +131,10 @@ const Timeliner: React.FC = () => {
 
       setProcessing(isTimelinerTaskRunning);
     } catch (error) {
+      display_message("error", `Error fetching tasks: ${error}`);
       console.error("Error fetching tasks", error);
     }
-  }, [id]);
+  }, [id, display_message]);
 
   // Function to fetch TimelinerGraph data
   const fetchTimelinerGraph = useCallback(async () => {
@@ -149,10 +156,9 @@ const Timeliner: React.FC = () => {
           response.data.artefacts[0][0],
         ]);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching TimelinerGraph", error);
-      if (error.response && error.response.status === 404) {
-        // Data not available, check if task is running
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
         checkIfTimelinerTaskRunning();
       }
     }
@@ -220,8 +226,8 @@ const Timeliner: React.FC = () => {
     setProcessing(true);
     try {
       await axiosInstance.post(`/api/evidence/tasks/timeliner/`, { id });
-      // Task started, processing remains true until task completes via WebSocket
     } catch (error) {
+      display_message("error", `Error triggering timeliner task: ${error}`);
       console.error("Error triggering timeliner task", error);
       setProcessing(false); // Stop processing on error
     }
@@ -257,8 +263,7 @@ const Timeliner: React.FC = () => {
             {
               seriesIndex,
               dataPointIndex,
-              config,
-            }: { seriesIndex: number; dataPointIndex: number; config: any },
+            }: { seriesIndex: number; dataPointIndex: number },
           ) {
             const timestamp =
               chartContext.w.config.series[seriesIndex].data[dataPointIndex].x;

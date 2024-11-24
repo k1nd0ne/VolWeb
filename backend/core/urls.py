@@ -8,7 +8,7 @@ from core.views import (
     IndicatorExportApiView,
     IndicatorEvidenceApiView,
     IndicatorTypeListAPIView,
-    StatisticsApiView
+    StatisticsApiView,
 )
 
 urlpatterns = [
@@ -18,14 +18,16 @@ urlpatterns = [
     path("users/", UserList.as_view(), name="users"),
     path("stix/indicators/", IndicatorApiView.as_view()),
     path("stix/indicators/<int:indicator_id>/", IndicatorApiView.as_view()),
-    path(
-        "stix/indicators/case/<int:case_id>/", IndicatorCaseApiView.as_view()
-    ),
+    path("stix/indicators/case/<int:case_id>/", IndicatorCaseApiView.as_view()),
     path(
         "stix/indicators/evidence/<int:evidence_id>/",
         IndicatorEvidenceApiView.as_view(),
     ),
     path("stix/export/<int:case_id>/", IndicatorExportApiView.as_view()),
-    path("stix/indicator-types/", IndicatorTypeListAPIView.as_view(), name="indicator_types"),
+    path(
+        "stix/indicator-types/",
+        IndicatorTypeListAPIView.as_view(),
+        name="indicator_types",
+    ),
     path("statistics/", StatisticsApiView.as_view(), name="statistics"),
 ]

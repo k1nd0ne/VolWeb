@@ -1,6 +1,4 @@
 import axios from "axios";
-import { getAuthHeaders } from "./auth";
-import { useNavigate } from "react-router-dom";
 
 // Create an Axios instance
 const axiosInstance = axios.create();
@@ -8,14 +6,16 @@ const axiosInstance = axios.create();
 // Add a request interceptor to include auth headers
 axiosInstance.interceptors.request.use(
   (config) => {
-    const authHeaders = getAuthHeaders();
-    config.headers = { ...config.headers, ...authHeaders };
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      config.headers = config.headers ?? new axios.AxiosHeaders();
+      config.headers.set("Authorization", `Bearer ${token}`);
+    }
     return config;
   },
   (error) => Promise.reject(error),
 );
 
-// Add a response interceptor to handle token expiration
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -47,16 +47,10 @@ axiosInstance.interceptors.response.use(
           }
         } catch (refreshError) {
           console.error("Token refresh failed", refreshError);
+          window.location.href = "/login";
         }
       }
     }
-
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      window.location.href = "/login"; // Navigate to login
-    }
-
     return Promise.reject(error);
   },
 );

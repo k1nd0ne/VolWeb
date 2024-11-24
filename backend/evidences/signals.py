@@ -18,6 +18,7 @@ def send_evidence_created(sender, instance, created, **kwargs):
         {"type": "send_notification", "status": "created", "message": serializer.data},
     )
 
+
 @receiver(post_delete, sender=Evidence)
 def send_evidence_deleted(sender, instance, **kwargs):
     channel_layer = get_channel_layer()

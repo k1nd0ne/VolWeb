@@ -36,17 +36,14 @@ const GraphDataController: FC<GraphDataControllerProps> = ({ data }) => {
       });
     });
 
-    // Load the graph into Sigma
     loadGraph(graph);
 
-    // Start ForceSupervisor layout
     const layout = new ForceSupervisor(graph);
     layout.start();
     setTimeout(() => {
       layout.stop();
     }, 1000);
 
-    // Cleanup on unmount
     return () => {
       layout.stop();
     };
