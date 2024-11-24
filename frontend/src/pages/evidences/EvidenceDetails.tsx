@@ -87,6 +87,7 @@ const EvidenceDetail: React.FC = () => {
               color: "inherit",
             },
           }}
+          style={{ height: "0px" }}
         >
           <Tab
             label="Overview"
@@ -97,13 +98,27 @@ const EvidenceDetail: React.FC = () => {
               fontSize: "0.75rem",
             }}
           />
-          <Tab
-            label="Explore"
-            icon={<BlurOn />}
-            iconPosition="start"
-            {...a11yProps(1)}
-            sx={{ fontSize: "0.75rem" }}
-          />
+          {currentEvidence && currentEvidence.os === "windows" && (
+            <Tab
+              label="Explore"
+              icon={<BlurOn />}
+              iconPosition="start"
+              {...a11yProps(1)}
+              sx={{ fontSize: "0.75rem" }}
+            />
+          )}
+
+          {currentEvidence && currentEvidence.os === "linux" && (
+            <Tab
+              label="Explore (coming soon)"
+              icon={<BlurOn />}
+              iconPosition="start"
+              {...a11yProps(1)}
+              disabled
+              sx={{ fontSize: "0.75rem" }}
+            />
+          )}
+
           <Tab
             label="Investigate"
             icon={<Biotech />}
