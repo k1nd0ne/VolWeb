@@ -8,7 +8,8 @@ import {
   IconButton,
 } from "@mui/material";
 import { Close, Settings } from "@mui/icons-material";
-import axios from "axios";
+import axiosInstance from "../../../../utils/axiosInstance";
+import { AxiosError } from "axios";
 import PluginDataGrid from "../../PluginDataGrid";
 
 interface DumpMapsButtonProps {
@@ -30,7 +31,7 @@ const DumpMapsButton: React.FC<DumpMapsButtonProps> = ({
     setLoading(true);
     try {
       // First, check if the data exists
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `/api/evidence/${evidenceId}/plugin/volatility3.plugins.linux.proc.MapsDump.${pid}`,
       );
       if (
@@ -43,13 +44,20 @@ const DumpMapsButton: React.FC<DumpMapsButtonProps> = ({
         setLoading(false);
       } else {
         // Data does not exist, start computation
-        await axios.post(`/api/evidence/tasks/dump/maps/`, { pid, evidenceId });
+        await axiosInstance.post(`/api/evidence/tasks/dump/maps/`, {
+          pid,
+          evidenceId,
+        });
         // Loading remains true until task completes and WebSocket updates it
       }
-    } catch (error: any) {
-      if (error.response && error.response.status === 404) {
+    } catch (error: unknown) {
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        error.response.status === 404
+      ) {
         // Data does not exist, start computation
-        await axios.post(`/api/evidence/tasks/dump/process/maps/`, {
+        await axiosInstance.post(`/api/evidence/tasks/dump/process/maps/`, {
           pid,
           evidenceId,
         });

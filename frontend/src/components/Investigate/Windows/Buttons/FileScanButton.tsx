@@ -15,30 +15,32 @@ import CloseIcon from "@mui/icons-material/Close";
 import { FolderOpen } from "@mui/icons-material";
 import { Artefact } from "../../../../types";
 import FileScan from "../Components/FileScan";
+import { useSnackbar } from "../../../SnackbarProvider";
 
 const FilescanButton: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<Artefact[]>([]);
+  const { display_message } = useSnackbar();
 
   const fetchFileScan = async () => {
     try {
       const response = await axiosInstance.get(
         `/api/evidence/${id}/plugin/volatility3.plugins.windows.filescan.FileScan`,
       );
-      console.log(response.data.artefacts);
+
       const artefactsWithId: Artefact[] = [];
       response.data.artefacts.forEach((artefact: Artefact, index: number) => {
         artefactsWithId.push({ ...artefact, id: index });
-        if (artefact.__children && artefact.__children.length) {
-          artefact.__children.map((child: Artefact, idx: number) => {
+        if (Array.isArray(artefact.__children) && artefact.__children.length) {
+          artefact.__children.forEach((child: Artefact, idx: number) => {
             artefactsWithId.push({ ...child, id: `${index}-${idx}` });
           });
         }
       });
       setData(artefactsWithId);
     } catch (error) {
-      // TODO: Error message
+      display_message("error", `Error fetching filescan details: ${error}`);
       console.error("Error fetching filescan details", error);
     }
   };

@@ -2,6 +2,7 @@ import React from "react";
 import { Button, CircularProgress } from "@mui/material";
 import { Download } from "@mui/icons-material";
 import axiosInstance from "../../../../utils/axiosInstance";
+import { useSnackbar } from "../../../SnackbarProvider";
 
 interface DumpPslistButtonProps {
   evidenceId: string | undefined;
@@ -16,6 +17,8 @@ const DumpPslistButton: React.FC<DumpPslistButtonProps> = ({
   loading,
   setLoading,
 }) => {
+  const { display_message } = useSnackbar();
+
   const handleDump = async () => {
     setLoading(true);
     try {
@@ -23,9 +26,8 @@ const DumpPslistButton: React.FC<DumpPslistButtonProps> = ({
         pid,
         evidenceId,
       });
-      // Loading remains true until task completes and WebSocket updates it
     } catch (error) {
-      // Handle the error appropriately
+      display_message("error", `Error dumping process: ${error}`);
       console.error("Error dumping process:", error);
       setLoading(false);
     }

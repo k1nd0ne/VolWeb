@@ -1,12 +1,10 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { Snackbar, Alert, AlertColor } from "@mui/material";
 
-// Define the shape of the context value
 interface SnackbarContextValue {
   display_message: (severity: AlertColor, message: string) => void;
 }
 
-// Create a Context for the Snackbar
 const SnackbarContext = createContext<SnackbarContextValue | undefined>(
   undefined,
 );

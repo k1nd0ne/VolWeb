@@ -39,7 +39,7 @@ const InvestigatorSelect: React.FC<{
         `${user.first_name} ${user.last_name} (${user.username})`
       }
       value={selectedUsers}
-      onChange={(event, newValue) => setSelectedUsers(newValue)}
+      onChange={(_event, newValue) => setSelectedUsers(newValue)}
       renderInput={(params) => (
         <TextField
           {...params}

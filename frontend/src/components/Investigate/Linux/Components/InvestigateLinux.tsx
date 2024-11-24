@@ -4,25 +4,26 @@ import Grid from "@mui/material/Grid2";
 import PsTree from "./PsTree";
 import ProcessMetadata from "./ProcessMetadata";
 import PluginDashboard from "../../PluginDashboard";
-import { ProcessInfo, Evidence } from "../../../../types";
+import { Artefact, Evidence, LinuxProcessInfo } from "../../../../types";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../../../utils/axiosInstance";
 import { downloadFile } from "../../../../utils/downloadFile";
+import { TaskData } from "../../../../types";
+import { useSnackbar } from "../../../SnackbarProvider";
 
 interface InvestigateLinuxProps {
   evidence: Evidence;
 }
 
 const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
-  const [processMetadata, setProcessMetadata] = useState<ProcessInfo>(
-    {} as ProcessInfo,
+  const [processMetadata, setProcessMetadata] = useState<LinuxProcessInfo>(
+    {} as LinuxProcessInfo,
   );
   const { id } = useParams<{ id: string }>();
+  const { display_message } = useSnackbar();
 
-  // WebSocket setup
   const ws = useRef<WebSocket | null>(null);
 
-  // Loading states
   const [loadingDump, setLoadingDump] = useState<boolean>(false);
   const [loadingMaps, setLoadingMaps] = useState<boolean>(false);
 
@@ -48,11 +49,15 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
             setLoadingDump(false);
             if (message.result) {
               const results = message.result;
-              results.forEach((item: any) => {
-                const fileName = item["File output"];
+              results.forEach((item: Artefact) => {
+                const fileName = item["File output"] as string;
                 if (fileName === "Error outputting file") {
                   // TODO use the message handler
                   console.log(
+                    `The volatility engine failed to dump ${item.COMM}`,
+                  );
+                  display_message(
+                    "warning",
                     `The volatility engine failed to dump ${item.COMM}`,
                   );
                   return;
@@ -60,6 +65,10 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
                 const fileUrl = `/media/${id}/${fileName}`;
                 // Initiate file download
                 downloadFile(fileUrl, fileName);
+                display_message(
+                  "success",
+                  `${item.COMM} was dumped with success.`,
+                );
               });
             }
           }
@@ -80,7 +89,7 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
         ws.current.close();
       }
     };
-  }, [id, processMetadata.PID]);
+  }, [id, processMetadata.PID, display_message]);
 
   // Fetch tasks when processMetadata updates
   useEffect(() => {
@@ -102,6 +111,7 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
               return parsedTwice;
             } catch (error) {
               console.error("Error parsing task_args", error);
+              display_message("warning", `Error parsing task_args ${error}`);
               return [];
             }
           };
@@ -136,6 +146,7 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
           setLoadingMaps(isMapsTaskRunning);
         } catch (error) {
           console.error("Error fetching tasks", error);
+          display_message("error", `Error fetching tasks: ${error}`);
         }
       };
 
@@ -145,7 +156,7 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
       setLoadingDump(false);
       setLoadingMaps(false);
     }
-  }, [processMetadata, id]);
+  }, [processMetadata, id, display_message]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>

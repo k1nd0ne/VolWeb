@@ -10,17 +10,11 @@ import { TreeViewBaseItem } from "@mui/x-tree-view/models";
 import axiosInstance from "../../../../utils/axiosInstance";
 import { useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
-import { ProcessInfo } from "../../../../types";
-
-interface ProcessNode {
-  PID: number;
-  PPID: number;
-  ImageFileName: string;
-  __children: ProcessNode[];
-}
+import { LinuxProcessInfo } from "../../../../types";
+import { useSnackbar } from "../../../SnackbarProvider";
 
 // Styled TreeItem component with dashed border for parent nodes
-const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
+const CustomTreeItem = styled(TreeItem)(() => ({
   [`& .${treeItemClasses.groupTransition}`]: {
     marginLeft: 1,
     paddingLeft: 12,
@@ -37,7 +31,9 @@ const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
 }));
 
 // Helper function to transform artefacts data to TreeViewBaseItem
-const transformProcessData = (nodes: ProcessNode[]): TreeViewBaseItem[] => {
+const transformProcessData = (
+  nodes: LinuxProcessInfo[],
+): TreeViewBaseItem[] => {
   return nodes.map((node) => ({
     id: node.PID.toString(),
     label: ` ${node.PID.toString()} - ${node.COMM} `,
@@ -46,7 +42,7 @@ const transformProcessData = (nodes: ProcessNode[]): TreeViewBaseItem[] => {
 };
 
 // Helper function to extract all node (P)IDs for default expansion
-const extractAllNodeIds = (nodes: ProcessNode[]): string[] => {
+const extractAllNodeIds = (nodes: LinuxProcessInfo[]): string[] => {
   let ids: string[] = [];
   nodes.forEach((node) => {
     ids.push(node.PID.toString());
@@ -58,7 +54,7 @@ const extractAllNodeIds = (nodes: ProcessNode[]): string[] => {
 };
 
 interface PsTreeProps {
-  setProcessMetadata: (processInfo: ProcessInfo) => void;
+  setProcessMetadata: (processInfo: LinuxProcessInfo) => void;
 }
 
 const PsTree: React.FC<PsTreeProps> = ({ setProcessMetadata }) => {
@@ -66,6 +62,31 @@ const PsTree: React.FC<PsTreeProps> = ({ setProcessMetadata }) => {
   const [treeItems, setTreeItems] = useState<TreeViewBaseItem[]>([]);
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
+  const { display_message } = useSnackbar();
+
+  const fetchProcessMetadata = React.useCallback(
+    async (pid: number) => {
+      try {
+        const response = await axiosInstance.get(
+          `/api/evidence/${id}/plugin/volatility3.plugins.linux.pslist.PsList/`,
+        );
+        const artefacts = response.data.artefacts;
+        const foundProcess = artefacts.find(
+          (process: { PID: number }) => process.PID === pid,
+        );
+        if (foundProcess) {
+          setProcessMetadata(foundProcess);
+        } else {
+          console.log(`No process found with PID: ${pid}`);
+          display_message("error", `No process found with PID: ${pid}`);
+        }
+      } catch (error) {
+        console.error("Error fetching process details", error);
+        display_message("error", `Error fetching process details: ${error}`);
+      }
+    },
+    [id, setProcessMetadata, display_message],
+  );
 
   useEffect(() => {
     const fetchTree = async () => {
@@ -73,17 +94,14 @@ const PsTree: React.FC<PsTreeProps> = ({ setProcessMetadata }) => {
         const response = await axiosInstance.get(
           `/api/evidence/${id}/plugin/volatility3.plugins.linux.pstree.PsTree/`,
         );
-        const data: ProcessNode[] = response.data.artefacts;
+        const data: LinuxProcessInfo[] = response.data.artefacts;
 
-        // Transform data for RichTreeView
         const transformedData = transformProcessData(data);
         setTreeItems(transformedData);
 
-        // Extract all node IDs for expanded
         const allIds = extractAllNodeIds(data);
         setExpanded(allIds);
 
-        // Select the first item by default
         if (transformedData.length > 0) {
           setSelected(transformedData[0].id);
           fetchProcessMetadata(Number(transformedData[0].id));
@@ -94,28 +112,7 @@ const PsTree: React.FC<PsTreeProps> = ({ setProcessMetadata }) => {
     };
 
     fetchTree();
-  }, [id]);
-
-  const fetchProcessMetadata = async (pid: number) => {
-    try {
-      const response = await axiosInstance.get(
-        `/api/evidence/${id}/plugin/volatility3.plugins.linux.pslist.PsList/`,
-      );
-      const artefacts = response.data.artefacts;
-      const foundProcess = artefacts.find(
-        (process: { PID: number }) => process.PID === pid,
-      );
-      if (foundProcess) {
-        setProcessMetadata(foundProcess);
-      } else {
-        console.log(`No process found with PID: ${pid}`);
-        // TODO: Error message
-      }
-    } catch (error) {
-      console.error("Error fetching case details", error);
-      // TODO: Error message
-    }
-  };
+  }, [id, fetchProcessMetadata]);
 
   // Event handler for item selection
   const handleSelect = (

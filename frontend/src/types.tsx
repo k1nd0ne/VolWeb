@@ -1,6 +1,8 @@
 export interface User {
   id: number;
   username: string;
+  first_name: string;
+  last_name: string;
 }
 
 export interface Indicator {
@@ -56,6 +58,14 @@ export interface ProcessInfo {
   anomalies: string[] | undefined;
 }
 
+export interface LinuxProcessInfo {
+  PID: number;
+  PPID: number;
+  TID: number;
+  COMM: string;
+  __children: LinuxProcessInfo[];
+}
+
 export interface NetworkInfo {
   __children: string[];
   Offset: number;
@@ -86,21 +96,6 @@ interface KnownEnrichedData {
 
 export interface EnrichedProcessData extends KnownEnrichedData {
   [key: string]: ProcessInfo | NetworkInfo | unknown;
-}
-
-export interface ProcessInfo {
-  PID: number; // Process ID
-  PPID: number; // Parent Process ID
-  ImageFileName: string | null; // Executable file name
-  OffsetV: number | null; // Memory offset as a virtual address
-  Threads: number | null; // Number of threads
-  Handles: number | null; // Number of handles
-  SessionId: number | null; // Session ID, null if not applicable
-  Wow64: boolean | null; // 32-bit process on 64-bit Windows
-  CreateTime: string | null; // ISO string representing creation time
-  ExitTime: string | null; // ISO string representing exit time, null if not applicable
-  __children: ProcessInfo[];
-  anomalies: string[] | undefined; // Add this line to include anomalies
 }
 
 export interface Plugin {

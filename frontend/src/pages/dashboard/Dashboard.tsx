@@ -8,6 +8,7 @@ import StatisticsCard from "../../components/Statistics/StatisticsCard";
 import RecentCases from "../../components/RecentItems/RecentCases";
 import RecentISF from "../../components/RecentItems/RecentISF";
 import { countTasksByDate } from "../../utils/countTasksByDate";
+import { Case } from "../../types";
 
 interface StatisticsData {
   total_evidences: number;
@@ -18,7 +19,7 @@ interface StatisticsData {
   total_evidences_windows: number;
   total_evidences_linux: number;
   tasks: Array<{ date_created: string }>;
-  last_5_cases: Array<{ case_name: string }>;
+  last_5_cases: Case[];
   last_5_isf: Array<{ name: string }>;
 }
 

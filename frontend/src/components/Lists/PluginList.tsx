@@ -12,7 +12,7 @@ import { Plugin } from "../../types";
 import { useSnackbar } from "../SnackbarProvider";
 
 interface PluginListProps {
-  evidenceId?: number;
+  evidenceId?: string;
 }
 
 const PluginList: React.FC<PluginListProps> = ({ evidenceId }) => {

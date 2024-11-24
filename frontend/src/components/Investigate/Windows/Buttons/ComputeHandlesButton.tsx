@@ -8,7 +8,8 @@ import {
   IconButton,
 } from "@mui/material";
 import { Close, Settings } from "@mui/icons-material";
-import axios from "axios";
+import axiosInstance from "../../../../utils/axiosInstance";
+import { AxiosError } from "axios";
 import PluginDataGrid from "../../PluginDataGrid";
 
 interface ComputeHandlesButtonProps {
@@ -30,7 +31,7 @@ const ComputeHandlesButton: React.FC<ComputeHandlesButtonProps> = ({
     setLoading(true);
     try {
       // First, check if the data exists
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `/api/evidence/${evidenceId}/plugin/volatility3.plugins.windows.handles.Handles.${pid}`,
       );
       if (
@@ -38,18 +39,25 @@ const ComputeHandlesButton: React.FC<ComputeHandlesButtonProps> = ({
         response.data.artefacts &&
         response.data.artefacts.length > 0
       ) {
-        // Data exists, open dialog to display results
         setOpenDialog(true);
         setLoading(false);
       } else {
-        // Data does not exist, start computation
-        await axios.post(`/api/evidence/tasks/handles/`, { pid, evidenceId });
-        // Loading remains true until task completes and WebSocket updates it
+        await axiosInstance.post(`/api/evidence/tasks/handles/`, {
+          pid,
+          evidenceId,
+        });
       }
-    } catch (error: any) {
-      if (error.response && error.response.status === 404) {
+    } catch (error) {
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        error.response.status === 404
+      ) {
         // Data does not exist, start computation
-        await axios.post(`/api/evidence/tasks/handles/`, { pid, evidenceId });
+        await axiosInstance.post(`/api/evidence/tasks/handles/`, {
+          pid,
+          evidenceId,
+        });
         // Loading remains true
       } else {
         // Handle other errors

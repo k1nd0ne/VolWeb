@@ -25,7 +25,7 @@ import IndicatorsList from "./Lists/IndicatorsList";
 import { useSnackbar } from "./SnackbarProvider";
 
 interface StixModuleProps {
-  evidenceId?: number;
+  evidenceId?: string;
 }
 
 const StixModule: React.FC<StixModuleProps> = ({ evidenceId }) => {

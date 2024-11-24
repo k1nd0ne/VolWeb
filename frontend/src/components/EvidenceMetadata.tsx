@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid2";
 import PluginList from "./Lists/PluginList";
 
 interface EvidenceMetadataProps {
-  evidenceId?: number;
+  evidenceId?: string;
   theme: "light" | "dark";
 }
 

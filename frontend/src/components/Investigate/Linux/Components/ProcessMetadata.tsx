@@ -10,13 +10,13 @@ import {
   ListItemText,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
-import { ProcessInfo } from "../../../../types";
+import { LinuxProcessInfo } from "../../../../types";
 import { styled } from "@mui/material/styles";
 import DumpPslistButton from "../Buttons/DumpPslistButton";
 import DumpMapsButton from "../Buttons/DumpMapsButton";
 
 interface ProcessMetadataProps {
-  processMetadata: ProcessInfo;
+  processMetadata: LinuxProcessInfo;
   id: string | undefined;
   loadingDumpPslist: boolean;
   setLoadingDumpPslist: (loading: boolean) => void;

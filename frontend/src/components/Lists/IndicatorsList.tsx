@@ -19,7 +19,7 @@ import { Indicator } from "../../types";
 interface IndicatorsListProps {
   open: boolean;
   onClose: () => void;
-  evidenceId?: number;
+  evidenceId?: string;
   onIndicatorDeleted?: (indicatorId: number) => void;
 }
 
