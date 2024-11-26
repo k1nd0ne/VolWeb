@@ -23,6 +23,7 @@ services:
       - "6379:6379"
 
   volweb-backend:
+    image: "forensicxlab/volweb-backend:3.0.0"
     container_name: volweb-backend
     environment:
       - DATABASE=${DATABASE}
@@ -35,7 +36,6 @@ services:
       - DJANGO_SECRET=${DJANGO_SECRET}
       - BROKER_HOST=${BROKER_HOST}
       - BROKER_PORT=${BROKER_PORT}
-    image: "volweb-test-backend:1.0"
     command: daphne -b 0.0.0.0 -p 8000 backend.asgi:application
     ports:
       - "8000:8000"
@@ -48,6 +48,7 @@ services:
       - media:/home/app/web/media
 
   volweb-workers:
+    image: "forensicxlab/volweb-backend:3.0.0"
     container_name: volweb-workers
     environment:
       - DATABASE=${DATABASE}
@@ -60,7 +61,6 @@ services:
       - DJANGO_SECRET=${DJANGO_SECRET}
       - BROKER_HOST=${BROKER_HOST}
       - BROKER_PORT=${BROKER_PORT}
-    image: "volweb-test-backend:1.0"
     command: celery -A backend worker --loglevel=INFO
     depends_on:
       - volweb-redis
@@ -73,8 +73,8 @@ services:
       replicas: 1
 
   volweb-frontend:
+    image: "forensicxlab/volweb-frontend:3.0.0"
     container_name: volweb-frontend
-    image: "volweb-test-front:1.0"
     ports:
       - "3000:3000"
     depends_on:
