@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class Case(models.Model):
     id = models.AutoField(primary_key=True)
-    bucket_id = models.UUIDField()
+    bucket_id = models.CharField(max_length=255)
     name = models.CharField(max_length=500)
     description = models.TextField()
     linked_users = models.ManyToManyField(User)

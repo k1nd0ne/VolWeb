@@ -1,6 +1,6 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent } from "@mui/material";
 
 interface DonutChartProps {
   totalWindows: number;
@@ -13,71 +13,40 @@ const DonutChart: React.FC<DonutChartProps> = ({
   totalLinux,
   theme,
 }) => {
-  const options = {
+  const state = {
     series: [totalWindows, totalLinux],
-    labels: ["Windows", "Linux"],
-    chart: {
-      width: 380,
-      type: "donut",
-      background: "transparent",
-      foreColor: theme !== "dark" ? "#121212" : "#fff",
-    },
-    plotOptions: {
-      pie: {
-        startAngle: -90,
-        endAngle: 270,
+    options: {
+      chart: {
+        width: 380,
+        background: "transparent",
+        foreColor: theme !== "dark" ? "#121212" : "#fff",
       },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    fill: {
-      type: "gradient",
-      gradient: {
-        gradientToColors: ["#790909", "#670979"],
+      labels: ["Windows", "Linux"],
+      dataLabels: {
+        enabled: true,
       },
-      colors: ["#790909", "#670979"],
-    },
-    legend: {
-      formatter: function (val: string, opts: any) {
-        return `${val} - ${opts.w.globals.series[opts.seriesIndex]}`;
+      fill: {
+        type: "gradient",
+        gradient: {
+          gradientToColors: ["#790909", "#670979"],
+        },
+        colors: ["#790909", "#670979"],
       },
-      labels: {
-        colors: theme !== "dark" ? "#101418" : "#fff",
-      },
-      markers: {
-        fillColors: ["#790909", "#670979"],
-      },
-    },
-    title: {
-      text: "Operating System Repartition",
-      style: {
-        color: theme !== "dark" ? "#101418" : "#fff",
-      },
-    },
-    responsive: [
-      {
-        breakpoint: 480,
-        options: {
-          chart: {
-            width: 200,
-          },
-          legend: {
-            position: "bottom",
-          },
+      title: {
+        text: "Operating System Repartition",
+        style: {
+          color: theme !== "dark" ? "#101418" : "#fff",
         },
       },
-    ],
+    },
   };
-
-  const series = [totalWindows, totalLinux];
 
   return (
     <Card variant="outlined">
       <CardContent>
         <ReactApexChart
-          options={options}
-          series={series}
+          options={state.options}
+          series={state.series}
           type="donut"
           width={380}
         />

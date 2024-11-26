@@ -47,6 +47,21 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
   const [selectedEvidence, setSelectedEvidence] = useState<Case | null>(null);
   const [evidenceLoading, setEvidencesLoading] = useState<boolean>(false);
 
+  const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
+
+  const createFileChunks = (file: File) => {
+    const chunks = [];
+    let currentPointer = 0;
+
+    while (currentPointer < file.size) {
+      const chunk = file.slice(currentPointer, currentPointer + CHUNK_SIZE);
+      chunks.push(chunk);
+      currentPointer += CHUNK_SIZE;
+    }
+
+    return chunks;
+  };
+
   useEffect(() => {
     if (open) {
       if (caseId) {
@@ -84,32 +99,86 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
     const uploadCaseId = caseId || selectedEvidence?.id;
 
     try {
-      const response = await axiosInstance.get<{ url: string }>(
-        `/api/cases/${uploadCaseId}/generate-presigned-url/`,
+      // Step 1: Initiate Multipart Upload
+      const initiateResponse = await axiosInstance.post(
+        `/api/cases/${uploadCaseId}/initiate-multipart-upload/`,
         {
-          params: {
-            filename: file.name,
-          },
+          filename: file.name,
         },
       );
-      const { url } = response.data;
+      const uploadId = initiateResponse.data.upload_id;
 
-      const uploadResponse = await axios.put(url, file, {
-        headers: {
-          "Content-Type": file.type,
+      // Step 2: Split File into Chunks
+      const chunks = createFileChunks(file);
+      //const totalChunks = chunks.length;
+
+      // Store ETags of uploaded parts
+      const parts: { ETag: string; PartNumber: number }[] = [];
+
+      let uploadedSize = 0;
+
+      for (let index = 0; index < chunks.length; index++) {
+        const chunk = chunks[index];
+        const partNumber = index + 1;
+
+        // Step 3: Get Presigned URL for Each Part
+        const presignedUrlResponse = await axiosInstance.get(
+          `/api/cases/${uploadCaseId}/generate-presigned-url-for-part/`,
+          {
+            params: {
+              filename: file.name,
+              upload_id: uploadId,
+              part_number: partNumber,
+            },
+          },
+        );
+        const presignedUrl = presignedUrlResponse.data.url;
+
+        // Step 4: Upload Each Chunk
+        const uploadResponse = await axios.put(presignedUrl, chunk, {
+          headers: {
+            "Content-Type": "application/octet-stream",
+          },
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              uploadedSize += progressEvent.loaded;
+              const percentage = Math.round((uploadedSize / file.size) * 100);
+              setUploadProgress(percentage);
+            }
+          },
+        });
+
+        // Extract ETag from headers
+        let etag = uploadResponse.headers.etag;
+        if (!etag) {
+          // Try to get ETag from the response data (if any)
+          console.error("ETag not found in response headers.");
+          setError("ETag not found in response headers.");
+          setUploading(false);
+          return;
+        }
+
+        // Remove quotes from ETag if present
+        etag = etag.replace(/"/g, "");
+
+        // Store the ETag and PartNumber
+        parts.push({ ETag: etag, PartNumber: partNumber });
+      }
+
+      // Step 5: Comple Multipart Upload
+      const completeResponse = await axiosInstance.post(
+        `/api/cases/${uploadCaseId}/complete-multipart-upload/`,
+        {
+          filename: file.name,
+          upload_id: uploadId,
+          parts: parts,
         },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const percentage = Math.round(
-              (progressEvent.loaded / progressEvent.total) * 100,
-            );
-            setUploadProgress(percentage);
-          }
-        },
-      });
+      );
 
-      const etag = uploadResponse.headers["etag"];
+      // For example, log the response status
+      console.log("Upload completed:", completeResponse.status);
 
+      // Step 6: Create Evidence Record
       try {
         const newEvidenceResp = await axiosInstance.post<Evidence>(
           "/api/evidences/",
@@ -117,7 +186,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
             name: file.name,
             os,
             linked_case: uploadCaseId,
-            etag,
+            etag: parts.map((p) => p.ETag).join(";"),
           },
         );
         onCreateSuccess(newEvidenceResp.data);
@@ -128,7 +197,6 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
       }
 
       setUploading(false);
-      onClose();
       setOs("");
       setFile(null);
       setUploadProgress(null);

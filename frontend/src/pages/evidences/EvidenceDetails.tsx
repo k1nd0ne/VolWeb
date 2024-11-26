@@ -87,7 +87,7 @@ const EvidenceDetail: React.FC = () => {
               color: "inherit",
             },
           }}
-          style={{ height: "0px" }}
+          style={{ height: "60px" }}
         >
           <Tab
             label="Overview"

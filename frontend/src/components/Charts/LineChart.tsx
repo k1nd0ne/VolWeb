@@ -9,89 +9,54 @@ interface LineChartProps {
 }
 
 const LineChart: React.FC<LineChartProps> = ({ dates, counts, theme }) => {
-  const options = {
-    theme: {
-      mode: theme,
-      palette: "palette1",
-      monochrome: {
-        enabled: true,
-        color: "#9a0000",
-        shadeTo: "light",
-        shadeIntensity: 0.65,
-      },
-    },
+  const state = {
     series: [
       {
         name: "Analysis Started",
         data: counts,
       },
     ],
-    chart: {
-      type: "area",
-      height: 350,
-      zoom: {
-        enabled: false,
-      },
-      background: "transparent",
-      foreColor: theme !== "dark" ? "#101418" : "#fff",
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      curve: "smooth",
-    },
-    title: {
-      text: "Analysis",
-      align: "left",
-      style: {
-        color: theme !== "dark" ? "#101418" : "#fff",
-      },
-    },
-    subtitle: {
-      text: "Started analysis in time",
-      align: "left",
-      style: {
-        color: theme !== "dark" ? "#101418" : "#fff",
-      },
-    },
-    labels: dates,
-    yaxis: {
-      opposite: true,
-      labels: {
-        style: {
-          colors: theme !== "dark" ? "#101418" : "#fff",
+    options: {
+      theme: {
+        mode: "dark" as const,
+        palette: "palette1",
+        monochrome: {
+          enabled: true,
+          color: "#9a0000",
+          shadeTo: "light" as const,
+          shadeIntensity: 0.65,
         },
       },
-    },
-    xaxis: {
-      labels: {
-        style: {
-          colors: theme !== "dark" ? "#101418" : "#fff",
+      labels: dates,
+
+      dataLabels: { enabled: false },
+      chart: {
+        background: "#121212",
+        stacked: false,
+        zoom: {
+          enabled: true,
+          autoScaleYaxis: true,
         },
-      },
-    },
-    legend: {
-      horizontalAlign: "left",
-      labels: {
-        colors: theme !== "dark" ? "#101418" : "#fff",
+        stroke: {
+          curve: "smooth",
+        },
+        yaxis: {
+          opposite: true,
+          labels: {
+            style: {
+              colors: theme !== "dark" ? "#101418" : "#fff",
+            },
+          },
+        },
       },
     },
   };
-
-  const series = [
-    {
-      name: "Analysis Started",
-      data: counts,
-    },
-  ];
-
   return (
     <Card variant="outlined">
       <CardContent>
         <ReactApexChart
-          options={options}
-          series={series}
+          options={state.options}
+          series={state.series}
           type="area"
           height={228}
         />

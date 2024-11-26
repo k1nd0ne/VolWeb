@@ -272,21 +272,25 @@ function EvidenceList({ caseId }: EvidenceListProps) {
       renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
           <Tooltip title="Investigate" placement="left">
-            <IconButton
-              edge="end"
-              aria-label="open"
-              onClick={() => handleToggle(params.row.id)}
-              disabled={params.row.status !== 100}
-            >
-              <Biotech />
-            </IconButton>
+            {params.row.status !== 100 ? (
+              <IconButton edge="end" disabled={params.row.status !== 100}>
+                <Biotech />
+              </IconButton>
+            ) : (
+              <IconButton
+                edge="end"
+                aria-label="open"
+                onClick={() => handleToggle(params.row.id)}
+              >
+                <Biotech />
+              </IconButton>
+            )}
           </Tooltip>
           <Tooltip title="Delete" placement="right">
             <IconButton
               edge="end"
               aria-label="delete"
               onClick={() => handleDeleteClick(params.row)}
-              disabled={params.row.status !== 100}
             >
               <DeleteSweep />
             </IconButton>

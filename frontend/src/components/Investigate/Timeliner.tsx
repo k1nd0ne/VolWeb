@@ -234,76 +234,54 @@ const Timeliner: React.FC = () => {
     }
   };
 
-  // Chart options
-  const options = useMemo(
+  const state = useMemo(
     () => ({
-      theme: {
-        mode: "dark" as const,
-        palette: "palette1",
-        monochrome: {
-          enabled: true,
-          color: "#9a0000",
-          shadeTo: "light" as const,
-          shadeIntensity: 0.65,
-        },
-      },
       series: [{ data: seriesData }],
-      chart: {
-        background: "#121212",
-        type: "area" as const,
-        stacked: false,
-        zoom: {
-          type: "x" as const,
-          enabled: true,
-          autoScaleYaxis: true,
-        },
-        events: {
-          markerClick: function (
-            _event: MouseEvent,
-            chartContext: ChartContext,
-            {
-              seriesIndex,
-              dataPointIndex,
-            }: { seriesIndex: number; dataPointIndex: number },
-          ) {
-            const timestamp =
-              chartContext.w.config.series[seriesIndex].data[dataPointIndex].x;
-            fetchArtefacts([timestamp, timestamp]);
-          },
-          zoomed: function (
-            chartContext: ChartContext,
-            { xaxis }: { xaxis: { min: number; max: number } },
-          ) {
-            const timestamp_min =
-              chartContext.w.config.series[0].data[xaxis.min - 1].x;
-            const timestamp_max =
-              chartContext.w.config.series[0].data[xaxis.max - 1].x;
-            fetchArtefacts([timestamp_min, timestamp_max]);
+      options: {
+        theme: {
+          mode: "dark" as const,
+          palette: "palette1",
+          monochrome: {
+            enabled: true,
+            color: "#9a0000",
+            shadeTo: "light" as const,
+            shadeIntensity: 0.65,
           },
         },
-      },
-      dataLabels: { enabled: false },
-      markers: { size: 0 },
-      title: { text: "Timeline of events", align: "left" as const },
-      fill: {
-        type: "gradient",
-        gradient: {
-          shadeIntensity: 1,
-          inverseColors: false,
-          opacityFrom: 0.5,
-          opacityTo: 0,
-          stops: [0, 70, 80, 100],
+        dataLabels: { enabled: false },
+        chart: {
+          background: "#121212",
+          stacked: false,
+          zoom: {
+            enabled: true,
+            autoScaleYaxis: true,
+          },
+          events: {
+            markerClick: function (
+              _event: MouseEvent,
+              chartContext: ChartContext,
+              {
+                seriesIndex,
+                dataPointIndex,
+              }: { seriesIndex: number; dataPointIndex: number },
+            ) {
+              const timestamp =
+                chartContext.w.config.series[seriesIndex].data[dataPointIndex]
+                  .x;
+              fetchArtefacts([timestamp, timestamp]);
+            },
+            zoomed: function (
+              chartContext: ChartContext,
+              { xaxis }: { xaxis: { min: number; max: number } },
+            ) {
+              const timestamp_min =
+                chartContext.w.config.series[0].data[xaxis.min - 1].x;
+              const timestamp_max =
+                chartContext.w.config.series[0].data[xaxis.max - 1].x;
+              fetchArtefacts([timestamp_min, timestamp_max]);
+            },
+          },
         },
-      },
-      yaxis: {
-        tickAmount: 4,
-        labels: { formatter: (val: number) => val.toFixed(0) },
-        title: { text: "Event Count" },
-      },
-      xaxis: {},
-      tooltip: {
-        shared: false,
-        y: { formatter: (val: number) => val.toFixed(0) },
       },
     }),
     [seriesData, fetchArtefacts],
@@ -336,8 +314,8 @@ const Timeliner: React.FC = () => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Chart
-        options={options}
-        series={options.series}
+        options={state.options}
+        series={state.series}
         type="area"
         height={300}
       />

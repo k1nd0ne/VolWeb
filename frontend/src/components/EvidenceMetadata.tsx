@@ -48,6 +48,10 @@ const EvidenceMetadata: React.FC<EvidenceMetadataProps> = ({
   const gradientToColors = ["#790909", "#670979", "#097979", "#097907"];
 
   const radarOptions: ApexOptions = {
+    theme: {
+      mode: "dark" as const,
+      palette: "palette1",
+    },
     chart: {
       type: "radar",
       background: "transparent",
@@ -55,18 +59,6 @@ const EvidenceMetadata: React.FC<EvidenceMetadataProps> = ({
     },
     xaxis: {
       categories: categories,
-      labels: {
-        style: {
-          colors: theme !== "dark" ? "#121212" : "#fff",
-        },
-      },
-    },
-    yaxis: {
-      labels: {
-        style: {
-          colors: theme !== "dark" ? "#121212" : "#fff",
-        },
-      },
     },
     title: {
       text: "Results by Category",
@@ -82,7 +74,7 @@ const EvidenceMetadata: React.FC<EvidenceMetadataProps> = ({
       colors: colors,
     },
     markers: {
-      size: 4,
+      size: 6,
       colors: colors,
     },
     legend: {
