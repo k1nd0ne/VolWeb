@@ -86,7 +86,7 @@ const DumpMapsButton: React.FC<DumpMapsButtonProps> = ({
         disabled={loading}
         startIcon={loading ? <CircularProgress size={20} /> : <Settings />}
       >
-        {loading ? "Dumping..." : "Dump Maps"}
+        {loading ? "Dumping..." : "Show Maps"}
       </Button>
 
       {/* Dialog to display the procmaps data */}

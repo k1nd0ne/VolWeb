@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   volweb-redis:
     container_name: volweb-redis
@@ -16,8 +15,8 @@ services:
     volumes:
       - minio-storage-dev:/data
     environment:
-      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
-      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
+      - MINIO_ROOT_USER=user
+      - MINIO_ROOT_PASSWORD=password
     command: server --console-address ":9001" /data
 volumes:
   minio-storage-dev:

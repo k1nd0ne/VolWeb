@@ -12,7 +12,7 @@ attrs==24.2.0
 autobahn==24.4.2
 Automat==24.8.1
 billiard==4.2.1
-psycopg2==2.9.9
+psycopg2-binary
 boto3==1.35.16
 botocore==1.35.16
 cachetools==5.5.0

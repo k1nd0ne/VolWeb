@@ -2,6 +2,7 @@ from evidences.models import Evidence
 from .models import VolatilityPlugin, EnrichedProcess
 import logging
 import volatility3
+import os
 from volatility3.cli import MuteProgress
 from volatility3.framework.exceptions import UnsatisfiedException
 from .utils import (
@@ -170,6 +171,7 @@ class VolatilityEngine:
         try:
             logger.info("Starting extraction")
             self.evidence.status = 0  # Make sure we start at 0%
+            os.makedirs("media/{self.evidence.id}", exist_ok=True)
             if self.evidence.os == "windows":
                 self.start_windows_analysis()
                 self.construct_windows_explorer()
