@@ -51,6 +51,7 @@ const LineChart: React.FC<LineChartProps> = ({ dates, counts, theme }) => {
       },
     },
   };
+
   return (
     <Card variant="outlined">
       <CardContent>

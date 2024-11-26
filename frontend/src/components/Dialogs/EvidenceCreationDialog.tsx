@@ -186,7 +186,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
             name: file.name,
             os,
             linked_case: uploadCaseId,
-            etag: parts.map((p) => p.ETag).join(";"),
+            etag: parts[parts.length - 1].ETag,
           },
         );
         onCreateSuccess(newEvidenceResp.data);
