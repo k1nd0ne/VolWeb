@@ -1,12 +1,11 @@
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from .models import Evidence
-from .serializers import EvidenceSerializer, BindEvidenceSerializer
+from .serializers import EvidenceSerializer
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework import status
-from evidences.models import Evidence
 from volatility_engine.models import VolatilityPlugin
 from collections import Counter
 from urllib.parse import urlparse

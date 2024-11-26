@@ -1,15 +1,11 @@
 from evidences.models import Evidence
 from .models import VolatilityPlugin, EnrichedProcess
-from celery import shared_task
-import logging, os, json
+import logging
 import volatility3
 from volatility3.cli import MuteProgress
-from volatility3.framework import contexts, automagic, constants
 from volatility3.framework.exceptions import UnsatisfiedException
 from .utils import (
-    DictRenderer,
     file_handler,
-    volweb_open,
     DjangoRenderer,
     build_timeline,
     fix_permissions,
@@ -17,11 +13,12 @@ from .utils import (
 from volatility3.plugins.linux.pslist import PsList
 from volatility3.plugins.linux.proc import Maps
 from volatility3.framework.plugins import construct_plugin
+from volatility3.plugins.windows.dumpfiles import DumpFiles
 from .plugins.windows.volweb_main import VolWebMain as VolWebMainW
 from .plugins.windows.volweb_misc import VolWebMisc as VolWebMiscW
 from .plugins.linux.volweb_main import VolWebMain as VolWebMainL
 from .plugins.linux.volweb_misc import VolWebMisc as VolWebMiscL
-from volatility3.plugins.windows.dumpfiles import DumpFiles
+from volatility3.framework import contexts, automagic
 
 volatility3.framework.require_interface_version(2, 0, 0)
 logger = logging.getLogger(__name__)
@@ -167,6 +164,7 @@ class VolatilityEngine:
                 display="False",
                 results=True,
             )
+        return result
 
     def start_extraction(self):
         try:
@@ -181,6 +179,10 @@ class VolatilityEngine:
             self.evidence.status = -1
             self.evidence.save()
             logger.warning(f"Unsatisfied requirements: {str(e)}")
+        except:
+            self.evidence.status = -1
+            self.evidence.save()
+            logger.warning(f"Unknown error, should not happen: {str(e)}")
 
     def dump_process(self, pid):
         logger.info(f"Trying to dump PID {pid}")
@@ -211,6 +213,7 @@ class VolatilityEngine:
         self.context.config["plugins.PsList.dump"] = True
         builted_plugin = self.construct_plugin()
         result = self.run_plugin(builted_plugin)
+        fix_permissions(f"media/{self.evidence.id}")
         return result
 
     def dump_process_maps(self, pid):
@@ -242,6 +245,7 @@ class VolatilityEngine:
         self.context.config["plugins.Maps.dump"] = True
         builted_plugin = self.construct_plugin()
         result = self.run_plugin(builted_plugin)
+        fix_permissions(f"media/{self.evidence.id}")
         return result
 
     def compute_handles(self, pid):
@@ -274,6 +278,7 @@ class VolatilityEngine:
         builted_plugin = self.construct_plugin()
         try:
             result = self.run_plugin(builted_plugin)
+            fix_permissions(f"media/{self.evidence.id}")
             if not result:
                 del self.context.config["plugins.DumpFiles.virtaddr"]
                 self.context.config["plugins.DumpFiles.physaddr"] = int(offset)

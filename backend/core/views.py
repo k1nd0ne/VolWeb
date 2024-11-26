@@ -1,8 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 from stix2.exceptions import InvalidValueError
@@ -11,13 +9,12 @@ from core.serializers import UserSerializer, TypeSerializer
 from core.models import TYPES, Indicator
 from cases.models import Case
 from cases.serializers import CaseSerializer
-from evidences.serializers import EvidenceSerializer
 from evidences.models import Evidence
 from symbols.models import Symbol
 from symbols.serializers import SymbolSerializer
 from core.serializers import IndicatorSerializer, TasksSerializer
 from django_celery_results.models import TaskResult
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from rest_framework import status
 from core.stix import export_bundle, create_indicator
 
@@ -31,7 +28,7 @@ class LogoutView(APIView):
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response(status=204)
-        except Exception as e:
+        except Exception:
             return Response(status=400)
 
 
@@ -76,7 +73,6 @@ class IndicatorApiView(APIView):
 
 class IndicatorEvidenceApiView(APIView):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, evidence_id, *args, **kwargs):
         """
@@ -88,8 +84,7 @@ class IndicatorEvidenceApiView(APIView):
 
 
 class IndicatorCaseApiView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, case_id, *args, **kwargs):
         """
@@ -102,7 +97,6 @@ class IndicatorCaseApiView(APIView):
 
 class IndicatorExportApiView(APIView):
     permission_classes = [IsAuthenticated]
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, case_id, *args, **kwargs):
         """
@@ -123,7 +117,6 @@ class IndicatorTypeListAPIView(APIView):
     """
 
     permission_classes = [IsAuthenticated]
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
 
     def get(self, request, format=None):
         types = [{"value": type_[0], "display": type_[1]} for type_ in TYPES]

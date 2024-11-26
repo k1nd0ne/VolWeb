@@ -131,7 +131,7 @@ const Timeliner: React.FC = () => {
 
       setProcessing(isTimelinerTaskRunning);
     } catch (error) {
-      display_message("error", `Error fetching tasks: ${error}`);
+      //display_message("error", `Error fetching tasks: ${error}`);
       console.error("Error fetching tasks", error);
     }
   }, [id, display_message]);
@@ -189,8 +189,16 @@ const Timeliner: React.FC = () => {
       const message = data.message;
       if (message.name === "timeliner") {
         if (message.status === "finished") {
-          setProcessing(false);
-          fetchTimelinerGraph();
+          if (message.result !== "false") {
+            setProcessing(false);
+            fetchTimelinerGraph();
+          } else {
+            setProcessing(false);
+            display_message(
+              "warning",
+              "The timeliner plugin did not return any results.",
+            );
+          }
         }
       }
     };

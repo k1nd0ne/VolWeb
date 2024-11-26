@@ -27,18 +27,31 @@ def start_timeliner(evidence_id):
     instance = Evidence.objects.get(id=evidence_id)
     channel_layer = get_channel_layer()
     engine = VolatilityEngine(instance)
-    engine.start_timeliner()
-    async_to_sync(channel_layer.group_send)(
-        f"volatility_tasks_{evidence_id}",
-        {
-            "type": "send_notification",
-            "message": {
-                "name": "timeliner",
-                "status": "finished",
-                "msg": "",
+    result = engine.start_timeliner()
+    if result:
+        async_to_sync(channel_layer.group_send)(
+            f"volatility_tasks_{evidence_id}",
+            {
+                "type": "send_notification",
+                "message": {
+                    "name": "timeliner",
+                    "status": "finished",
+                    "result": "true",
+                },
             },
-        },
-    )
+        )
+    else:
+        async_to_sync(channel_layer.group_send)(
+            f"volatility_tasks_{evidence_id}",
+            {
+                "type": "send_notification",
+                "message": {
+                    "name": "timeliner",
+                    "status": "finished",
+                    "result": "false",
+                },
+            },
+        )
 
 
 @shared_task

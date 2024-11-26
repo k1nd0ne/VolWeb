@@ -48,7 +48,7 @@ const App: React.FC = () => {
               </PrivateRoute>
             }
           >
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="" element={<Dashboard />} />
             <Route path="cases" element={<Cases />} />
             <Route path="evidences" element={<Evidences />} />
             <Route path="symbols" element={<Symbols />} />

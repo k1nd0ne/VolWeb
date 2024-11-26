@@ -79,7 +79,7 @@ export default function Login() {
         localStorage.setItem("access_token", result.access);
         localStorage.setItem("refresh_token", result.refresh);
         localStorage.setItem("username", data.get("username") as string);
-        navigate("/dashboard");
+        navigate("/");
       } else {
         const responseData = await response.json();
         setUsernameError(true);

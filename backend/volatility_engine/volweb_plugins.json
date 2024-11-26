@@ -55,12 +55,6 @@
         "category": "Registry",
         "display": "True"
       },
-      "volatility3.plugins.windows.ssdt.SSDT": {
-        "icon": "TableChart",
-        "description": "Show the System Service Descriptor Table",
-        "category": "Kernel",
-        "display": "True"
-      },
       "volatility3.plugins.windows.info.Info": {
         "icon": "Info",
         "description": "Show OS & kernel details of the memory sample being analyzed.",

@@ -22,36 +22,17 @@ services:
     ports:
       - "6379:6379"
 
-  volweb-minio:
-    container_name: volweb-minio
-    image: minio/minio
-    restart: always
-    volumes:
-      - minio_storage:/data
-    environment:
-      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
-      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
-    command: server --console-address ":9001" /data
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-
   volweb-backend:
     container_name: volweb-backend
     environment:
       - DATABASE=${DATABASE}
       - DATABASE_HOST=${DATABASE_HOST}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
       - DATABASE_PORT=${DATABASE_PORT}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
       - DJANGO_SECRET=${DJANGO_SECRET}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
-      - AWS_ENDPOINT_HOST=${AWS_ENDPOINT_HOST}
-      - AWS_REGION=${AWS_REGION}
-      - WEBSOCKET_URL=${WEBSOCKET_URL}
       - BROKER_HOST=${BROKER_HOST}
       - BROKER_PORT=${BROKER_PORT}
     image: "volweb-test-backend:1.0"
@@ -61,7 +42,6 @@ services:
     depends_on:
       - volweb-postgresdb
       - volweb-redis
-      - volweb-minio
     restart: always
     volumes:
       - staticfiles:/home/app/web/staticfiles
@@ -72,17 +52,12 @@ services:
     environment:
       - DATABASE=${DATABASE}
       - DATABASE_HOST=${DATABASE_HOST}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
       - DATABASE_PORT=${DATABASE_PORT}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
       - DJANGO_SECRET=${DJANGO_SECRET}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
-      - AWS_ENDPOINT_HOST=${AWS_ENDPOINT_HOST}
-      - AWS_REGION=${AWS_REGION}
-      - WEBSOCKET_URL=${WEBSOCKET_URL}
       - BROKER_HOST=${BROKER_HOST}
       - BROKER_PORT=${BROKER_PORT}
     image: "volweb-test-backend:1.0"
@@ -90,7 +65,6 @@ services:
     depends_on:
       - volweb-redis
       - volweb-postgresdb
-      - volweb-minio
     restart: always
     volumes:
       - media:/home/app/web/media
@@ -111,7 +85,6 @@ services:
       - media:/home/app/web/media
 
 volumes:
-  minio_storage:
   postgres-data:
   redis-data:
   staticfiles:

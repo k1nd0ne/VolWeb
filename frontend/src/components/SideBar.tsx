@@ -109,39 +109,33 @@ export default function MiniDrawer() {
           {/* Box to contain navigation links, allowed to grow */}
           <Box flexGrow={1}>
             <List>
-              {["Dashboard", "Cases", "Evidences", "Symbols"].map(
-                (text, index) => (
-                  <ListItem
-                    key={index}
-                    disablePadding
-                    sx={{ display: "block" }}
+              {["", "Cases", "Evidences", "Symbols"].map((text, index) => (
+                <ListItem key={index} disablePadding sx={{ display: "block" }}>
+                  <ListItemButton
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? "initial" : "center",
+                      px: 2.5,
+                    }}
+                    component={Link}
+                    to={`/${text.toLowerCase().replace(" ", "")}`}
                   >
-                    <ListItemButton
+                    <ListItemIcon
                       sx={{
-                        minHeight: 48,
-                        justifyContent: open ? "initial" : "center",
-                        px: 2.5,
+                        minWidth: 0,
+                        mr: open ? 3 : "auto",
+                        justifyContent: "center",
                       }}
-                      component={Link}
-                      to={`/${text.toLowerCase().replace(" ", "")}`}
                     >
-                      <ListItemIcon
-                        sx={{
-                          minWidth: 0,
-                          mr: open ? 3 : "auto",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {renderIcon(index)}
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={text}
-                        sx={{ opacity: open ? 1 : 0 }}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                ),
-              )}
+                      {renderIcon(index)}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={text}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
             </List>
           </Box>
 

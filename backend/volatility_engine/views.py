@@ -63,6 +63,8 @@ class EnrichedProcessView(APIView):
 
 
 class TimelinerArtefactsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, evidence_id, plugin_name):
         try:
             evidence = Evidence.objects.get(id=evidence_id)
@@ -82,6 +84,8 @@ class TimelinerArtefactsView(APIView):
 
 
 class PluginArtefactsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, evidence_id, plugin_name):
         try:
             evidence = Evidence.objects.get(id=evidence_id)
@@ -129,6 +133,8 @@ class PluginArtefactsView(APIView):
 
 
 class TimelinerTask(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         try:
             evidence_id = request.data.get("id")
@@ -142,6 +148,8 @@ class TimelinerTask(APIView):
 
 
 class HandlesTask(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         try:
             evidence_id = request.data.get("evidenceId")
@@ -156,6 +164,8 @@ class HandlesTask(APIView):
 
 
 class ProcessDumpPslistTask(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         try:
             evidence_id = request.data.get("evidenceId")
@@ -170,6 +180,8 @@ class ProcessDumpPslistTask(APIView):
 
 
 class ProcessDumpMapsTask(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         try:
             evidence_id = request.data.get("evidenceId")
@@ -184,6 +196,8 @@ class ProcessDumpMapsTask(APIView):
 
 
 class FileDumpTask(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         try:
             evidence_id = request.data.get("evidenceId")
@@ -210,7 +224,8 @@ class TasksApiView(APIView):
                 filtered_tasks = [
                     task
                     for task in tasks
-                    if ast.literal_eval(ast.literal_eval(task.task_args))[0] == evidence_id
+                    if ast.literal_eval(ast.literal_eval(task.task_args))[0]
+                    == evidence_id
                 ]
                 serializer = TasksSerializer(filtered_tasks, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)

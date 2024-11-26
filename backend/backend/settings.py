@@ -25,8 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("DJANGO_SECRET", "DEV_SECRET")
 
-CSRF_TRUSTED_ORIGINS= ["http://localhost:5173"]
-
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(" ")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if SECRET_KEY == "DEV_SECRET":

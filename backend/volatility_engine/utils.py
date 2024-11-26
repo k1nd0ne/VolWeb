@@ -2,7 +2,7 @@ from inspect import _empty
 from volatility_engine.models import VolatilityPlugin
 import datetime, hashlib, io, tempfile, os, stat, logging, volatility3, urllib.parse, s3fs, json
 from typing import Dict, Any, List, Tuple
-from volatility3.framework import interfaces
+from volatility3.framework import interfaces, constants
 from volatility3.framework.interfaces.context import ModuleInterface
 from volatility3.framework.interfaces.layers import (
     DataLayerInterface,
@@ -20,10 +20,8 @@ from volatility3.cli.text_renderer import (
 from volatility3.framework.renderers import format_hints
 from backend.keyconfig import Secrets
 from evidences.models import Evidence
-from volatility3.framework import automagic, constants, exceptions
 from volatility3.cli import MuteProgress
 from volatility3.framework.layers.cloudstorage import S3FileSystemHandler
-from volatility3.plugins.windows import modules, ssdt
 from typing import Optional
 
 logging.basicConfig(level=logging.INFO)
@@ -171,6 +169,7 @@ def build_timeline(data):
                 nb_event += 1
         except:
             raise GraphException("Could not generate timeline graph")
+    print(timeline)
     return timeline
 
 

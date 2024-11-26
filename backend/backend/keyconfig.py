@@ -14,11 +14,3 @@ class Secrets:
     BROKER_HOST = os.getenv("BROKER_HOST", "127.0.0.1")
     BROKER_PORT = os.getenv("BROKER_PORT", "6379")
     WEBSOCKET_URL = os.getenv("WEBSOCKET_URL", None)
-
-
-class CloudStorage:
-    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", None)
-    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", None)
-    AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL", None)
-    AWS_ENDPOINT_HOST = os.getenv("AWS_ENDPOINT_HOST", None)
-    AWS_REGION = os.getenv("AWS_REGION", None)

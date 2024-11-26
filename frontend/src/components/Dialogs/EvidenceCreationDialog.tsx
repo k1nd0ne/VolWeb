@@ -46,7 +46,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
   const [selectedEvidence, setSelectedEvidence] = useState<Case | null>(null);
   const [evidenceLoading, setEvidencesLoading] = useState<boolean>(false);
 
-  const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
+  const CHUNK_SIZE = 100 * 1024 * 1024; // 100MB
 
   const createFileChunks = (file: File) => {
     const chunks = [];
@@ -98,7 +98,6 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
     const uploadCaseId = caseId || selectedEvidence?.id;
 
     try {
-      // Step 1: Initiate Upload
       const initiateResponse = await axiosInstance.post(
         `/api/cases/upload/initiate/`,
         {
@@ -109,12 +108,10 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
       );
       const uploadId = initiateResponse.data.upload_id;
 
-      // Step 2: Split File into Chunks
       const chunks = createFileChunks(file);
 
       let uploadedSize = 0;
 
-      // Step 3: Upload Each Chunk
       for (let index = 0; index < chunks.length; index++) {
         const chunk = chunks[index];
         const partNumber = index + 1;
@@ -132,10 +129,18 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
         setUploadProgress(percentage);
       }
 
-      // Step 4: Complete Upload
-      await axiosInstance.post(`/api/cases/upload/complete/`, {
-        upload_id: uploadId,
-      });
+      try {
+        const completeUploadResponse = await axiosInstance.post(
+          `/api/cases/upload/complete/`,
+          {
+            upload_id: uploadId,
+          },
+        );
+        onCreateSuccess(completeUploadResponse.data);
+      } catch (error) {
+        console.error("Complete upload failed:", error);
+        onCreateFailed(error);
+      }
       onClose();
       setUploading(false);
       setOs("");
@@ -150,7 +155,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
-      <DialogTitle>Upload New Evidence</DialogTitle>
+      <DialogTitle>Upload a new evidence</DialogTitle>
       <DialogContent>
         {evidenceLoading ? (
           <div style={{ textAlign: "center", marginTop: "20px" }}>
@@ -169,7 +174,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Select Case"
+                    label="Linked Case"
                     margin="dense"
                     fullWidth
                     required
@@ -178,7 +183,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
               />
             )}
             <FormControl fullWidth margin="dense">
-              <InputLabel id="os-select-label">Operating System</InputLabel>
+              <InputLabel id="os-select-label">Source OS</InputLabel>
               <Select
                 labelId="os-select-label"
                 label="Operating System"
@@ -193,9 +198,10 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
               </Select>
             </FormControl>
             <Button
-              variant="contained"
+              variant="outlined"
               component="label"
               style={{ marginTop: 16 }}
+              color="secondary"
             >
               Select File
               <input
@@ -231,7 +237,8 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
         </Button>
         <Button
           onClick={handleUpload}
-          variant="contained"
+          variant="outlined"
+          color="error"
           disabled={
             uploading || (!selectedEvidence && !caseId) || evidenceLoading
           }
