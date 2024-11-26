@@ -132,7 +132,9 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
             },
           },
         );
-        const presignedUrl = presignedUrlResponse.data.url;
+        const originalUrl = new URL(presignedUrlResponse.data.url);
+        const presignedUrl = `/minio${originalUrl.pathname}${originalUrl.search}`;
+        console.log(`${presignedUrl}`);
 
         // Step 4: Upload Each Chunk
         const uploadResponse = await axios.put(presignedUrl, chunk, {

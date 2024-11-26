@@ -69,29 +69,20 @@ class GeneratePresignedUrlView(APIView):
         filename = request.query_params.get("filename")
         case = get_object_or_404(Case, id=case_id)
 
-        # Initialize MinIO client with the actual endpoint
         client = Minio(
-            endpoint=CloudStorage.AWS_ENDPOINT_HOST,  # Should be 'volweb-minio:9000'
+            endpoint=CloudStorage.AWS_ENDPOINT_HOST,
             access_key=CloudStorage.AWS_ACCESS_KEY_ID,
             secret_key=CloudStorage.AWS_SECRET_ACCESS_KEY,
             secure=False,
         )
 
-        # Generate the presigned URL
         url = client.presigned_put_object(
             bucket_name=str(case.bucket_id),
             object_name=filename,
             expires=timedelta(hours=1),
         )
 
-        # Parse the URL and replace the host
-        parsed_url = urlparse(url)
-        new_netloc = 'localhost:3000'  # The desired host and port
-
-        # Reconstruct the URL with the new host
-        adjusted_url = urlunparse(parsed_url._replace(netloc=new_netloc))
-
-        return Response({"url": adjusted_url})
+        return Response({"url": url})
 
 
 class CompleteMultipartUploadView(APIView):
