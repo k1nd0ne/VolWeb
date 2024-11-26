@@ -201,14 +201,6 @@ function CaseList() {
       flex: 2,
     },
     {
-      field: "bucket_id",
-      headerName: "Bucket",
-      renderCell: (params: GridRenderCellParams) => (
-        <Chip label={params.value} color="error" variant="outlined" />
-      ),
-      flex: 1,
-    },
-    {
       field: "last_update",
       headerName: "Last Update",
       renderCell: (params: GridRenderCellParams) => (

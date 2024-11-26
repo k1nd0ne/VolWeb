@@ -450,7 +450,7 @@ def file_handler(output_dir):
 
 S3FileSystemHandler.default_open = volweb_open  # This is to set the correct AWS endpoint url when the source bucket is of type AWS.
 volatility3.symbols.__path__ = [
-    os.path.abspath(f"media/symbols")
+    os.path.abspath("media/symbols")
 ] + constants.SYMBOL_BASEPATHS  # This is to include the volweb symbols imported by the users.
 interfaces.context.ModuleContainer.add_module = volweb_add_module  # A module requirement already present is throwing an exeception, we don't want this.
 interfaces.layers.LayerContainer.add_layer = volweb_add_layer  # An already present layer is throwing an exception, we don't want this either.

@@ -204,13 +204,17 @@ class TasksApiView(APIView):
         """
         Return the requested tasks if existing.
         """
-        tasks = TaskResult.objects.all()
         tasks = TaskResult.objects.filter(Q(status="STARTED") | Q(status="PENDING"))
-
-        filtered_tasks = [
-            task
-            for task in tasks
-            if ast.literal_eval(ast.literal_eval(task.task_args))[0] == evidence_id
-        ]
-        serializer = TasksSerializer(filtered_tasks, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            if tasks:
+                filtered_tasks = [
+                    task
+                    for task in tasks
+                    if ast.literal_eval(ast.literal_eval(task.task_args))[0] == evidence_id
+                ]
+                serializer = TasksSerializer(filtered_tasks, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)

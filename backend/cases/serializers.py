@@ -15,3 +15,17 @@ class CaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Case
         fields = "__all__"
+
+
+class InitiateUploadSerializer(serializers.Serializer):
+    filename = serializers.CharField(max_length=255)
+    os = serializers.CharField(max_length=255)
+    case_id = serializers.IntegerField()
+
+class UploadChunkSerializer(serializers.Serializer):
+    upload_id = serializers.UUIDField()
+    part_number = serializers.IntegerField()
+    chunk = serializers.FileField()
+
+class CompleteUploadSerializer(serializers.Serializer):
+    upload_id = serializers.UUIDField()

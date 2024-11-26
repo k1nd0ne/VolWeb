@@ -10,6 +10,7 @@ OS = (
 SOURCES = (
     ("AWS", "AWS"),
     ("MINIO", "MINIO"),
+    ("FILESYSTEM", "FILESYSTEM"),
 )
 
 
@@ -25,7 +26,6 @@ class Evidence(models.Model):
     os = models.CharField(max_length=10, choices=OS)
     linked_case = models.ForeignKey(Case, on_delete=models.CASCADE, null=False)
     status = models.IntegerField(default=0)
-    logs = models.JSONField(null=True)
     access_key_id = models.TextField(null=True)
     access_key = models.TextField(null=True)
     url = models.TextField(null=True)

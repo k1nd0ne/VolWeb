@@ -164,8 +164,7 @@ const InvestigateLinux: React.FC<InvestigateLinuxProps> = ({ evidence }) => {
           setLoadingDump(isDumpTaskRunning);
           setLoadingMaps(isMapsTaskRunning);
         } catch (error) {
-          console.error("Error fetching tasks", error);
-          display_message("error", `Error fetching tasks: ${error}`);
+          console.error("Could not fetch tasks", error);
         }
       };
 

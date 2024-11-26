@@ -37,16 +37,10 @@ class VolatilityEngine:
         """ """
         self.evidence: Evidence = evidence
         # Checks if the user bind an evidence or is using the default storage solution
-        if self.evidence.url:
-            self.evidence_data = {
-                "bucket": self.evidence.url,
-                "output_path": f"media/{self.evidence.id}/",
-            }
-        else:
-            self.evidence_data = {
-                "bucket": f"s3://{self.evidence.linked_case.bucket_id}/{self.evidence.name}",
-                "output_path": f"media/{self.evidence.id}/",
-            }
+        self.evidence_data = {
+            "bucket": self.evidence.url,
+            "output_path": f"media/{self.evidence.id}/",
+        }
         self.base_config_path = "plugins"
 
     def build_context(self, plugin):
@@ -184,6 +178,8 @@ class VolatilityEngine:
             else:
                 self.start_linux_analysis()
         except UnsatisfiedException as e:
+            self.evidence.status = -1
+            self.evidence.save()
             logger.warning(f"Unsatisfied requirements: {str(e)}")
 
     def dump_process(self, pid):

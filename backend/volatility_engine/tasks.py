@@ -13,8 +13,9 @@ def start_extraction(evidence_id):
     instance = Evidence.objects.get(id=evidence_id)
     engine = VolatilityEngine(instance)
     engine.start_extraction()
-    instance.status = 100
-    instance.save()
+    if instance.status != -1:
+        instance.status = 100
+        instance.save()
 
 
 @shared_task

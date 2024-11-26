@@ -229,7 +229,7 @@ function EvidenceList({ caseId }: EvidenceListProps) {
     },
     {
       field: "etag",
-      headerName: "Etag",
+      headerName: "Identifier",
       renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
           <Chip
@@ -246,13 +246,7 @@ function EvidenceList({ caseId }: EvidenceListProps) {
       field: "status",
       headerName: "Status",
       renderCell: (params: GridRenderCellParams) =>
-        params.value !== 100 ? (
-          <div
-            style={{ display: "flex", alignItems: "center", height: "100%" }}
-          >
-            <LinearProgressWithLabel value={Number(params.value)} />
-          </div>
-        ) : (
+        params.value === 100 ? (
           <div
             style={{ display: "flex", alignItems: "center", height: "100%" }}
           >
@@ -262,6 +256,23 @@ function EvidenceList({ caseId }: EvidenceListProps) {
               color="success"
               variant="outlined"
             />
+          </div>
+        ) : params.value === -1 ? (
+          <div
+            style={{ display: "flex", alignItems: "center", height: "100%" }}
+          >
+            <Chip
+              label="Unsatisfied requirements"
+              size="small"
+              color="error"
+              variant="outlined"
+            />
+          </div>
+        ) : (
+          <div
+            style={{ display: "flex", alignItems: "center", height: "100%" }}
+          >
+            <LinearProgressWithLabel value={Number(params.value)} />
           </div>
         ),
       flex: 1,

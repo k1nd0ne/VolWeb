@@ -160,8 +160,7 @@ const InvestigateWindows: React.FC<InvestigateWindowsProps> = ({
           setLoadingDump(isDumpTaskRunning);
           setLoadingHandles(isHandlesTaskRunning);
         } catch (error) {
-          console.error("Error fetching tasks", error);
-          display_message("error", `Error fetching tasks: ${error}`);
+          console.error("Could not fetch tasks", error);
         }
       };
 
