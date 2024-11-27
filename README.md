@@ -46,7 +46,7 @@ You also get a enhanced view of all of the plugins results by categories.
 The explore feature comes with VolWeb 3.0 for Windows investigations (coming soon for Linux).
 It enable the memory forensics expert to investigate potential suspicious processes in a graph view allowing another way to look at the data, but also correlate the volatility3 plugins to get more context.
 
-IMAGE HERE
+<img width="1728" alt="image" src="https://github.com/user-attachments/assets/e77e5c07-4ff7-4bdb-9eb4-d8880e0a0107">
 
 ## Capitalize and share indicators
 
