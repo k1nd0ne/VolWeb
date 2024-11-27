@@ -10,6 +10,9 @@ import {
   TableRow,
   Button,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogActions,
 } from "@mui/material";
 import axiosInstance from "../../utils/axiosInstance";
 import { useSnackbar } from "../SnackbarProvider";
@@ -23,6 +26,10 @@ const CaseIndicatorsList: React.FC<CaseIndicatorsListProps> = ({ caseId }) => {
   const [indicators, setIndicators] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedIndicator, setSelectedIndicator] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     fetchIndicators();
@@ -48,18 +55,30 @@ const CaseIndicatorsList: React.FC<CaseIndicatorsListProps> = ({ caseId }) => {
     }
   };
 
-  const handleDelete = async (indicatorId: number) => {
-    if (!window.confirm("Are you sure you want to delete this indicator?")) {
-      return;
+  const handleDelete = async () => {
+    if (selectedIndicator) {
+      try {
+        await axiosInstance.delete(
+          `/core/stix/indicators/${selectedIndicator}/`,
+        );
+        display_message("success", "Indicator deleted.");
+        setOpenDialog(false);
+        setSelectedIndicator(null);
+        fetchIndicators();
+      } catch (err) {
+        display_message("error", `Failed to delete the indicator: ${err}`);
+      }
     }
+  };
 
-    try {
-      await axiosInstance.delete(`/core/stix/indicators/${indicatorId}/`);
-      display_message("success", "Indicator deleted.");
-      fetchIndicators();
-    } catch (err) {
-      display_message("error", `Failed to delete the indicator: ${err}`);
-    }
+  const handleOpenDialog = (indicatorId: number) => {
+    setSelectedIndicator(indicatorId);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedIndicator(null);
   };
 
   return (
@@ -140,7 +159,7 @@ const CaseIndicatorsList: React.FC<CaseIndicatorsListProps> = ({ caseId }) => {
                           variant="outlined"
                           color="error"
                           size="small"
-                          onClick={() => handleDelete(indicator.id)}
+                          onClick={() => handleOpenDialog(indicator.id)}
                         >
                           Remove
                         </Button>
@@ -159,6 +178,22 @@ const CaseIndicatorsList: React.FC<CaseIndicatorsListProps> = ({ caseId }) => {
           </TableContainer>
         )}
       </Box>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Are you sure you want to delete this Indicator ?
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleDelete} color="error" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

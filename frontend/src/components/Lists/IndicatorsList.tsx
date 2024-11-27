@@ -11,6 +11,9 @@ import {
   TableRow,
   Button,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogActions,
 } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
 import axiosInstance from "../../utils/axiosInstance";
@@ -30,6 +33,11 @@ const IndicatorsList: React.FC<IndicatorsListProps> = ({
   onIndicatorDeleted,
 }) => {
   const [indicators, setIndicators] = useState([]);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [currentIndicatorId, setCurrentIndicatorId] = useState<number | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(false);
   const { display_message } = useSnackbar();
 
@@ -53,21 +61,36 @@ const IndicatorsList: React.FC<IndicatorsListProps> = ({
     }
   };
 
-  // Handle Delete Indicator
-  const handleDelete = async (indicatorId: number) => {
-    if (!window.confirm("Are you sure you want to delete this indicator?")) {
-      return;
-    }
+  // Handle Open Delete Dialog
+  const handleOpenDeleteDialog = (indicatorId: number) => {
+    setCurrentIndicatorId(indicatorId);
+    setDeleteDialogOpen(true);
+  };
 
-    try {
-      await axiosInstance.delete(`/core/stix/indicators/${indicatorId}/`);
-      fetchIndicators();
-      if (onIndicatorDeleted) {
-        onIndicatorDeleted(indicatorId);
+  // Handle Delete Indicator
+  const handleDelete = async () => {
+    if (currentIndicatorId !== null) {
+      setIsDeleting(true);
+      try {
+        await axiosInstance.delete(
+          `/core/stix/indicators/${currentIndicatorId}/`,
+        );
+        fetchIndicators();
+        if (onIndicatorDeleted) {
+          onIndicatorDeleted(currentIndicatorId);
+        }
+        setCurrentIndicatorId(null);
+      } catch (err) {
+        display_message("error", `Failed to delete the indicator: ${err}`);
+      } finally {
+        setDeleteDialogOpen(false);
+        setIsDeleting(false);
       }
-    } catch (err) {
-      display_message("error", `Failed to delete the indicator: ${err}`);
     }
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
   };
 
   return (
@@ -155,7 +178,7 @@ const IndicatorsList: React.FC<IndicatorsListProps> = ({
                           variant="outlined"
                           color="error"
                           size="small"
-                          onClick={() => handleDelete(indicator.id)}
+                          onClick={() => handleOpenDeleteDialog(indicator.id)}
                         >
                           Remove
                         </Button>
@@ -174,6 +197,29 @@ const IndicatorsList: React.FC<IndicatorsListProps> = ({
           </TableContainer>
         )}
       </Box>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle>
+          {"Are you sure you want to delete this indicator?"}
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
+          <Button
+            onClick={handleDelete}
+            color="error"
+            autoFocus
+            disabled={isDeleting}
+          >
+            {isDeleting ? <CircularProgress size={24} /> : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

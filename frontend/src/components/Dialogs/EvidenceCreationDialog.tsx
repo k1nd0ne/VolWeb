@@ -46,7 +46,7 @@ const EvidenceCreationDialog: React.FC<EvidenceCreationDialogProps> = ({
   const [selectedEvidence, setSelectedEvidence] = useState<Case | null>(null);
   const [evidenceLoading, setEvidencesLoading] = useState<boolean>(false);
 
-  const CHUNK_SIZE = 100 * 1024 * 1024; // 100MB
+  const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
 
   const createFileChunks = (file: File) => {
     const chunks = [];

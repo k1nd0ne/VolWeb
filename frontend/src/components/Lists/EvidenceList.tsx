@@ -298,13 +298,19 @@ function EvidenceList({ caseId }: EvidenceListProps) {
             )}
           </Tooltip>
           <Tooltip title="Delete" placement="right">
-            <IconButton
-              edge="end"
-              aria-label="delete"
-              onClick={() => handleDeleteClick(params.row)}
-            >
-              <DeleteSweep />
-            </IconButton>
+            {params.row.status !== 100 ? (
+              <IconButton edge="end" disabled={params.row.status !== 100}>
+                <DeleteSweep />
+              </IconButton>
+            ) : (
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={() => handleDeleteClick(params.row)}
+              >
+                <DeleteSweep />
+              </IconButton>
+            )}
           </Tooltip>
         </div>
       ),

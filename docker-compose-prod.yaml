@@ -1,0 +1,106 @@
+services:
+  volweb-postgresdb:
+    container_name: volweb-postgresdb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    image: postgres:14.1
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  volweb-redis:
+    container_name: volweb-redis
+    image: "redis:latest"
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - "redis-data:/data"
+    ports:
+      - "6379:6379"
+
+  volweb-backend:
+    image: "forensicxlab/volweb-backend:3.0.0"
+    container_name: volweb-backend
+    environment:
+      - DATABASE=${DATABASE}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - DJANGO_SECRET=${DJANGO_SECRET}
+      - BROKER_HOST=${BROKER_HOST}
+      - BROKER_PORT=${BROKER_PORT}
+    command: daphne -b 0.0.0.0 -p 8000 backend.asgi:application
+    ports:
+      - "8000:8000"
+    depends_on:
+      - volweb-postgresdb
+      - volweb-redis
+    restart: always
+    volumes:
+      - staticfiles:/home/app/web/staticfiles
+      - media:/home/app/web/media
+
+  volweb-workers:
+    image: "forensicxlab/volweb-backend:3.0.0"
+    container_name: volweb-workers
+    environment:
+      - DATABASE=${DATABASE}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - DJANGO_SECRET=${DJANGO_SECRET}
+      - BROKER_HOST=${BROKER_HOST}
+      - BROKER_PORT=${BROKER_PORT}
+    command: celery -A backend worker --loglevel=INFO
+    depends_on:
+      - volweb-redis
+      - volweb-postgresdb
+    restart: always
+    volumes:
+      - media:/home/app/web/media
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  volweb-frontend:
+    image: "forensicxlab/volweb-frontend:3.0.0"
+    container_name: volweb-frontend
+    expose:
+      - 3000
+    depends_on:
+      - volweb-backend
+    restart: always
+    volumes:
+      - staticfiles:/home/app/web/staticfiles
+      - media:/home/app/web/media
+
+  volweb-nginx:
+    container_name: volweb_nginx
+    image: nginx:mainline-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./nginx/ssl/:/etc/nginx/certs/
+    depends_on:
+      - volweb-frontend
+      - volweb-backend
+      - volweb-workers
+
+volumes:
+  postgres-data:
+  redis-data:
+  staticfiles:
+  media:

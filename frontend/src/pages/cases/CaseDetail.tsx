@@ -55,9 +55,6 @@ const CaseDetail: React.FC = () => {
                 {caseDetail.description}
               </Typography>
               <Typography variant="subtitle1" component="div">
-                Bucket ID: {caseDetail.bucket_id}
-              </Typography>
-              <Typography variant="subtitle1" component="div">
                 Last Update: {caseDetail.last_update}
               </Typography>
               <Typography
