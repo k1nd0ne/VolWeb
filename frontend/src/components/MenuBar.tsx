@@ -76,10 +76,12 @@ function ResponsiveAppBar() {
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            {/* <MenuItem disabled>
-              Settings <br />
-              <p style={{ fontSize: "0.7rem" }}>(coming soon)</p>
-            </MenuItem> */}
+            <MenuItem onClick={() => (window.location.href = "/swagger/")}>
+              Swagger
+            </MenuItem>
+            <MenuItem onClick={() => (window.location.href = "/admin/")}>
+              Administration
+            </MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </div>
