@@ -23,7 +23,7 @@ services:
       - "6379:6379"
 
   volweb-backend:
-    image: "forensicxlab/volweb-backend:3.0.0"
+    image: "forensicxlab/volweb-backend:latest"
     container_name: volweb-backend
     environment:
       - DATABASE=${DATABASE}
@@ -48,7 +48,7 @@ services:
       - media:/home/app/web/media
 
   volweb-workers:
-    image: "forensicxlab/volweb-backend:3.0.0"
+    image: "forensicxlab/volweb-backend:latest"
     container_name: volweb-workers
     environment:
       - DATABASE=${DATABASE}
@@ -73,7 +73,7 @@ services:
       replicas: 1
 
   volweb-frontend:
-    image: "forensicxlab/volweb-frontend:3.0.0"
+    image: "forensicxlab/volweb-frontend:latest"
     container_name: volweb-frontend
     expose:
       - 3000
