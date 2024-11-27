@@ -17,7 +17,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Case, User } from "../../types";
 import InvestigatorSelect from "../InvestigatorSelect";
 import { useSnackbar } from "../SnackbarProvider";
-
+import { AxiosError } from "axios";
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
@@ -51,14 +51,23 @@ const AddCaseDialog: React.FC<AddCaseDialogProps> = ({
     };
     try {
       const response = await axiosInstance.post("/api/cases/", requestData);
-      onCreateSuccess(response.data);
-      display_message("success", "Case created.");
-      onClose();
-      setName("");
-      setDescription("");
-      setSelectedUsers([]);
+      if (response.status === 201) {
+        onCreateSuccess(response.data);
+        display_message("success", "Case created.");
+        onClose();
+        setName("");
+        setDescription("");
+        setSelectedUsers([]);
+      }
     } catch (error) {
-      display_message("error", `Error creating case: ${error}`);
+      display_message(
+        "error",
+        `Case could not be created: ${
+          error instanceof AxiosError && error.response?.status === 409
+            ? "A case with this name already exists"
+            : error
+        }`,
+      );
     }
   };
 

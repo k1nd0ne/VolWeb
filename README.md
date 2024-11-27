@@ -5,33 +5,76 @@
 
 # Introduction
 
-VolWeb is a digital forensic memory analysis platform that leverages the power of the Volatility 3 framework. It is dedicated to aiding in investigations and incident responses.
+VolWeb is a digital forensic memory analysis platform that leverages the power of the Volatility 3 framework.
+It is dedicated to aiding in investigations and incident responses.
 
 ![image](https://github.com/k1nd0ne/VolWeb/assets/27780432/691f1717-6c37-4147-9cac-e1a52aa2d1d0)
 
-## Objective
+## Objectives
 
 The goal of VolWeb is to enhance the efficiency of memory collection and forensic analysis by providing a centralized, visual, and enhanced web application for incident responders and digital forensics investigators.
-Once an investigator obtains a memory image from a Linux or Windows system, the evidence can be uploaded to VolWeb, which triggers automatic processing and extraction of artifacts using the power of the Volatility 3 framework.
+Once an investigator obtains a memory image from a Linux or Windows system (Mac coming soon), the evidence can be uploaded to VolWeb, which triggers automatic processing and extraction of artifacts using the power of the Volatility 3 framework.
 
-By utilizing cloud-native storage technologies, VolWeb also enables incident responders to directly upload memory images into the VolWeb platform from various locations using dedicated scripts interfaced with the platform and maintained by the community. Another goal is to allow users to compile technical information, such as Indicators, which can later be imported into modern CTI platforms like OpenCTI, thereby connecting your incident response and CTI teams after your investigation.
+By utilizing hybrid storage technologies, VolWeb also enables incident responders to directly upload memory images into the VolWeb platform from various locations using dedicated scripts interfaced with the platform and maintained by the community.
+Another goal is to allow users to compile technical information, such as Indicators, which can later be imported into modern CTI platforms like OpenCTI, thereby connecting your incident response and CTI teams after your investigation.
 
 # Project Documentation and Getting Started Guide
 
-The project documentation is available on the <a href="https://github.com/k1nd0ne/VolWeb/wiki/VolWeb-Documentation">Wiki</a>. There, you will be able to deploy the tool in your investigation environment or lab.
+The project documentation is available on the <a href="https://github.com/k1nd0ne/VolWeb/wiki/VolWeb-Documentation">Wiki</a>.
+There, you will be able to deploy the tool in your investigation environment or lab.
 
 >[!IMPORTANT]
 > Take time to read the documentation in order to avoid common miss-configuration issues.
 
+# Analysis features
+A quick disclaimer: VolWeb is meant to be use in conjunction with the volatility3 framework CLI,
+it offers a different way to review & investigate some of the results and will not do all of the deep dive analysis job for you.
 
-# Interacting with the REST API
+## Investigate
 
-VolWeb exposes a REST API to allow analysts to interact with the platform. There is a dedicated repository proposing some scripts maintained by the community: https://github.com/forensicxlab/VolWeb-Scripts .
-Check the [wiki](https://github.com/k1nd0ne/VolWeb/wiki/VolWeb-%E2%80%90-REST-API) of the project to learn more about the possible API calls.
+The investigate feature is one of the core feature of VolWeb.
+It provides an overview of the available artefacts that were retrived by the custom volatiltiy3 engine in the backend.
+If available, you can visualize the process tree and get basic information about each process, dump them etc...
+You also get a enhanced view of all of the plugins results by categories.
 
-# Issues
+IMAGE
+
+## Explore
+« Defenders think in lists. Attackers think in graphs. As long as this is true, attackers win. »
+
+The explore feature comes with VolWeb 3.0 for Windows investigations (coming soon for Linux).
+It enable the memory forensics expert to investigate potential suspicious processes in a graph view allowing another way to look at the data, but also correlate the volatility3 plugins to get more context.
+
+IMAGE HERE
+
+## Capitalize and share indicators
+
+When the expert found malicious activies, VolWeb give you the possibility to create STIX V2 Indicators directly from the interface and centralize them in your case.
+Once your case is closed, you can generate you STIX bundle and share your Indicators with your community using CTI Platforms like MISP or OpenCTI.
+
+
+
+## Interacting with the REST API
+
+VolWeb exposes a REST API to allow analysts to interact with the platform. A swagger is available on the platform in oder to get the full documentation.
+There is a dedicated repository proposing some scripts maintained by the community: https://github.com/forensicxlab/VolWeb-Scripts .
+
+IMAGE HERE
+
+## Administration
+
+VolWeb is using django in the backend. Manage your user and database directly from the admin panel.
+
+IMAGE HERE
+
+# Issues & Feature request
 
 If you have encountered a bug, or wish to propose a feature, please feel free to create a [discussion](https://github.com/k1nd0ne/VolWeb/discussions) to enable us to quickly address them. Please provide logs to any issues you are facing.
+
+
+# Contributing
+
+VolWeb is open to contributions. Follow the contributing guideline to propose features.
 
 # Contact
 

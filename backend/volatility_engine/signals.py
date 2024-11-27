@@ -12,12 +12,6 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
 
-@receiver(post_save, sender=User)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
-
-
 @before_task_publish.connect
 def create_task_result_on_publish(sender=None, headers=None, body=None, **kwargs):
     if "task" not in headers:

@@ -1,12 +1,12 @@
 from rest_framework import serializers
 from .models import Case
 from django.contrib.auth.models import User
+from core.serializers import UserSerializer
 
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["username", "id"]
+    # class UserSerializer(serializers.ModelSerializer):
+    #     class Meta:
+    #         model = User
+    #         fields = ["username", "id"]
 
 
 class CaseSerializer(serializers.ModelSerializer):

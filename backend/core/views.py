@@ -33,6 +33,8 @@ class LogoutView(APIView):
 
 
 class UserList(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 

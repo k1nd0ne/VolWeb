@@ -9,6 +9,7 @@ export default defineConfig({
       "/core": "http://localhost:8000",
       "/media": "http://localhost:8000",
       "/admin": "http://localhost:8000",
+      "/swagger": "http://localhost:8000",
       "/static": "http://localhost:8000",
       "/ws": {
         target: "ws://localhost:8000",
