@@ -8,7 +8,7 @@
 VolWeb is a digital forensic memory analysis platform that leverages the power of the Volatility 3 framework.
 It is dedicated to aiding in investigations and incident responses.
 
-![image](https://github.com/k1nd0ne/VolWeb/assets/27780432/691f1717-6c37-4147-9cac-e1a52aa2d1d0)
+
 
 ## Objectives
 
@@ -37,10 +37,11 @@ It provides an overview of the available artefacts that were retrived by the cus
 If available, you can visualize the process tree and get basic information about each process, dump them etc...
 You also get a enhanced view of all of the plugins results by categories.
 
-IMAGE
+<img width="1728" alt="image" src="https://github.com/user-attachments/assets/ecdc3ba5-e3e1-48b9-9e82-3d8bba1649ae">
+
 
 ## Explore
-« Defenders think in lists. Attackers think in graphs. As long as this is true, attackers win. »
+« _Defenders think in lists. Attackers think in graphs. As long as this is true, attackers win._ »
 
 The explore feature comes with VolWeb 3.0 for Windows investigations (coming soon for Linux).
 It enable the memory forensics expert to investigate potential suspicious processes in a graph view allowing another way to look at the data, but also correlate the volatility3 plugins to get more context.
@@ -52,6 +53,7 @@ IMAGE HERE
 When the expert found malicious activies, VolWeb give you the possibility to create STIX V2 Indicators directly from the interface and centralize them in your case.
 Once your case is closed, you can generate you STIX bundle and share your Indicators with your community using CTI Platforms like MISP or OpenCTI.
 
+<img width="1728" alt="image" src="https://github.com/user-attachments/assets/5e4015ff-5eeb-495b-bfe0-7fd3bcdfe43c">
 
 
 ## Interacting with the REST API
@@ -59,13 +61,13 @@ Once your case is closed, you can generate you STIX bundle and share your Indica
 VolWeb exposes a REST API to allow analysts to interact with the platform. A swagger is available on the platform in oder to get the full documentation.
 There is a dedicated repository proposing some scripts maintained by the community: https://github.com/forensicxlab/VolWeb-Scripts .
 
-IMAGE HERE
+<img width="1728" alt="image" src="https://github.com/user-attachments/assets/84578c55-bba3-4695-b25e-bdb4e25c60bb">
 
 ## Administration
 
 VolWeb is using django in the backend. Manage your user and database directly from the admin panel.
 
-IMAGE HERE
+<img width="1718" alt="image" src="https://github.com/user-attachments/assets/ded4d50e-23ee-4154-bc22-0ddb76678495">
 
 # Issues & Feature request
 
