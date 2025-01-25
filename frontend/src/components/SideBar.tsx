@@ -107,7 +107,7 @@ export default function MiniDrawer() {
         {/* Flex container for layout */}
         <Box display="flex" flexDirection="column" height="100%">
           {/* Box to contain navigation links, allowed to grow */}
-          <Box flexGrow={1}>
+          <Box flexGrow={1} marginTop={1}>
             <List>
               {["", "Cases", "Evidences", "Symbols"].map((text, index) => (
                 <ListItem key={index} disablePadding sx={{ display: "block" }}>
@@ -130,7 +130,7 @@ export default function MiniDrawer() {
                       {renderIcon(index)}
                     </ListItemIcon>
                     <ListItemText
-                      primary={text}
+                      primary={text === "" ? "Dashboard" : text}
                       sx={{ opacity: open ? 1 : 0 }}
                     />
                   </ListItemButton>

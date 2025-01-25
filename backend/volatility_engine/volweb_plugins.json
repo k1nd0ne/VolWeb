@@ -253,7 +253,7 @@
         "category": "Security",
         "display": "True"
       },
-      "volatility3.plugins.windows.suspicious_threads.SupsiciousThreads": {
+      "volatility3.plugins.windows.suspicious_threads.SuspiciousThreads": {
         "icon": "VisibilityOff",
         "description": "Lists suspicious userland process threads.",
         "category": "Malware",

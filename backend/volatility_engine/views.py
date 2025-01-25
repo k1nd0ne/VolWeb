@@ -16,6 +16,8 @@ from .tasks import (
     start_timeliner,
     dump_windows_handles,
     dump_maps,
+    start_extraction,
+
 )
 from dateutil.parser import parse as parse_date
 from django_celery_results.models import TaskResult
@@ -129,6 +131,20 @@ class PluginArtefactsView(APIView):
             return Response(
                 {"error": f"Invalid date format: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST,
+            )
+
+class RestartAnalysisTask(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        try:
+            evidence_id = request.data.get("id")
+            evidence = Evidence.objects.get(id=evidence_id)
+            start_extraction.apply_async(args=[evidence.id])
+            return Response(status=status.HTTP_200_OK)
+        except Evidence.DoesNotExist:
+            return Response(
+                {"error": "Evidence not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
 

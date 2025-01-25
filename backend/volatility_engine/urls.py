@@ -10,6 +10,7 @@ from .views import (
     FileDumpTask,
     TasksApiView,
     EnrichedProcessView,
+    RestartAnalysisTask,
 )
 
 urlpatterns = [
@@ -37,4 +38,5 @@ urlpatterns = [
         "evidence/<int:evidence_id>/process/<int:pid>/enriched/",
         EnrichedProcessView.as_view(),
     ),
+    path("evidence/tasks/restart/", RestartAnalysisTask.as_view()),
 ]

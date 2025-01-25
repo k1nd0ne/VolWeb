@@ -30,7 +30,7 @@ constantly==23.10.4
 cryptography==43.0.3
 daphne==4.1.2
 decorator==5.1.1
-Django==5.1.1
+Django==5.1.5
 django-celery-results==2.5.1
 django-cors-headers==4.4.0
 django-filter==24.3
@@ -100,7 +100,7 @@ tzdata==2024.2
 uritemplate==4.1.1
 urllib3==2.2.3
 vine==5.1.0
-volatility3==2.8.0
+volatility3==2.11.0
 wcwidth==0.2.13
 wrapt==1.16.0
 yara-python==4.5.1

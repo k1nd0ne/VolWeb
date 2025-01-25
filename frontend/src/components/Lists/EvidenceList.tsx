@@ -25,6 +25,8 @@ import {
   DeleteSweep,
   Link,
   Delete as DeleteIcon,
+  RestartAlt,
+  Fingerprint,
 } from "@mui/icons-material";
 import BindEvidenceDialog from "../Dialogs/BindEvidenceDialog";
 import { Evidence } from "../../types";
@@ -37,6 +39,8 @@ function EvidenceList({ caseId }: EvidenceListProps) {
   const navigate = useNavigate();
   const [evidenceData, setEvidenceData] = useState<Evidence[]>([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [openRestartDialog, setOpenRestartDialog] = useState<boolean>(false);
+
   const [openCreationDialog, setOpenCreationDialog] = useState<boolean>(false);
   const [openBindingDialog, setOpenBindingDialog] = useState<boolean>(false);
   const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(
@@ -166,6 +170,12 @@ function EvidenceList({ caseId }: EvidenceListProps) {
     setDeleteMultiple(false);
   };
 
+  const handleRestartClick = (row: Evidence) => {
+    setSelectedEvidence(row);
+
+    setOpenRestartDialog(true);
+  };
+
   const handleOpenDeleteMultipleDialog = () => {
     setDeleteMultiple(true);
     setOpenDeleteDialog(true);
@@ -184,6 +194,20 @@ function EvidenceList({ caseId }: EvidenceListProps) {
       }
     } else if (deleteMultiple) {
       handleDeleteSelected();
+    }
+  };
+
+  const handleConfirmRestart = async () => {
+    if (selectedEvidence) {
+      const id: number = selectedEvidence.id;
+      try {
+        await axiosInstance.post(`/api/evidence/tasks/restart/`, { id });
+        display_message("success", "Analysis restarted");
+      } catch (error) {
+        display_message("error", `Error restarting the analysis: ${error}`);
+      } finally {
+        setOpenRestartDialog(false);
+      }
     }
   };
 
@@ -210,7 +234,7 @@ function EvidenceList({ caseId }: EvidenceListProps) {
       headerName: "Evidence Name",
       renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
-          <Memory style={{ marginRight: 8 }} />
+          <Memory style={{ marginRight: 8 }} color="info" />
           {params.value}
         </div>
       ),
@@ -232,12 +256,8 @@ function EvidenceList({ caseId }: EvidenceListProps) {
       headerName: "Identifier",
       renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
-          <Chip
-            label={params.value}
-            size="small"
-            color="secondary"
-            variant="outlined"
-          />
+          <Fingerprint style={{ marginRight: 8 }} color="secondary" />
+          {params.value}
         </div>
       ),
       flex: 1,
@@ -296,6 +316,15 @@ function EvidenceList({ caseId }: EvidenceListProps) {
                 <Biotech />
               </IconButton>
             )}
+          </Tooltip>
+          <Tooltip title="Restart analysis" placement="right">
+            <IconButton
+              edge="end"
+              aria-label="restart"
+              onClick={() => handleRestartClick(params.row)}
+            >
+              <RestartAlt />
+            </IconButton>
           </Tooltip>
           <Tooltip title="Delete" placement="right">
             {params.row.status !== 100 ? (
@@ -400,6 +429,28 @@ function EvidenceList({ caseId }: EvidenceListProps) {
           </Button>
           <Button onClick={handleConfirmDelete} color="primary" autoFocus>
             Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openRestartDialog}
+        onClose={() => setOpenRestartDialog(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Restart the analysis</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            You are about to restart the analysis, confirm ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenRestartDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmRestart} color="primary" autoFocus>
+            Restart
           </Button>
         </DialogActions>
       </Dialog>

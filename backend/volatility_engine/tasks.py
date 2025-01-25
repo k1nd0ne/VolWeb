@@ -12,6 +12,8 @@ def start_extraction(evidence_id):
     """
     instance = Evidence.objects.get(id=evidence_id)
     engine = VolatilityEngine(instance)
+    instance.status = 0
+    instance.save()
     engine.start_extraction()
     if instance.status != -1:
         instance.status = 100

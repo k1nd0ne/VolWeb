@@ -181,7 +181,7 @@ class VolatilityEngine:
             self.evidence.status = -1
             self.evidence.save()
             logger.warning(f"Unsatisfied requirements: {str(e)}")
-        except:
+        except Exception as e:
             self.evidence.status = -1
             self.evidence.save()
             logger.warning(f"Unknown error, should not happen: {str(e)}")
