@@ -172,7 +172,6 @@ function EvidenceList({ caseId }: EvidenceListProps) {
 
   const handleRestartClick = (row: Evidence) => {
     setSelectedEvidence(row);
-
     setOpenRestartDialog(true);
   };
 

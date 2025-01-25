@@ -294,6 +294,48 @@
         "description": "Lists the unloaded kernel modules.",
         "category": "Kernel",
         "display": "True"
+      },
+      "volatility3.plugins.windows.amcache.Amcache": {
+        "icon": "Cached",
+        "description": "Extract information on executed applications from the AmCache.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.cmdscan.CmdScan": {
+        "icon": "History",
+        "description": "Looks for Windows Command History lists.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.consoles.Consoles": {
+        "icon": "Terminal",
+        "description": "Looks for Windows console buffers",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.debugregisters.DebugRegisters": {
+        "icon": "AppRegistration",
+        "description": "Gathers information related to the debug registers for the given thread",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.orphan_kernel_threads.Threads": {
+        "icon": "Gesture",
+        "description": "Gathers information related to the debug registers for the given thread",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.scheduled_tasks.ScheduledTasks": {
+        "icon": "PendingActionsIcon",
+        "description": "Decodes scheduled task information from the Windows registry",
+        "category": "Registry",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.unhoooked_system_calls.unhooked_system_calls": {
+        "icon": "Phishing",
+        "description": "Looks for signs of Skeleton Key malware",
+        "category": "Malware",
+        "display": "True"
       }
     },
     "linux": {

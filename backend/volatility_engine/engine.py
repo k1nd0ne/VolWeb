@@ -2,6 +2,7 @@ from evidences.models import Evidence
 from .models import VolatilityPlugin, EnrichedProcess
 import logging
 import volatility3
+import traceback
 import os
 from volatility3.cli import MuteProgress
 from volatility3.framework.exceptions import UnsatisfiedException
@@ -184,7 +185,9 @@ class VolatilityEngine:
         except Exception as e:
             self.evidence.status = -1
             self.evidence.save()
-            logger.warning(f"Unknown error, should not happen: {str(e)}")
+            logger.error(f"Unknown error, should not happen: {str(e)}")
+            logger.error(traceback.format_exc())
+
 
     def dump_process(self, pid):
         logger.info(f"Trying to dump PID {pid}")
@@ -326,13 +329,14 @@ class VolatilityEngine:
                     continue
                 # Check if the PID matches in the plugin's artefacts
                 for artefact in artefacts:
-                    plugin_pid = artefact.get("PID") or artefact.get("Process ID")
-                    if plugin_pid and int(plugin_pid) == pid:
-                        # Ensure enriched process data contains an array of artefacts
-                        if plugin.name not in enriched_process_data:
-                            enriched_process_data[plugin.name] = []
-                        # Append the artefact to the array
-                        enriched_process_data[plugin.name].append(artefact)
+                    if not isinstance(artefact, list):
+                        plugin_pid = artefact.get("PID") or artefact.get("Process ID")
+                        if plugin_pid and int(plugin_pid) == pid:
+                            # Ensure enriched process data contains an array of artefacts
+                            if plugin.name not in enriched_process_data:
+                                enriched_process_data[plugin.name] = []
+                            # Append the artefact to the array
+                            enriched_process_data[plugin.name].append(artefact)
 
             # Save the enriched process data into the EnrichedProcess model
             EnrichedProcess.objects.update_or_create(
