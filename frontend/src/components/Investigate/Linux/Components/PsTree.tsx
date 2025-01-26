@@ -92,7 +92,7 @@ const PsTree: React.FC<PsTreeProps> = ({ setProcessMetadata }) => {
     const fetchTree = async () => {
       try {
         const response = await axiosInstance.get(
-          `/api/evidence/${id}/plugin/volatility3.plugins.linux.pstree.PsTree/`,
+          `/api/evidence/${id}/plugin/volatility_engine.plugins.linux.patched_pstree.PsTree/`, // TODO: Remove me in future volatility3 release..
         );
         const data: LinuxProcessInfo[] = response.data.artefacts;
 

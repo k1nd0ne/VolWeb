@@ -172,7 +172,7 @@ class VolatilityEngine:
         try:
             logger.info("Starting extraction")
             self.evidence.status = 0  # Make sure we start at 0%
-            os.makedirs("media/{self.evidence.id}", exist_ok=True)
+            os.makedirs(f"media/{self.evidence.id}", exist_ok=True)
             if self.evidence.os == "windows":
                 self.start_windows_analysis()
                 self.construct_windows_explorer()

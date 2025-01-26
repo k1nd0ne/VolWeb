@@ -336,10 +336,16 @@
         "description": "Looks for signs of Skeleton Key malware",
         "category": "Malware",
         "display": "True"
+      },
+      "volatility3.plugins.windows.ssdt.SSDT": {
+        "icon": "ViewModule",
+        "description": "Lists the system call table.",
+        "category": "Malware",
+        "display": "True"
       }
     },
     "linux": {
-      "volatility3.plugins.linux.pstree.PsTree": {
+      "volatility_engine.plugins.linux.patched_pstree.PsTree": {
         "name": "volatility3.plugins.linux.pstree.PsTree",
         "icon": "AccountTree",
         "description": "Plugin for listing processes in a tree based on their parent process ID.",
@@ -477,6 +483,42 @@
         "description": "Checks tty devices for hooks.",
         "category": "Kernel",
         "display": "True"
+      },
+      "volatility3.plugins.linux.boottime.Boottime": {
+        "icon": "Start",
+        "description": "Shows the time the system was started",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.ebpf.EBPF": {
+        "icon": "ViewModule",
+        "description": "Enumerate eBPF programs",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.hidden_modules.Hidden_modules": {
+        "icon": "ViewModule",
+        "description": "Carves memory to find hidden kernel modules",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.kthreads.Kthreads": {
+        "icon": "Gesture",
+        "description": "Enumerates kthread functions",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.ptrace.Ptrace": {
+        "icon": "CallSplit",
+        "description": "Enumerates ptrace's tracer and tracee tasks",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.pagecache.Files": {
+        "icon": "FilterList",
+        "description": "Lists all files from memory",
+        "category": "Filesystem",
+        "display": "False"
       }
     }
   }
