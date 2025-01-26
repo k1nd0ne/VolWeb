@@ -103,15 +103,17 @@ def dump_windows_handles(evidence_id, pid):
 
 
 @shared_task
-def dump_windows_file(evidence_id, offset):
+def dump_file(evidence_id, offset):
     """
     This task is dedicated for trying to dump a file at a specific memory offset.
     """
     instance = Evidence.objects.get(id=evidence_id)
     channel_layer = get_channel_layer()
     engine = VolatilityEngine(instance)
-    result = engine.dump_file(offset)
-    print(result)
+    if instance.os == "windows":
+        result = engine.dump_file_windows(offset)
+    else:
+        result = engine.dump_file_linux(offset)
     async_to_sync(channel_layer.group_send)(
         f"volatility_tasks_{evidence_id}",
         {

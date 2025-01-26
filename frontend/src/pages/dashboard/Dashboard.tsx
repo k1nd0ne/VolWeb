@@ -9,6 +9,13 @@ import RecentCases from "../../components/RecentItems/RecentCases";
 import RecentISF from "../../components/RecentItems/RecentISF";
 import { countTasksByDate } from "../../utils/countTasksByDate";
 import { Case } from "../../types";
+import {
+  AccountCircle,
+  BlurLinear,
+  CasesSharp,
+  FindReplace,
+  Memory,
+} from "@mui/icons-material";
 
 interface StatisticsData {
   total_evidences: number;
@@ -26,7 +33,7 @@ interface StatisticsData {
 const Dashboard: React.FC = () => {
   const [data, setData] = useState<StatisticsData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const theme = "dark"; // Replace with your theme logic
+  const theme = "dark";
 
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -67,24 +74,38 @@ const Dashboard: React.FC = () => {
         {/* Statistics Cards */}
         <Grid size={2}>
           <StatisticsCard
-            title="Total Evidences"
+            title="Evidences"
             value={data.total_evidences}
+            icon={<Memory fontSize="large" color="error" />}
           />
         </Grid>
         <Grid size={2}>
           <StatisticsCard
-            title="Evidences in Progress"
+            title="Processing"
             value={data.total_evidences_progress}
+            icon={<FindReplace fontSize="large" color="warning" />}
           />
         </Grid>
         <Grid size={2}>
-          <StatisticsCard title="Total Cases" value={data.total_cases} />
+          <StatisticsCard
+            title="Cases"
+            value={data.total_cases}
+            icon={<CasesSharp fontSize="large" color="primary" />}
+          />
         </Grid>
         <Grid size={2}>
-          <StatisticsCard title="Total Users" value={data.total_users} />
+          <StatisticsCard
+            title="Total Users"
+            value={data.total_users}
+            icon={<AccountCircle fontSize="large" color="info" />}
+          />
         </Grid>
         <Grid size={2}>
-          <StatisticsCard title="Total Symbols" value={data.total_symbols} />
+          <StatisticsCard
+            title="Symbols"
+            value={data.total_symbols}
+            icon={<BlurLinear fontSize="large" color="secondary" />}
+          />
         </Grid>
 
         {/* Charts */}

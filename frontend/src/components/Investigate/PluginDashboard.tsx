@@ -21,7 +21,8 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import PluginDataGrid from "./PluginDataGrid";
 import { Plugin, Evidence } from "../../types";
-import FilescanButton from "./Windows/Buttons/FileScanButton";
+import WindowsFileScanButton from "./Windows/Buttons/FileScanButton";
+import LinuxFileScanButton from "./Linux/Buttons/FileScanButton";
 
 interface PluginDashboardProps {
   evidence: Evidence;
@@ -130,8 +131,13 @@ const PluginDashboard: React.FC<PluginDashboardProps> = ({ evidence }) => {
                   <Grid container spacing={1}>
                     {/* Here we insert our custom components */}
                     {evidence.os === "windows" && category === "Filesystem" && (
-                      <FilescanButton />
+                      <WindowsFileScanButton />
                     )}
+
+                    {evidence.os === "linux" && category === "Filesystem" && (
+                      <LinuxFileScanButton />
+                    )}
+
                     {groupedPlugins[category].map((plugin) => {
                       const iconName = plugin.icon;
                       const IconComponent =

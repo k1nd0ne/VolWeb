@@ -11,7 +11,7 @@ from .serializers import (
 )
 from rest_framework.permissions import IsAuthenticated
 from .tasks import (
-    dump_windows_file,
+    dump_file,
     dump_process,
     start_timeliner,
     dump_windows_handles,
@@ -219,7 +219,7 @@ class FileDumpTask(APIView):
             evidence_id = request.data.get("evidenceId")
             offset = request.data.get("offset")
             evidence = Evidence.objects.get(id=evidence_id)
-            dump_windows_file.apply_async(args=[evidence.id, offset])
+            dump_file.apply_async(args=[evidence.id, offset])
             return Response(status=status.HTTP_200_OK)
         except Evidence.DoesNotExist:
             return Response(

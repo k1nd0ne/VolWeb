@@ -268,7 +268,7 @@ class VolatilityEngine:
         builted_plugin = self.construct_plugin()
         result = self.run_plugin(builted_plugin)
 
-    def dump_file(self, offset):
+    def dump_file_windows(self, offset):
         dumpfiles_plugin = {
             DumpFiles: {
                 "icon": "N/A",
@@ -276,6 +276,33 @@ class VolatilityEngine:
                 "category": "Processes",
                 "display": "False",
                 "name": f"volatility3.plugins.dumpfiles.DumpFiles.{offset}",
+            }
+        }
+        self.build_context(dumpfiles_plugin)
+        self.context.config["plugins.DumpFiles.virtaddr"] = int(offset)
+        builted_plugin = self.construct_plugin()
+        try:
+            result = self.run_plugin(builted_plugin)
+            if not result:
+                del self.context.config["plugins.DumpFiles.virtaddr"]
+                self.context.config["plugins.DumpFiles.physaddr"] = int(offset)
+                result = self.run_plugin(builted_plugin)
+
+            fix_permissions(f"media/{self.evidence.id}")
+            return result
+        except Exception as e:
+            logger.error(e)
+            return None
+
+
+    def dump_file_linux(self, offset):
+        dumpfiles_plugin = {
+            DumpFiles: {
+                "icon": "N/A",
+                "description": "N/A",
+                "category": "Processes",
+                "display": "False",
+                "name": f"volatility3.plugins.linux.pagecache.Inode.{offset}",
             }
         }
         self.build_context(dumpfiles_plugin)
@@ -294,6 +321,8 @@ class VolatilityEngine:
         except Exception as e:
             logger.error(e)
             return None
+
+
 
     def construct_windows_explorer(self):
         # Get all VolatilityPlugin objects linked to this evidence

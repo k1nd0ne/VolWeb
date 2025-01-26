@@ -13,7 +13,7 @@ import {
   Work,
   Memory,
   QuestionMark,
-  TableBar,
+  BlurLinear,
 } from "@mui/icons-material";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -81,7 +81,7 @@ function renderIcon(index: number) {
     case 2:
       return <Memory />;
     case 3:
-      return <TableBar />;
+      return <BlurLinear />;
     default:
       return <QuestionMark />;
   }

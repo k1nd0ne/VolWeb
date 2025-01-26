@@ -17,7 +17,7 @@ import { Artefact } from "../../../../types";
 import FileScan from "../Components/FileScan";
 import { useSnackbar } from "../../../SnackbarProvider";
 
-const WindowsFileScanButton: React.FC = () => {
+const LinuxFileScanButton: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<Artefact[]>([]);
@@ -26,7 +26,7 @@ const WindowsFileScanButton: React.FC = () => {
   const fetchFileScan = async () => {
     try {
       const response = await axiosInstance.get(
-        `/api/evidence/${id}/plugin/volatility3.plugins.windows.filescan.FileScan`,
+        `/api/evidence/${id}/plugin/volatility3.plugins.linux.pagecache.Files`,
       );
 
       const artefactsWithId: Artefact[] = [];
@@ -99,4 +99,4 @@ const WindowsFileScanButton: React.FC = () => {
   );
 };
 
-export default WindowsFileScanButton;
+export default LinuxFileScanButton;
