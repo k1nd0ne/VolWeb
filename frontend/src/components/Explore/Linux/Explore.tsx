@@ -9,7 +9,7 @@ interface ExploreProps {
 }
 import { useSnackbar } from "../../SnackbarProvider";
 
-const ExploreWin: React.FC<ExploreProps> = ({ evidence }) => {
+const ExploreLinux: React.FC<ExploreProps> = ({ evidence }) => {
   const [data, setData] = useState<ProcessInfo[]>([]); // Initialize with an empty array
   const { display_message } = useSnackbar();
 
@@ -17,10 +17,11 @@ const ExploreWin: React.FC<ExploreProps> = ({ evidence }) => {
     const fetchTree = async () => {
       try {
         const response = await axiosInstance.get(
-          `/api/evidence/${evidence.id}/plugin/volatility3.plugins.windows.pstree.PsTree/`,
+          `/api/evidence/${evidence.id}/plugin/volatility3.plugins.linux.pstree.PsTree/`,
         );
         annotateProcessData(response.data.artefacts);
         setData(response.data.artefacts);
+        console.log(response.data.artefacts);
       } catch (error) {
         display_message(
           "error",
@@ -40,4 +41,4 @@ const ExploreWin: React.FC<ExploreProps> = ({ evidence }) => {
   );
 };
 
-export default ExploreWin;
+export default ExploreLinux;

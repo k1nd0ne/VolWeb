@@ -169,7 +169,7 @@ export default function MiniDrawer() {
         </Box>
       </Drawer>
 
-      <Box component="main" sx={{ width: "100%", p: 2 }}>
+      <Box component="main" sx={{ width: "95%", p: 2 }}>
         <DrawerHeader />
         <Outlet />
       </Box>

@@ -1,12 +1,12 @@
 import { FC, useEffect, useRef, useCallback } from "react";
 import { useSigma, useRegisterEvents } from "@react-sigma/core";
 import Graph from "graphology";
-import { ProcessInfo } from "../../../types";
+import { LinuxProcessInfo } from "../../../types";
 import FA2Layout from "graphology-layout-forceatlas2/worker";
 
 interface GraphEventsControllerProps {
-  data: ProcessInfo[];
-  onProcessSelect: (process: ProcessInfo | null) => void;
+  data: LinuxProcessInfo[];
+  onProcessSelect: (process: LinuxProcessInfo | null) => void;
 }
 
 const GraphEventsController: FC<GraphEventsControllerProps> = ({
@@ -21,7 +21,7 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({
   const draggedNode = useRef<string | null>(null);
 
   const findProcessByPID = useCallback(
-    (data: ProcessInfo[], pid: number): ProcessInfo | null => {
+    (data: LinuxProcessInfo[], pid: number): LinuxProcessInfo | null => {
       for (const process of data) {
         if (process.PID === pid) {
           return process;
@@ -36,7 +36,7 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({
   );
 
   const expandNode = useCallback(
-    (process: ProcessInfo, graph: Graph) => {
+    (process: LinuxProcessInfo, graph: Graph) => {
       const parentId = process.PID.toString();
 
       const parentAttributes = graph.getNodeAttributes(parentId);
@@ -55,7 +55,7 @@ const GraphEventsController: FC<GraphEventsControllerProps> = ({
 
         if (!graph.hasNode(childId)) {
           graph.addNode(childId, {
-            label: `${child.ImageFileName || "Unknown"} - ${child.PID} (${child.__children.length})`,
+            label: `${child.COMM || "Unknown"} - ${child.PID} (${child.__children.length})`,
             size: 5,
             color:
               child.__children.length > 0

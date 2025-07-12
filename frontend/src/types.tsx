@@ -64,6 +64,7 @@ export interface LinuxProcessInfo {
   TID: number;
   COMM: string;
   __children: LinuxProcessInfo[];
+  anomalies: string[] | undefined;
 }
 
 export interface NetworkInfo {

@@ -10,7 +10,8 @@ import HomeIcon from "@mui/icons-material/Home";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import Timeliner from "../../components/Investigate/Timeliner";
 import StixModule from "../../components/StixModule";
-import Explore from "../../components/Explore/Windows/Explore";
+import ExploreLinux from "../../components/Explore/Linux/Explore";
+import ExploreWin from "../../components/Explore/Windows/Explore";
 import { Evidence } from "../../types";
 import { useParams } from "react-router-dom";
 import { Biotech, BlurOn } from "@mui/icons-material";
@@ -110,11 +111,10 @@ const EvidenceDetail: React.FC = () => {
 
           {currentEvidence && currentEvidence.os === "linux" && (
             <Tab
-              label="Explore (coming soon)"
+              label="Explore"
               icon={<BlurOn />}
               iconPosition="start"
               {...a11yProps(1)}
-              disabled
               sx={{ fontSize: "0.75rem" }}
             />
           )}
@@ -140,7 +140,10 @@ const EvidenceDetail: React.FC = () => {
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         {currentEvidence && currentEvidence.os === "windows" && (
-          <Explore evidence={currentEvidence} />
+          <ExploreWin evidence={currentEvidence} />
+        )}
+        {currentEvidence && currentEvidence.os === "linux" && (
+          <ExploreLinux evidence={currentEvidence} />
         )}
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>

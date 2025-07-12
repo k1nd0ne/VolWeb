@@ -42,7 +42,7 @@ const PluginList: React.FC<PluginListProps> = ({ evidenceId }) => {
   };
 
   return (
-    <Box style={{ maxHeight: "80vh", overflowY: "auto" }}>
+    <Box style={{ maxHeight: "85vh", overflowY: "auto", overflowX: "hidden" }}>
       <List>
         {plugins.map((plugin) => (
           <ListItem key={plugin.name}>

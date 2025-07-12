@@ -204,6 +204,7 @@ const FileScan: React.FC<FileScanProps> = ({ data }) => {
         columns={columns}
         getRowId={(row) => row.id}
         pagination
+        showToolbar
         getRowHeight={() => "auto"}
       />
     </Box>

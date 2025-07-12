@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
-import {
-  DataGrid,
-  GridColDef,
-  GridToolbar,
-  useGridApiRef,
-} from "@mui/x-data-grid";
+import { DataGrid, GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import Checkbox from "@mui/material/Checkbox";
@@ -122,14 +117,7 @@ const PluginDataGrid: React.FC<PluginDataGridProps> = ({ pluginName }) => {
     <Box sx={{ flexGrow: 1 }}>
       <DataGrid
         disableDensitySelector
-        slots={{
-          toolbar: GridToolbar,
-        }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-          },
-        }}
+        showToolbar
         rows={data}
         density="compact"
         sx={{ height: "80vh" }}

@@ -24,7 +24,6 @@ from volatility3.cli import MuteProgress
 from volatility3.framework.layers.cloudstorage import S3FileSystemHandler
 from typing import Optional
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -211,9 +210,7 @@ def volweb_add_module(self, module: ModuleInterface) -> None:
 
 def volweb_add_layer(self, layer: DataLayerInterface) -> None:
     """Adds a layer to memory model.
-
     This will throw an exception if the required dependencies are not met
-
     Args:
         layer: the layer to add to the list of layers (based on layer.name)
     """
@@ -242,7 +239,10 @@ class DjangoRenderer(CLIRenderer):
             if not isinstance(x, interfaces.renderers.BaseAbsentValue)
             else None
         ),
-        "default": lambda x: x,
+        "default": lambda x: (
+            x if isinstance(x, (str, int, float, bool, type(None), list, dict))
+            else str(x)
+        ),
     }
     name = "JSON"
     structured_output = True
@@ -259,7 +259,6 @@ class DjangoRenderer(CLIRenderer):
         results = False
         if result:
             results = True
-
         VolatilityPlugin.objects.update_or_create(
             name=self.plugin["name"],
             icon=self.plugin["icon"],
@@ -329,7 +328,10 @@ class DictRenderer(CLIRenderer):
             if not isinstance(x, interfaces.renderers.BaseAbsentValue)
             else None
         ),
-        "default": lambda x: x,
+        "default": lambda x: (
+            x if isinstance(x, (str, int, float, bool, type(None), list, dict))
+            else str(x)
+        ),
     }
 
     name = "JSON"
@@ -448,8 +450,6 @@ def file_handler(output_dir):
 
 
 S3FileSystemHandler.default_open = volweb_open  # This is to set the correct AWS endpoint url when the source bucket is of type AWS.
-volatility3.symbols.__path__ = [
-    os.path.abspath("media/symbols")
-] + constants.SYMBOL_BASEPATHS  # This is to include the volweb symbols imported by the users.
+volatility3.symbols.__path__+= [os.path.abspath("media/symbols")]  # This is to include the volweb symbols imported by the users.
 interfaces.context.ModuleContainer.add_module = volweb_add_module  # A module requirement already present is throwing an exeception, we don't want this.
 interfaces.layers.LayerContainer.add_layer = volweb_add_layer  # An already present layer is throwing an exception, we don't want this either.

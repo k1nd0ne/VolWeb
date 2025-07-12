@@ -100,10 +100,11 @@ tzdata==2024.2
 uritemplate==4.1.1
 urllib3==2.2.3
 vine==5.1.0
-volatility3==2.11.0
+volatility3==2.26.0
 wcwidth==0.2.13
 wrapt==1.16.0
 yara-python==4.5.1
 yarl==1.14.0
 zipp==3.20.2
 zope.interface==7.1.1
+pillow==11.2.1

@@ -4,6 +4,7 @@ import logging
 import volatility3
 import traceback
 import os
+import shutil
 from volatility3.cli import MuteProgress
 from volatility3.framework.exceptions import UnsatisfiedException
 from .utils import (
@@ -12,6 +13,9 @@ from .utils import (
     build_timeline,
     fix_permissions,
 )
+from pathlib import Path
+from django.db import transaction
+
 from volatility3.plugins.linux.pslist import PsList
 from volatility3.plugins.linux.proc import Maps
 from volatility3.framework.plugins import construct_plugin
@@ -20,11 +24,13 @@ from .plugins.windows.volweb_main import VolWebMain as VolWebMainW
 from .plugins.windows.volweb_misc import VolWebMisc as VolWebMiscW
 from .plugins.linux.volweb_main import VolWebMain as VolWebMainL
 from .plugins.linux.volweb_misc import VolWebMisc as VolWebMiscL
-from volatility3.framework import contexts, automagic
+from volatility3.framework import contexts, automagic, constants
+from volatility3 import framework
+import volatility3.plugins
+from volatility3.framework.symbols.linux import extensions as linux_ext
 
 volatility3.framework.require_interface_version(2, 0, 0)
 logger = logging.getLogger(__name__)
-
 
 class VolatilityEngine:
     """
@@ -41,10 +47,43 @@ class VolatilityEngine:
             "output_path": f"media/{self.evidence.id}/",
         }
         self.base_config_path = "plugins"
+        self._modules_loaded = False
+        self._load_core_modules()
+
+    def _purge_previous_run(self) -> None:
+        """
+        Remove all VolWeb-generated artefacts linked to this Evidence
+        (database rows *and* exported files) so the forthcoming analysis
+        starts from a clean slate.
+        """
+        with transaction.atomic():
+            VolatilityPlugin.objects.filter(
+                evidence=self.evidence
+            ).delete()
+            EnrichedProcess.objects.filter(
+                evidence=self.evidence
+            ).delete()
+        artefact_dir = Path(f"media/{self.evidence.id}")
+        if artefact_dir.exists():
+            shutil.rmtree(artefact_dir, ignore_errors=True)
+        artefact_dir.mkdir(parents=True, exist_ok=True)
+
+
+    def _load_core_modules(self):
+        if self._modules_loaded:
+            return
+        from volatility3 import framework
+        import volatility3.plugins
+        from volatility3.framework.symbols.linux import extensions as linux_ext
+
+        framework.import_files(volatility3.plugins, True)   # plugins (all OSes)
+        framework.import_files(linux_ext, True)             # linux symbol ext.
+        self._modules_loaded = True
+
 
     def build_context(self, plugin):
-        self.plugin, self.metadata = plugin.popitem()
 
+        self.plugin, self.metadata = plugin.popitem()
         self.context = contexts.Context()
         available_automagics = automagic.available(self.context)
 
@@ -65,7 +104,6 @@ class VolatilityEngine:
             - Create a new context
             - Choose the automagics
             - Construct the plugin
-            - Put the result inside the django database using our custom renderer
         """
         constructed = construct_plugin(
             self.context,
@@ -170,6 +208,7 @@ class VolatilityEngine:
 
     def start_extraction(self):
         try:
+            self._purge_previous_run()
             logger.info("Starting extraction")
             self.evidence.status = 0  # Make sure we start at 0%
             os.makedirs(f"media/{self.evidence.id}", exist_ok=True)
@@ -178,10 +217,11 @@ class VolatilityEngine:
                 self.construct_windows_explorer()
             else:
                 self.start_linux_analysis()
+                self.construct_linux_explorer()
         except UnsatisfiedException as e:
             self.evidence.status = -1
             self.evidence.save()
-            logger.warning(f"Unsatisfied requirements: {str(e)}")
+            logger.error(f"{e.unsatisfied}")
         except Exception as e:
             self.evidence.status = -1
             self.evidence.save()
@@ -360,12 +400,72 @@ class VolatilityEngine:
                 for artefact in artefacts:
                     if not isinstance(artefact, list):
                         plugin_pid = artefact.get("PID") or artefact.get("Process ID")
-                        if plugin_pid and int(plugin_pid) == pid:
-                            # Ensure enriched process data contains an array of artefacts
-                            if plugin.name not in enriched_process_data:
-                                enriched_process_data[plugin.name] = []
-                            # Append the artefact to the array
-                            enriched_process_data[plugin.name].append(artefact)
+                        try:
+                            if plugin_pid and int(plugin_pid) == pid:
+                                # Ensure enriched process data contains an array of artefacts
+                                if plugin.name not in enriched_process_data:
+                                    enriched_process_data[plugin.name] = []
+                                # Append the artefact to the array
+                                enriched_process_data[plugin.name].append(artefact)
+                        except:
+                            logger.info(f"Unknown PID Found: {plugin_pid}")
+                            pass
+
+
+            # Save the enriched process data into the EnrichedProcess model
+            EnrichedProcess.objects.update_or_create(
+                evidence=self.evidence,
+                pid=pid,
+                defaults={"data": enriched_process_data},
+            )
+
+
+    def construct_linux_explorer(self):
+        # Get all VolatilityPlugin objects linked to this evidence
+        plugins = VolatilityPlugin.objects.filter(evidence=self.evidence)
+
+        # Get the pslist plugin's output, which contains the list of processes
+        try:
+            pslist_plugin = VolatilityPlugin.objects.get(
+                evidence=self.evidence, name="volatility3.plugins.linux.pslist.PsList"
+            )
+        except VolatilityPlugin.DoesNotExist:
+            logger.error("pslist plugin not found for this evidence")
+            return
+
+        pslist_artefacts = (
+            pslist_plugin.artefacts
+        )  # This should be a list of process dicts
+
+        # Iterate over each process in pslist
+        for process in pslist_artefacts:
+            pid = process.get("PID") or process.get("Process ID")
+            if pid is None:
+                continue  # Skip if no PID
+            pid = int(pid)
+
+            # Initialize enriched process data with pslist data
+            enriched_process_data = {"pslist": process}
+
+            # Iterate over other plugins linked to the same evidence
+            for plugin in plugins.exclude(id=pslist_plugin.id):
+                artefacts = plugin.artefacts
+                if not artefacts:
+                    continue
+                # Check if the PID matches in the plugin's artefacts
+                for artefact in artefacts:
+                    if not isinstance(artefact, list):
+                        plugin_pid = artefact.get("PID") or artefact.get("Process ID") or artefact.get("Pid")
+                        try:
+                            if plugin_pid and int(plugin_pid) == pid:
+                                # Ensure enriched process data contains an array of artefacts
+                                if plugin.name not in enriched_process_data:
+                                    enriched_process_data[plugin.name] = []
+                                # Append the artefact to the array
+                                enriched_process_data[plugin.name].append(artefact)
+                        except:
+                            logger.info(f"Unknown PID Found: {plugin_pid}")
+                            pass
 
             # Save the enriched process data into the EnrichedProcess model
             EnrichedProcess.objects.update_or_create(

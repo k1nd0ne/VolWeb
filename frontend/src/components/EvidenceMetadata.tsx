@@ -3,7 +3,7 @@ import axiosInstance from "../utils/axiosInstance";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { Box, CircularProgress } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import PluginList from "./Lists/PluginList";
 
 interface EvidenceMetadataProps {

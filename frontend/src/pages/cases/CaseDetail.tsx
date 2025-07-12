@@ -11,7 +11,7 @@ import {
   Stack,
   Container,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import EvidenceList from "../../components/Lists/EvidenceList";
 import CaseIndicatorsList from "../../components/Lists/CaseIndicatorsList";
 import StixButton from "../../components/StixButton";

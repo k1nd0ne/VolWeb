@@ -26,9 +26,10 @@ interface ProcessMetadataProps {
 
 const ValueText = styled("span")(({ theme }) => ({
   color: theme.palette.primary.main,
-  "&.wow64": {
-    color: "red",
-  },
+  // In case we identify some anomalies in the future
+  // "&.wow64": {
+  //   color: "red",
+  // },
 }));
 
 const ProcessMetadata: React.FC<ProcessMetadataProps> = ({
@@ -67,12 +68,7 @@ const ProcessMetadata: React.FC<ProcessMetadataProps> = ({
                         primary={
                           <>
                             {`${key}: `}
-                            <ValueText
-                              className={
-                                key === "WoW64" && value ? "wow64" : ""
-                              }
-                              sx={{ fontSize: "0.800rem" }}
-                            >
+                            <ValueText sx={{ fontSize: "0.800rem" }}>
                               {value ? value.toString() : "N/A"}
                             </ValueText>
                           </>
@@ -82,7 +78,7 @@ const ProcessMetadata: React.FC<ProcessMetadataProps> = ({
                   ),
               )
             ) : (
-              <></>
+              <>No Metadata</>
             )}
           </List>
           <Box sx={{ display: "flex", justifyContent: "left", mt: 2 }}>

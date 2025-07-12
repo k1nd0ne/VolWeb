@@ -4,11 +4,11 @@ import { Card, CardContent, Divider } from "@mui/material";
 import MemoryIcon from "@mui/icons-material/Memory";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import { styled } from "@mui/material/styles";
-import { TreeItem2, TreeItem2Props } from "@mui/x-tree-view/TreeItem2";
+import { TreeItem, TreeItemProps } from "@mui/x-tree-view/TreeItem";
 import { treeItemClasses } from "@mui/x-tree-view/TreeItem";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import { TreeViewBaseItem } from "@mui/x-tree-view/models";
-import { useTreeItem2Utils } from "@mui/x-tree-view/hooks";
+import { useTreeItemUtils } from "@mui/x-tree-view/hooks";
 import axiosInstance from "../../../../utils/axiosInstance";
 import { useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
@@ -24,10 +24,10 @@ interface CustomLabelProps {
 
 const CustomTreeItem = styled(
   React.forwardRef(function CustomTreeItem(
-    props: TreeItem2Props,
+    props: TreeItemProps,
     ref: React.Ref<HTMLLIElement>,
   ) {
-    const { publicAPI } = useTreeItem2Utils({
+    const { publicAPI } = useTreeItemUtils({
       itemId: props.itemId,
       children: props.children,
     });
@@ -35,7 +35,7 @@ const CustomTreeItem = styled(
     const item = publicAPI.getItem(props.itemId);
 
     return (
-      <TreeItem2
+      <TreeItem
         {...props}
         ref={ref}
         slots={{

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import PsTree from "./PsTree";
 import ProcessMetadata from "./ProcessMetadata";
 import PluginDashboard from "../../PluginDashboard";

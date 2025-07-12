@@ -74,25 +74,12 @@ const WindowsFileScanButton: React.FC = () => {
           </Button>
         </span>
       </Tooltip>
-      <Dialog fullScreen open={open} onClose={handleClose}>
-        <DialogTitle>
-          FileScan
-          <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleClose}
-            aria-label="close"
-            sx={{ position: "absolute", right: 8, top: 8 }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+      <Dialog fullWidth={true} maxWidth="xl" open={open} onClose={handleClose}>
+        <DialogTitle>FileScan</DialogTitle>
         <Divider sx={{ marginBottom: 1 }} />
 
         <DialogContent>
-          <Paper>
-            <FileScan data={data} />
-          </Paper>
+          <FileScan data={data} />
         </DialogContent>
       </Dialog>
     </>

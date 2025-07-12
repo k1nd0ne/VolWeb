@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Typography, CircularProgress, Box } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import axiosInstance from "../../utils/axiosInstance";
 import DonutChart from "../../components/Charts/DonutChart";
 import LineChart from "../../components/Charts/LineChart";

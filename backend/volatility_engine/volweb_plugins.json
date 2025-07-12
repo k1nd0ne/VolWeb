@@ -157,7 +157,7 @@
         "category": "Security",
         "display": "True"
       },
-      "volatility3.plugins.windows.hashdump.Hashdump": {
+      "volatility3.plugins.windows.registry.hashdump.Hashdump": {
         "icon": "Security",
         "description": "Dumps user hashes from memory.",
         "category": "Security",
@@ -181,7 +181,7 @@
         "category": "Processes",
         "display": "True"
       },
-      "volatility3.plugins.windows.lsadump.Lsadump": {
+      "volatility3.plugins.windows.registry.lsadump.Lsadump": {
         "icon": "Lock",
         "description": "Dumps lsa secrets from memory.",
         "category": "Security",
@@ -295,7 +295,7 @@
         "category": "Kernel",
         "display": "True"
       },
-      "volatility3.plugins.windows.amcache.Amcache": {
+      "volatility3.plugins.windows.registry.amcache.Amcache": {
         "icon": "Cached",
         "description": "Extract information on executed applications from the AmCache.",
         "category": "Processes",
@@ -325,13 +325,13 @@
         "category": "Processes",
         "display": "True"
       },
-      "volatility3.plugins.windows.scheduled_tasks.ScheduledTasks": {
+      "volatility3.plugins.windows.registry.scheduled_tasks.ScheduledTasks": {
         "icon": "PendingActionsIcon",
         "description": "Decodes scheduled task information from the Windows registry",
         "category": "Registry",
         "display": "True"
       },
-      "volatility3.plugins.windows.unhoooked_system_calls.unhooked_system_calls": {
+      "volatility3.plugins.windows.unhooked_system_calls.unhooked_system_calls": {
         "icon": "Phishing",
         "description": "Looks for signs of Skeleton Key malware",
         "category": "Malware",
@@ -342,10 +342,64 @@
         "description": "Lists the system call table.",
         "category": "Malware",
         "display": "True"
+      },
+      "volatility3.plugins.windows.deskscan.DeskScan": {
+        "icon": "DesktopWindows",
+        "description": "Scans for the Desktop instances of each Window Station.",
+        "category": "GUI",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.desktops.Desktops": {
+        "icon": "DesktopMac",
+        "description": "Enumerates the Desktop instances of each Window Station.",
+        "category": "GUI",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.direct_system_calls.DirectSystemCalls": {
+        "icon": "CallMade",
+        "description": "Detects the Direct System Call technique used to bypass EDRs.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.indirect_system_calls.IndirectSystemCalls": {
+        "icon": "CallMissed",
+        "description": "Detects Indirect System Call technique used to evade detection.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.registry.getcellroutine.GetCellRoutine": {
+        "icon": "RuleFolder",
+        "description": "Reports registry hives with a hooked GetCellRoutine handler.",
+        "category": "Registry",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.suspended_threads.SuspendedThreads": {
+        "icon": "PauseCircle",
+        "description": "Enumerates suspended threads.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.verinfo.VerInfo": {
+        "icon": "Verified",
+        "description": "Lists version information from PE files.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.windows.Windows": {
+        "icon": "Window",
+        "description": "Enumerates the Windows of Desktop instances.",
+        "category": "GUI",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.windowstations.WindowStations": {
+        "icon": "Hub",
+        "description": "Scans for top level Windows Stations.",
+        "category": "GUI",
+        "display": "True"
       }
     },
     "linux": {
-      "volatility_engine.plugins.linux.patched_pstree.PsTree": {
+      "volatility3.plugins.linux.pstree.PsTree": {
         "name": "volatility3.plugins.linux.pstree.PsTree",
         "icon": "AccountTree",
         "description": "Plugin for listing processes in a tree based on their parent process ID.",
@@ -519,6 +573,78 @@
         "description": "Lists all files from memory",
         "category": "Filesystem",
         "display": "False"
+      },
+      "volatility3.plugins.linux.graphics.fbdev.Fbdev": {
+        "icon": "Photo",
+        "description": "Extract framebuffers from the fbdev graphics subsystem",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.ip.Addr": {
+        "icon": "SettingsInputAntenna",
+        "description": "Lists network interface information for all devices",
+        "category": "Network",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.ip.Link": {
+        "icon": "SettingsInputComponent",
+        "description": "Lists information about network interfaces similar to `ip link show`",
+        "category": "Network",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.kallsyms.Kallsyms": {
+        "icon": "TextFormat",
+        "description": "Kallsyms symbols enumeration plugin.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.library_list.LibraryList": {
+        "icon": "LibraryBooks",
+        "description": "Enumerate libraries loaded into processes",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.modxview.Modxview": {
+        "icon": "Visibility",
+        "description": "Centralizes module check results to efficiently spot modules presence and taints.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.pagecache.RecoverFs": {
+        "icon": "Archive",
+        "description": "Recovers the cached filesystem into a compressed tarball.",
+        "category": "Filesystem",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.pidhashtable.PIDHashTable": {
+        "icon": "123",
+        "description": "Enumerates processes through the PID hash table",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.pscallstack.PsCallStack": {
+        "icon": "StackedBarChart",
+        "description": "Enumerates the call stack of each task",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.tracing.ftrace.CheckFtrace": {
+        "icon": "Timeline",
+        "description": "Detect ftrace hooking",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.tracing.perf_events.PerfEvents": {
+        "icon": "TrendingUp",
+        "description": "Lists performance events for each process.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.tracing.tracepoints.CheckTracepoints": {
+        "icon": "BugReport",
+        "description": "Detect tracepoints hooking",
+        "category": "Malware",
+        "display": "True"
       }
     }
   }

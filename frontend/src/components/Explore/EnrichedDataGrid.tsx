@@ -39,6 +39,7 @@ const EnrichedDataGrid: React.FC<EnrichedDataGridProps> = ({ data }) => {
       rows={data.map((row, index) => ({ id: index, ...row }))}
       columns={columns}
       density="compact"
+      showToolbar={true}
       getRowId={(row) => row.id as string | number}
     />
   );

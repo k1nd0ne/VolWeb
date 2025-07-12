@@ -5,7 +5,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 
-@shared_task(name="Windows.Engine")
+@shared_task(name="VolWeb.Engine")
 def start_extraction(evidence_id):
     """
     This task will extract all the artefacts using different plugins

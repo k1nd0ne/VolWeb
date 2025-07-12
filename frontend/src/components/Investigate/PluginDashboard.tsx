@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import {
   Card,
   CardContent,
@@ -9,14 +9,12 @@ import {
   Button,
   Dialog,
   DialogTitle,
-  IconButton,
   DialogContent,
   CircularProgress,
   Tooltip,
-  Paper,
 } from "@mui/material";
 import * as Icons from "@mui/icons-material";
-import { HomeRepairService, Close } from "@mui/icons-material";
+import { HomeRepairService } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import PluginDataGrid from "./PluginDataGrid";
@@ -192,24 +190,11 @@ const PluginDashboard: React.FC<PluginDashboardProps> = ({ evidence }) => {
           },
         }}
       >
-        <DialogTitle>
-          {currentPlugin ? currentPlugin.name : ""}
-          <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleClose}
-            aria-label="close"
-            sx={{ position: "absolute", right: 8, top: 8 }}
-          >
-            <Close />
-          </IconButton>
-        </DialogTitle>
+        <DialogTitle>{currentPlugin ? currentPlugin.name : ""}</DialogTitle>
         <DialogContent>
-          <Paper>
-            <PluginDataGrid
-              pluginName={currentPlugin ? currentPlugin.name : ""}
-            />
-          </Paper>
+          <PluginDataGrid
+            pluginName={currentPlugin ? currentPlugin.name : ""}
+          />
         </DialogContent>
       </Dialog>
     </Box>
