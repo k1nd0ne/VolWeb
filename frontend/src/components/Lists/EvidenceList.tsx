@@ -1,6 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridRowSelectionModel,
+} from "@mui/x-data-grid";
 import axiosInstance from "../../utils/axiosInstance";
 import { AxiosError } from "axios";
 import EvidenceCreationDialog from "../Dialogs/EvidenceCreationDialog";
@@ -46,8 +51,12 @@ function EvidenceList({ caseId }: EvidenceListProps) {
   const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(
     null,
   );
-  const [checked, setChecked] = useState<number[]>([]);
   const [deleteMultiple, setDeleteMultiple] = useState(false);
+
+  const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({
+    type: "include",
+    ids: new Set(),
+  });
 
   const { display_message } = useSnackbar();
 
@@ -103,9 +112,10 @@ function EvidenceList({ caseId }: EvidenceListProps) {
           setEvidenceData((prevData) =>
             prevData.filter((evidence) => evidence.id !== message.id),
           );
-          setChecked((prevChecked) =>
-            prevChecked.filter((id) => id !== message.id),
-          );
+          setSelectionModel((prev) => ({
+            type: "include",
+            ids: new Set([...prev.ids].filter((id) => id !== message.id)),
+          }));
         }
       };
 
@@ -180,6 +190,8 @@ function EvidenceList({ caseId }: EvidenceListProps) {
     setOpenDeleteDialog(true);
   };
 
+  const selectedIds = [...selectionModel.ids] as number[];
+
   const handleConfirmDelete = async () => {
     if (selectedEvidence && !deleteMultiple) {
       try {
@@ -213,10 +225,10 @@ function EvidenceList({ caseId }: EvidenceListProps) {
   const handleDeleteSelected = async () => {
     try {
       await Promise.all(
-        checked.map((id) => axiosInstance.delete(`/api/evidences/${id}/`)),
+        selectedIds.map((id) => axiosInstance.delete(`/api/evidences/${id}/`)),
       );
       display_message("success", "Selected evidences deleted.");
-      setChecked([]);
+      setSelectionModel({ type: "include", ids: new Set() });
     } catch (error) {
       display_message(
         "error",
@@ -392,11 +404,12 @@ function EvidenceList({ caseId }: EvidenceListProps) {
         columns={columns}
         loading={!isConnected}
         checkboxSelection
-        onRowSelectionModelChange={(newSelection) => {
-          setChecked(newSelection as number[]);
-        }}
+        rowSelectionModel={selectionModel}
+        onRowSelectionModelChange={(newSelection) =>
+          setSelectionModel(newSelection as GridRowSelectionModel)
+        }
       />
-      {checked.length > 0 && (
+      {selectedIds.length > 0 && (
         <Fab
           color="secondary"
           aria-label="delete"

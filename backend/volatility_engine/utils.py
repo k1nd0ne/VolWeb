@@ -153,13 +153,12 @@ def build_timeline(data):
     nb_event = 1
     actual_date = ""
     try:
-        print(data)
         saved_date = data[0]["Created Date"]
     except:
         raise GraphException("Could not generate timeline graph")
-    for i in data:
+    for plugin in data:
         try:
-            actual_date = str(i["Created Date"])
+            actual_date = str(plugin["Created Date"])
             if actual_date != saved_date:
                 timeline.append([saved_date, nb_event])
                 saved_date = actual_date
@@ -168,7 +167,6 @@ def build_timeline(data):
                 nb_event += 1
         except:
             raise GraphException("Could not generate timeline graph")
-    print(timeline)
     return timeline
 
 
@@ -259,6 +257,8 @@ class DjangoRenderer(CLIRenderer):
         results = False
         if result:
             results = True
+            if self.plugin["name"] == "volatility3.plugins.timeliner.Timeliner":
+                result[:] = [r for r in result if r.get("Plugin") != "MFTScan"]
         VolatilityPlugin.objects.update_or_create(
             name=self.plugin["name"],
             icon=self.plugin["icon"],

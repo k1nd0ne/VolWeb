@@ -1,5 +1,10 @@
 import { useEffect, useState, useRef } from "react";
-import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridRowSelectionModel,
+} from "@mui/x-data-grid";
 import axiosInstance from "../../utils/axiosInstance";
 import SymbolCreationDialog from "../Dialogs/SymbolCreationDialog";
 import {
@@ -29,10 +34,13 @@ function SymbolsList() {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openCreationDialog, setOpenCreationDialog] = useState<boolean>(false);
   const [selectedSymbol, setSelectedSymbol] = useState<Symbol | null>(null);
-  const [checked, setChecked] = useState<number[]>([]);
   const [deleteMultiple, setDeleteMultiple] = useState(false);
 
-  // WebSocket related state
+  const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({
+    type: "include",
+    ids: new Set(),
+  });
+
   const [isConnected, setIsConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
   const retryInterval = useRef<number | null>(null);
@@ -89,9 +97,10 @@ function SymbolsList() {
           setSymbolData((prevData) =>
             prevData.filter((symbol) => symbol.id !== message.id),
           );
-          setChecked((prevChecked) =>
-            prevChecked.filter((id) => id !== message.id),
-          );
+          setSelectionModel((prev) => ({
+            type: "include",
+            ids: new Set([...prev.ids].filter((id) => id !== message.id)),
+          }));
         }
       };
 
@@ -102,7 +111,6 @@ function SymbolsList() {
 
     connectWebSocket();
 
-    // Fetch initial symbol data
     axiosInstance
       .get("/api/symbols/")
       .then((response) => {
@@ -138,6 +146,8 @@ function SymbolsList() {
     setOpenDeleteDialog(true);
   };
 
+  const selectedIds = [...selectionModel.ids] as number[];
+
   const handleConfirmDelete = async () => {
     if (selectedSymbol && !deleteMultiple) {
       try {
@@ -157,10 +167,10 @@ function SymbolsList() {
   const handleDeleteSelected = async () => {
     try {
       await Promise.all(
-        checked.map((id) => axiosInstance.delete(`/api/symbols/${id}/`)),
+        selectedIds.map((id) => axiosInstance.delete(`/api/symbols/${id}/`)),
       );
       display_message("success", `Selected symbols deleted.`);
-      setChecked([]);
+      setSelectionModel({ type: "include", ids: new Set() });
     } catch (error) {
       display_message("error", `Error deleting the symbols: ${error}`);
     } finally {
@@ -248,11 +258,12 @@ function SymbolsList() {
         columns={columns}
         loading={!isConnected}
         checkboxSelection
-        onRowSelectionModelChange={(newSelection) => {
-          setChecked(newSelection as number[]);
-        }}
+        rowSelectionModel={selectionModel}
+        onRowSelectionModelChange={(newSelection) =>
+          setSelectionModel(newSelection as GridRowSelectionModel)
+        }
       />
-      {checked.length > 0 && (
+      {selectedIds.length > 0 && (
         <Fab
           color="secondary"
           aria-label="delete"

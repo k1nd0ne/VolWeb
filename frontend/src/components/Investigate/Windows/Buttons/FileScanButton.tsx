@@ -7,11 +7,8 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  IconButton,
   Divider,
-  Paper,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import { FolderOpen } from "@mui/icons-material";
 import { Artefact } from "../../../../types";
 import FileScan from "../Components/FileScan";

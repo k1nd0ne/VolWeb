@@ -9,7 +9,7 @@ import { Settings } from "sigma/settings";
 import { NodeDisplayData, PartialButFor } from "sigma/types";
 import GraphDataController from "./GraphDataController";
 import GraphEventsController from "./GraphEventsController";
-import { ProcessInfo, EnrichedProcessData } from "../../../types";
+import { EnrichedProcessData, LinuxProcessInfo } from "../../../types";
 import {
   CenterFocusWeak,
   ZoomIn,
@@ -44,13 +44,12 @@ function drawLabel(
 }
 
 interface ProcessGraphProps {
-  data: ProcessInfo[];
+  data: LinuxProcessInfo[];
 }
 
 const ProcessGraph: FC<ProcessGraphProps> = ({ data }) => {
-  const [selectedProcess, setSelectedProcess] = useState<ProcessInfo | null>(
-    null,
-  );
+  const [selectedProcess, setSelectedProcess] =
+    useState<LinuxProcessInfo | null>(null);
 
   const [show, setShow] = useState<boolean>(false);
 

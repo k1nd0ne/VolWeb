@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../utils/axiosInstance";
 import ProcessGraph from "./ProcessGraph";
-import { ProcessInfo, Evidence } from "../../../types";
+import { LinuxProcessInfo, Evidence } from "../../../types";
 import { Box, CircularProgress } from "@mui/material";
 import { annotateProcessData } from "../../../utils/processAnalysis";
 interface ExploreProps {
@@ -10,7 +10,7 @@ interface ExploreProps {
 import { useSnackbar } from "../../SnackbarProvider";
 
 const ExploreLinux: React.FC<ExploreProps> = ({ evidence }) => {
-  const [data, setData] = useState<ProcessInfo[]>([]); // Initialize with an empty array
+  const [data, setData] = useState<LinuxProcessInfo[]>([]); // Initialize with an empty array
   const { display_message } = useSnackbar();
 
   useEffect(() => {

@@ -1,15 +1,6 @@
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from evidences.models import Evidence
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-from django.db.models.signals import post_save, post_delete
-from evidences.serializers import EvidenceSerializer
 from celery import states
 from celery.signals import before_task_publish
 from django_celery_results.models import TaskResult
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
 
 
 @before_task_publish.connect

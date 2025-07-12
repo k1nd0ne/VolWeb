@@ -1,0 +1,305 @@
+################################################################################
+# 1.  PVCs
+################################################################################
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: postgres-data }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 1Gi } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: redis-data }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 500Mi } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: staticfiles }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 1Gi } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: media }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 1Gi } }
+---
+################################################################################
+# 2.  PostgreSQL
+################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: volweb-postgresdb }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: volweb-postgresdb } }
+  template:
+    metadata: { labels: { app: volweb-postgresdb } }
+    spec:
+      containers:
+        - name: volweb-postgresdb
+          image: postgres:14.1
+          ports: [{ containerPort: 5432 }]
+          envFrom:
+            - secretRef: { name: volweb-secrets }
+          volumeMounts:
+            - { name: postgres-data, mountPath: /var/lib/postgresql/data }
+      volumes:
+        - {
+            name: postgres-data,
+            persistentVolumeClaim: { claimName: postgres-data },
+          }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: volweb-postgresdb }
+spec:
+  selector: { app: volweb-postgresdb }
+  ports: [{ protocol: TCP, port: 5432, targetPort: 5432 }]
+---
+################################################################################
+# 3.  Redis (unchanged – no env needed)
+################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: volweb-redis }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: volweb-redis } }
+  template:
+    metadata: { labels: { app: volweb-redis } }
+    spec:
+      containers:
+        - name: volweb-redis
+          image: redis:latest
+          command: ["redis-server", "--appendonly", "yes"]
+          ports: [{ containerPort: 6379 }]
+          volumeMounts:
+            - { name: redis-data, mountPath: /data }
+      volumes:
+        - { name: redis-data, persistentVolumeClaim: { claimName: redis-data } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: volweb-redis }
+spec:
+  selector: { app: volweb-redis }
+  ports: [{ protocol: TCP, port: 6379, targetPort: 6379 }]
+---
+################################################################################
+# 4.  Django backend
+################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: volweb-backend }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: volweb-backend } }
+  template:
+    metadata: { labels: { app: volweb-backend } }
+    spec:
+      containers:
+        - name: volweb-backend
+          image: forensicxlab/volweb-backend:latest
+          args:
+            [
+              "daphne",
+              "-b",
+              "0.0.0.0",
+              "-p",
+              "8000",
+              "backend.asgi:application",
+            ]
+          ports: [{ containerPort: 8000 }]
+          envFrom:
+            - secretRef: { name: volweb-secrets }
+          volumeMounts:
+            - { name: staticfiles, mountPath: /home/app/web/staticfiles }
+            - { name: media, mountPath: /home/app/web/media }
+      volumes:
+        - {
+            name: staticfiles,
+            persistentVolumeClaim: { claimName: staticfiles },
+          }
+        - { name: media, persistentVolumeClaim: { claimName: media } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: volweb-backend }
+spec:
+  selector: { app: volweb-backend }
+  ports: [{ protocol: TCP, port: 8000, targetPort: 8000 }]
+---
+################################################################################
+# 5.  Celery workers
+################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: volweb-workers }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: volweb-workers } }
+  template:
+    metadata: { labels: { app: volweb-workers } }
+    spec:
+      containers:
+        - name: volweb-workers
+          image: forensicxlab/volweb-backend:latest
+          command: ["celery", "-A", "backend", "worker", "--loglevel=INFO"]
+          envFrom:
+            - secretRef: { name: volweb-secrets }
+          volumeMounts:
+            - { name: media, mountPath: /home/app/web/media }
+      volumes:
+        - { name: media, persistentVolumeClaim: { claimName: media } }
+---
+################################################################################
+# 6.  React frontend
+################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: volweb-frontend }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: volweb-frontend } }
+  template:
+    metadata: { labels: { app: volweb-frontend } }
+    spec:
+      containers:
+        - name: volweb-frontend
+          image: forensicxlab/volweb-frontend:latest
+          ports: [{ containerPort: 3000 }]
+          volumeMounts:
+            - { name: staticfiles, mountPath: /home/app/web/staticfiles }
+            - { name: media, mountPath: /home/app/web/media }
+      volumes:
+        - {
+            name: staticfiles,
+            persistentVolumeClaim: { claimName: staticfiles },
+          }
+        - { name: media, persistentVolumeClaim: { claimName: media } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: volweb-frontend }
+spec:
+  selector: { app: volweb-frontend }
+  ports: [{ protocol: TCP, port: 3000, targetPort: 3000 }]
+---
+################################################################################
+# 7.  Production NGINX – ConfigMap with the HTTPS
+################################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: volweb-nginx-config }
+data:
+  nginx.conf: |
+    worker_processes  1;
+    events { worker_connections  1024; }
+
+    http {
+      include       /etc/nginx/mime.types;
+      default_type  application/octet-stream;
+
+      map $http_upgrade $connection_upgrade {
+        default upgrade;
+        ''      close;
+      }
+
+      upstream volweb-platform {
+        server volweb-frontend:3000;
+      }
+
+      upstream websocket {
+        server volweb-backend:8000;
+      }
+
+      server {
+        listen 80;
+        server_name localhost;
+        location / { return 301 https://$host$request_uri; }
+      }
+
+      server {
+        listen 443 ssl http2;
+        server_name localhost;
+
+        ssl_certificate     /etc/nginx/certs/tls.crt;
+        ssl_certificate_key /etc/nginx/certs/tls.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_session_cache shared:SSL:1m;
+        ssl_prefer_server_ciphers on;
+        ssl_session_tickets off;
+        ssl_ecdh_curve secp384r1;
+
+        client_max_body_size 1G;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+        location / {
+          # strip prefix before forwarding
+          proxy_pass http://volweb-platform;
+          proxy_set_header Host              $host;
+          proxy_set_header X-Real-IP         $remote_addr;
+          proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade           $http_upgrade;
+          proxy_set_header Connection        $connection_upgrade;
+          proxy_redirect off;
+        }
+      }
+    }
+---
+################################################################################
+# 8.  NGINX Deployment
+################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: volweb-nginx }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: volweb-nginx } }
+  template:
+    metadata: { labels: { app: volweb-nginx } }
+    spec:
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: volweb-nginx-config
+            items: [{ key: nginx.conf, path: nginx.conf }]
+        - name: tls-certs
+          secret:
+            secretName: volweb-tls
+      containers:
+        - name: nginx
+          image: nginx:1.25-alpine
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          volumeMounts:
+            - {
+                name: nginx-config,
+                subPath: nginx.conf,
+                mountPath: /etc/nginx/nginx.conf,
+              }
+            - { name: tls-certs, mountPath: /etc/nginx/certs, readOnly: true }
+---
+################################################################################
+# 9.  NGINX Service
+################################################################################
+apiVersion: v1
+kind: Service
+metadata: { name: volweb-nginx }
+spec:
+  type: LoadBalancer # change to NodePort/ClusterIP if required
+  selector: { app: volweb-nginx }
+  ports:
+    - { name: http, port: 80, targetPort: 80, protocol: TCP }
+    - { name: https, port: 443, targetPort: 443, protocol: TCP }

@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridRowSelectionModel,
+} from "@mui/x-data-grid";
 import {
   IconButton,
   Dialog,
@@ -28,15 +33,17 @@ import { useSnackbar } from "../SnackbarProvider";
 
 function CaseList() {
   const navigate = useNavigate();
-  const [checked, setChecked] = useState<number[]>([]);
+  const { display_message } = useSnackbar();
+
+  const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({
+    type: "include",
+    ids: new Set(),
+  });
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
-
   const [caseDialogOpen, setCaseDialogOpen] = useState(false);
   const [caseData, setCaseData] = useState<Case[]>([]);
   const [deleteMultiple, setDeleteMultiple] = useState(false);
-
-  const { display_message } = useSnackbar();
 
   const [isConnected, setIsConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
@@ -96,7 +103,10 @@ function CaseList() {
           setCaseData((prevData) =>
             prevData.filter((caseItem) => caseItem.id !== message.id),
           );
-          setChecked([]);
+          setSelectionModel({
+            type: "include",
+            ids: new Set(),
+          });
         }
       };
 
@@ -131,14 +141,31 @@ function CaseList() {
     display_message("success", "Case created.");
   };
 
+  const selectedIds = [...selectionModel.ids] as number[];
+
   const handleDeleteClick = (row: Case) => {
     setSelectedCase(row);
-    setOpenDialog(true);
     setDeleteMultiple(false);
+    setOpenDialog(true);
   };
 
   const handleConfirmDelete = async () => {
-    if (selectedCase && !deleteMultiple) {
+    if (deleteMultiple) {
+      try {
+        await Promise.all(
+          selectedIds.map((id) => axiosInstance.delete(`/api/cases/${id}/`)),
+        );
+        display_message("success", "Selected cases deleted.");
+        setSelectionModel({
+          type: "include",
+          ids: new Set(),
+        });
+      } catch {
+        display_message("error", "Error deleting selected cases");
+      } finally {
+        setOpenDialog(false);
+      }
+    } else if (selectedCase) {
       try {
         await axiosInstance.delete(`/api/cases/${selectedCase.id}/`);
         display_message("success", "Case deleted.");
@@ -148,22 +175,6 @@ function CaseList() {
         setOpenDialog(false);
         setSelectedCase(null);
       }
-    } else if (deleteMultiple) {
-      handleDeleteSelected();
-    }
-  };
-
-  const handleDeleteSelected = async () => {
-    try {
-      await Promise.all(
-        checked.map((id) => axiosInstance.delete(`/api/cases/${id}/`)),
-      );
-      display_message("success", "Selected cases deleted.");
-      setChecked([]);
-    } catch {
-      display_message("error", "Error deleting selected cases");
-    } finally {
-      setOpenDialog(false);
     }
   };
 
@@ -180,39 +191,41 @@ function CaseList() {
     {
       field: "name",
       headerName: "Case Name",
+      flex: 1,
       renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Work style={{ marginRight: 8 }} />
           {params.value}
         </div>
       ),
-      flex: 1,
     },
     {
       field: "description",
       headerName: "Description",
+      flex: 2,
       renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Info style={{ marginRight: 8 }} />
           {params.value}
         </div>
       ),
-      flex: 2,
     },
     {
       field: "last_update",
       headerName: "Last Update",
+      flex: 1,
       renderCell: (params: GridRenderCellParams) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <CalendarToday style={{ marginRight: 8 }} />
           {params.value}
         </div>
       ),
-      flex: 1,
     },
     {
       field: "actions",
       headerName: "Actions",
+      flex: 1,
+      sortable: false,
       renderCell: (params: GridRenderCellParams) => (
         <>
           <Tooltip title="Review case">
@@ -235,8 +248,6 @@ function CaseList() {
           </Tooltip>
         </>
       ),
-      sortable: false,
-      flex: 1,
     },
   ];
 
@@ -249,9 +260,10 @@ function CaseList() {
         rows={caseData}
         loading={!isConnected}
         checkboxSelection
-        onRowSelectionModelChange={(selection) => {
-          setChecked(selection as number[]);
-        }}
+        rowSelectionModel={selectionModel}
+        onRowSelectionModelChange={(newSelection) =>
+          setSelectionModel(newSelection as GridRowSelectionModel)
+        }
       />
       <Fab
         color="primary"
@@ -261,7 +273,7 @@ function CaseList() {
       >
         <AddIcon />
       </Fab>
-      {checked.length > 0 && (
+      {selectedIds.length > 0 && (
         <Fab
           color="secondary"
           aria-label="delete"

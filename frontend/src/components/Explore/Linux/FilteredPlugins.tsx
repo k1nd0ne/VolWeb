@@ -8,10 +8,10 @@ import {
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import EnrichedDataGrid from "../EnrichedDataGrid";
-import { ProcessInfo, EnrichedProcessData } from "../../../types";
+import { LinuxProcessInfo, EnrichedProcessData } from "../../../types";
 
 interface FilteredPluginsProps {
-  process: ProcessInfo;
+  process: LinuxProcessInfo;
   enrichedData: EnrichedProcessData | null;
   show: boolean;
 }

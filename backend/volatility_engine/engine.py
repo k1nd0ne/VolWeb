@@ -24,7 +24,7 @@ from .plugins.windows.volweb_main import VolWebMain as VolWebMainW
 from .plugins.windows.volweb_misc import VolWebMisc as VolWebMiscW
 from .plugins.linux.volweb_main import VolWebMain as VolWebMainL
 from .plugins.linux.volweb_misc import VolWebMisc as VolWebMiscL
-from volatility3.framework import contexts, automagic, constants
+from volatility3.framework import contexts, automagic
 from volatility3 import framework
 import volatility3.plugins
 from volatility3.framework.symbols.linux import extensions as linux_ext
@@ -72,9 +72,7 @@ class VolatilityEngine:
     def _load_core_modules(self):
         if self._modules_loaded:
             return
-        from volatility3 import framework
-        import volatility3.plugins
-        from volatility3.framework.symbols.linux import extensions as linux_ext
+
 
         framework.import_files(volatility3.plugins, True)   # plugins (all OSes)
         framework.import_files(linux_ext, True)             # linux symbol ext.
@@ -408,7 +406,6 @@ class VolatilityEngine:
                                 # Append the artefact to the array
                                 enriched_process_data[plugin.name].append(artefact)
                         except:
-                            logger.info(f"Unknown PID Found: {plugin_pid}")
                             pass
 
 
@@ -464,7 +461,6 @@ class VolatilityEngine:
                                 # Append the artefact to the array
                                 enriched_process_data[plugin.name].append(artefact)
                         except:
-                            logger.info(f"Unknown PID Found: {plugin_pid}")
                             pass
 
             # Save the enriched process data into the EnrichedProcess model

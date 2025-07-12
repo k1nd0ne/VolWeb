@@ -334,6 +334,7 @@ const Timeliner: React.FC = () => {
           density="compact"
           getRowId={(row) => row.id}
           pagination
+          showToolbar={true}
           autosizeOnMount
           loading={loading}
           autosizeOptions={autosizeOptions}

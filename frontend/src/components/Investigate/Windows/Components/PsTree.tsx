@@ -161,13 +161,14 @@ const PsTree: React.FC<PsTreeProps> = ({ setProcessMetadata }) => {
   }, [id, fetchProcessMetadata, display_message]);
 
   const handleSelect = (
-    _event: React.SyntheticEvent,
-    selected: string | null,
+    _event: React.SyntheticEvent | null,
+    itemIds: string | string[] | null,
   ) => {
-    if (selected) {
-      console.log(`Selected PID: ${selected}`);
-      setSelected(selected);
-      fetchProcessMetadata(Number(selected));
+    const selectedId = Array.isArray(itemIds) ? itemIds[0] : itemIds;
+    if (selectedId) {
+      console.log(`Selected PID: ${selectedId}`);
+      setSelected(selectedId);
+      fetchProcessMetadata(Number(selectedId));
     }
   };
 
