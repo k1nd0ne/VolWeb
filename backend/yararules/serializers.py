@@ -36,7 +36,33 @@ class YaraRuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = YaraRule
         fields = "__all__"
-    
+
+    def validate(self, attrs):
+        """Reject a manual create/update whose content duplicates an existing rule."""
+        from yararules.utils import compute_content_hash, backfill_content_hashes
+
+        rule_content = attrs.get("rule_content")
+        if rule_content is None and self.instance is not None:
+            # Partial update not touching the content.
+            return attrs
+
+        backfill_content_hashes()
+
+        content_hash = compute_content_hash(rule_content)
+        qs = YaraRule.objects.filter(content_hash=content_hash)
+        if self.instance is not None:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        existing = qs.first()
+        if existing is not None:
+            raise serializers.ValidationError({
+                "rule_content": (
+                    f"A YARA rule with identical content already exists "
+                    f"(name: '{existing.name}', id: {existing.id})."
+                )
+            })
+        return attrs
+
     def to_representation(self, instance):
         """
         Override to add linked_yararuleset information safely

@@ -9,6 +9,7 @@ from .models import Case, UploadSession
 from evidences.models import Evidence
 from .serializers import CaseSerializer, InitiateUploadSerializer, UploadChunkSerializer, CompleteUploadSerializer
 from core.permissions import get_accessible_cases, check_case_access
+from core.validators import safe_media_path
 import os
 import shutil
 
@@ -69,8 +70,11 @@ class CompleteUploadView(APIView):
             except ValueError:
                 return Response({'error': 'Invalid chunk filenames.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            final_filename = upload_session.filename
-            final_file_path = os.path.join(settings.MEDIA_ROOT, 'evidences', final_filename)
+            try:
+                final_file_path = safe_media_path('evidences', upload_session.filename)
+            except ValueError:
+                return Response({'error': 'Invalid filename.'}, status=status.HTTP_400_BAD_REQUEST)
+            final_filename = os.path.basename(final_file_path)
             os.makedirs(os.path.dirname(final_file_path), exist_ok=True)
 
             # Assemble the chunks into the final file
@@ -85,7 +89,7 @@ class CompleteUploadView(APIView):
             # Create the Evidence record
             evidence = Evidence.objects.create(
                 name=final_filename,
-                url=f"file://{os.path.join(settings.MEDIA_ROOT, 'evidences', final_filename)}",
+                url=f"file://{final_file_path}",
                 linked_case=upload_session.case,
                 os=upload_session.os,
                 etag=upload_session.upload_id,

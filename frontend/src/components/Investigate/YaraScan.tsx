@@ -11,6 +11,10 @@ import {
   ListItemText,
   Checkbox,
   FormControlLabel,
+  FormControl,
+  FormLabel,
+  Radio,
+  RadioGroup,
   Divider,
   Alert,
   Chip,
@@ -35,6 +39,7 @@ import { useSnackbar } from "../SnackbarProvider";
 
 interface YaraScanProps {
   evidenceId: string;
+  evidenceOs?: string;
 }
 
 interface ScanHistory {
@@ -48,7 +53,14 @@ interface ScanHistory {
   count?: number;
 }
 
-const YaraScan: React.FC<YaraScanProps> = ({ evidenceId }) => {
+const YaraScan: React.FC<YaraScanProps> = ({ evidenceId, evidenceOs }) => {
+  // Per-process user-space scan uses VadYaraScan on Windows (VADs) and
+  // VmaYaraScan on Linux (VMAs) — surface the right plugin/region per OS.
+  const isLinuxScan = evidenceOs === "linux";
+  const vadPluginId = isLinuxScan
+    ? "linux.vmayarascan.VmaYaraScan"
+    : "windows.vadyarascan.VadYaraScan";
+  const vadRegion = isLinuxScan ? "VMA" : "VAD";
   const { display_message } = useSnackbar();
   const ws = useRef<WebSocket | null>(null);
   const [rulesets, setRulesets] = useState<YaraRuleSet[]>([]);
@@ -71,6 +83,7 @@ const YaraScan: React.FC<YaraScanProps> = ({ evidenceId }) => {
   const [scanResultsPagination, setScanResultsPagination] = useState({ page: 0, pageSize: 100 });
   const [scanResultsLoading, setScanResultsLoading] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
+  const [scanScope, setScanScope] = useState<"vad" | "kernel">("vad");
 
   const fetchScanResults = useCallback((page: number, pageSize: number) => {
     setScanResultsLoading(true);
@@ -286,6 +299,14 @@ const YaraScan: React.FC<YaraScanProps> = ({ evidenceId }) => {
         } else if (message.status === "stopped") {
           setProcessing(false);
           display_message("info", "YARA scan was stopped");
+        } else if (message.status === "error") {
+          setProcessing(false);
+          display_message(
+            "error",
+            message.error
+              ? `YaraScan failed: ${message.error}`
+              : "YaraScan failed"
+          );
         }
       }
     };
@@ -349,6 +370,7 @@ const YaraScan: React.FC<YaraScanProps> = ({ evidenceId }) => {
         id: evidenceId,
         rulesets: selectedRulesets,
         rules: effectiveRules,
+        scan_scope: scanScope,
       });
       display_message("info", "YaraScan task started");
     } catch (error) {
@@ -562,7 +584,63 @@ const YaraScan: React.FC<YaraScanProps> = ({ evidenceId }) => {
                 />
               )}
             </Box>
-            
+
+            <FormControl component="fieldset" sx={{ mb: 3 }} disabled={processing}>
+              <FormLabel component="legend" sx={{ mb: 1, fontWeight: 500 }}>
+                Scan scope
+              </FormLabel>
+              <RadioGroup
+                row
+                value={scanScope}
+                onChange={(e) => setScanScope(e.target.value as "vad" | "kernel")}
+              >
+                <FormControlLabel
+                  value="vad"
+                  control={<Radio />}
+                  label={
+                    <Box>
+                      <Typography variant="body2" component="span" sx={{ fontWeight: 500 }}>
+                        Process memory ({vadRegion})
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        component="div"
+                        sx={{ fontFamily: "monospace", color: "text.secondary" }}
+                      >
+                        {vadPluginId}
+                      </Typography>
+                      <Typography variant="caption" component="div" color="text.secondary">
+                        Recommended for malware. Scans every process {vadRegion}.
+                      </Typography>
+                    </Box>
+                  }
+                  sx={{ mr: 4, alignItems: "flex-start" }}
+                />
+                <FormControlLabel
+                  value="kernel"
+                  control={<Radio />}
+                  label={
+                    <Box>
+                      <Typography variant="body2" component="span" sx={{ fontWeight: 500 }}>
+                        Kernel layer
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        component="div"
+                        sx={{ fontFamily: "monospace", color: "text.secondary" }}
+                      >
+                        yarascan.YaraScan
+                      </Typography>
+                      <Typography variant="caption" component="div" color="text.secondary">
+                        For rootkits and kernel-mode threats. Faster, narrower coverage.
+                      </Typography>
+                    </Box>
+                  }
+                  sx={{ alignItems: "flex-start" }}
+                />
+              </RadioGroup>
+            </FormControl>
+
             <Grid container spacing={3}>
               <Grid size={6}>
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>

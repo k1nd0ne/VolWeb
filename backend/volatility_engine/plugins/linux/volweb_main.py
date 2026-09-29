@@ -7,6 +7,7 @@ from volatility3.framework.interfaces import plugins
 from volatility3.framework.configuration import requirements
 from volatility3.framework.renderers import TreeGrid
 from volatility_engine.utils import DjangoRenderer, file_handler
+from volatility_engine.models import VolatilityPlugin
 from evidences.models import Evidence
 
 vollog = logging.getLogger(__name__)
@@ -50,8 +51,16 @@ class VolWebMain(plugins.PluginInterface):
         # Read optional PID filter
         pid_filter = self.context.config.get("VolWeb.PidFilter", None)
 
+        try:
+            kernel_module = self.context.modules[self.config["kernel"]]
+            self.context.config[f"{self.config_path}.primary"] = kernel_module.layer_name
+        except Exception as e:
+            vollog.warning(f"Could not expose 'primary' layer for layer-scanning plugins: {e}")
+
         instances = {}
+        failed_plugins = []
         for plugin, details in volweb_plugins.items():
+            plugin_class = None
             try:
                 plugin_class = self.dynamic_import(plugin)
                 instances[plugin] = {
@@ -61,9 +70,37 @@ class VolWebMain(plugins.PluginInterface):
                 instances[plugin]["details"]["name"] = plugin
             except ImportError as e:
                 vollog.error(f"Could not import {plugin}: {e}")
+            except Exception as e:
+                try:
+                    unmet = plugin_class.unsatisfied(self.context, self.config_path)
+                    unmet_desc = ", ".join(sorted(unmet.keys())) if unmet else "unknown"
+                except Exception:
+                    unmet_desc = "unknown"
+                vollog.error(
+                    f"Skipping plugin {plugin}: failed to validate; "
+                    f"unsatisfied requirements: [{unmet_desc}] ({e})"
+                )
+                failed_plugins.append(
+                    (plugin, details, f"Unsatisfied requirements: {unmet_desc}")
+                )
 
         evidence_id = self.context.config["VolWeb.Evidence"]
         evidence = Evidence.objects.get(id=evidence_id)
+
+        for name, details, err in failed_plugins:
+            VolatilityPlugin.objects.update_or_create(
+                name=name,
+                evidence=evidence,
+                defaults={
+                    "icon": details.get("icon"),
+                    "description": details.get("description"),
+                    "category": details.get("category", "Other"),
+                    "display": details.get("display", "True"),
+                    "artefacts": None,
+                    "results": False,
+                    "error_message": f"Plugin failed to construct/validate: {err}",
+                },
+            )
 
         # Read optional per-plugin timeout (in seconds)
         plugin_timeout = self.context.config.get("VolWeb.PluginTimeout", None)

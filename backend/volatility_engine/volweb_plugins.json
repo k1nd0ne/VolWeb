@@ -25,7 +25,7 @@
         "category": "Filesystem",
         "display": "True"
       },
-      "volatility3.plugins.windows.svcdiff.SvcDiff": {
+      "volatility3.plugins.windows.malware.svcdiff.SvcDiff": {
         "icon": "SyncProblem",
         "description": "Compares services found through list walking versus scanning to find rootkits.",
         "category": "Kernel",
@@ -40,6 +40,12 @@
       "volatility3.plugins.windows.registry.hivelist.HiveList": {
         "icon": "Settings",
         "description": "Lists the registry hives present in a particular memory image.",
+        "category": "Registry",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.registry.printkey.PrintKey": {
+        "icon": "Key",
+        "description": "Lists and prints registry keys and values (root keys when no target key is given).",
         "category": "Registry",
         "display": "True"
       },
@@ -91,9 +97,39 @@
         "category": "Processes",
         "display": "True"
       },
-      "volatility3.plugins.windows.malfind.Malfind": {
+      "volatility3.plugins.windows.malware.malfind.Malfind": {
         "icon": "BugReport",
         "description": "Lists process memory ranges that potentially contain injected code.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.malware.pebmasquerade.PebMasquerade": {
+        "icon": "TheaterComedy",
+        "description": "Detects PEB masquerading (mismatch between PEB and on-disk image paths).",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.vadwalk.VadWalk": {
+        "icon": "AccountTree",
+        "description": "Walks the VAD tree for each process.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.vadinfo.VadInfo": {
+        "icon": "Memory",
+        "description": "Lists process memory ranges (VADs) with detailed protection and mapping info.",
+        "category": "Processes",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.mftscan.MFTScan": {
+        "icon": "Storage",
+        "description": "Scans for Master File Table (MFT) entries recoverable from memory.",
+        "category": "Filesystem",
+        "display": "True"
+      },
+      "volatility3.plugins.windows.etwpatch.EtwPatch": {
+        "icon": "EditOff",
+        "description": "Detects ETW patching used by malware to evade event logging.",
         "category": "Malware",
         "display": "True"
       },
@@ -121,7 +157,7 @@
         "category": "Kernel",
         "display": "True"
       },
-      "volatility3.plugins.windows.drivermodule.DriverModule": {
+      "volatility3.plugins.windows.malware.drivermodule.DriverModule": {
         "icon": "Build",
         "description": "Determines if any loaded drivers were hidden by a rootkit.",
         "category": "Kernel",
@@ -163,7 +199,7 @@
         "category": "Security",
         "display": "True"
       },
-      "volatility3.plugins.windows.hollowprocesses.HollowProcesses": {
+      "volatility3.plugins.windows.malware.hollowprocesses.HollowProcesses": {
         "icon": "VisibilityOff",
         "description": "Lists hollowed processes.",
         "category": "Malware",
@@ -175,7 +211,7 @@
         "category": "Processes",
         "display": "True"
       },
-      "volatility3.plugins.windows.ldrmodules.LdrModules": {
+      "volatility3.plugins.windows.malware.ldrmodules.LdrModules": {
         "icon": "Layers",
         "description": "Lists the loaded modules in a particular windows memory image.",
         "category": "Processes",
@@ -229,7 +265,7 @@
         "category": "Processes",
         "display": "True"
       },
-      "volatility3.plugins.windows.processghosting.ProcessGhosting": {
+      "volatility3.plugins.windows.malware.processghosting.ProcessGhosting": {
         "icon": "Ghost",
         "description": "Lists processes whose DeletePending bit is set or whose FILE_OBJECT is set to 0.",
         "category": "Malware",
@@ -241,19 +277,19 @@
         "category": "Processes",
         "display": "True"
       },
-      "volatility3.plugins.windows.psxview.PsXView": {
+      "volatility3.plugins.windows.malware.psxview.PsXView": {
         "icon": "Visibility",
         "description": "Lists all processes found via four methods described in 'The Art of Memory Forensics' to help identify hidden processes.",
         "category": "Malware",
         "display": "True"
       },
-      "volatility3.plugins.windows.skeleton_key_check.Skeleton_Key_Check": {
+      "volatility3.plugins.windows.malware.skeleton_key_check.Skeleton_Key_Check": {
         "icon": "Warning",
         "description": "Looks for signs of Skeleton Key malware.",
         "category": "Security",
         "display": "True"
       },
-      "volatility3.plugins.windows.suspicious_threads.SuspiciousThreads": {
+      "volatility3.plugins.windows.malware.suspicious_threads.SuspiciousThreads": {
         "icon": "VisibilityOff",
         "description": "Lists suspicious userland process threads.",
         "category": "Malware",
@@ -331,7 +367,7 @@
         "category": "Registry",
         "display": "True"
       },
-      "volatility3.plugins.windows.unhooked_system_calls.unhooked_system_calls": {
+      "volatility3.plugins.windows.malware.unhooked_system_calls.UnhookedSystemCalls": {
         "icon": "Phishing",
         "description": "Looks for signs of Skeleton Key malware",
         "category": "Malware",
@@ -355,13 +391,13 @@
         "category": "GUI",
         "display": "True"
       },
-      "volatility3.plugins.windows.direct_system_calls.DirectSystemCalls": {
+      "volatility3.plugins.windows.malware.direct_system_calls.DirectSystemCalls": {
         "icon": "CallMade",
         "description": "Detects the Direct System Call technique used to bypass EDRs.",
         "category": "Malware",
         "display": "True"
       },
-      "volatility3.plugins.windows.indirect_system_calls.IndirectSystemCalls": {
+      "volatility3.plugins.windows.malware.indirect_system_calls.IndirectSystemCalls": {
         "icon": "CallMissed",
         "description": "Detects Indirect System Call technique used to evade detection.",
         "category": "Malware",
@@ -418,31 +454,49 @@
         "category": "Security",
         "display": "True"
       },
-      "volatility3.plugins.linux.check_afinfo.Check_afinfo": {
+      "volatility3.plugins.linux.malware.check_afinfo.Check_afinfo": {
         "icon": "CheckBox",
         "description": "Verifies the operation function pointers of network protocols.",
         "category": "Network",
         "display": "True"
       },
-      "volatility3.plugins.linux.check_creds.Check_creds": {
+      "volatility3.plugins.linux.malware.process_spoofing.ProcessSpoofing": {
+        "icon": "TheaterComedy",
+        "description": "Detects potential process spoofing via mismatched process metadata.",
+        "category": "Malware",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.sockscan.Sockscan": {
+        "icon": "Lan",
+        "description": "Scans for network socket objects in memory.",
+        "category": "Network",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.vmcoreinfo.VMCoreInfo": {
+        "icon": "Info",
+        "description": "Extracts the VMCoreInfo structure from the memory image.",
+        "category": "Kernel",
+        "display": "True"
+      },
+      "volatility3.plugins.linux.malware.check_creds.Check_creds": {
         "icon": "AccountCircle",
         "description": "Checks if any processes are sharing credential structures.",
         "category": "Security",
         "display": "True"
       },
-      "volatility3.plugins.linux.check_idt.Check_idt": {
+      "volatility3.plugins.linux.malware.check_idt.Check_idt": {
         "icon": "Compare",
         "description": "Checks if the IDT has been altered.",
         "category": "Kernel",
         "display": "True"
       },
-      "volatility3.plugins.linux.check_modules.Check_modules": {
+      "volatility3.plugins.linux.malware.check_modules.Check_modules": {
         "icon": "InsertChart",
         "description": "Compares module list to sysfs info, if available.",
         "category": "Kernel",
         "display": "True"
       },
-      "volatility3.plugins.linux.check_syscall.Check_syscall": {
+      "volatility3.plugins.linux.malware.check_syscall.Check_syscall": {
         "icon": "SettingsEthernet",
         "description": "Check system call table for hooks.",
         "category": "Kernel",
@@ -466,7 +520,7 @@
         "category": "Kernel",
         "display": "True"
       },
-      "volatility3.plugins.linux.keyboard_notifiers.Keyboard_notifiers": {
+      "volatility3.plugins.linux.malware.keyboard_notifiers.Keyboard_notifiers": {
         "icon": "Keyboard",
         "description": "Parses the keyboard notifier call chain.",
         "category": "Kernel",
@@ -490,7 +544,7 @@
         "category": "Filesystem",
         "display": "True"
       },
-      "volatility3.plugins.linux.malfind.Malfind": {
+      "volatility3.plugins.linux.malware.malfind.Malfind": {
         "icon": "BugReport",
         "description": "Lists process memory ranges that potentially contain injected code.",
         "category": "Malware",
@@ -502,7 +556,7 @@
         "category": "Filesystem",
         "display": "True"
       },
-      "volatility3.plugins.linux.netfilter.Netfilter": {
+      "volatility3.plugins.linux.malware.netfilter.Netfilter": {
         "icon": "FilterList",
         "description": "Lists Netfilter hooks.",
         "category": "Network",
@@ -532,7 +586,7 @@
         "category": "Network",
         "display": "True"
       },
-      "volatility3.plugins.linux.tty_check.tty_check": {
+      "volatility3.plugins.linux.malware.tty_check.Tty_Check": {
         "icon": "Call",
         "description": "Checks tty devices for hooks.",
         "category": "Kernel",
@@ -550,7 +604,7 @@
         "category": "Kernel",
         "display": "True"
       },
-      "volatility3.plugins.linux.hidden_modules.Hidden_modules": {
+      "volatility3.plugins.linux.malware.hidden_modules.Hidden_modules": {
         "icon": "ViewModule",
         "description": "Carves memory to find hidden kernel modules",
         "category": "Malware",
@@ -604,7 +658,7 @@
         "category": "Processes",
         "display": "True"
       },
-      "volatility3.plugins.linux.modxview.Modxview": {
+      "volatility3.plugins.linux.malware.modxview.Modxview": {
         "icon": "Visibility",
         "description": "Centralizes module check results to efficiently spot modules presence and taints.",
         "category": "Kernel",

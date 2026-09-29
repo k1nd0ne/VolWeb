@@ -12,7 +12,8 @@ from .models import YaraRuleSet, UploadSession
 from yararules.models import YaraRule
 from .serializers import YaraRuleSetSerializer, InitiateUploadSerializer, UploadChunkSerializer, CompleteUploadSerializer
 from yararules.serializers import YaraRuleSerializer
-from yararules.utils import BatchUploadManager
+from yararules.utils import BatchUploadManager, compute_content_hash, get_existing_content_hashes
+from core.validators import safe_media_path
 import os
 import shutil
 from asgiref.sync import async_to_sync
@@ -188,8 +189,10 @@ class CompleteUploadView(APIView):
             except ValueError:
                 return Response({'error': 'Invalid chunk filenames.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            final_filename = upload_session.filename
-            final_file_path = os.path.join(settings.MEDIA_ROOT, 'yara_files', final_filename)
+            try:
+                final_file_path = safe_media_path('yara_files', upload_session.filename)
+            except ValueError:
+                return Response({'error': 'Invalid filename.'}, status=status.HTTP_400_BAD_REQUEST)
             os.makedirs(os.path.dirname(final_file_path), exist_ok=True)
 
             # Assemble the chunks into the final file
@@ -204,16 +207,16 @@ class CompleteUploadView(APIView):
 
             # Now process the uploaded file with batch optimization
             try:
-                created_rules = self._process_uploaded_file_with_batch(
+                created_rules, skipped_duplicates = self._process_uploaded_file_with_batch(
                     final_file_path,
                     upload_session.yararuleset,
                     upload_session.description,
                     upload_session.source
                 )
-                
+
                 # Clean up the temporary file
                 os.remove(final_file_path)
-                
+
                 # Delete the upload session
                 upload_session.delete()
 
@@ -230,8 +233,9 @@ class CompleteUploadView(APIView):
                     )
 
                 return Response({
-                    'status': 'upload complete', 
+                    'status': 'upload complete',
                     'rules_created': len(created_rules),
+                    'skipped_duplicates': skipped_duplicates,
                     'rules': YaraRuleSerializer(created_rules, many=True).data
                 }, status=status.HTTP_200_OK)
                 
@@ -266,56 +270,68 @@ class CompleteUploadView(APIView):
         batch_manager = BatchUploadManager(
             ruleset_id=yara_ruleset.id if yara_ruleset else None
         )
-        
+
         created_rules = []
-        
+        skipped_duplicates = 0
+        # Skip rules whose content already exists in the DB or earlier in this batch.
+        seen_hashes = get_existing_content_hashes()
+
         with batch_manager.batch_context():
             # Read the file content
             with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
-            
+
             # Check if it's a single rule or multiple rules
             if self._is_single_rule_file(content):
                 # Single rule file
                 rule = self._create_rule_from_content(
-                    content, 
-                    yara_ruleset, 
-                    description, 
-                    source, 
-                    os.path.basename(file_path)
+                    content,
+                    yara_ruleset,
+                    description,
+                    source,
+                    os.path.basename(file_path),
+                    seen_hashes
                 )
                 if rule:
                     batch_manager.add_created_rule(rule)
                     created_rules.append(rule)
                     logger.debug(f"Created single rule {rule.name}")
+                else:
+                    skipped_duplicates += 1
             else:
                 # Multiple rules in one file - split them
                 individual_rules = self._split_yara_rules(content)
-                
+
                 for i, rule_content in enumerate(individual_rules):
                     if rule_content.strip():
                         try:
                             rule = self._create_rule_from_content(
-                                rule_content, 
-                                yara_ruleset, 
-                                description, 
+                                rule_content,
+                                yara_ruleset,
+                                description,
                                 source,
-                                f"{os.path.basename(file_path)}_rule_{i+1}"
+                                f"{os.path.basename(file_path)}_rule_{i+1}",
+                                seen_hashes
                             )
                             if rule:
                                 batch_manager.add_created_rule(rule)
                                 created_rules.append(rule)
                                 logger.debug(f"Created rule {rule.name} ({i+1}/{len(individual_rules)})")
-                                
+                            else:
+                                skipped_duplicates += 1
+
                         except Exception as e:
                             logger.error(f"Failed to create rule {i+1}: {e}")
                             continue
-        
+
         # At this point, we're outside the batch context
         # The BatchUploadManager automatically triggered ruleset validation
-        
-        logger.info(f"Successfully processed {batch_manager.get_created_count()} rules from uploaded file")
-        return created_rules
+
+        logger.info(
+            f"Successfully processed {batch_manager.get_created_count()} rules from "
+            f"uploaded file ({skipped_duplicates} duplicate(s) skipped)"
+        )
+        return created_rules, skipped_duplicates
 
     def _is_single_rule_file(self, content):
         """Check if the file contains a single YARA rule"""
@@ -340,11 +356,19 @@ class CompleteUploadView(APIView):
         
         return rules
 
-    def _create_rule_from_content(self, content, yara_ruleset, description, source, filename):
-        """Create a single YARA rule from content"""
+    def _create_rule_from_content(self, content, yara_ruleset, description, source, filename, seen_hashes):
+        """
+        Create a YARA rule from content, or return None if it duplicates an
+        existing rule. Updates ``seen_hashes`` in place on creation.
+        """
         import re
         import hashlib
-        
+
+        content_hash = compute_content_hash(content)
+        if content_hash in seen_hashes:
+            logger.info(f"Skipping duplicate rule from {filename} (content hash {content_hash[:12]})")
+            return None
+
         # Extract rule name from content
         rule_match = re.search(r'rule\s+(\w+)', content)
         if rule_match:
@@ -352,22 +376,29 @@ class CompleteUploadView(APIView):
         else:
             # Fallback to filename
             rule_name = os.path.splitext(filename)[0]
-        
+
         # Generate unique etag
         etag_content = f"{rule_name}_{content}_{source}"
         etag = hashlib.md5(etag_content.encode()).hexdigest()
-        
+
         # Create the rule (this will NOT trigger ruleset validation due to batch context)
-        rule = YaraRule.objects.create(
-            name=rule_name,
-            etag=etag,
-            rule_content=content,
-            description=description or f"Uploaded from file: {filename}",
-            linked_yararuleset=yara_ruleset,
-            source=source,
-            is_active=True
-        )
-        
+        try:
+            rule = YaraRule.objects.create(
+                name=rule_name,
+                etag=etag,
+                rule_content=content,
+                description=description or f"Uploaded from file: {filename}",
+                linked_yararuleset=yara_ruleset,
+                source=source,
+                is_active=True
+            )
+        except IntegrityError:
+            # An identical rule (same etag) already exists — treat as duplicate.
+            logger.info(f"Skipping duplicate rule from {filename} (etag collision)")
+            seen_hashes.add(content_hash)
+            return None
+
+        seen_hashes.add(content_hash)
         return rule
 
 
@@ -411,15 +442,16 @@ class GitHubImportView(APIView):
             download_url = self._convert_to_download_url(github_url)
             
             # Process the repository with batch optimization
-            imported_rules = self._process_github_repo_optimized(
-                download_url, 
-                yara_ruleset, 
+            imported_rules, skipped_duplicates = self._process_github_repo_optimized(
+                download_url,
+                yara_ruleset,
                 description
             )
-            
+
             return Response({
                 'success': True,
                 'imported_count': len(imported_rules),
+                'skipped_duplicates': skipped_duplicates,
                 'rules': YaraRuleSerializer(imported_rules, many=True).data
             }, status=status.HTTP_200_OK)
             
@@ -445,10 +477,14 @@ class GitHubImportView(APIView):
         batch_manager = BatchUploadManager(
             ruleset_id=yara_ruleset.id if yara_ruleset else None
         )
-        
+
+        skipped_duplicates = 0
+        # Skip rules whose content already exists in the DB or earlier in this batch.
+        seen_hashes = get_existing_content_hashes()
+
         with batch_manager.batch_context():
             imported_rules = []
-            
+
             with tempfile.TemporaryDirectory() as temp_dir:
                 zip_path = os.path.join(temp_dir, 'repo.zip')
                 
@@ -477,55 +513,75 @@ class GitHubImportView(APIView):
                 for i, yara_file in enumerate(yara_files):
                     try:
                         rule = self._import_yara_file_optimized(
-                            yara_file, 
-                            yara_ruleset, 
+                            yara_file,
+                            yara_ruleset,
                             description,
-                            download_url
+                            download_url,
+                            seen_hashes
                         )
                         if rule:
                             batch_manager.add_created_rule(rule)
                             imported_rules.append(rule)
                             logger.debug(f"Created rule {rule.name} ({i+1}/{len(yara_files)})")
-                        
+                        else:
+                            skipped_duplicates += 1
+
                     except Exception as e:
                         logger.error(f"Failed to create rule from {yara_file}: {e}")
                         continue
-        
+
         # At this point, we're outside the batch context
         # The BatchUploadManager automatically triggered ruleset validation
-        
-        logger.info(f"Successfully imported {batch_manager.get_created_count()} rules from GitHub")
-        return imported_rules
-    
-    def _import_yara_file_optimized(self, file_path, yara_ruleset, description, source_url):
-        """Import a single YARA file with optimized etag generation"""
+
+        logger.info(
+            f"Successfully imported {batch_manager.get_created_count()} rules from GitHub "
+            f"({skipped_duplicates} duplicate(s) skipped)"
+        )
+        return imported_rules, skipped_duplicates
+
+    def _import_yara_file_optimized(self, file_path, yara_ruleset, description, source_url, seen_hashes):
+        """
+        Import a single YARA file, or return None if it duplicates an existing
+        rule. Updates ``seen_hashes`` in place on creation.
+        """
         with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
-        
+
+        content_hash = compute_content_hash(content)
+        if content_hash in seen_hashes:
+            logger.info(f"Skipping duplicate rule from {os.path.basename(file_path)} (content hash {content_hash[:12]})")
+            return None
+
         # Extract rule name from file or content
         filename = os.path.basename(file_path)
         rule_name = os.path.splitext(filename)[0]
-        
+
         # Try to extract rule name from content
         rule_match = re.search(r'rule\s+(\w+)', content)
         if rule_match:
             rule_name = rule_match.group(1)
-        
+
         # Generate unique etag
         etag = self._generate_etag(rule_name, content, source_url)
-        
+
         # Create the rule (this will NOT trigger ruleset validation due to batch context)
-        rule = YaraRule.objects.create(
-            name=rule_name,
-            etag=etag,
-            rule_content=content,
-            description=description or f"Imported from GitHub: {filename}",
-            linked_yararuleset=yara_ruleset,
-            source="github",
-            url=source_url,
-            is_active=True
-        )
-        
+        try:
+            rule = YaraRule.objects.create(
+                name=rule_name,
+                etag=etag,
+                rule_content=content,
+                description=description or f"Imported from GitHub: {filename}",
+                linked_yararuleset=yara_ruleset,
+                source="github",
+                url=source_url,
+                is_active=True
+            )
+        except IntegrityError:
+            logger.info(f"Skipping duplicate rule from {filename} (etag collision)")
+            seen_hashes.add(content_hash)
+            return None
+
+        seen_hashes.add(content_hash)
         return rule
     
     def _generate_etag(self, rule_name, rule_content, source_url):

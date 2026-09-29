@@ -6,6 +6,7 @@ import logging
 import volatility3
 import traceback
 import os
+import re
 import json
 import shutil
 from volatility3.cli import MuteProgress
@@ -36,6 +37,116 @@ import tempfile
 
 volatility3.framework.require_interface_version(2, 0, 0)
 logger = logging.getLogger(__name__)
+
+
+def _match_yara_braces(source, start):
+    """
+    Given the index of an opening ``{`` in ``source``, return the index just
+    past its matching ``}``. String literals and comments are skipped so that
+    braces appearing inside them are ignored. Hex strings and regex
+    quantifiers ({n,m}) keep their braces balanced, so plain depth counting
+    locates the real end of a rule body.
+    """
+    depth = 0
+    k, n = start, len(source)
+    while k < n:
+        ch = source[k]
+        if ch == '"':
+            k += 1
+            while k < n:
+                if source[k] == '\\':
+                    k += 2
+                    continue
+                if source[k] == '"':
+                    k += 1
+                    break
+                k += 1
+            continue
+        if source.startswith("//", k):
+            nl = source.find("\n", k)
+            k = n if nl == -1 else nl
+            continue
+        if source.startswith("/*", k):
+            end = source.find("*/", k)
+            k = n if end == -1 else end + 2
+            continue
+        if ch == '{':
+            depth += 1
+        elif ch == '}':
+            depth -= 1
+            if depth == 0:
+                return k + 1
+        k += 1
+    return n
+
+
+def _dedupe_yara_rules(source):
+    """
+    Drop duplicate top-level rule definitions (keeping the first of each
+    identifier) and collapse duplicate import/include statements, so a
+    duplicated identifier doesn't make yara.compile abort the whole scan.
+
+    Returns ``(deduped_source, dropped_identifiers)``.
+    """
+    imports = []
+    seen_imports = set()
+    rules_out = []
+    seen_rules = set()
+    dropped = []
+
+    rule_decl = re.compile(r'((?:(?:private|global)\s+)*)rule\s+([A-Za-z_]\w*)')
+    import_decl = re.compile(r'(import|include)\s+("[^"]*")')
+
+    i, n = 0, len(source)
+    while i < n:
+        ch = source[i]
+
+        if ch.isspace():
+            i += 1
+            continue
+        if source.startswith("//", i):
+            nl = source.find("\n", i)
+            i = n if nl == -1 else nl
+            continue
+        if source.startswith("/*", i):
+            end = source.find("*/", i)
+            i = n if end == -1 else end + 2
+            continue
+
+        m = import_decl.match(source, i)
+        if m:
+            stmt = f"{m.group(1)} {m.group(2)}"
+            if stmt not in seen_imports:
+                seen_imports.add(stmt)
+                imports.append(stmt)
+            i = m.end()
+            continue
+
+        m = rule_decl.match(source, i)
+        if m:
+            identifier = m.group(2)
+            brace_start = source.find("{", m.end())
+            if brace_start == -1:
+                break  # malformed input — stop parsing defensively
+            end = _match_yara_braces(source, brace_start)
+            rule_text = source[i:end].strip()
+            if identifier in seen_rules:
+                dropped.append(identifier)
+            else:
+                seen_rules.add(identifier)
+                rules_out.append(rule_text)
+            i = end
+            continue
+
+        # Unrecognised token — advance one char to stay robust.
+        i += 1
+
+    parts = []
+    if imports:
+        parts.append("\n".join(imports))
+    parts.extend(rules_out)
+    return ("\n\n".join(parts) + "\n", dropped)
+
 
 class VolatilityEngine:
     """
@@ -181,6 +292,58 @@ class VolatilityEngine:
             )
             return result
         return None
+
+    def _collect_grid(self, plugin, column=None):
+        """
+        Run a plugin and collect rows in-memory (no DB persistence).
+        Returns a list of the values of ``column`` (or full value tuples).
+        """
+        self.build_context(plugin)
+        constructed = self.construct_plugin()
+        if not constructed:
+            return []
+        grid = constructed.run()
+        col_names = [c.name for c in grid.columns]
+        idx = col_names.index(column) if column in col_names else None
+        rows = []
+
+        def _visit(node, acc):
+            try:
+                values = list(node.values)
+                rows.append(values[idx] if idx is not None else values)
+            except Exception:
+                pass
+            return acc
+
+        if not grid.populated:
+            grid.populate(_visit, None)
+        else:
+            grid.visit(node=None, function=_visit, initial_accumulator=None)
+        return rows
+
+    def detect_linux_banner(self):
+        """Scan the image for the Linux kernel banner; return it or None."""
+        import volatility3.plugins.banners
+
+        banners = self._collect_grid(
+            {volatility3.plugins.banners.Banners: {"name": "banners"}}, column="Banner"
+        )
+        banners = [str(b).strip().strip("\x00").strip() for b in banners if b]
+        for banner in banners:
+            if "Linux version" in banner:
+                return banner
+        return banners[0] if banners else None
+
+    def verify_linux_symbols(self):
+        """Return True if Linux symbols resolve for this image (runs linux.pslist)."""
+        try:
+            rows = self._collect_grid({PsList: {"name": "verify"}})
+            return len(rows) > 0
+        except UnsatisfiedException:
+            return False
+        except Exception as e:
+            logger.warning(f"Linux symbol verification failed: {e}")
+            return False
 
     def start_timeliner(self):
         timeliner_plugin = {
@@ -387,13 +550,13 @@ class VolatilityEngine:
             }
         }
         self.build_context(dumpfiles_plugin)
-        self.context.config["plugins.DumpFiles.virtaddr"] = int(offset)
+        self.context.config["plugins.DumpFiles.virtaddr"] = [int(offset)]
         builted_plugin = self.construct_plugin()
         try:
             result = self.run_plugin(builted_plugin)
             if not result:
                 del self.context.config["plugins.DumpFiles.virtaddr"]
-                self.context.config["plugins.DumpFiles.physaddr"] = int(offset)
+                self.context.config["plugins.DumpFiles.physaddr"] = [int(offset)]
                 result = self.run_plugin(builted_plugin)
 
             fix_permissions(f"media/{self.obj.id}")
@@ -414,14 +577,14 @@ class VolatilityEngine:
             }
         }
         self.build_context(dumpfiles_plugin)
-        self.context.config["plugins.DumpFiles.virtaddr"] = int(offset)
+        self.context.config["plugins.DumpFiles.virtaddr"] = [int(offset)]
         builted_plugin = self.construct_plugin()
         try:
             result = self.run_plugin(builted_plugin)
             fix_permissions(f"media/{self.evidence.id}")
             if not result:
                 del self.context.config["plugins.DumpFiles.virtaddr"]
-                self.context.config["plugins.DumpFiles.physaddr"] = int(offset)
+                self.context.config["plugins.DumpFiles.physaddr"] = [int(offset)]
                 result = self.run_plugin(builted_plugin)
 
             fix_permissions(f"media/{self.obj.id}")
@@ -670,9 +833,15 @@ class VolatilityEngine:
             self.obj.save()
             return self.obj.status
         
-    def run_yara_scan(self, yara_ruleset=None, yara_rules=None, yara_rulesets=None):
+    def run_yara_scan(self, yara_ruleset=None, yara_rules=None, yara_rulesets=None, scan_scope="vad"):
         """
         Run YARA scan on evidence with selected ruleset(s) or rules.
+
+        scan_scope:
+            - "vad"    -> scan process memory via VadYaraScan (default).
+                          Best for malware/ransomware artefacts in user space.
+            - "kernel" -> scan the primary (kernel) layer via plain YaraScan.
+                          Use for rootkits or kernel-mode threats.
         """
         from yararules.models import YaraRule
         import traceback
@@ -779,6 +948,15 @@ class VolatilityEngine:
                 return None
             
             logger.info(f"Combined {active_rules.count()} rules for scanning")
+
+            # Drop duplicate identifiers so a collision doesn't abort the scan.
+            combined_rules, dropped_rules = _dedupe_yara_rules(combined_rules)
+            if dropped_rules:
+                logger.warning(
+                    f"Dropped {len(dropped_rules)} duplicate rule identifier(s) "
+                    f"before compilation: {', '.join(sorted(set(dropped_rules)))}"
+                )
+
             logger.debug(f"Combined rules content length: {len(combined_rules)} characters")
                             
             # === FILE CREATION PHASE ===
@@ -811,9 +989,25 @@ class VolatilityEngine:
             formatted_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             scan_description = f"YARA scan using {' + '.join(scan_description_parts)} - processing at {formatted_timestamp}"
             
-            # Configure YARA scan plugin for Volatility
+            # "vad" -> per-process VadYaraScan (user space); "kernel" -> generic
+            # YaraScan on the primary layer (kernel space).
+            target_os = getattr(self.obj, "os", "windows")
+            normalized_scope = (scan_scope or "vad").lower()
+            if normalized_scope == "kernel":
+                yarascan_cls = volatility3.plugins.yarascan.YaraScan
+                plugin_config_prefix = "plugins.YaraScan"
+            else:
+                if target_os == "linux":
+                    import volatility3.plugins.linux.vmayarascan as _vad_mod
+                    yarascan_cls = _vad_mod.VmaYaraScan
+                    plugin_config_prefix = "plugins.VmaYaraScan"
+                else:
+                    import volatility3.plugins.windows.vadyarascan as _vad_mod
+                    yarascan_cls = _vad_mod.VadYaraScan
+                    plugin_config_prefix = "plugins.VadYaraScan"
+
             yara_plugin = {
-                volatility3.plugins.yarascan.YaraScan: {
+                yarascan_cls: {
                     "icon": "🔍",
                     "description": scan_description,
                     "category": "Malware",
@@ -821,37 +1015,41 @@ class VolatilityEngine:
                     "name": f"volatility3.plugins.yarascan.{scan_id}",
                 }
             }
-            
+
             # Build context and configure plugin
             self.build_context(yara_plugin)
-            
-            # Try different path formats for the file
-            # Option 1: file:// URL with absolute path
+
+            # Configure both the chosen plugin and the underlying YaraScan it delegates to.
             file_url = f"file://{os.path.abspath(temp_file_path)}"
-            self.context.config["plugins.YaraScan.yara_file"] = file_url
-            
-            logger.info(f"Context config after YARA file: {self.context.config.get('plugins.YaraScan.yara_file')}")
+            for prefix in (plugin_config_prefix, "plugins.YaraScan"):
+                self.context.config[f"{prefix}.yara_file"] = file_url
+
+            logger.info(f"YARA plugin selected: {yarascan_cls.__module__}.{yarascan_cls.__name__}")
+            logger.info(f"Context config after YARA file: {self.context.config.get(f'{plugin_config_prefix}.yara_file')}")
             logger.info(f"Layer stacker location: {self.context.config.get('automagic.LayerStacker.single_location')}")
-            
+
             # Build and run the plugin
             builted_plugin = self.construct_plugin()
 
             if not builted_plugin:
-                logger.error("Failed to construct YaraScan plugin")
+                logger.error("Failed to construct VadYaraScan plugin")
 
-                # If it fails with file://, try with direct absolute path
+                # Retry with the absolute path (some builds reject the file:// form).
                 logger.info("Retrying with absolute path...")
-                self.context.config["plugins.YaraScan.yara_file"] = os.path.abspath(temp_file_path)
+                abs_path = os.path.abspath(temp_file_path)
+                for prefix in (plugin_config_prefix, "plugins.YaraScan"):
+                    self.context.config[f"{prefix}.yara_file"] = abs_path
                 builted_plugin = self.construct_plugin()
 
                 if not builted_plugin:
                     # Last attempt: relative path
                     logger.info("Retrying with relative path...")
-                    self.context.config["plugins.YaraScan.yara_file"] = temp_file_name
+                    for prefix in (plugin_config_prefix, "plugins.YaraScan"):
+                        self.context.config[f"{prefix}.yara_file"] = temp_file_name
                     builted_plugin = self.construct_plugin()
 
                 if not builted_plugin:
-                    logger.error("All attempts to construct YaraScan plugin failed")
+                    logger.error("All attempts to construct VadYaraScan plugin failed")
                     return None
 
             # Stream each match directly to a JSONL file — no in-memory accumulation.
@@ -943,7 +1141,8 @@ class VolatilityEngine:
         except Exception as e:
             logger.error(f"Failed to run YARA scan on evidence '{self.obj.name}': {str(e)}")
             logger.error(traceback.format_exc())
-            return None
+            # Propagate so the calling task reports an error, not a fake success.
+            raise
             
         finally:
             # Cleanup of temporary file

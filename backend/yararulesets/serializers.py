@@ -2,6 +2,7 @@
 from rest_framework import serializers
 from .models import YaraRuleSet
 from yararules.models import YaraRule
+from core.validators import validate_upload_filename
 
 
 class YaraRuleSetSerializer(serializers.ModelSerializer):
@@ -21,7 +22,9 @@ class YaraRuleSetSerializer(serializers.ModelSerializer):
         
         
 class InitiateUploadSerializer(serializers.Serializer):
-    filename = serializers.CharField(max_length=255)
+    filename = serializers.CharField(
+        max_length=255, validators=[validate_upload_filename]
+    )
     description = serializers.CharField(max_length=255,required=False, allow_blank=True, default="")
     yara_ruleset_id = serializers.IntegerField(required=False, allow_null=True, default=None)
     source = serializers.CharField(max_length=255)

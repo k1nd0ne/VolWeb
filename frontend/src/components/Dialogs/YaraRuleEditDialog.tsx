@@ -171,10 +171,18 @@ const YaraRuleEditDialog: React.FC<YaraRuleEditDialogProps> = ({
       
       handleClose();
     } catch (error: any) {
-      display_message(
-        "error",
-        `Failed to save YARA rule: ${error.response?.data?.error || error.message}`
-      );
+      const data = error.response?.data;
+      let detail: string = error.message;
+      if (typeof data === "string") {
+        detail = data;
+      } else if (data?.error) {
+        detail = data.error;
+      } else if (data && typeof data === "object") {
+        // Surface DRF field errors (e.g. duplicate content on rule_content)
+        const first = data.rule_content ?? Object.values(data)[0];
+        detail = Array.isArray(first) ? first[0] : String(first);
+      }
+      display_message("error", `Failed to save YARA rule: ${detail}`);
     } finally {
       setSaving(false);
     }

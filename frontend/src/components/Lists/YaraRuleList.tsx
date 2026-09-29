@@ -463,12 +463,20 @@ function YaraRuleList({ yararuleset }: YaraRuleListProps) {
         onClose={() => {
           setOpenCreationDialog(false);
         }}
-        onCreateSuccess={(rule) => {
-          display_message("success", "YARA rule created successfully");
-          handleUpdateSuccess(rule);
+        onCreateSuccess={({ created, skipped }) => {
+          display_message(
+            "success",
+            `Upload complete: ${created} rule(s) created` +
+              (skipped ? `, ${skipped} duplicate(s) skipped` : "")
+          );
+          handleUpdateSuccess({} as YaraRule);
         }}
-        onImportSuccess={() => {
-          display_message("success", "GitHub import completed");
+        onImportSuccess={({ created, skipped }) => {
+          display_message(
+            "success",
+            `GitHub import completed: ${created} rule(s) imported` +
+              (skipped ? `, ${skipped} duplicate(s) skipped` : "")
+          );
           handleUpdateSuccess({} as YaraRule);
         }}
         yara_ruleset={yararuleset}

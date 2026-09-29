@@ -48,7 +48,19 @@ const PluginList: React.FC<PluginListProps> = ({ evidenceId }) => {
           <ListItem key={plugin.name}>
             <ListItemIcon>{getIcon(plugin.icon)}</ListItemIcon>
             <ListItemText
-              primary={plugin.name}
+              primary={
+                <Typography
+                  component="span"
+                  title={plugin.name}
+                  sx={{
+                    fontWeight: 500,
+                    display: "block",
+                    overflowWrap: "anywhere",
+                  }}
+                >
+                  {plugin.name.replace(/^volatility3\.plugins\./, "")}
+                </Typography>
+              }
               secondary={
                 <React.Fragment>
                   <Typography

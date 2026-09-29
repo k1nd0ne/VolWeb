@@ -1,0 +1,50 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label='volatility_engine' %}">Volatility_engine</a>
+  &rsaquo; Plugin catalog diff
+</div>
+{% endblock %}
+
+{% block content %}
+<p style="max-width:900px;color:var(--body-quiet-color,#666)">
+  Compares the curated plugin list (<code>volweb_plugins.json</code> +
+  <code>volweb_misc.json</code>) against the plugins exposed by the
+  <strong>installed</strong> volatility3. Use it when bumping the pinned
+  volatility3 version to update the curated list deliberately. Read-only.
+  <br><em>Note:</em> deprecated top-level aliases (modules moved under
+  <code>malware/</code> or <code>registry/</code>) are hidden from "Missing"
+  automatically. Remaining entries can still be infra/utility plugins or ones
+  used only programmatically by the engine, so cross-check before adding.
+</p>
+
+{% if error %}
+  <p style="color:#ba2121"><strong>Error:</strong> {{ error }}</p>
+{% endif %}
+
+{% for os_name, data in report.items %}
+  <h2 style="text-transform:capitalize">{{ os_name }}
+    <small style="font-weight:normal">(curated: {{ data.curated_count }}, installed: {{ data.available_count }})</small>
+  </h2>
+
+  <h3>Missing from curated list, candidates to add ({{ data.missing|length }})
+    {% if data.deprecated_hidden %}<small style="font-weight:normal">({{ data.deprecated_hidden }} deprecated alias(es) hidden)</small>{% endif %}
+  </h3>
+  {% if data.missing %}
+    <ul>{% for name in data.missing %}<li><code>{{ name }}</code></li>{% endfor %}</ul>
+  {% else %}
+    <p><em>None, curated list covers everything installed.</em></p>
+  {% endif %}
+
+  <h3>Curated but not in installed volatility3, fix / remove ({{ data.stale|length }})</h3>
+  {% if data.stale %}
+    <ul>{% for name in data.stale %}<li><code>{{ name }}</code></li>{% endfor %}</ul>
+  {% else %}
+    <p><em>None, no stale entries.</em></p>
+  {% endif %}
+
+  <hr>
+{% endfor %}
+{% endblock %}

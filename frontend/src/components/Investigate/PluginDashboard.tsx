@@ -14,10 +14,11 @@ import {
   Tooltip,
 } from "@mui/material";
 import * as Icons from "@mui/icons-material";
-import { HomeRepairService } from "@mui/icons-material";
+import { HomeRepairService, Inventory2 } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import PluginDataGrid from "./PluginDataGrid";
+import Loot from "./Loot";
 import { Plugin, Evidence } from "../../types";
 import WindowsFileScanButton from "./Windows/Buttons/FileScanButton";
 import LinuxFileScanButton from "./Linux/Buttons/FileScanButton";
@@ -31,6 +32,7 @@ const PluginDashboard: React.FC<PluginDashboardProps> = ({ evidence }) => {
   const [plugins, setPlugins] = useState<Plugin[] | null>(null);
   const [open, setOpen] = useState(false);
   const [currentPlugin, setCurrentPlugin] = useState<Plugin | null>(null);
+  const [lootOpen, setLootOpen] = useState(false);
   const [loading, setLoading] = useState(true); // State to track loading
 
   const handleClickOpen = (plugin: Plugin) => {
@@ -103,18 +105,35 @@ const PluginDashboard: React.FC<PluginDashboardProps> = ({ evidence }) => {
       ) : (
         <Card variant="outlined">
           <CardContent>
-            <Typography
-              gutterBottom
+            <Box
               sx={{
-                color: "text.secondary",
-                fontSize: 20,
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
-              <HomeRepairService sx={{ marginRight: 1 }} />
-              Tools
-            </Typography>
+              <Typography
+                gutterBottom
+                sx={{
+                  color: "text.secondary",
+                  fontSize: 20,
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <HomeRepairService sx={{ marginRight: 1 }} />
+                Tools
+              </Typography>
+              <Button
+                color="secondary"
+                variant="outlined"
+                size="small"
+                startIcon={<Inventory2 />}
+                onClick={() => setLootOpen(true)}
+              >
+                Loot
+              </Button>
+            </Box>
             <Divider sx={{ marginBottom: 1 }} />
             <Grid container spacing={1}>
               {Object.keys(groupedPlugins).map((category) => (
@@ -196,6 +215,25 @@ const PluginDashboard: React.FC<PluginDashboardProps> = ({ evidence }) => {
             pluginName={currentPlugin ? currentPlugin.name : ""}
           />
         </DialogContent>
+      </Dialog>
+      <Dialog
+        fullWidth
+        maxWidth="lg"
+        open={lootOpen}
+        onClose={() => setLootOpen(false)}
+        sx={{
+          "& .MuiBackdrop-root": {
+            backgroundColor: "transparent",
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+        >
+          <Inventory2 fontSize="small" />
+          Loot
+        </DialogTitle>
+        <DialogContent>{lootOpen && <Loot />}</DialogContent>
       </Dialog>
     </Box>
   );

@@ -6,6 +6,8 @@ from volatility_engine.engine import VolatilityEngine
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from yararules.utils import is_batch_upload_active
+from django.conf import settings
+import os
 import logging
 
 logger = logging.getLogger(__name__)
@@ -274,14 +276,17 @@ def start_ruleset_validation(yara_ruleset_id, skip_rule_validation=False):
 
 
 @shared_task
-def start_yarascan(evidence_id, rulesets=None, rules=None):
+def start_yarascan(evidence_id, rulesets=None, rules=None, scan_scope="vad"):
     """
     Run YARA scan on evidence with selected rulesets and/or individual rules.
-    
+
     Args:
         evidence_id: ID of the evidence to scan
         rulesets: List of ruleset IDs to use
         rules: List of individual rule IDs to use
+        scan_scope: "vad" (per-process memory, default) or "kernel"
+                    (kernel layer). Selects which Volatility plugin
+                    drives the scan; see VolatilityEngine.run_yara_scan.
     """
     import traceback
     from datetime import datetime
@@ -306,15 +311,15 @@ def start_yarascan(evidence_id, rulesets=None, rules=None):
             },
         )
         
-        # Initialize scan_executed to track if any scan was performed
+        # run_yara_scan: True=matches, False=no matches, None=could not run; raises on failure.
+        scan_result = None
         scan_executed = False
-        scan_results = []
-        
+
         # If specific rulesets are selected, combine them in a single scan
         if rulesets:
             from yararulesets.models import YaraRuleSet
             selected_rulesets = []
-            
+
             for ruleset_id in rulesets:
                 try:
                     # Try to fetch the ruleset regardless of its status. We will
@@ -328,54 +333,45 @@ def start_yarascan(evidence_id, rulesets=None, rules=None):
                         logger.warning(f"Ruleset {ruleset_id} found but not compiled yet; skipping")
                 except YaraRuleSet.DoesNotExist:
                     logger.warning(f"Ruleset {ruleset_id} not found")
-            
-            if selected_rulesets:
-                logger.info(f"Running YARA scan with {len(selected_rulesets)} rulesets combined")
-                scan_result = engine.run_yara_scan(yara_rulesets=selected_rulesets)
-                
-                # Mark that a scan was executed
-                scan_executed = True
-                
-                # Collect results if any matches found
-                if scan_result is not None and scan_result != []:
-                    scan_results.extend(scan_result if isinstance(scan_result, list) else [scan_result])
-                    
+
+            if not selected_rulesets:
+                raise RuntimeError(
+                    "None of the selected rulesets are compiled and ready to scan."
+                )
+
+            logger.info(f"Running YARA scan with {len(selected_rulesets)} rulesets combined (scope={scan_scope})")
+            scan_result = engine.run_yara_scan(yara_rulesets=selected_rulesets, scan_scope=scan_scope)
+            scan_executed = True
+
         # If specific rules are selected (without ruleset)
         elif rules:
-            logger.info(f"Running YARA scan with individual rules: {rules}")
-            
-            scan_result = engine.run_yara_scan(yara_rules=rules)
-            
-            # Mark that a scan was executed
+            logger.info(f"Running YARA scan with individual rules: {rules} (scope={scan_scope})")
+            scan_result = engine.run_yara_scan(yara_rules=rules, scan_scope=scan_scope)
             scan_executed = True
-            
-            # Collect results if any matches found
-            if scan_result is not None and scan_result != []:
-                scan_results.extend(scan_result if isinstance(scan_result, list) else [scan_result])
-                
+
         # If no specific selections, run with all active rules
         else:
-            logger.info("Running YARA scan with all active rules")
-            scan_result = engine.run_yara_scan()
-            
-            # Mark that a scan was executed
+            logger.info(f"Running YARA scan with all active rules (scope={scan_scope})")
+            scan_result = engine.run_yara_scan(scan_scope=scan_scope)
             scan_executed = True
-            
-            # Collect results if any matches found
-            if scan_result is not None and scan_result != []:
-                scan_results.extend(scan_result if isinstance(scan_result, list) else [scan_result])
-        
-        # Determine the result based on whether scan was executed successfully
-        # A scan is successful if it was executed, regardless of whether matches were found
-        result = scan_executed
-        
+
+        # None means nothing was scanned (inactive/uncompiled rules): treat as failure.
+        if not scan_executed or scan_result is None:
+            raise RuntimeError(
+                "YARA scan did not run: no compiled, active rules were available "
+                "for the selected rulesets/rules."
+            )
+
+        matches_found = bool(scan_result)
+        result = matches_found
+
         # Generate a unique scan ID with timestamp for logging
         scan_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         scan_id = f"scan_{scan_timestamp}"
-        
-        logger.info(f"YARA scan completed for evidence {evidence_id}. Found {len(scan_results)} total matches. Scan ID: {scan_id}")
-        
-        # Send finished notification
+
+        logger.info(f"YARA scan completed for evidence {evidence_id}. Matches found: {matches_found}. Scan ID: {scan_id}")
+
+        # result="true" => matches found; "false" => completed with no matches.
         async_to_sync(channel_layer.group_send)(
             f"volatility_tasks_{evidence_id}",
             {
@@ -383,9 +379,8 @@ def start_yarascan(evidence_id, rulesets=None, rules=None):
                 "message": {
                     "name": "yarascan",
                     "status": "finished",
-                    "result": str(result).lower(),
-                    "scan_id": scan_id,  # Include scan ID in notification
-                    "matches_count": len(scan_results),  # Include match count
+                    "result": str(matches_found).lower(),
+                    "scan_id": scan_id,
                 },
             },
         )
@@ -426,5 +421,150 @@ def start_yarascan(evidence_id, rulesets=None, rules=None):
                 },
             },
         )
-        
+
     return result
+
+
+@shared_task
+def generate_linux_symbols(evidence_id):
+    """
+    Auto-resolve the Linux kernel ISF for a Linux evidence: detect the banner,
+    download a matching ISF from the community remote index, verify it against
+    the image, and register it as a Symbol. Gates Linux plugin execution until
+    status == "ready". On failure, records guidance for building it manually.
+    """
+    from volatility_engine.models import LinuxSymbolResolution
+    from volatility_engine import isf as isf_mod
+    from symbols.models import Symbol
+
+    instance = Evidence.objects.get(id=evidence_id)
+    if instance.os != "linux":
+        return
+
+    channel_layer = get_channel_layer()
+    resolution, _ = LinuxSymbolResolution.objects.get_or_create(evidence=instance)
+
+    def _set(status, **fields):
+        resolution.status = status
+        for key, value in fields.items():
+            setattr(resolution, key, value)
+        resolution.save()
+        async_to_sync(channel_layer.group_send)(
+            f"volatility_tasks_{evidence_id}",
+            {
+                "type": "send_notification",
+                "message": {
+                    "name": "isf",
+                    "status": resolution.status,
+                    "banner": resolution.banner,
+                    "method": resolution.method,
+                    "message": resolution.message,
+                    "guidance": resolution.guidance,
+                },
+            },
+        )
+
+    engine = VolatilityEngine(instance)
+
+    # Reset any stale banner/guidance from a previous run so intermediate
+    # states don't carry the old "manual build" guidance.
+    _set("detecting", banner=None, method=None, guidance=None,
+         message="Detecting kernel banner…")
+    try:
+        banner = engine.detect_linux_banner()
+    except Exception as e:
+        logger.error(f"Banner detection failed for evidence {evidence_id}: {e}")
+        banner = None
+
+    if not banner:
+        _set("failed_banner", message="Could not find a Linux kernel banner in the image.")
+        return
+
+    _set("resolving", banner=banner, message="Looking up matching ISF…")
+    try:
+        isf_rel = isf_mod.resolve_isf_remote(banner)
+    except Exception as e:
+        logger.error(f"Remote ISF resolution failed for evidence {evidence_id}: {e}")
+        isf_rel = None
+
+    if not isf_rel:
+        _set(
+            "failed_isf",
+            method="remote",
+            guidance=isf_mod.build_manual_guidance(banner),
+            message="No matching ISF in the remote index. Build it manually and upload it.",
+        )
+        return
+
+    _set("verifying", method="remote", message="Verifying ISF against the image…")
+    if not engine.verify_linux_symbols():
+        # Drop the non-working ISF so it doesn't pollute the symbol path.
+        try:
+            os.remove(os.path.join(settings.MEDIA_ROOT, isf_rel))
+        except OSError:
+            pass
+        _set(
+            "failed_isf",
+            method="remote",
+            guidance=isf_mod.build_manual_guidance(banner),
+            message="An ISF was found but did not resolve against this image. Build it manually.",
+        )
+        return
+
+    symbol = Symbol.objects.create(
+        name=(banner.split("(")[0].strip()[:100] or "Linux ISF"),
+        os="Linux",
+        description=banner[:500],
+        symbols_file=isf_rel,
+    )
+    _set("ready", method="remote", linked_symbol=symbol, message="Kernel symbols ready.")
+
+
+@shared_task
+def reverify_linux_symbols(evidence_id):
+    """
+    Re-validate Linux kernel symbols for an evidence and update the extraction
+    gate accordingly. Runs after a manual ISF upload (may *open* the gate) or
+    after an ISF deletion (may *close* it), so it re-checks regardless of the
+    current status.
+    """
+    from volatility_engine.models import LinuxSymbolResolution
+    from volatility_engine import isf as isf_mod
+
+    instance = Evidence.objects.get(id=evidence_id)
+    if instance.os != "linux":
+        return
+    resolution = LinuxSymbolResolution.objects.filter(evidence=instance).first()
+    if not resolution:
+        return
+
+    channel_layer = get_channel_layer()
+
+    def _set(status, **fields):
+        resolution.status = status
+        for key, value in fields.items():
+            setattr(resolution, key, value)
+        resolution.save()
+        async_to_sync(channel_layer.group_send)(
+            f"volatility_tasks_{evidence_id}",
+            {
+                "type": "send_notification",
+                "message": {
+                    "name": "isf",
+                    "status": resolution.status,
+                    "banner": resolution.banner,
+                    "method": resolution.method,
+                    "message": resolution.message,
+                    "guidance": resolution.guidance,
+                },
+            },
+        )
+
+    _set("verifying", message="Re-checking kernel symbols…")
+    engine = VolatilityEngine(instance)
+    if engine.verify_linux_symbols():
+        _set("ready", guidance=None, message="Kernel symbols ready.")
+    else:
+        guidance = isf_mod.build_manual_guidance(resolution.banner) if resolution.banner else None
+        _set("failed_isf", guidance=guidance,
+             message="No usable ISF for this evidence. Re-fetch automatically or upload a matching ISF.")

@@ -95,6 +95,15 @@ const PluginSelector: React.FC<PluginSelectorProps> = ({
   const [pluginTimeout, setPluginTimeout] = useState<string>("600");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Linux kernel-symbol (ISF) resolution state — gates extraction.
+  const isLinux = evidenceOs === "linux";
+  const [isfStatus, setIsfStatus] = useState<string>(isLinux ? "pending" : "ready");
+  const [isfBanner, setIsfBanner] = useState<string | null>(null);
+  const [isfMessage, setIsfMessage] = useState<string | null>(null);
+  const [isfGuidance, setIsfGuidance] = useState<any | null>(null);
+  const [isfRetrying, setIsfRetrying] = useState(false);
+  const isfReady = !isLinux || isfStatus === "ready";
+
   const requiredPlugins = REQUIRED_PLUGINS[evidenceOs] || [];
 
   const fetchAvailablePlugins = useCallback(async () => {
@@ -139,6 +148,36 @@ const PluginSelector: React.FC<PluginSelectorProps> = ({
     fetchAvailablePlugins();
   }, [fetchAvailablePlugins]);
 
+  const fetchIsfStatus = useCallback(async () => {
+    if (!isLinux) return;
+    try {
+      const res = await axiosInstance.get(`/api/evidence/${evidenceId}/isf/`);
+      setIsfStatus(res.data.status);
+      setIsfBanner(res.data.banner ?? null);
+      setIsfMessage(res.data.message ?? null);
+      setIsfGuidance(res.data.guidance ?? null);
+    } catch {
+      /* keep pending; WS will update */
+    }
+  }, [evidenceId, isLinux]);
+
+  useEffect(() => {
+    fetchIsfStatus();
+  }, [fetchIsfStatus]);
+
+  const handleRetryIsf = async () => {
+    try {
+      setIsfRetrying(true);
+      await axiosInstance.post(`/api/evidence/${evidenceId}/isf/`);
+      setIsfStatus("detecting");
+      setIsfGuidance(null);
+      display_message("info", "Kernel symbol resolution restarted");
+    } catch (error) {
+      setIsfRetrying(false);
+      display_message("error", `Failed to restart ISF resolution: ${error}`);
+    }
+  };
+
   // WebSocket for extraction progress
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
@@ -158,6 +197,21 @@ const PluginSelector: React.FC<PluginSelectorProps> = ({
           } else {
             display_message("error", "Analysis failed");
           }
+        }
+      }
+      if (message.name === "isf") {
+        setIsfStatus(message.status);
+        if (message.banner !== undefined) setIsfBanner(message.banner);
+        if (message.message !== undefined) setIsfMessage(message.message);
+        if (message.guidance !== undefined) setIsfGuidance(message.guidance);
+        if (message.status === "ready") {
+          setIsfRetrying(false);
+          display_message(
+            "success",
+            "Kernel symbols (ISF) retrieved successfully and added to your Symbols database."
+          );
+        } else if (message.status.startsWith("failed")) {
+          setIsfRetrying(false);
         }
       }
     };
@@ -319,6 +373,68 @@ const PluginSelector: React.FC<PluginSelectorProps> = ({
             variant="outlined"
           />
         </Box>
+
+        {/* Linux kernel-symbol (ISF) status — extraction is gated until ready */}
+        {isLinux && isfStatus !== "ready" && (
+          <Alert
+            severity={isfStatus.startsWith("failed") ? "error" : "info"}
+            icon={isfStatus.startsWith("failed") ? undefined : <CircularProgress size={18} />}
+            sx={{ mb: 2 }}
+            action={
+              isfStatus.startsWith("failed") ? (
+                <Button color="inherit" size="small" onClick={handleRetryIsf} disabled={isfRetrying}>
+                  Retry
+                </Button>
+              ) : undefined
+            }
+          >
+            <Typography variant="subtitle2">
+              Kernel symbols (ISF):{" "}
+              {(
+                {
+                  pending: "waiting…",
+                  detecting: "detecting kernel banner…",
+                  resolving: "looking up matching ISF…",
+                  verifying: "verifying ISF against the image…",
+                  failed_banner: "banner not found",
+                  failed_isf: "no matching ISF",
+                } as Record<string, string>
+              )[isfStatus] || isfStatus}
+            </Typography>
+            {isfMessage && <Typography variant="body2">{isfMessage}</Typography>}
+            {isfBanner && (
+              <Typography
+                variant="caption"
+                component="pre"
+                sx={{ mt: 1, whiteSpace: "pre-wrap", fontFamily: "monospace" }}
+              >
+                {isfBanner}
+              </Typography>
+            )}
+            {isfGuidance && isfStatus.startsWith("failed") && (
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  Build it manually, then upload it in the Symbols page:
+                </Typography>
+                {isfGuidance.package && (
+                  <Typography variant="body2">Package: {isfGuidance.package}</Typography>
+                )}
+                {isfGuidance.where && (
+                  <Typography variant="body2" sx={{ wordBreak: "break-all" }}>
+                    Where: {isfGuidance.where}
+                  </Typography>
+                )}
+                <ol style={{ margin: "4px 0 0 18px" }}>
+                  {(isfGuidance.steps || []).map((step: string, i: number) => (
+                    <li key={i}>
+                      <Typography variant="caption">{step}</Typography>
+                    </li>
+                  ))}
+                </ol>
+              </Box>
+            )}
+          </Alert>
+        )}
 
         {/* Global controls */}
         <Box sx={{ display: "flex", alignItems: "flex-start", gap: 3, mb: 2, flexWrap: "wrap" }}>
@@ -505,16 +621,22 @@ const PluginSelector: React.FC<PluginSelectorProps> = ({
 
         {/* Action bar */}
         <Box mt={4} display="flex" justifyContent="center" alignItems="center" gap={2}>
-          <Button
-            variant="outlined"
-            size="large"
-            color="error"
-            startIcon={processing ? <CircularProgress size={20} /> : <PlayArrow />}
-            onClick={handleStartAnalysis}
-            disabled={processing || selectedPlugins.length === 0}
+          <Tooltip
+            title={!isfReady ? "Waiting for Linux kernel symbols (ISF) to be ready" : ""}
           >
-            {processing ? "Processing..." : "Start Analysis"}
-          </Button>
+            <span>
+              <Button
+                variant="outlined"
+                size="large"
+                color="error"
+                startIcon={processing ? <CircularProgress size={20} /> : <PlayArrow />}
+                onClick={handleStartAnalysis}
+                disabled={processing || selectedPlugins.length === 0 || !isfReady}
+              >
+                {processing ? "Processing..." : "Start Analysis"}
+              </Button>
+            </span>
+          </Tooltip>
         </Box>
       </Paper>
     </Box>

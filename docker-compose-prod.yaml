@@ -35,6 +35,7 @@ services:
       - DJANGO_SECRET=${DJANGO_SECRET}
       - BROKER_HOST=${BROKER_HOST}
       - BROKER_PORT=${BROKER_PORT}
+      - RUN_MIGRATIONS=true
     command: daphne -b 0.0.0.0 -p 8000 backend.asgi:application
     ports:
       - "8000:8000"
@@ -64,6 +65,7 @@ services:
     depends_on:
       - volweb-redis
       - volweb-postgresdb
+      - volweb-backend
     restart: always
     volumes:
       - media:/home/app/web/media
@@ -89,6 +91,7 @@ services:
     depends_on:
       - volweb-redis
       - volweb-postgresdb
+      - volweb-backend
     restart: always
     volumes:
       - media:/home/app/web/media

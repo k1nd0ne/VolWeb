@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from threading import local
 import logging
 import os
+import hashlib
 import logging
 from django.conf import settings
 
@@ -13,6 +14,40 @@ logger = logging.getLogger(__name__)
 
 # Thread-local storage for batch operation state
 _local = local()
+
+
+def compute_content_hash(rule_content):
+    """SHA-256 of the rule content, normalized for line endings and whitespace."""
+    if not rule_content:
+        rule_content = ""
+    text = rule_content.replace("\r\n", "\n").replace("\r", "\n")
+    normalized = "\n".join(line.rstrip() for line in text.split("\n")).strip()
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+
+
+def backfill_content_hashes():
+    """Populate content_hash for legacy rows where it is still NULL (idempotent)."""
+    # local import: models imports this module
+    from yararules.models import YaraRule
+
+    missing = YaraRule.objects.filter(content_hash__isnull=True).only("id", "rule_content")
+    for rule in missing.iterator():
+        YaraRule.objects.filter(id=rule.id).update(
+            content_hash=compute_content_hash(rule.rule_content)
+        )
+
+
+def get_existing_content_hashes():
+    """Return the set of content hashes of all existing rules (backfilling legacy rows)."""
+    # local import: models imports this module
+    from yararules.models import YaraRule
+
+    backfill_content_hashes()
+
+    return set(
+        YaraRule.objects.exclude(content_hash__isnull=True)
+        .values_list("content_hash", flat=True)
+    )
 
 def create_yara_rule_file(rule):
     """

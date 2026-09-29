@@ -25,13 +25,18 @@ import {
   CloudDownload as CloudDownloadIcon,
 } from "@mui/icons-material";
 import axiosInstance from "../../utils/axiosInstance";
-import { YaraRule, YaraRuleSet } from "../../types";
+import { YaraRuleSet } from "../../types";
+
+export interface ImportSummary {
+  created: number;
+  skipped: number;
+}
 
 interface YaraRuleCreationDialogProps {
   open: boolean;
   onClose: () => void;
-  onCreateSuccess: (newYaraRule: YaraRule) => void;
-  onImportSuccess: () => void;
+  onCreateSuccess: (summary: ImportSummary) => void;
+  onImportSuccess: (summary: ImportSummary) => void;
   onCreateFailed?: (error: unknown) => void;
   onImportFailed?: (error: string) => void;
   yara_ruleset?: YaraRuleSet;
@@ -172,7 +177,10 @@ const YaraRuleCreationDialog: React.FC<YaraRuleCreationDialogProps> = ({
         upload_id: uploadId,
       });
 
-      onCreateSuccess(completeRes.data);
+      onCreateSuccess({
+        created: completeRes.data?.rules_created ?? 0,
+        skipped: completeRes.data?.skipped_duplicates ?? 0,
+      });
       handleClose();
     } catch (err) {
       console.error("Upload failed", err);
@@ -224,7 +232,10 @@ const YaraRuleCreationDialog: React.FC<YaraRuleCreationDialogProps> = ({
       });
 
       if (response.data.success) {
-        onImportSuccess();
+        onImportSuccess({
+          created: response.data?.imported_count ?? 0,
+          skipped: response.data?.skipped_duplicates ?? 0,
+        });
         handleClose();
       } else {
         setGithubError(response.data.error || "Import failed.");
